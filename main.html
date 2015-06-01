@@ -5,7 +5,6 @@
 <title>ExiSAXS</title>
 <link rel="stylesheet" type="text/css"	href="js/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
 
-http://localhost:1841/build/development/TutorialApp/resources/TutorialApp-all_01.css
 <script type="text/javascript" src="js/ext/build/ext-all.js"></script>
 <script type="text/javascript"src="js/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
 
@@ -32,12 +31,21 @@ http://localhost:1841/build/development/TutorialApp/resources/TutorialApp-all_01
 <script type="text/javascript" src="js/main/mainview.js"></script>
 <script type="text/javascript" src="js/main/sessionmainview.js"></script>
 <script type="text/javascript" src="js/main/experimentmainview.js"></script>
+<script type="text/javascript" src="js/main/macromoleculemainview.js"></script>
+<script type="text/javascript" src="js/main/primarydatamainview.js"></script>
 
 <script type="text/javascript" src="js/util/progressbar.js"></script>
 
-<!-- ISPyB -->
-<script type="text/javascript" src="js/widget/grid/analysisgrid.js"></script>
+<script type="text/javascript" src="js/widget/plot/curveplotter.js"></script>
+
+<script type="text/javascript" src="js/widget/grid/queuegrid.js"></script>
+<script type="text/javascript" src="js/widget/grid/frameselectorgrid.js"></script>
+<script type="text/javascript" src="js/widget/form/datareductionform.js"></script>
 <script type="text/javascript" src="js/bui.js"></script>
+
+
+<script type="text/javascript" src="http://pc593.embl.fr:8082/dygraphs-master/dygraph-dev.js"></script>
+
 
 
 <link rel="stylesheet" type="text/css" href="css/logger.css">
@@ -45,11 +53,25 @@ http://localhost:1841/build/development/TutorialApp/resources/TutorialApp-all_01
 </head>
 
 <script>
+	var exiSAXS;
 	Ext.onReady(function(){
-		var exiSAXS = new ExiSAXS();
+		Ext.Loader.setConfig({
+		    enabled: true
+		});
+
+		Ext.Loader.setPath('Ext.ux', 'js/ext/examples/ux/');
+
+		Ext.require([
+		  'Ext.ux.statusbar.StatusBar',
+		]);
+		
+		exiSAXS = new ExiSAXS();
 		exiSAXS.show();
+
 	});
 </script>
 
-<body></body>
+<body>
+
+</body>
 </html>

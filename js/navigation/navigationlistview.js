@@ -9,6 +9,10 @@ NavigationListView.prototype.getSorters = function(){
 	return {};
 };
 
+NavigationListView.prototype.load = function(data){
+	this.store.loadData(data);
+};
+
 NavigationListView.prototype.getPanel = function(){
 	var _this =this;
 	this.store = Ext.create('Ext.data.Store', {
@@ -32,6 +36,7 @@ NavigationListView.prototype.getPanel = function(){
 	    store: this.store,
 	    layout : 'fit',
 	    columns: this.getColumns(),
+	  
 	    width: this.width,
 //	    cls : 'navigation',
 	    height : this.height,
@@ -44,12 +49,12 @@ NavigationListView.prototype.getPanel = function(){
 			getRowClass : function(record, rowIdx, params, store) {
 			},
 			listeners : {
-				itemdblclick : function(dataview, record, item, e) {
-					console.log("dbl");
-				},
-				selectionchange: function( dataview, selected, eOpts ){
-						console.log(selected);
-				}
+//				itemdblclick : function(dataview, record, item, e) {
+//					console.log("dbl");
+//				},
+//				selectionchange: function( dataview, selected, eOpts ){
+//						console.log(selected);
+//				}
 			}
 		}
 	});

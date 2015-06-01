@@ -1,4 +1,5 @@
 MacromoleculeListView.prototype.getPanel = NavigationListView.prototype.getPanel;
+MacromoleculeListView.prototype.load = NavigationListView.prototype.load;
 
 function MacromoleculeListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];

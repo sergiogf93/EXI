@@ -489,9 +489,10 @@ var BUI = {
 
 		}
 
-		if (val === "") {
+		if (val == "") {
 			return "";
 		}
+		
 		if (unit == null) {
 			return "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "</span>";
 		}

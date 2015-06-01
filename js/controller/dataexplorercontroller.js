@@ -81,7 +81,7 @@ DataExplorerController.prototype.showExperiments = function(){
 };
 
 DataExplorerController.prototype.showMacromolecules = function(){
-	this.getAdapter(new MacromoleculeListView()).getMacromolecules();
+	this.getAdapter(new MacromoleculeListView(), new  MacromoleculeMainView()).getMacromolecules();
 };
 
 

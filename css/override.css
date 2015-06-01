@@ -6,10 +6,8 @@
 .x-grid-cell-inner{
 	padding: 2px 2px 2px 8px;
 }
-.x-tab-default{
-	border : 1px gray solid;
-	
-}
+
+
 
 .x-panel-body-default{
 	font-size : 9px;
@@ -29,7 +27,7 @@
 
 .navigation{
 	font-weight : bold;
-	border : 1px #207a7a solid;
+	border-right : 1px #207a7a solid;
 }
 
 .x-column-header-inner {

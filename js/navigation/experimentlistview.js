@@ -1,4 +1,5 @@
 ExperimentListView.prototype.getPanel = NavigationListView.prototype.getPanel;
+ExperimentListView.prototype.load = NavigationListView.prototype.load;
 
 function ExperimentListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
@@ -28,6 +29,8 @@ ExperimentListView.prototype.getRow = function(record){
 		}
 	return html + "</table>";
 };
+
+
 
 ExperimentListView.prototype.getColumns = function(){
 	var _this = this;
