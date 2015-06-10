@@ -34,8 +34,30 @@ DataAdapter.prototype.downloadFrameURL = function(frameId){
 };
 
 DataAdapter.prototype.getFramesURL = function(frames, averages, subtractions,sampleaverages, bufferaverages){
-//	this.call('/{0}/saxs/{1}/frame/plot?frame={2}&average={3}&subtracted={4}&sampleaverage={5}&bufferaverage={6}'.format([ AuthenticationController.getToken(), AuthenticationController.getUser(), frames.toString(), averages.toString(),subtractions.toString(), sampleaverages.toString(), bufferaverages.toString() ]));
+	if (frames == null){
+		frames = [];
+	}
+	if (averages == null){
+		averages = [];
+	}
+	if (subtractions == null){
+		subtractions = [];
+	}
+	if (sampleaverages == null){
+		sampleaverages = [];
+	}
+	if (bufferaverages == null){
+		bufferaverages = [];
+	}
 	return this.server + ('/{0}/saxs/{1}/frame/datplot?frame={2}&average={3}&subtracted={4}&sampleaverage={5}&bufferaverage={6}'.format([ AuthenticationController.getToken(), AuthenticationController.getUser(), frames.toString(), averages.toString(),subtractions.toString(), sampleaverages.toString(), bufferaverages.toString() ]));
+};
+
+DataAdapter.prototype.getFramesMergeURL = function(subtractionIdList, from, to, scale){
+	return this.server + ('/{0}/saxs/{1}/frame/subtractionId/{2}/datplotmerge?from={3}&to={4}&scale={5}'.format([ AuthenticationController.getToken(), AuthenticationController.getUser(), subtractionIdList.toString(), from.toString(),to.toString(), scale.toString() ]));
+};
+
+DataAdapter.prototype.getMergeURL = function(subtractionIdList, from, to, scale){
+	return this.server + ('/{0}/saxs/{1}/frame/subtractionId/{2}/merge?from={3}&to={4}&scale={5}'.format([ AuthenticationController.getToken(), AuthenticationController.getUser(), subtractionIdList.toString(), from.toString(),to.toString(), scale.toString() ]));
 };
 
 DataAdapter.prototype.getSessions = function(){
@@ -58,22 +80,46 @@ DataAdapter.prototype.getExperimentsBySessionId= function(sessionId){
 DataAdapter.prototype.getDataCollectionsByExperimentId= function(experimentId){
 	this.call('/{0}/saxs/{1}/datacollection/experimentId/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), experimentId]));
 };
+
+
+DataAdapter.prototype.getByExperimentId= function(experimentIds){
+	this.call('/{0}/saxs/{1}/experiment/experimentId/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), experimentIds]));
+};
+
+DataAdapter.prototype.getByExperimentByKey= function(key, value){
+	this.call('/{0}/saxs/{1}/experiment/{2}/{3}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), key.toString(), value.toString()]));
+};
+
+
 //DataAdapter.prototype.getSubtractionByExperimentId= function(experimentId){
 //	this.call('/{0}/saxs/{1}/subtraction/experimentId/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), experimentId]));
 //};
 
+/** DATA COLLECTIONS **/
 DataAdapter.prototype.getDataCollectionsByMacromoleculeAcronym= function(macromoleculeAcronym){
 	this.call('/{0}/saxs/{1}/datacollection/macromoleculeAcronym/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), macromoleculeAcronym]));
 };
+
+DataAdapter.prototype.getDataCollectionsByKey= function(key, value){
+	this.call('/{0}/saxs/{1}/datacollection/{2}/{3}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), key, value.toString()]));
+};
+
 
 DataAdapter.prototype.getDataCollectionsByDataCollectionId= function(dataCollectionIds){
 	this.call('/{0}/saxs/{1}/datacollection/dataCollectionId/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), dataCollectionIds]));
 };
 
+DataAdapter.prototype.getDataCollectionsByIdList= function(dataCollectionIds){
+	this.call('/{0}/saxs/{1}/datacollection/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), dataCollectionIds]));
+};
+
+
+/** SUBTRACTION **/
 DataAdapter.prototype.getSubtractionsBySubtractionIdList= function(subtractionIdList){
 	this.call('/{0}/saxs/{1}/subtraction/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), subtractionIdList.toString()]));
 };
 
+/** FRAMES **/
 DataAdapter.prototype.getFramesByAverageId= function(averageId){
 	this.call('/{0}/saxs/{1}/frame/average/{2}/list'.format( [AuthenticationController.getToken(), AuthenticationController.getUser(), averageId.toString()]));
 };

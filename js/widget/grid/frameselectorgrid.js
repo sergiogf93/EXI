@@ -1,294 +1,243 @@
 function FrameSelectorGrid(args) {
 
-	/** measurementId : [{frame}] **/
-	this.selected = {}; 
-	
 	this.onSelectionChange = new Event(this);
 }
 
-FrameSelectorGrid.prototype.getItem = function(measurement, type, group, fileName, frameId,mergeId ) {
-	return {
-		type : type,
-		group : group,
-		fileName : fileName,
-		frameId : frameId,
-		mergeId : mergeId,
-		measurementId : measurement.measurementId,
-		subtractionId : measurement.subtractionId,
-		concentration : measurement.concentration,
-		bufferAcronym : measurement.bufferAcronym,
-		macromoleculeId : measurement.macromoleculeId,
-		code : measurement.code,
-		macromoleculeAcronym : measurement.macromoleculeAcronym };
-};
-
-FrameSelectorGrid.prototype.loadSubtractionFrames = function(measurement) {
+/**
+ * Fill the tree with information about the subtraction: samples, buffers,
+ * averages and subtrated curve *
+ */
+FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
 	var _this = this;
-	/** Loading a subtraction * */
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, data) {
-		if (data != null) {
-			var frames = [];
-			frames.push(_this.getItem(measurement, "SampleAverage", "Average", data[0].sampleAverage));
-			frames.push(_this.getItem(measurement, "BufferAverage", "Average", data[0].bufferAverage));
-			frames.push(_this.getItem(measurement, "Subtraction", "Subtraction", data[0].subtraction));
-			for ( var index in data[0].buffers) {
-				frames.push(_this.getItem(measurement, "Buffer", "Buffer", data[0].buffers[index].filePath, data[0].buffers[index].frameId));
+	/**
+	 * Given a data collection return the run numbers, sample and buffer
+	 * acronym *
+	 */
+	function getSubtractionTitleByDataCollection(dataCollection) {
+		var title = "";
+		/** Sorts datacollection by data collection order * */
+		dataCollection.measurementtodatacollection3VOs.sort(function(a, b) {
+			return a.dataCollectionOrder - b.dataCollectionOrder;
+		});
+		for (var i = 0; i < dataCollection.measurementtodatacollection3VOs.length; i++) {
+			function getMeasurementTitle(measurementId) {
+				for (var i = 0; i < _this.measurements.length; i++) {
+					if (_this.measurements[i].measurementId == measurementId) {
+						if (_this.measurements[i].macromoleculeId != null) {
+							return _this.measurements[i].macromoleculeAcronym + ":  " + _this.measurements[i].concentration + "mg/ml";
+						}
+						return "";
+					}
+					;
+				}
+				;
 			}
-
-			for ( var index in data[0].samples) {
-				frames.push(_this.getItem(measurement, "Sample", "Sample", data[0].samples[index].filePath, data[0].samples[index].frameId));
-			}
-			_this.framesStore.loadData(frames);
+			;
+			title = title + " " + getMeasurementTitle(dataCollection.measurementtodatacollection3VOs[i].measurementId);
 		}
-	});
-	adapter.getFramesBySubtractionId(measurement.subtractionId);
-};
-
-FrameSelectorGrid.prototype.loadBufferFrames = function(measurement) {
-	var _this = this;
-	/** Loading a subtraction * */
-	/** Loading a buffer * */
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, data) {
-		if (data != null) {
-			var frames = [];
-			frames.push(_this.getItem(measurement, "Average", "Average", data[0].average,  null, data[0].averageId));
-			for ( var index in data[0].frames) {
-				frames.push(_this.getItem(measurement, "Frame", "Frame",data[0].frames[index].filePath, data[0].frames[index].frameId, null));
-			}
-			_this.framesStore.loadData(frames);
-		}
-	});
-	adapter.getFramesByAverageId(measurement.mergeId);
-};
-
-FrameSelectorGrid.prototype.onClick = function(measurement) {
-	if (measurement.macromoleculeAcronym != null) {
-		this.loadSubtractionFrames(measurement);
-	} else {
-		this.loadBufferFrames(measurement);
+		return title;
 	}
+
+	/** Gets the sample and buffer frames * */
+	function getChildren(dataCollection) {
+		var children = [];
+		function getTreeFromFrameList(OneDimensionalFiles) {
+			var sampleFrames = [];
+			if (OneDimensionalFiles.frametolist3VOs) {
+				for (var j = 0; j < OneDimensionalFiles.frametolist3VOs.length; j++) {
+					sampleFrames.push({
+						text : OneDimensionalFiles.frametolist3VOs[j].frame3VO.filePath,
+						type : "Frame",
+						frameId : OneDimensionalFiles.frametolist3VOs[j].frame3VO.frameId,
+						leaf : true });
+				}
+			}
+			return sampleFrames;
+		}
+
+		if (dataCollection != null) {
+			if (dataCollection.substraction3VOs != null) {
+				dataCollection.substraction3VOs.sort(function(a, b) {
+					return a.subtractionId - b.subtractionId
+				});
+				if (dataCollection.substraction3VOs.length > 0) {
+					var lastSubtraction = dataCollection.substraction3VOs[dataCollection.substraction3VOs.length - 1];
+					children.push({
+						text : lastSubtraction.substractedFilePath,
+						subtractionId : lastSubtraction.subtractionId,
+						type : "Subtraction",
+						leaf : true, }
+
+					);
+					children.push({
+						text : lastSubtraction.sampleAverageFilePath,
+						subtractionId : lastSubtraction.subtractionId,
+						type : "SampleAverage",
+						leaf : true, }
+
+					);
+					children.push({
+						text : lastSubtraction.bufferAverageFilePath,
+						subtractionId : lastSubtraction.subtractionId,
+						type : "BufferAverage",
+						leaf : true, }
+
+					);
+
+					if (lastSubtraction.sampleOneDimensionalFiles != null) {
+						children.push({
+							text : "Sample",
+							leaf : false,
+							type : 'Sample',
+							children : getTreeFromFrameList(lastSubtraction.sampleOneDimensionalFiles, 'Sample') }
+
+						);
+					}
+					if (lastSubtraction.bufferOneDimensionalFiles != null) {
+						children.push({
+							text : "Buffer",
+							leaf : false,
+							type : 'Buffer',
+							children : getTreeFromFrameList(lastSubtraction.bufferOneDimensionalFiles, 'Buffer') }
+
+						);
+					}
+
+				}
+			}
+		}
+		return children;
+	}
+
+	var parsed = [];
+	for (var i = 0; i < dataCollections.length; i++) {
+		parsed.push({
+			text : getSubtractionTitleByDataCollection(dataCollections[i]),
+			leaf : false,
+			children : getChildren(dataCollections[i]) });
+	}
+
+	_this.treePanel.setRootNode({
+		text : 'Root',
+		expanded : true,
+		children : parsed }
+	);
 };
 
 FrameSelectorGrid.prototype.load = function(data) {
-	this.measurementStore.loadData(data);
-};
-
-FrameSelectorGrid.prototype.getMeasurementPanel = function() {
 	var _this = this;
-	this.measurementStore = Ext.create('Ext.data.Store', {
-		fields : [  'measurementId', 'code', 'macromoleculeAcronym', 'bufferAcronym', 'framesMerge', 'framesCount', 'concentration' ],
-		data : [] });
-
-	var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect : true,
-		listeners : {
-			selectionchange : function(sm, selections) {
-				if (selections.length > 0) {
-					_this.onClick(selections[0].data);
-				}
+	this.measurements = data;
+	var dataCollectionIdList = [];
+	if (this.measurements != null) {
+		for (var i = 0; i < this.measurements.length; i++) {
+			if (this.measurements[i].dataCollectionId != null) {
+				dataCollectionIdList.push(this.measurements[i].dataCollectionId);
 			}
-		} 
+		}
+	}
+
+	var adapter = new DataAdapter();
+	adapter.onSuccess.attach(function(sender, data) {
+		if (data != null) {
+			_this.loadData(_this.measurements, data);
+		}
+
 	});
+	adapter.getDataCollectionsByIdList(dataCollectionIdList);
 
-	this.measurementPanel = Ext.create('Ext.grid.Panel', {
-		store : this.measurementStore,
-		selModel : selModel,
-		cls : 'defaultGridPanel',
-		flex : 0.2,
-		margin : 2,
-		columns : [ {
-			text : 'Run',
-			dataIndex : 'code',
-			flex : 1,
-			renderer : function(grid, ops, sample) {
-				if (sample.data.code != null) {
-					return "#" + sample.data.code;
-				}
-				return "--";
-			} }, {
-			text : 'Name',
-			dataIndex : 'code',
-			flex : 1,
-			renderer : function(grid, ops, sample) {
-				if (sample.data.macromoleculeId != null) {
-					return sample.data.macromoleculeAcronym;
-				} else {
-					if (sample.data.bufferAcronym != null) {
-						return sample.data.bufferAcronym;
-					}
-				}
-				return "--";
-			} }, {
-			text : 'Conc',
-			dataIndex : 'framesCount',
-			flex : 1,
-			renderer : function(grid, ops, sample) {
-				if (sample.data.macromoleculeId != null) {
-					if (sample.data.concentration != null) {
-						return parseFloat(sample.data.concentration).toFixed(2) + " mg/ml";
-					}
-				}
-				return "--";
-			} } ],
-		viewConfig : {
-			stripeRows : true,
-			rowLines : false,
-			getRowClass : function(record, index, rowParams, store) {
-		        	if (record.data.measurementId != null){
-		        		if (_this.selected[record.data.measurementId] != null){
-		        			if (_this.selected[record.data.measurementId].length > 0){
-		        				return "selected-row-grid";
-		        			}
-		        		}
-		        	}
-//				if (record.data.macromoleculeId != null) {
-//					return "sample-row-grid";
-//				}
-			} },
-		height : 400 });
-
-	return this.measurementPanel;
 };
 
-
-//PrimaryDataMainView.prototype.getSelectedFrameIdList = function() {
-//	var ids = [];
-//	for (var i = 0; i < this.selected.frame.length; i++) {
-//		ids.push(this.selected.frame[i].frameId);
-//	}
-//	return ids;
-//};
-
-FrameSelectorGrid.prototype.getFramesPanel = function() {
+FrameSelectorGrid.prototype.getPanel = function() {
 	var _this = this;
-	this.framesStore = Ext.create('Ext.data.Store', {
-		fields : [ 'group', 'fileName', 'type', 'macromoleculeAcronym', 'id','measurementId', 'bufferAcronym', 'macromoleculeId', 'concentration'  ],
-		data : [],
-		groupField : 'group' });
+	this.store = Ext.create('Ext.data.TreeStore', {
+		//		fields : [ 'text', 'type' ]
+		columns : [ {
+			xtype : 'treecolumn', //this is so we know which column will show the tree
+			text : 'Text',
+			dataIndex : 'text' } ] });
 
 	var selModel = Ext.create('Ext.selection.RowModel', {
 		allowDeselect : true,
 		mode : 'multi',
 		listeners : {
-//			select : function(sm, selected) {
-//				var data = [];
-//				var adapter = new DataAdapter();
-//				adapter.onSuccess.attach(function(sender, data) {
-//				/** Plotter * */
-//				});
-//				adapter.getFrames(_this.getSelectedFrameIdList());
-//				console.log(selected.data);
-//			},
-			deselect : function(sm, unselected) {
-				console.log(unselected.data);
-			},
 			selectionchange : function(sm, selections) {
-				var measurementId = _this.measurementPanel.getSelection()[0].data.measurementId;
-				
-				if (selections != null){
-					var data = [];
+				var frameIds = [];
+				var sampleAverages = [];
+				var bufferAverages = [];
+				var subtractions = [];
+				if (selections != null) {
 					for (var i = 0; i < selections.length; i++) {
-						data.push(selections[i].data);
+						if (selections[i].data.type) {
+							if (selections[i].data.type == "Frame") {
+								frameIds.push(selections[i].data.frameId);
+							}
+							if (selections[i].data.type == "SampleAverage") {
+								sampleAverages.push(selections[i].data.subtractionId);
+							}
+							if (selections[i].data.type == "BufferAverage") {
+								bufferAverages.push(selections[i].data.subtractionId);
+							}
+							if (selections[i].data.type == "Subtraction") {
+								subtractions.push(selections[i].data.subtractionId);
+							}
+						}
 					}
-					_this.selected[measurementId] = data;
-					_this.onSelectionChange.notify(_this.selected);
-					
-					/** In order to set the styles when elements have been selected **/
-					_this.measurementPanel.reconfigure();
-				}
-			}
-			 
-		} 
-	});
 
-	this.framesPanel = Ext.create('Ext.grid.Panel', {
-		store : this.framesStore,
+					/** Event is only triggered if node is a leaf **/
+					//					if (selections.length>0){
+					//						if (selections[selections.length - 1]){
+					_this.onSelectionChange.notify({
+						frame : frameIds,
+						average : [],
+						sampleaverage : sampleAverages,
+						bufferaverage : bufferAverages,
+						subtracted : subtractions });
+					//						}
+					//					}
+				}
+
+			}
+
+		} });
+
+	this.treePanel = Ext.create('Ext.tree.Panel', {
+		title : 'Data Collections',
+//		width : 150,
+//		border : 1,
+//		style : {
+//			borderColor : '#000000',
+//			borderStyle : 'solid',
+//			borderWidth : '1px' },
 		selModel : selModel,
-		margin : 2,
-		flex : 0.2,
-		cls : 'defaultGridPanel',
-		features : [ {
-			ftype : 'grouping' } ],
+		store : this.store,
+		rootVisible : false,
 		columns : [ {
-			text : 'File',
-			dataIndex : 'fileName',
-			flex : 0.9,
-			renderer : function(grid, ops, sample) {
-				return sample.data.fileName.split("/")[sample.data.fileName.split("/").length - 1];
-
-			} }, {
-			text : '',
-			dataIndex : 'type',
-			flex : 0.1,
-			hidden : true }, {
-			dataIndex : 'macromoleculeAcronym',
-			flex : 0.2,
-			hidden : true }, 
-			{
-				text : '',
-				dataIndex : 'macromoleculeAcronym',
-				flex : 0.2,
-				hidden : false,
-				renderer : function(grid, ops, sample){
-					if (sample.data.frameId != null){
-						return "<a href='" + new DataAdapter().downloadFrameURL(sample.data.frameId) +"' style='cursor:pointer;'><img style='height:15px;width:15px;' src='images/icon/ic_get_app_black_24dp.png'/></a>"
+			xtype : 'treecolumn',
+			dataIndex : 'text',
+			flex : 1,
+			renderer : function(tree, opts, record) {
+				if (record.data.leaf) {
+					if (record.data.text.lastIndexOf("/") != -1) {
+						return record.data.text.substr(record.data.text.lastIndexOf("/") + 1);
 					}
-					
 				}
-			}
-			
-			],
-		viewConfig : {
-			stripeRows : true,
-			rowLines : false
-			},
-		height : 400 });
-
-	return this.framesPanel;
-};
-
-FrameSelectorGrid.prototype.getTreePanel = function() {
-	var store = Ext.create('Ext.data.TreeStore', {
-	    root: {
-	        expanded: true,
-	        children: [
-	            { text: "detention", leaf: true },
-	            { text: "homework", expanded: true, children: [
-	                { text: "book report", leaf: true },
-	                { text: "algebra", leaf: true, }
-	            ] },
-	            { text: "buy lottery tickets", leaf: true },
-	            { text: "buy lottery tickets", leaf: false , children: [
-	                                                	                { text: "book report", leaf: true },
-	                                                	                { text: "buy lottery tickets", leaf: false , children: [
-	                                                		                                                	                { text: "book report", leaf: true },
-	                                                		                                                	                { text: "algebra", leaf: true, }
-	                                                		                                                	            ] }
-	                                                	            ] },
-	        ]
-	    }
+				return record.data.text;
+			} } ]
+//	,
+//			dockedItems : [ {
+//				dock : 'bottom',
+//				xtype : 'toolbar',
+//				height : 50,
+//				items : [ {
+//					glyph : 61,
+//					xtype : 'button' }, '-', {
+//					glyph : 88,
+//					xtype : 'button' }, {
+//					glyph : 70,
+//					xtype : 'button' }, '-', {
+//					text : 'Sent to idealized curve maker',
+//					glyph : 1,
+//					xtype : 'button' } ] } ] 
 	});
-
-	return Ext.create('Ext.tree.Panel', {
-	    title: 'Simple Tree',
-//	    width: 200,
-	    height: 400,
-	    flex : 1,
-	    store: store,
-	    rootVisible: false,
-	    renderTo: Ext.getBody()
-	});
-};
-
-FrameSelectorGrid.prototype.getPanel = function() {
-	return this.getTreePanel();
-//	return {
-//		xtype : 'panel',
-//		layout : 'hbox',
-////		title : 'Select frames',
-//		flex : 0.4,
-////		items : [ this.getMeasurementPanel(), this.getFramesPanel() ] };
-//		items : [ this.getTreePanel()] };
+	return this.treePanel;
 };

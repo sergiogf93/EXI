@@ -537,7 +537,7 @@ QueueGrid.prototype.getPanel = function() {
 	});
 	
 	this.panel = Ext.create('Ext.grid.Panel', {
-		title : 'Simpsons',
+		title : 'Data Collections',
 		border : true,
 		cls : 'defaultGridPanel',
 		maxHeight : this.maxHeight,

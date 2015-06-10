@@ -21,6 +21,7 @@ MainView.prototype.getPanel = function() {
 		closable: true,
 		icon : this.icon,
 		layout : 'fit',
+		bodyStyle:{"background-color":"#E6E6E6"}, 
 		items :[this.container ]
 	});
 	return this.panel;

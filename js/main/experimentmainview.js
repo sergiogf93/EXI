@@ -28,6 +28,7 @@ ExperimentMainView.prototype.load = function(selected) {
 		
 		var grid = new QueueGrid({
 			positionColumnsHidden : true,
+			maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
 			sorters : [ {
 				property : 'macromoleculeAcronym',
 				direction : 'ASC'
@@ -39,19 +40,19 @@ ExperimentMainView.prototype.load = function(selected) {
 			_this.onSelectionChange.notify(elements);
 		});
 		
-		this.panel.setTitle(experiment.name);
 		
 		this.container.insert(0, grid.getPanel());
+		grid.panel.setTitle(_this.getHeader(experiment.name,experiment.creationDate));
 		
-		grid.panel.setTitle(this.getHeader(experiment.name,experiment.creationDate));
+		
 		grid.panel.setLoading();
-		
-		
 		
 		var adapter = new DataAdapter();
 		/*** Trick for JS compiler **/
 		adapter.grid = grid;
 		adapter.onSuccess.attach(function(sender, data){
+			_this.panel.setTitle(experiment.name);
+			
 			sender.grid.load(data);
 			sender.grid.panel.setLoading(false);
 		});

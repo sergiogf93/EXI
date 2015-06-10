@@ -12,87 +12,7 @@ function PrimaryDataMainView() {
 	
 	this.frameSelectorGrid = new FrameSelectorGrid();
 	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
-		_this.selected = selections;
-		
-		var data = [];
-		function getFrames(selected){
-			var ids = [];
-			for ( var measurementId in selected) {
-				for (var i = 0; i < selected[measurementId].length; i++) {
-					if ( selected[measurementId][i].type == "Frame"){
-						ids.push(selected[measurementId][i].frameId);
-					}
-					
-					if ( selected[measurementId][i].type == "Buffer"){
-						ids.push(selected[measurementId][i].frameId);
-					}
-					
-					if ( selected[measurementId][i].type == "Sample"){
-						ids.push(selected[measurementId][i].frameId);
-					}
-				}
-			}
-			return ids;
-		}
-		
-		function getAverages(selected){
-			var ids = [];
-			for ( var measurementId in selected) {
-				for (var i = 0; i < selected[measurementId].length; i++) {
-					if ( selected[measurementId][i].type == "Average"){
-						ids.push(selected[measurementId][i].mergeId);
-					}
-				}
-			}
-			return ids;
-		}
-		
-		function getSubtractions(selected){
-			var ids = [];
-			for ( var measurementId in selected) {
-				for (var i = 0; i < selected[measurementId].length; i++) {
-					if ( selected[measurementId][i].type == "Subtraction"){
-						ids.push(selected[measurementId][i].subtractionId);
-					}
-				}
-			}
-			return ids;
-		}
-		
-		function getSampleAverages(selected){
-			var ids = [];
-			for ( var measurementId in selected) {
-				for (var i = 0; i < selected[measurementId].length; i++) {
-					if ( selected[measurementId][i].type == "SampleAverage"){
-						ids.push(selected[measurementId][i].subtractionId);
-					}
-				}
-			}
-			return ids;
-		}
-		
-		function getBufferAverages(selected){
-			var ids = [];
-			for ( var measurementId in selected) {
-				for (var i = 0; i < selected[measurementId].length; i++) {
-					if ( selected[measurementId][i].type == "BufferAverage"){
-						ids.push(selected[measurementId][i].subtractionId);
-					}
-				}
-			}
-			return ids;
-		}
-		
-		
-//		var adapter = new DataAdapter();
-//		adapter.onSuccess.attach(function(sender, data) {
-//			/** Plotter * */
-//			debugger
-//			_this.plotter.load(data);
-//		});
-//		debugger
-		_this.plotter.load(new DataAdapter().getFramesURL(getFrames(_this.selected), getAverages(_this.selected), getSubtractions(_this.selected), getSampleAverages(_this.selected), getBufferAverages(_this.selected)));
-		
+		_this.plotter.load(selections);
 	});
 	
 	/** Curve plotter * */
@@ -121,53 +41,13 @@ PrimaryDataMainView.prototype.getSelected = function() {
 
 
 
-PrimaryDataMainView.prototype.getSelectedFrames = function() {
-	var _this = this;
-	this.selectedStore = Ext.create('Ext.data.Store', {
-	    fields:['measurementId', 'code', 'macromoleculeAcronym', 'bufferAcronym', 'framesMerge', 'framesCount', 'concentration', 'fileName', 'type',  'macromoleculeAcronym', 'id'],
-	    data:[]
-	});
-
-	var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect		: true
-	});
-	
-	this.selectedPanel = Ext.create('Ext.grid.Panel', {
-	    store: this.selectedStore,
-	    selModel : selModel,
-	    title : 'Plot',
-	    cls : 'defaultGridPanel',
-	    flex : 0.2,
-	    margin : 2,
-	    columns: [
-	              { text: 'fileName',  dataIndex: 'fileName', flex : 1,
-	  	        	renderer : function(grid, ops, sample){
-	  	        		return "#" + sample.data.fileName;
-	  	        	
-	  	        	} 
-	  	        }
-	    ],
-	    viewConfig: {
-	    	stripeRows : true,
-			rowLines : false,
-	        getRowClass: function(record, index, rowParams, store) {
-	        	if (record.data.macromoleculeId != null){
-	        		return "sample-row-grid";
-	        	}
-	        }
-	    },
-	    height: 400
-	});
-	
-	
-	return this.selectedPanel;
-};
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
 		xtype : 'container',
 		layout : 'hbox',
 		cls : 'defaultGridPanel',
+		border : 0,
 		defaults : {
 			xtype : 'container',
 			height : 600 
@@ -176,13 +56,17 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		         {
 		        	 xtype : 'panel',
 		        	 layout: {
-		        	        // layout-specific configs go here
 		        	        type: 'accordion',
 		        	        titleCollapse: false,
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
 		        	 flex : 0.4,
+		        		border : 1,
+		        		style : {
+		        			borderColor : '#000000',
+		        			borderStyle : 'solid',
+		        			borderWidth : '1px' },
 		        	 items : [
 		        	          this.frameSelectorGrid.getPanel()
 		        	         
@@ -232,31 +116,3 @@ PrimaryDataMainView.prototype.load = function(selected) {
 
 };
 
-//
-//PrimaryDataMainView.prototype.addSelected = function(item) {
-//	var measurement = this.measurementPanel.getSelectionModel().getSelection()[0].data;
-//	item = $.extend({}, item, measurement);
-//	
-//	/** Remove id attribute, where does it come from? **/
-//	item.id = null;
-//	
-//	if (item.type == "Frame"){
-//		this.selected.frame.push(item);
-//	}
-//	if (item.type == "Average"){
-//		this.selected.average.push(item);
-//	}
-//	if (item.type == "Subtraction"){
-//		this.selected.subtraction.push(item);
-//	}
-//	
-//	if (item.type == "Sample"){
-//		this.selected.sample.push(item);
-//	}
-//	
-//	if (item.type == "Buffer"){
-//		this.selected.buffer.push(item);
-//	}
-//	
-//	this.selectedStore.loadData(item, true);
-//};

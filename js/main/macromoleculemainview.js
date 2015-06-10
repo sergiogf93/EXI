@@ -60,47 +60,6 @@ MacromoleculeMainView.prototype.load = function(selected) {
 		
 		adapter.getDataCollectionsByMacromoleculeAcronym(macromolecule.acronym);
 	}
-	
-//	var _this = this;
-//	for (var i = 0; i < selected.length; i++) {
-//		var macromolecule = selected[i];
-//		
-////		this.container.add(this.getHeader(experiment.name,experiment.creationDate));
-//		
-//		var grid = new QueueGrid({
-//			positionColumnsHidden : true,
-//			sorters : [ {
-//				property : 'macromoleculeAcronym',
-//				direction : 'ASC'
-//			} ]
-//		});
-//		
-//		
-//		this.panel.setTitle(macromolecule.acronym);
-//		
-//		this.container.insert(0, grid.getPanel());
-//		
-//		
-//		grid.panel.setTitle(this.getHeader(macromolecule.acronym,""));
-//		grid.panel.setLoading();
-////		
-//		grid.onSelectionChange.attach(function(sender, elements){
-//			_this.onSelectionChange.notify(elements);
-//		});
-//		
-//		var adapter = new DataAdapter();
-////		/*** Trick for JS compiler **/
-//		adapter.grid = grid;
-//		adapter.onSuccess.attach(function(sender, data){
-//			grid.panel.setTitle(_this.getHeader(macromolecule.acronym, data.length + " data collections"));
-//			sender.grid.load(data);
-//			sender.grid.panel.setLoading(false);
-//		});
-//		adapter.onError.attach(function(sender, data){
-//			sender.grid.panel.setLoading(false);
-//		});
-//		adapter.getSubtractionByMacromoleculeAcronym(macromolecule.acronym);
-//	}
 };
 
 
