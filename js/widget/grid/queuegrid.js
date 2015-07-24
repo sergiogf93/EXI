@@ -8,8 +8,14 @@ function QueueGrid(args) {
 	this.maxHeight = 600;
 	
 	this.id = BUI.id();
-	
+	this.title = 'Data Collections';
 	this.key = {};
+	
+
+	this.selectionMode = 'MULTI';
+	
+	this.collapsible = true;
+	this.collapsed = false;
 	
 	var _this = this;
 	this.filters = [ function(item) {
@@ -22,16 +28,33 @@ function QueueGrid(args) {
 		_this.key[item.data.dataCollectionId].push(item.data);
 		return item.data.macromoleculeId != null;
 	} ];
-	
 	if (args!= null){
 		if (args.maxHeight != null){
 			this.maxHeight = args.maxHeight;
+		}
+		if (args.width != null){
+			this.width = args.width;
+		}
+		if (args.collapsible != null){
+			this.collapsible = args.collapsible;
+		}
+		if (args.collapsed != null){
+			this.collapsed = args.collapsed;
+		}
+		if (args.selectionMode != null){
+			this.selectionMode = args.selectionMode;
+		}
+		if (args.title != null){
+			if (args.title == false){
+				this.title = null;
+			}
 		}
 	}
 	
 	this.selected = []; 
 	this.onSelectionChange = new Event();
-
+	this.onDeselect = new Event(this);
+	this.onSelect = new Event(this);
 }
 
 QueueGrid.prototype.getSorters = function() {
@@ -527,25 +550,33 @@ QueueGrid.prototype.getPanel = function() {
 
 	var selModel = Ext.create('Ext.selection.RowModel', {
 		allowDeselect		: true,
-		mode				: 'MULTI',
+		mode				: this.selectionMode,
 		listeners			: {
 						        selectionchange: function (sm, selections) {
 						           	_this.selected = _this.getSelectedData();
 						        	_this.onSelectionChange.notify(_this.selected );
+						        },
+						        select: function (sm, selected) {
+						        	_this.onSelect.notify(selected.data);
+						        },
+						        deselect: function (sm, deselected) {
+						        	_this.onDeselect.notify(deselected.data);
 						        }
 		}
 	});
 	
 	this.panel = Ext.create('Ext.grid.Panel', {
-		title : 'Data Collections',
+		title : this.title,
 		border : true,
 		cls : 'defaultGridPanel',
 		maxHeight : this.maxHeight,
+		minHeight : 300,
 		store : this.store,
 		columns : this.getColumns(),
 		allowDeselect : true,
 		selModel			: selModel,
-		collapsible : true,
+		collapsible : this.collapsible,
+		collapsed : this.collapsed,
 		viewConfig : {
 			enableTextSelection : true,
 			preserveScrollOnRefresh : true,

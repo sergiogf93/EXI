@@ -36,7 +36,6 @@ NavigationListView.prototype.getPanel = function(){
 	    store: this.store,
 	    layout : 'fit',
 	    columns: this.getColumns(),
-	  
 	    width: this.width,
 //	    cls : 'navigation',
 	    height : this.height,

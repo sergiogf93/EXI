@@ -672,7 +672,7 @@ var BUI = {
 		for ( var i = 0; i < 5; i++)
 			text += possible.charAt(Math.floor(Math.random() * possible.length));
 
-		return text;
+		return "ExiSAXS" + text;
 	},
 	showWarning : function(message) {
 		Ext.Msg.show({
@@ -736,4 +736,245 @@ var BUI = {
 		return "";
 	}
 
+};
+
+//
+//
+//
+//
+//Ext.define('Ext.form.field.RequiredNumber', {
+//	extend : 'Ext.form.field.Number',
+//	alias : 'widget.requirednumberfield',
+//	alternateClassName : [ 'Ext.form.RequiredNumberField', 'Ext.form.RequiredNumber' ],
+//	config : {
+//		cls : 'custom-field-text-required'
+//	},
+//
+//	initComponent : function() {
+//		var me = this;
+//		me.callParent();
+//		me.setMinValue(me.minValue);
+//		me.setMaxValue(me.maxValue);
+//	},
+//
+//	onChange : function() {
+//		if ((this.getValue() == null) || String(this.getValue()).length == 0) {
+//			this.addCls('custom-field-text-required');
+//		} else {
+//			this.removeCls('custom-field-text-required');
+//		}
+//		this.toggleSpinners();
+//		this.callParent(arguments);
+//	}
+//});
+//
+//
+//Ext.define('Ext.form.field.RequiredText', {
+//	extend : 'Ext.form.field.Text',
+//	alias : 'widget.requiredtext',
+//	requires : [ 'Ext.form.field.VTypes', 'Ext.layout.component.field.Text' ],
+//	alternateClassName : [ 'Ext.form.RequiredTextField', 'Ext.form.RequiredText' ],
+//	config : {
+//		cls : 'custom-field-text-required'
+//	},
+//	initComponent : function() {
+//		var me = this;
+//		if (me.allowOnlyWhitespace === false) {
+//			me.allowBlank = false;
+//		}
+//		me.callParent();
+//		me.addEvents(
+//		/**
+//		 * @event autosize
+//		 * Fires when the **{@link #autoSize}** function is triggered and the field is resized according to the
+//		 * {@link #grow}/{@link #growMin}/{@link #growMax} configs as a result. This event provides a hook for the
+//		 * developer to apply additional logic at runtime to resize the field if needed.
+//		 * @param {Ext.form.field.Text} this This text field
+//		 * @param {Number} width The new field width
+//		 */
+//		'autosize',
+//
+//		/**
+//		 * @event keydown
+//		 * Keydown input field event. This event only fires if **{@link #enableKeyEvents}** is set to true.
+//		 * @param {Ext.form.field.Text} this This text field
+//		 * @param {Ext.EventObject} e
+//		 */
+//		'keydown',
+//		/**
+//		 * @event keyup
+//		 * Keyup input field event. This event only fires if **{@link #enableKeyEvents}** is set to true.
+//		 * @param {Ext.form.field.Text} this This text field
+//		 * @param {Ext.EventObject} e
+//		 */
+//		'keyup',
+//		/**
+//		 * @event keypress
+//		 * Keypress input field event. This event only fires if **{@link #enableKeyEvents}** is set to true.
+//		 * @param {Ext.form.field.Text} this This text field
+//		 * @param {Ext.EventObject} e
+//		 */
+//		'keypress');
+//		me.addStateEvents('change');
+//		me.setGrowSizePolicy();
+//	},
+//	checkChange : function() {
+//		if ((this.getValue() == null) || String(this.getValue()).length == 0) {
+//			this.addCls('custom-field-text-required');
+//		} else {
+//			this.removeCls('custom-field-text-required');
+//		}
+//	}
+//});
+
+
+
+
+
+
+
+var BIOSAXS_COMBOMANAGER = {
+	getComboProposal : function(args) {
+		var labelWidth = null;
+		if (args != null){
+			if (args.labelWidth != null){
+				labelWidth = args.labelWidth;
+			}
+		}
+		var proposalStore = Ext.create('Ext.data.Store', {
+			fields : [ 'code', 'number', 'title', 'proposalId', 'proposal' ],
+			data : ProposalManager.getProposals() });
+
+		return Ext.create('Ext.form.ComboBox', {
+			fieldLabel : 'Proposal',
+			id : 'proposalIdCombo',
+			store : proposalStore,
+			labelWidth : labelWidth,
+			queryMode : 'local',
+			displayField : 'proposal',
+			valueField : 'proposalId' 
+		});
+	},
+	
+	getComboMacromoleculeByMacromolecules : function(macromolecules, args) {
+		var labelWidth = 150;
+		var margin = "0 0 5 0";
+		var width = 300;
+
+		if (args != null) {
+			if (args.labelWidth != null) {
+				labelWidth = args.labelWidth;
+			}
+			if (args.margin != null) {
+				margin = args.margin;
+			}
+			if (args.width != null) {
+				width = args.width;
+			}
+		}
+
+		var store = Ext.create('Ext.data.Store', {
+			fields : [ 'macromoleculeId', 'acronym' ],
+			data : macromolecules,
+			sorters : [ 'acronym' ]
+		});
+
+		return Ext.create('Ext.form.ComboBox', {
+			fieldLabel : 'Macromolecules',
+			labelWidth : labelWidth,
+			width : width,
+			margin : margin,
+			store : store,
+			editable: false,
+			queryMode : 'local',
+			displayField : 'acronym',
+			valueField : 'macromoleculeId'
+		});
+	},
+	getComboBuffers : function(buffers, args) {
+		var labelWidth = 150;
+		var margin = "0 0 5 0";
+		var width = 300;
+		var fieldLabel = 'Buffer';
+
+		if (args != null) {
+			if (args.labelWidth != null) {
+				labelWidth = args.labelWidth;
+			}
+			if (args.margin != null) {
+				margin = args.margin;
+			}
+			if (args.width != null) {
+				width = args.width;
+			}
+			if (args.noLabel != null) {
+				fieldLabel = null;
+			}
+		}
+
+		var store = Ext.create('Ext.data.Store', {
+			fields : [ 'bufferId', 'acronym' ],
+			data : buffers,
+			sorters : [ 'acronym' ]
+		});
+
+		return Ext.create('Ext.form.ComboBox', {
+			fieldLabel : fieldLabel,
+			labelWidth : labelWidth,
+			width : width,
+			margin : margin,
+			editable: false,
+			store : store,
+			queryMode : 'local',
+			displayField : 'acronym',
+			valueField : 'bufferId'
+		});
+	},
+	getComboSessions : function(sessions, args) {
+		var labelWidth = 150;
+		var margin = "0 0 5 0";
+		var width = 300;
+
+		if (args != null) {
+			if (args.labelWidth != null) {
+				labelWidth = args.labelWidth;
+			}
+			if (args.margin != null) {
+				margin = args.margin;
+			}
+			if (args.width != null) {
+				width = args.width;
+			}
+		}
+
+		for ( var i = 0; i < sessions.length; i++) {
+			sessions[i]["startDateFormatted"] = moment(sessions[i].startDate).format("MMM Do YY");
+			sessions[i]["sorter"] = moment(sessions[i].startDate).format("YYYYMMDD");
+		}
+
+		var store = Ext.create('Ext.data.Store', {
+			fields : [ 'sessionId', 'startDateFormatted', 'beamlineName', 'startDate', 'endDate', 'beamlineOperator' ],
+			data : sessions,
+			sorters : [ 'sorter' ]
+		});
+
+		return Ext.create('Ext.form.ComboBox', {
+			fieldLabel : 'Sessions',
+			labelWidth : labelWidth,
+			width : width,
+			margin : margin,
+			store : store,
+			queryMode : 'local',
+			//		    	    displayField			: 'startDate',
+			valueField : 'sessionId',
+			// Template for the dropdown menu.
+			// Note the use of "x-boundlist-item" class,
+			// this is required to make the items selectable.
+			tpl : Ext.create('Ext.XTemplate', '<tpl for=".">',
+					'<div class="x-boundlist-item">{startDateFormatted}<span style="font-weight:bold"> {beamlineName}</span></div>', '</tpl>'),
+			// template for the content inside text field
+			displayTpl : Ext.create('Ext.XTemplate', '<tpl for=".">', '{startDateFormatted}', '</tpl>')
+
+		});
+	}
 };

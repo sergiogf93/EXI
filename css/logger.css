@@ -1,3 +1,72 @@
+.exi-top-bar{
+    background-color: #F5F5F5;
+   
+}
+.btn-red{
+	border : solid 1px #8a0000;
+	border-radius : 3px;
+	height: 20px;
+	moz-border-radius : 3px;
+	#-webkit-box-shadow : 0px 2px 2px rgba(0,0,0,0.4);
+	#-moz-box-shadow : 0px 2px 2px rgba(0,0,0,0.4);
+	#box-shadow : 0px 2px 2px rgba(0,0,0,0.4);
+	font-size : 9px;
+	color : #ffffff;
+	padding : 1px 17px;
+#	background : #c20000;
+	background : #F5A9A9;
+	background : -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c20000), color-stop(100%,#ff0055));
+	background : -moz-linear-gradient(top, #c20000 0%, #ff0055 100%);
+	background : -webkit-linear-gradient(top, #c20000 0%, #ff0055 100%);
+	background : -o-linear-gradient(top, #c20000 0%, #ff0055 100%);
+	background : -ms-linear-gradient(top, #c20000 0%, #ff0055 100%);
+	background : linear-gradient(top, #c20000 0%, #ff0055 100%);
+	filter : progid:DXImageTransform.Microsoft.gradient( startColorstr='#c20000', endColorstr='#ff0055',GradientType=0 );
+}
+
+.border-grid{
+	border : 1;
+	border-color:#666666;
+	border-style: solid;
+    border-width: 1px;
+	
+}
+
+.inline-help{
+	font-style: oblique;
+	color : gray;
+	font-size : 11px;
+}
+
+.custom-field-text-disabled .x-form-field{    
+	background-color:#DEDEDE;
+	background-image:none
+}
+
+.custom-field-text-required .x-form-field{    
+    background-color: #faafbe; 
+    background-image: url(http://skirtlesden.com/static/lib/silk/bullet_red.png); 
+    background-position: right center; 
+    background-repeat:no-repeat;
+    color: #090; 
+	
+}
+
+
+.exiSAXSMenuToolBar{
+	background-color: #207a7a;
+	border-color: #207a7a;
+	color : #fff;
+}
+
+.button_log_out  {
+	border-color: #207a7a;
+	background-color: #207a7a;
+	color : black;
+}
+
+
+
 .title {
 	margin-left: 15px;
 	position: absolute;
@@ -172,7 +241,96 @@
 	cursor	: pointer;
 }
 
-.statusBar{
-	background : #f5f5f5;
-	border : 1px green solid;
+.statusBar{ 
+	border-top : 2px solid #207a7a;
+}
+
+.statusBarButton{
+	border-color : #333;
+	background-color : #333;
+}
+
+.accept{
+	background-image: url(../images/icon/accept.png);
+	padding-left: 25px !important;
+	background-repeat : no-repeat;
+}
+
+.busy{
+	background-image: url(../images/icon/loading.gif);
+	padding-left: 25px !important;
+	background-repeat : no-repeat;
+	color : orange;
+}
+
+.error{
+	background-image: url(../images/icon/exclamation.gif);
+	padding-left: 25px !important;
+	background-repeat : no-repeat;
+	color : red;
+}
+
+.projectName{
+	 font-weight: bold;
+}
+
+
+.projectDescription{
+	font-weight: italic;
+	color : gray;
+}
+
+.hplcMenu{
+		background-color: #f5f5f5;
+}
+
+.toolPanel{
+			background-color: #ffffff;
+			border : solid 1px black;
+}
+
+.toolPanelText{
+		font-size : 16px;
+		background-color: #E6E6E6;
+		font-weight: bold;
+}
+
+.toolDescription{
+	font-size : 14px;
+	background-color: #E6E6E6;
+	font-style: oblique;
+	
+}
+
+.toolName{
+	font-size : 14px;
+	font-weight: bold;
+}
+
+.toolReference{
+	font-size : 12px;
+	font-style: oblique;
+}
+
+.nameRun{
+	font-weight: bold;
+	font-size : 12px;
+	text-decoration: underline;
+}
+
+.statusRun{
+	padding-left: 10px;
+}
+
+.dateRun{
+	padding-left: 10px;
+}
+
+.jobRow{
+	background-color: white;
+	padding-left: 25px;
+}
+
+.generalContainerRunList{
+	font-size : 12px;
 }

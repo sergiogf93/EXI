@@ -1,14 +1,18 @@
-function CurvePlotter() {
+function CurvePlotter(args) {
 	this.id = BUI.id();
-	this.left = 40;
-	this.right = 30;
-	this.top = 50;
-	this.bottom = 50;
 
 	this.backgroundColor = "#FFFFFF";
 	
+	this.margin = '0 0 0 5';
 	this.ruleColor ="black";
 	this.targetId = "plotCanvas" + BUI.id();
+	
+	
+	if (args != null){
+		if (args.margin != null){
+			this.margin = args.margin;
+		}
+	}
 	
 	this.onRendered = new Event(this);
      
@@ -20,20 +24,10 @@ CurvePlotter.prototype.getPanel = function() {
 	        type: 'hbox'
 	    },
 	    flex : 0.7,
-	    border: 1,
-	    style: {borderColor:'#000000', borderStyle:'solid', borderWidth:'1px'},
-	    margin : '0 0 0 5',
-	    defaults: {
-	        style: {
-	            padding: '10px'
-	        }
-	    },
+	    margin : this.margin,
 	    items: [{
 	    	html : '<div id="' + this.targetId +'"></div>',
-	    	style :' background:#E6E6E6;',
-	    	flex : 1,
 	    	id : this.id,
-	    	border : 1
 	    }]
 	});
 	
@@ -63,7 +57,7 @@ CurvePlotter.prototype.render = function(url) {
 	this.width = this.plotPanel.getWidth();
 	this.height = this.plotPanel.getHeight();
 	
-	document.getElementById(this.targetId).setAttribute("style", "height:" + (this.plotPanel.getHeight() - 10) + "px;width:" + (this.plotPanel.getWidth() - 10) + "px;");
+	document.getElementById(this.targetId).setAttribute("style", "border: 1px solid #000000; height:" + (this.plotPanel.getHeight() - 1) + "px;width:" + (this.plotPanel.getWidth() - 2) + "px;");
 	
 	Ext.getCmp(this.id).setHeight(this.plotPanel.getHeight());
 	Ext.getCmp(this.id).setWidth(this.plotPanel.getWidth());
@@ -88,8 +82,12 @@ CurvePlotter.prototype.render = function(url) {
 
 CurvePlotter.prototype.loadMerge = function(subtractionIdList, from, to, scale) {
 	this.render(new DataAdapter().getFramesMergeURL(subtractionIdList, from, to, scale));
-	
 };
+
+CurvePlotter.prototype.loadHPLCFrame = function(experimentId, frameNumber) {
+	this.render(new DataAdapter().getHPLCFramesScatteringURL(experimentId, frameNumber));
+};
+
 
 
 CurvePlotter.prototype.load = function(selections) {

@@ -1,40 +1,57 @@
 function AuthenticationForm(){
-	
-	
-	
+	this.onAuthenticate = new Event(this);
 }
 AuthenticationForm.prototype.show = function(){
-	Ext.create('Ext.window.Window', {
+	this.window = Ext.create('Ext.window.Window', {
 	    title: 'Authentication',
-	    height: 200,
+	    height: 250,
+	    closable :  exiSAXS.localExtorage.tokenManager.getTokens().length > 0,
 	    width: 400,
+	    modal : true,
 	    layout: 'fit',
 	    items: [
 	            this.getPanel()
         ]}
-	).show();
+	);
+	this.window.show();
 };
 
 AuthenticationForm.prototype.getPanel = function(){
+	var _this = this;
+	var sites = Ext.create('Ext.data.Store', {
+	    fields: ['name', 'url'],
+	    data : ExtISPyB.sites
+	});
+	
 	return Ext.create('Ext.form.Panel', {
 	    bodyPadding: 5,
 	    width: 350,
 	    layout: 'anchor',
 	    defaults: {
-	        anchor: '100%'
+	        anchor: '90%'
 	    },
-
 	    // The fields
 	    defaultType: 'textfield',
 	    items: [{
 	        fieldLabel: 'User',
 	        name: 'user',
+	        margin : '10 0 0 10',
 	        allowBlank: false
 	    },{
 	        fieldLabel: 'Password',
+	        margin : '10 0 0 10',
 	        name: 'password',
 	        allowBlank: false,
 	        inputType : 'password'
+	    },{
+	    	xtype : 'combo',
+	        fieldLabel: 'Choose site',
+	        name: 'site',
+	        store : sites,
+	        allowBlank: false,
+	        valueField : 'url',
+	        displayField : 'name',
+	        margin : '10 0 0 10'
 	    }],
 
 	    buttons: [ {
@@ -43,7 +60,12 @@ AuthenticationForm.prototype.getPanel = function(){
 	        disabled: true,
 	        handler: function() {
 	        	var form = this.up('form').getForm();
-	        	AuthenticationController.login(form.getFieldValues().user, form.getFieldValues().password);
+	        	_this.onAuthenticate.notify({
+	        		user : form.getFieldValues().user, 
+	        		password : form.getFieldValues().password, 
+	        		site : form.getFieldValues().site
+	        	});
+
 	        }
 	    }]
 	});

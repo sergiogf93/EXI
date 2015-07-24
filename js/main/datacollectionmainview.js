@@ -7,6 +7,9 @@ function DataCollectionMainView() {
 	this.queueGridList = [];
 
 	MainView.call(this);
+
+	this.onSelect = new Event(this);
+	this.onDeselect = new Event(this);
 }
 
 DataCollectionMainView.prototype.getHeader = function(beamlineName, startDate) {
@@ -33,6 +36,13 @@ DataCollectionMainView.prototype.load = function(selected) {
 
 	grid.onSelectionChange.attach(function(sender, elements) {
 		_this.onSelectionChange.notify(elements);
+	});
+
+	grid.onSelect.attach(function(sender, selected) {
+		_this.onSelect.notify(selected);
+	});
+	grid.onDeselect.attach(function(sender, unselected) {
+		_this.onDeselect.notify(unselected);
 	});
 
 	this.container.insert(0, grid.getPanel());

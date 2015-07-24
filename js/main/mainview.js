@@ -1,12 +1,16 @@
 
 function MainView() {
-	this.title = "Not set yet";
+	this.title = "New Tab";
 	
 	this.onSelectionChange = new Event(this);
+	this.onSelect = new Event(this);
+	this.onDeselect = new Event(this);
+	
+	this.bodyStyle = {"background-color":"#E6E6E6"};
 }
 
 MainView.prototype.getContainer = function() {
-	return null;
+	return this.container;
 };
 
 MainView.prototype.getPanel = function() {
@@ -20,9 +24,8 @@ MainView.prototype.getPanel = function() {
 		title : this.title,
 		closable: true,
 		icon : this.icon,
-		layout : 'fit',
-		bodyStyle:{"background-color":"#E6E6E6"}, 
-		items :[this.container ]
+		bodyStyle: this.bodyStyle, 
+		items :[this.getContainer() ]
 	});
 	return this.panel;
 };

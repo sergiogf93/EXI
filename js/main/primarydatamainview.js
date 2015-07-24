@@ -1,5 +1,5 @@
 PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
-PrimaryDataMainView.prototype.getContainer = MainView.prototype.getContainer;
+//PrimaryDataMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 function PrimaryDataMainView() {
 	this.title = "Primary Data View";
@@ -17,6 +17,13 @@ function PrimaryDataMainView() {
 	
 	/** Curve plotter * */
 	this.plotter = new CurvePlotter({
+	});
+	
+	
+
+	this.grid = new QueueGrid({
+		maxHeight : 300
+
 	});
 	
 	/** measurementId : [{frame}] **/
@@ -41,15 +48,13 @@ PrimaryDataMainView.prototype.getSelected = function() {
 
 
 
-
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
 		xtype : 'container',
 		layout : 'hbox',
-		cls : 'defaultGridPanel',
+		cls 	: 'defaultGridPanel',
 		border : 0,
 		defaults : {
-			xtype : 'container',
 			height : 600 
 		},
 		items : [ 
@@ -61,7 +66,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
-		        	 flex : 0.4,
+		        	    flex : 0.3,
 		        		border : 1,
 		        		style : {
 		        			borderColor : '#000000',
@@ -79,22 +84,31 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 
 };
 
+
+
+PrimaryDataMainView.prototype.getContainer = function() {
+	return {
+		xtype : 'container',
+//		layout : 'fit',
+		items : [
+		         	this.grid.getPanel(),
+		        	this.getSlavePanel()         
+		]
+	};
+};
+
 PrimaryDataMainView.prototype.load = function(selected) {
 	var _this = this;
 
-	var grid = new QueueGrid({
-		maxHeight : 300
-
-	});
 
 	this.panel.setTitle(" Primary Data Viewer");
-	this.container.insert(0, grid.getPanel());
+//	this.container.insert(0, grid.getPanel());
 
-	this.container.insert(1, this.getSlavePanel());
+//	this.container.insert(1, this.getSlavePanel());
 
 	var adapter = new DataAdapter();
 	/** * Trick for JS compiler * */
-	adapter.grid = grid;
+	adapter.grid = this.grid;
 	adapter.grid.panel.setLoading();
 	adapter.grid.panel.setTitle(selected.length + " items selected");
 	adapter.onSuccess.attach(function(sender, data) {
@@ -113,6 +127,5 @@ PrimaryDataMainView.prototype.load = function(selected) {
 
 	}
 	adapter.getDataCollectionsByDataCollectionId(dataCollectionIds);
-
 };
 

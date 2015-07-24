@@ -1,3 +1,4 @@
+
 ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
 ExperimentMainView.prototype.getContainer = MainView.prototype.getContainer;
 
@@ -7,6 +8,9 @@ function ExperimentMainView() {
 	this.queueGridList = [];
 	
     MainView.call(this);
+    
+    this.onSelect = new Event(this);
+    this.onDeselect = new Event(this);
 }
 
 ExperimentMainView.prototype.getHeader = function(beamlineName, startDate) {
@@ -40,6 +44,13 @@ ExperimentMainView.prototype.load = function(selected) {
 			_this.onSelectionChange.notify(elements);
 		});
 		
+		grid.onSelect.attach(function(sender, selected){
+			_this.onSelect.notify(selected);
+		});
+		grid.onDeselect.attach(function(sender, unselected){
+			_this.onDeselect.notify(unselected);
+		});
+		
 		
 		this.container.insert(0, grid.getPanel());
 		grid.panel.setTitle(_this.getHeader(experiment.name,experiment.creationDate));
@@ -59,7 +70,6 @@ ExperimentMainView.prototype.load = function(selected) {
 		adapter.onError.attach(function(sender, data){
 			sender.grid.panel.setLoading(false);
 		});
-		
 		adapter.getDataCollectionsByExperimentId(selected[i].experimentId);
 	}
 };

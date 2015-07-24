@@ -1,0 +1,187 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="tree.css">
+<link rel="stylesheet" type="text/css" href="../../css/override.css">
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<script type="text/javascript" src="rest-api.js"></script>
+</head>
+<style>
+.chapter{
+	margin : 50 0 0 0;
+}
+</style>
+
+
+<body style='margin: 25px'>
+</div>
+	<h1>ISPyB webservices API</h1>
+	<h3><span style='color:gray;font-size:14px;'>Documentation updated on 22 Jul 2015</span></h3>
+	<br />
+	<h4>Overivew</h4>
+	<ol style='margin: 0 0 0 50'>
+		<li ><a href="#Goal">Goal</a></li>
+		<li><a href="#rest">RestFul Webservices</a></li>
+		<li><a href="">TO BE DONE: How to access ISPyB webservices from Javascrip</a></li>
+		<li><a href="">TO BE DONE: How to access ISPyB webservices from Python</a></li>
+		<li><a href='#categories'>API main categories</a></li>
+		<li><a href='#Authentication'>Authentication</a></li>
+		<li><a href='#Shipping'>Shipping API</a></li>
+		<li><a href='#SAXS'>SAXS API</a></li>
+		<li>Global scheme</li>
+	</ol>
+
+	<h4 id="Goal" class='chapter'>Goal</h4>
+	<br />
+	<p>The number of applications connecting to ISPyB trough the web services has increased over the time. There was a clear need of creating an light-weight API in order to import and export data and metadata from ISPyB to another systems. 
+	<br />Not only there is a considerable number of different applications that can take advantage of this proposed API: beamline control software, online and offline data analysis tools, xtal laboratory facilities, etc.. but also users can access programmatically to their experiment data and metadata in an easy way.</p>
+	
+	<h4 id="rest" class='chapter'>RestFul Webservices</h4>
+	<br />
+	<p>Representational State Transfer (REST) is an architectural style that specifies constraints, such as the uniform interface, that if applied to a web service induce desirable properties, such as performance, scalability, and modifiability, that enable services to work best on the Web. In the REST architectural style, data and functionality are considered resources and are accessed using <b>Uniform Resource Identifiers (URIs)</b>, typically links on the Web. The resources are acted upon by using a set of simple, well-defined operations. The REST architectural style constrains an architecture to a client/server architecture and is designed to use a stateless communication protocol, typically HTTP. In the REST architecture style, clients and servers exchange representations of resources by using a standardized interface and protocol.</p>
+	<p>The following principles encourage RESTful applications to be simple, lightweight, and fast:</p>
+	<ul style='margin:0 0 0 50'>
+	<li><p><b>Resource identification through URI</b>: A RESTful web service exposes a set of resources that identify the targets of the interaction with its clients. Resources are identified by URIs, which provide a global addressing space for resource and service discovery.</p>
+	</li>
+	<li><p><b>Uniform interface</b>: Resources are manipulated using a fixed set of four create, read, update, delete operations: <tt>PUT</tt>, <tt>GET</tt>, <tt>POST</tt>, and <tt>DELETE</tt>. <tt>PUT</tt> creates a new resource, which can be then deleted by using <tt>DELETE</tt>. <tt>GET</tt> retrieves the current state of a resource in some representation. <tt>POST</tt> transfers a new state onto a resource.</p>
+	</li>
+	<li><p><b>Self-descriptive messages</b>: Resources are decoupled from their representation so that their content can be accessed in a variety of formats, such as HTML, XML, plain text, PDF, JPEG, JSON, and others. Metadata about the resource is available and used, for example, to control caching, detect transmission errors, negotiate the appropriate representation format, and perform authentication or access control.</p>
+	</li>
+		<li><p><b>Stateful interactions through hyperlinks</b>: Every interaction with a resource is stateless; that is, request messages are self-contained. Stateful interactions are based on the concept of explicit state transfer. Several techniques exist to exchange state, such as URI rewriting, cookies, and hidden form fields. State can be embedded in response messages to point to valid future states of the interaction. </p></li>
+	</ul>
+	<br />
+	<a href='https://docs.oracle.com/javaee/6/tutorial/doc/gijqy.html'>More info</a>
+
+
+	<h4 id="categories" class='chapter'>API main categories</h4>
+	<br />Every restful URI starts from <b>ispyb-ws/rest</b> this is done in that way because ISPyB also contains SOAP webservices which url will start by  <b>ispyb-ws/soap</b>
+	<br />Almost all webservices are proposal oriented that means that they are based on an existing proposal and it is likeliwise subdivided in several categories: saxs, mx, session and shipping.
+	<div style='margin:0 0 500 0;width:4000px' class="tree" id='main_tree'></div>
+	
+	
+	
+
+	<h4 id="Authentication" class='chapter'>Authentication</h4>
+	<br />
+	A basic authentication is been developed based on a token authentication. A web method receives a https call with the username and the password and if the ISPyB instance gets success authenticating such credentials then a token is get back to the client.
+	<img src='jwt_flow.png' />
+	<br />Example of authentication based on javascript and using Jquery:
+	<br />	<br />
+	
+	<pre class=prettyprint>
+$.ajax({
+  url: 'http://ispyb.esrf.fr:8080/ispyb-ws/rest/authenticate',
+  type: 'post',
+  data: {
+	login : 'mx9999',
+	password : 'secretPassword'
+  },
+  success: function(token){
+	   console.log(token);
+  },
+  error: function(error){
+	  alert("There was an error");
+  }
+});
+	</pre>
+
+	<br />
+	However, antoher most sophisticated systems should be put in place later this year:
+	<br />
+	<br />
+	<a href='http://www.intridea.com/blog/2013/11/7/json-web-token-the-useful-little-standard-you-haven-t-heard-about'>JSON Web Token</a><br />
+	<a href='http://oauth.net/2/'>Oauth</a>
+
+    </div>
+	
+	<h4 id="Shipping" class='chapter'>Shipping API</h4>
+	<br />
+	<br />
+	Example: 
+	<br />
+	POST https://ispyb.esrf.fr/ispyb-ws/rest/{token}/proposal/{proposalId}/shipping/{shippingId}/dewar/{dewarId}/save
+	
+	<div style='margin:0 0 500 0;width:4000px' class="tree" id='shipping_tree'></div>
+	
+	
+	<h4 id="SAXS" class='chapter'>SAXS API</h4>
+	<br />
+	
+	<div style='margin:0 0 500 0;width:4000px' class="tree" id='saxs_tree'></div>
+	
+	
+	
+	<h4 id="SAXS" class='chapter'>API</h4>
+	<br />
+	Example: 
+	<br />
+	GET https://ispyb.esrf.fr/ispyb-ws/rest/{token}/proposal/{proposalId}/saxs/experiment/{experimentId}/get
+	<br />
+	POST https://ispyb.esrf.fr/ispyb-ws/rest/{token}/proposal/{proposalId}/shipping/{shippingId}/dewar/{dewarId}/save
+	<br />
+	<div style='margin:0 0 500 0;width:4000px' class="tree" id='ws_tree'></div>
+
+</body>
+</html>
+
+
+
+<script>
+function init(target, items){
+
+	function createSingleNode(item){
+		var node = document.createElement("li");
+		var a = document.createElement("a");
+		a.setAttribute("href", "#");
+		a.appendChild(document.createTextNode(item.name));
+		if (item.name.indexOf("{") != -1){
+			a.setAttribute("style", "font-weight:bold;color:black;border:1px solid black;");
+		}
+		
+		if (item.method != null){
+			var methodNodeSpace = document.createElement("br");
+			var methodNode = document.createElement("span");
+			methodNode.appendChild(document.createTextNode(item.method));
+			a.appendChild(methodNodeSpace);
+			a.appendChild(methodNode);
+			if (item.method == "POST"){
+				a.setAttribute("style", "color:black;background-color:#F8E0E6;border:1px solid black;");
+			}
+			if (item.method == "GET"){
+				a.setAttribute("style", "color:black;background-color:#F5F6CE;border:1px solid black;");
+			}
+		}
+		 
+		node.appendChild(a);
+		
+		return node;
+	}
+	
+	function getNode(item){
+		var node = createSingleNode(item);
+
+		if (item.children != null){
+			if (item.children.length > 0){
+				var ul = document.createElement("ul");
+				for(var i = 0; i < item.children.length; i++){
+					ul.appendChild(getNode(item.children[i]));
+				}
+				node.appendChild(ul);
+			}
+		}
+		return node;
+	}
+
+	var ul = document.createElement("ul");
+	for (var i=0; i< items.length; i++){
+		ul.appendChild(getNode(items[i]));
+	}
+	document.getElementById(target).appendChild(ul);
+}
+
+init("main_tree", getMainData());
+init("saxs_tree", [getSAXS()]);
+init("shipping_tree", [getShipping()]);
+init("ws_tree", getData());
+</script>
+
