@@ -23,7 +23,6 @@ AuthenticationManager.prototype.login = function(user, password, url){
 	adapter.onError.attach(function(sender, data) {
 		Ext.Msg.alert('Failed', "Error on authentication");
 	});
-	debugger
 	adapter.authenticate(user, password, url);
 };
 

@@ -316,7 +316,7 @@ DataAdapter.prototype.getProposals= function(){
 };
 
 DataAdapter.prototype.getProposalsInfo= function(){
-	this.call('/{0}/saxs/{1}/proposal/all'.format( ['%TOKEN%', '%USER%']));
+	this.call('/{0}/proposal/{1}/technique/saxs/get'.format( ['%TOKEN%', '%USER%']));
 };
 
 
@@ -336,7 +336,6 @@ DataAdapter.prototype.getFramesBySubtractionId= function(subtractionId){
 };
 
 DataAdapter.prototype.authenticate = function(user, password, url){
-	debugger
 	var _this = this;
 	$.ajax({
 		  url: url + '/authenticate',

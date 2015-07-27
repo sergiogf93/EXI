@@ -32,46 +32,43 @@ MainMenu.prototype.getPreparationMenu = function() {
 
 	return Ext.create('Ext.menu.Menu', {
 		items : [ {
-			text : 'Macromolecules',
-			checked : false,
-			icon : 'images/icon/macromolecule.png',
-			group : 'theme',
-			checkHandler : onItemCheck },
+				text : 'Macromolecules',
+//				checked : false,
+				icon : 'images/icon/macromolecule.png',
+	//			group : 'theme',
+				handler : onItemCheck 
+			},
 			 {
 				text : 'Buffers',
-				group : 'theme',
+//				group : 'theme',
 				icon : 'images/icon/buffer.jpg',
-				checked : false,
-				checkHandler : onItemCheck 
+//				checked : false,
+				handler : onItemCheck 
 			},
 			"-",
 			{
 				text : 'Stock Solutions',
-				group : 'theme',
+//				group : 'theme',
 				icon : 'images/icon/testtube.png',
-				checked : false,
-				checkHandler : onItemCheck 
+//				checked : false,
+				handler : onItemCheck 
 			}
 			
 			, {
 				text : 'Sample Tracking',
-				checked : false,
+//				checked : false,
 				icon : 'images/icon/shipping.png',
-				group : 'theme',
-				checkHandler : onItemCheck }, "-" ,
+//				group : 'theme',
+				handler : onItemCheck }, "-" ,
 				{
 						text : 'Experiment Designer',
 						icon : 'images/icon/tool.png',
-						checked : false,
-						group : 'theme',
-						checkHandler : onItemCheck 
+						handler : onItemCheck 
 				},
 				{
 					text : 'My Experiments',
 					icon : 'images/icon/edit.png',
-					checked : false,
-					group : 'theme',
-					checkHandler : onItemCheck 
+					handler : onItemCheck 
 				}
 				
 				] });

@@ -1,7 +1,12 @@
+/**
+ * Main class used for the west panel. Main purpose is the navigation
+ */
+
 function NavigationListView(){
 	this.width = 250;
 	this.height = Ext.getBody().getHeight() - 215;
 
+	/** Event is triggered when a element has been selected from the list **/
 	this.onSelect = new Event();
 }
 
@@ -27,44 +32,22 @@ NavigationListView.prototype.getPanel = function(){
 	    }
 	});
 	
-	this.store.on('refresh', function(store, elements){
-		var l = store.count();
-        var s = l != 1 ? 's' : '';
-	});
-	
 	this.panel =  Ext.create('Ext.grid.Panel', {
 	    store: this.store,
 	    layout : 'fit',
 	    columns: this.getColumns(),
 	    width: this.width,
-//	    cls : 'navigation',
 	    height : this.height,
 	    multiSelect : true,
 	    viewConfig : {
 	    	 emptyText: 'No items to display',
 	    	enableTextSelection : true,
 	    	preserveScrollOnRefresh : true,
-			stripeRows : true,
-			getRowClass : function(record, rowIdx, params, store) {
-			},
-			listeners : {
-//				itemdblclick : function(dataview, record, item, e) {
-//					console.log("dbl");
-//				},
-//				selectionchange: function( dataview, selected, eOpts ){
-//						console.log(selected);
-//				}
-			}
+			stripeRows : true
 		}
 	});
 	
     this.panel.on('selectionchange', function(view, elements){
-    		/** 
-    		TODO: For displaying the selected elements 
-	        var l = nodes.length;
-	        var s = l != 1 ? 's' : '';
-	        _this.panel.setTitle('<i style="font-size:10px;">('+l+' item'+s+' selected)</i>');
-	        **/
     		var data = [];
     		for ( var index in elements) {
 				data.push(elements[index].data);

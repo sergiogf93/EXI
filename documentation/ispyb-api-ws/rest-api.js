@@ -217,7 +217,7 @@ function getSAXS(){
 	};
 };
 
-function getData() {
+function getData(proposalChildrenFn) {
 	return [{
 		name : "ispyb.esrf.fr",
 		children : [
@@ -236,18 +236,27 @@ function getData() {
 																		children : [
 																				{
 																					name:'{proposalId}',
+																					children : proposalChildrenFn
+																								
+																				},
+																				{
+																					name:'user',
 																					children : [
-																								getSAXS(),
 																								{
-																										name:'session',
-																										children : [
-																														{name:'list', method : 'GET'}	
-																										]
-																								},
-																								getShipping()
+																									name:'{user}', children : [{name : 'list', method : 'GET'}]
+																								}
 																								]
-																				}	
-																				]}
+																				},
+																				{
+																					name:'technique',
+																					children : [
+																								{
+																									name:'{technique}', children : [{name : 'get', method : 'GET'}]
+																								}
+																								]
+																				}
+																				]
+																	}	
 																	]
 													}
 													]
@@ -258,48 +267,22 @@ function getData() {
 	}];
 }
 
+function getProposalChildren() {
+	return [	getSAXS(),
+				{
+					name:'session',
+					children : [
+									{name:'list', method : 'GET'}	
+					]
+				},
+				getShipping(),
+				{
+					name:'mx'
+				}
+			];
+}
+
 
 function getMainData() {
-	return [{
-		name : "ispyb.esrf.fr",
-		children : [
-					{
-						name : 'ispyb-ws',
-						children : [
-									{
-										name : 'rest',
-										children:[
-										          	{ name : 'authenticate', method : 'GET'},
-													{
-														name : '{token}',
-														children : [
-																	{
-																		name : 'proposal',
-																		children : [
-																				{
-																					name:'{proposalId}',
-																					children : [
-																								{
-																									name:'saxs'
-																								},
-																								{
-																									name:'mx'
-																								},
-																								{
-																										name:'session',
-																								},
-																								{
-																									name:'shipping'
-																								}
-																								]
-																				}	
-																				]}
-																	]
-													}
-													]
-									}
-									]
-					}
-		]
-	}];
+	return getData(function(){return []});
 }
