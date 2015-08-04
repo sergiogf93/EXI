@@ -89,11 +89,11 @@ SpecimenGrid.prototype._prepareData = function(experiment) {
 
 		/** For grouping, because sencha has not option for multiple grouping I add a field to your store with a convert function that concatenates these two fields and then group by that field.**/
 		sample.groupIndex = sample.bufferId + sample.macromoleculeId;
-		var macromolecule = ProposalManager.getMacromoleculeById(sample.macromoleculeId);
+		var macromolecule = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId);
 
 		sample.acronym = "Buffers";
 		if (macromolecule != null) {
-			sample.acronym = ProposalManager.getMacromoleculeById(sample.macromoleculeId).acronym;
+			sample.acronym = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId).acronym;
 		}
 
 		sample.buffer = experiment.getBufferById(sample.bufferId);
@@ -197,21 +197,19 @@ SpecimenGrid.prototype.getPlugins = function() {
 					}
 
 					var macromoleculeId = e.record.data.macromoleculeId;
-					var adapter = new DataAdapter();
-					adapter.onSuccess.attach(function(sender, specimen) {
+					
+					var onSuccess = (function(sender, specimen) {
+						debugger
 						/** Because macromolecule3VO is fecthed LAZY **/
 						if (macromoleculeId != null) {
-							specimen.macromolecule3VO = ProposalManager.getMacromoleculeById(macromoleculeId);
+							specimen.macromolecule3VO = EXI.proposalManager.getMacromoleculeById(macromoleculeId);
 						}
 						_this.onSpecimenChanged.notify(specimen);
 						_this.grid.setLoading(false);
 					});
-					adapter.onError.attach(function() {
-						alert("Error");
-						_this.grid.setLoading(false);
-					});
+					
 					_this.grid.setLoading();
-					adapter.saveSpecimen(e.record.data);
+					EXI.getDataAdapter({onSuccess: onSuccess}).saxs.specimen.saveSpecimen(e.record.data);
 				}
 			}
 		}));
@@ -348,6 +346,7 @@ SpecimenGrid.prototype.getPanel = function() {
 						title 		: this.title,
 						height 		: this.height,
 						width 		: this.width,
+//						layout : 'fit',
 						selModel 	: selModel,
 						store 		: this.store,
 						features 	: features,
@@ -395,13 +394,13 @@ SpecimenGrid.prototype.getPanel = function() {
 								text : 'Buffer',
 								dataIndex : 'bufferId',
 								width : 140,
-								editor : BIOSAXS_COMBOMANAGER.getComboBuffers(ProposalManager.getBuffers(), {
+								editor : BIOSAXS_COMBOMANAGER.getComboBuffers(EXI.proposalManager.getBuffers(), {
 									noLabel : true,
 									width : 300
 								}),
 								renderer : function(val, y, sample) {
 									if (sample.data.bufferId != null) {
-										return ProposalManager.getBufferById(val).acronym;
+										return EXI.proposalManager.getBufferById(val).acronym;
 									}
 								}
 							}, 

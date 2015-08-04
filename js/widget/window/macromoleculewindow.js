@@ -16,6 +16,7 @@ function MacromoleculeWindow(args) {
 	var _this = this;
 	
 	this.macromoleculeTabs.onSave.attach(function(sender, macromolecule) {
+		debugger
 		_this.onSave.notify();
 		_this.refresh(macromolecule);
 	});
@@ -42,18 +43,7 @@ MacromoleculeWindow.prototype.draw = function(macromolecule) {
 	this.panel = Ext.create('Ext.Window', {
 		id : this.id,
 		title : this.title,
-//		resizable : true,
-//		constrain : true,
-//		border : 0,
 		modal : true,
-//		frame : false,
-//		draggable : true,
-//		closable : true,
-//		autoscroll : true,
-//		layout : {
-//			type : 'vbox',
-//			align : 'stretch'
-//		},
 		items : this.macromoleculeTabs.getPanel(),
 		width : this.width,
 		height : this.height,

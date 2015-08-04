@@ -56,14 +56,11 @@ MacromoleculeMainView.prototype.getContainer = function() {
 
 
 MacromoleculeMainView.prototype.load = function() {
-	var _this = this;
 	this.panel.setLoading();
-	var manager = new ProposalUpdater(); 
-	manager.onSuccess.attach(function(sender, proposals){
-		_this.macromoleculeGrid.load(ProposalManager.getMacromolecules());
-		_this.panel.setLoading(false);
-	});
-	manager.get();
-	
 	this.panel.setTitle("Macromolecules");
+//	manager.onSuccess.attach(function(sender, proposals){
+//		_this.macromoleculeGrid.load(EXI.proposalManager.getMacromolecules());
+//	});
+	this.macromoleculeGrid.load(EXI.proposalManager.getMacromolecules());
+	this.panel.setLoading(false);
 };

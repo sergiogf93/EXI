@@ -13,21 +13,52 @@
 <script type="text/javascript" src="js/dependency/jquery.cookie.js"></script>
 <script type="text/javascript" src="js/dependency/moment.min.js"></script>
 <script type="text/javascript" src="js/dependency/jquery.qtip.min.js"></script>
+<script type="text/javascript" src="js/event.js"></script>
+<script type="text/javascript" src="js/security/credential.js"></script>
+<script type="text/javascript" src="js/security/credentialmanager.js"></script>
 
 <script type="text/javascript" src="js/data/dataadapter.js"></script>
-<script type="text/javascript" src="js/data/exidataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/saxsdataadapterfactory.js"></script>
+
+
+<script type="text/javascript" src="js/data/saxs/buffersaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/datacollectionsaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/experimentsaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/hplcsaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/macromoleculesaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/measurementsaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/specimensaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/stocksolutionsaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/subtractionsaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/framesaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/templatesaxsdataadapter.js"></script>
+<script type="text/javascript" src="js/data/saxs/saxsdataadaptergroup.js"></script>
+
+<script type="text/javascript" src="js/data/proposal/authenticationdataadapter.js"></script>
+<script type="text/javascript" src="js/data/proposal/dewardataadapter.js"></script>
+<script type="text/javascript" src="js/data/proposal/proposaldataadapter.js"></script>
+<script type="text/javascript" src="js/data/proposal/sessiondataadapter.js"></script>
+<script type="text/javascript" src="js/data/proposal/shippingdataadapter.js"></script>
+<script type="text/javascript" src="js/data/proposal/proposaldataadaptergroup.js"></script>
+<script type="text/javascript" src="js/data/proposal/dataadapterfactory.js"></script>
+
+
+
+
 <script type="text/javascript" src="js/data/extlocalstorage.js"></script>
 
 <script type="text/javascript" src="js/data/saxs/experiment.js"></script>
 <script type="text/javascript" src="js/data/saxs/experimentlist.js"></script>
 
+<script type="text/javascript" src="js/app/exi.js"></script>
 <script type="text/javascript" src="js/app/exisaxs.js"></script>
 <script type="text/javascript" src="js/app/mainstatusbar.js"></script>
 <script type="text/javascript" src="js/menu/mainmenu.js"></script>
+<script type="text/javascript" src="js/menu/saxsmainmenu.js"></script>
 <script type="text/javascript" src="js/menu/selectionmenu.js"></script>
 
-<script type="text/javascript" src="js/event.js"></script>
-<script type="text/javascript" src="js/user/authenticationform.js"></script>
+
+<script type="text/javascript" src="js/widget/form/authenticationform.js"></script>
 
 <script type="text/javascript" src="js/app/authenticationcontroller.js"></script>
 
@@ -40,6 +71,7 @@
 <script type="text/javascript" src="js/navigation/macromoleculelistview.js"></script>
 
 <script type="text/javascript" src="js/main/mainview.js"></script>
+<script type="text/javascript" src="js/main/welcomemainview.js"></script>
 <script type="text/javascript" src="js/main/prepare/buffermainview.js"></script>
 <script type="text/javascript" src="js/main/shippingmainview.js"></script>
 <script type="text/javascript" src="js/main/prepare/stocksolutionmainview.js"></script>
@@ -82,6 +114,7 @@
 <script type="text/javascript" src="js/widget/sampleplate/sampleplategroupwidget.js"></script>
 <script type="text/javascript" src="js/widget/grid/specimengrid.js"></script>
 <script type="text/javascript" src="js/widget/grid/volumegrid.js"></script>
+<script type="text/javascript" src="js/widget/grid/proposalgrid.js"></script>
 <script type="text/javascript" src="js/widget/grid/casegrid.js"></script>
 <script type="text/javascript" src="js/widget/specimen/specimenwidget.js"></script>
 
@@ -137,9 +170,11 @@
 <script type="text/javascript" src="http://pc593.embl.fr:8082/dygraphs-master/dygraph-dev.js"></script>
 <script type="text/javascript" src="http://pc593.embl.fr:8082/dev/pathjs/path.js"></script>
 
-<script type="text/javascript" src="js/app/appcontroller.js"></script>
+<script type="text/javascript" src="js/controller/exicontroller.js"></script>
+<script type="text/javascript" src="js/controller/saxsexicontroller.js"></script>
 
-<link rel="stylesheet" type="text/css" href="css/logger.css">
+<link rel="stylesheet" type="text/css" href="css/exi.css">
+<link rel="stylesheet" type="text/css" href="css/menu/mainmenu.css">
 <link rel="stylesheet" type="text/css" href="css/override.css">
 </head>
 
@@ -154,6 +189,7 @@ function isNumber(value) {
 } 
 
 	var exiSAXS;
+
 	Ext.onReady(function(){
 		Ext.Loader.setConfig({
 		    enabled: true
@@ -166,28 +202,20 @@ function isNumber(value) {
 		  'Ext.ux.statusbar.StatusBar',
 		  'Ext.Extended.RequiredTextField',
 		  'Ext.Extended.RequiredNumberField'
-			 
-		 
 		]);
 
 			
-
-		exiSAXS = new ExiSAXS();
-		exiSAXS.show();
-
-
 		
-		exiSAXS.onAfterRender.attach(function(){
-// 			// This line is used to start the PathJS listener.  It's good practice to put this
-// 	        // call inside some sort of "document ready" listener, in case the default route
-// 	        // relies on DOM elements that may not yet be ready.
-// 	     	Path.listen();
+		EXI = new ExiSAXS();
+		EXI.show();
+
+// 		UserManager.onUserAdded.attach(function(sender, args){
+// 			debugger
+// 		});
+
+		EXI.onAfterRender.attach(function(){
 			Path.listen();	
 		});
-
-
-
-
 	});
 </script>
 

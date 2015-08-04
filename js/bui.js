@@ -843,7 +843,7 @@ var BIOSAXS_COMBOMANAGER = {
 		}
 		var proposalStore = Ext.create('Ext.data.Store', {
 			fields : [ 'code', 'number', 'title', 'proposalId', 'proposal' ],
-			data : ProposalManager.getProposals() });
+			data : EXI.proposalManager.getProposals() });
 
 		return Ext.create('Ext.form.ComboBox', {
 			fieldLabel : 'Proposal',

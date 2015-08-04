@@ -169,7 +169,7 @@ TemplateMainView.prototype.getTabs = function() {
 					},
 					{
 						tabConfig : {
-							title : "Specimens"
+							title : "Sample Plate Setup"
 						},
 						items : [  
 									{
@@ -239,20 +239,16 @@ TemplateMainView.prototype.getContainer = function() {
 
 TemplateMainView.prototype.load = function(experiments) {
 	var _this = this;
-	this.panel.setLoading();
-	var manager = new ProposalUpdater(); 
-	manager.onSuccess.attach(function(sender, proposals){
+	_this.panel.setLoading();
+	var onSuccess = (function(sender, experiments){
+		_this.experiment = new Experiment(experiments[0]);
+		_this.experimentHeaderForm.load(_this.experiment);
+		_this.measurementGrid.loadExperiment(_this.experiment);
+		_this.specimenWidget.refresh(_this.experiment);
+		_this.volumePlanificator.load(_this.experiment);
 		_this.panel.setLoading(false);
-		var adapter = new DataAdapter();
-		adapter.onSuccess.attach(function(sender, experiments){
-			_this.experiment = new Experiment(experiments[0]);
-			_this.experimentHeaderForm.load(_this.experiment);
-			_this.measurementGrid.loadExperiment(_this.experiment);
-			_this.specimenWidget.refresh(_this.experiment);
-			_this.volumePlanificator.load(_this.experiment);
-		});
-		adapter.getExperimentById(experiments[0].experimentId);
 	});
-	manager.get();
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experiments[0].experimentId);
+	
 	this.panel.setTitle("Template");
 };

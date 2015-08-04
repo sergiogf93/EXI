@@ -20,6 +20,13 @@ MainStatusBar.prototype.showBusy = function(){
 	this.statusBar.showBusy();
 };
 
+MainStatusBar.prototype.showError = function(error){
+	this.statusBar.clearStatus();
+	this.statusBar.setStatus({
+	    text: error,
+	    iconCls: 'error'
+	});
+};
 
 MainStatusBar.prototype.showReady = function(){
 	this.statusBar.clearStatus();

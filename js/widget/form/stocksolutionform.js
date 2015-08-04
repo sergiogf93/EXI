@@ -73,7 +73,7 @@ StockSolutionForm.prototype.setStockSolution = function(stockSolution) {
 };
 
 StockSolutionForm.prototype.getBufferCombo = function() {
-	this.bufferCombo = BIOSAXS_COMBOMANAGER.getComboBuffers(ProposalManager.getBuffers(), {
+	this.bufferCombo = BIOSAXS_COMBOMANAGER.getComboBuffers(EXI.proposalManager.getBuffers(), {
 		labelWidth : 80,
 		margin : '0 0 10 20',
 		width : 250
@@ -83,7 +83,7 @@ StockSolutionForm.prototype.getBufferCombo = function() {
 };
 
 StockSolutionForm.prototype.getMacromoleculeCombo = function() {
-	this.macromoleculeCombo = BIOSAXS_COMBOMANAGER.getComboMacromoleculeByMacromolecules(ProposalManager.getMacromolecules(), {
+	this.macromoleculeCombo = BIOSAXS_COMBOMANAGER.getComboMacromoleculeByMacromolecules(EXI.proposalManager.getMacromolecules(), {
 		labelWidth : 150,
 		margin : '0 0 10 0',
 		width : 350

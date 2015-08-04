@@ -127,7 +127,7 @@ SamplePlateGroupWidget.prototype.getDimensions = function(plates) {
 	return {
 		"maxSlotPositionRow" 		: parseFloat(maxSlotPositionRow),
 		"maxSlotPositionColumn"		: parseFloat(maxSlotPositionColumn)
-	}
+	};
 };
 
 /** return true or false if the plates are going to be displayed vertically or horizontally **/
@@ -206,9 +206,9 @@ SamplePlateGroupWidget.prototype.selectSpecimens = function(specimens){
 
 SamplePlateGroupWidget.prototype.selectSpecimen = function(specimen){
 	if (specimen.sampleplateposition3VO != null){
-		var samplePlateId = specimen.sampleplateposition3VO.samplePlateId;
+//		var samplePlateId = specimen.sampleplateposition3VO.samplePlateId;
 		for ( var i = 0; i < this.samplePlateWidgets.length; i++) {
-			var samplePlateId = this.samplePlateWidgets[i].samplePlate.samplePlateId;
+//			var samplePlateId = this.samplePlateWidgets[i].samplePlate.samplePlateId;
 			if ( this.samplePlateWidgets[i].samplePlate.samplePlateId == specimen.sampleplateposition3VO.samplePlateId){
 				this.samplePlateWidgets[i].selectSpecimen(specimen);
 				return;

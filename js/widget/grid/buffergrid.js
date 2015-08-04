@@ -45,19 +45,14 @@ BufferGrid.prototype._edit = function(bufferId) {
 				return [ {
 					text : 'Save',
 					handler : function() {
-						var adapter = new DataAdapter();
-						adapter.onSuccess.attach(function(sender) {
-							_this.window.close();
-							_this.onUpdated.notify();
-							
-							var manager = new ProposalUpdater(); 
-							manager.onSuccess.attach(function(sender, proposals){
-								_this.load(ProposalManager.getBuffers());	
+						var onSuccess = (function(sender) {
+							var onSuccess2 = function(sender, proposals){
+								_this.window.close();
+								_this.onUpdated.notify();
 								_this.panel.setLoading(false);
-							});
-							_this.panel.setLoading();
-							manager.get(true);
-							
+							};
+							_this.panel.setLoading("Updading proposal information");
+							EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
 							
 						});
 						/** Checking mandatory fields **/
@@ -73,7 +68,7 @@ BufferGrid.prototype._edit = function(bufferId) {
 							BUI.showWarning("Proposal field is mandatory");
 							return;
 						}
-						adapter.saveBuffer(_this.bufferForm.getBuffer());
+						EXI.getDataAdapter({onSuccess : onSuccess}).saxs.buffer.saveBuffer(_this.bufferForm.getBuffer());
 					}
 				}, {
 					text : 'Cancel',
@@ -122,7 +117,7 @@ BufferGrid.prototype.load = function(buffers) {
 //	});
 //	adapter.getProposals();
 	for (var i = 0; i < buffers.length; i++) {
-		var proposal = ProposalManager.getProposalById(buffers[i].proposalId);
+		var proposal = EXI.proposalManager.getProposalById(buffers[i].proposalId);
 		buffers[i]["proposal"] = proposal.code + proposal.number;
 	}
 	this.store.loadData(buffers, false);

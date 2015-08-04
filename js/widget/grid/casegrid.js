@@ -166,7 +166,7 @@ CaseGrid.prototype._getColumns = function() {
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var rec = grid.getStore().getAt(rowIndex);
-                    _this.edit(rec);
+                    _this.edit(rec.data);
                 }
             }]
         });
@@ -248,7 +248,7 @@ CaseGrid.prototype.edit = function(dewar) {
 	    modal : true,
 	    layout: 'fit',
 	    items: [
-	            	caseForm.getPanel(dewar.data)
+	            	caseForm.getPanel(dewar)
 	    ],
 	    buttons : [ {
 						text : 'Save',
@@ -339,7 +339,13 @@ CaseGrid.prototype.getPanel = function() {
 		store : this.store,
 		columns : this._getColumns(),
 		viewConfig : {
-			stripeRows : true
+			stripeRows : true,
+			listeners : {
+				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+					_this.edit(record.data);
+				}
+
+			}
 		},
 		selModel : {
 			mode : 'SINGLE'

@@ -1,6 +1,5 @@
 function QueueGrid(args) {
-	this.width = Ext.getBody().getWidth() - 500;
-	this.height = Ext.getBody().getHeight() - 500;
+//	this.height = Ext.getBody().getHeight() - 500;
 
 	this.decimals = 3;
 	this.onSelect = new Event();
@@ -31,9 +30,6 @@ function QueueGrid(args) {
 	if (args!= null){
 		if (args.maxHeight != null){
 			this.maxHeight = args.maxHeight;
-		}
-		if (args.width != null){
-			this.width = args.width;
 		}
 		if (args.collapsible != null){
 			this.collapsible = args.collapsible;
@@ -95,12 +91,17 @@ QueueGrid.prototype.getRunHTML = function(sample) {
 			var specimen = this.key[dataCollectionId][i];
 			var tr = document.createElement("tr");
 			var td = document.createElement("td");
-			if (specimen.macromoleculeId == null) {
-				td.setAttribute("style", "padding-top:4px;width:130px;color:gray;");
-				td.appendChild(document.createTextNode("# " + specimen.measurementCode));
-			} else {
-				td.setAttribute("style", "padding-top:4px;width:130px;font-weight:bold;");
-				td.appendChild(document.createTextNode("# " + specimen.measurementCode));
+			if (specimen.measurementCode != null){
+				if (specimen.macromoleculeId == null) {
+					td.setAttribute("style", "padding-top:1px;width:130px;color:gray;");
+					td.appendChild(document.createTextNode("# " + specimen.measurementCode));
+				} else {
+					td.setAttribute("style", "padding-top:1px;width:130px;font-weight:bold;");
+					td.appendChild(document.createTextNode("# " + specimen.measurementCode));
+				}
+			}
+			else{
+				td.appendChild(document.createTextNode(" - "));
 			}
 			tr.appendChild(td);
 			table.appendChild(tr);
@@ -108,6 +109,40 @@ QueueGrid.prototype.getRunHTML = function(sample) {
 
 	}
 	return "<table>" + table.innerHTML + "</table>";
+};
+
+QueueGrid.prototype.getPercentage = function(averaged, total) {
+	var tdFrames = document.createElement("td");
+	
+	var color = "green";
+	if (averaged == null){
+		averaged = "NA";
+		color = "orange";
+	}
+	if (total == null){
+		total = "NA";
+		color = "orange";
+	}
+	
+	if ((averaged != "NA")&(total != "NA")){
+		if (averaged/total >= 0.3){
+			color = "orange";
+		}
+		if (averaged/total > 0.7){
+			color = "#BCF5A9";
+		}
+		
+		if (averaged/total < 0.3){
+			color = "red";
+		}
+		
+		
+	}
+	
+	tdFrames.appendChild(document.createTextNode(averaged + " / " + total));
+	
+	tdFrames.setAttribute("style", "background-color:" + color +";");
+	return tdFrames;
 };
 
 QueueGrid.prototype.getFramesHTML = function(sample) {
@@ -131,10 +166,8 @@ QueueGrid.prototype.getFramesHTML = function(sample) {
 				td.appendChild(document.createTextNode(specimen.macromoleculeAcronym));
 			}
 			tr.appendChild(td);
-			var frames = specimen.framesMerge + "/" + specimen.framesCount;
-			var tdFrames = document.createElement("td");
-			tdFrames.appendChild(document.createTextNode(frames));
-			tr.appendChild(tdFrames);
+			
+			tr.appendChild(this.getPercentage(specimen.framesMerge, specimen.framesCount));
 
 			var td = document.createElement("td");
 			var a = document.createElement("a");
@@ -144,11 +177,6 @@ QueueGrid.prototype.getFramesHTML = function(sample) {
 				a.setAttribute("href", BUI.getZipURLBySubtractionId(specimen.subtractionId, specimen.measurementCode));
 			}
 
-//			var img = document.createElement("img");
-//			img.setAttribute("src", "../images/download.png");
-//			img.setAttribute("style", "width:12px;height:12px;cursor:pointer;");
-//			a.appendChild(img);
-//			td.appendChild(a);
 			tr.appendChild(td);
 
 			table.appendChild(tr);
@@ -169,7 +197,7 @@ QueueGrid.prototype.getHTMLTable = function(items) {
 QueueGrid.prototype.getImage = function(sample, name) {
 	if (sample.data.macromoleculeId != null) {
 		if (sample.data.subtractionId != null) {
-			var url = new DataAdapter().getImage(sample.data.subtractionId, name);
+			var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.data.subtractionId, name);
 			return '<img src=' + url + '   height="70" width="70" >';
 		}
 	}
@@ -214,7 +242,7 @@ QueueGrid.prototype.getColumns = function() {
 
 			{
 				header : "Run",
-				flex : 1,
+				flex : 0.2,
 				name : "runNumber",
 				dataIndex : "measurementCode",
 				renderer : function(val, y, sample) {
@@ -300,7 +328,7 @@ QueueGrid.prototype.getColumns = function() {
 			{
 				text : 'Guinier',
 				name : 'Guinier',
-				flex : 1,
+				flex : 0.8,
 				dataIndex : 'subtractionId',
 				renderer : function(val, y, sample) {
 					if (sample.data.macromoleculeId != null) {
@@ -350,7 +378,7 @@ QueueGrid.prototype.getColumns = function() {
 			{
 				text : 'Gnom',
 				name : 'Gnom',
-				flex : 1,
+				flex : 0.7,
 				dataIndex : 'subtractionId',
 				renderer : function(val, y, sample) {
 					if (sample.data.macromoleculeId != null) {
@@ -440,65 +468,65 @@ QueueGrid.prototype.getColumns = function() {
 
 						}
 					}
-				} }
-//				,
-//				{
-//				text : 'Advanced',
-//				hidden : true,
-//				id : this.id + 'buttonAction',
-//				dataIndex : 'subtrationId',
-//				flex : 1,
-//				renderer : function(val, y, sample) {
-//					// 'fitCount', 'superposisitionCount', 'rigidbodyCount',
-//					// 'abinitioCount'
-//					var html = "<table><tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Data Reduction", {
-//						width : 90,
-//						height : 15 }) + "</td></tr>";
-//
-//					if (sample.data.abinitioCount > 0) {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Abinitio", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					} else {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Abinitio", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					}
-//
-//					if (sample.data.fitCount > 0) {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Fit", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					} else {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Fit", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					}
-//
-//					if (sample.data.superposisitionCount > 0) {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Superposition", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					} else {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Superposition", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					}
-//					if (sample.data.rigidbodyCount > 0) {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Rigid Body", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					} else {
-//						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Rigid Body", {
-//							width : 90,
-//							height : 15 }) + "</td></tr>";
-//					}
-//
-//					return html + "</table>";
-//				}
-//
-//			}
-				];
+				}
+			},
+				{
+				text : 'Advanced',
+				hidden : false,
+				id : this.id + 'buttonAction',
+				dataIndex : 'subtrationId',
+				flex : 1,
+				renderer : function(val, y, sample) {
+					// 'fitCount', 'superposisitionCount', 'rigidbodyCount',
+					// 'abinitioCount'
+					var html = "<table><tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Data Reduction", {
+						width : 90,
+						height : 15 }) + "</td></tr>";
+
+					if (sample.data.abinitioCount > 0) {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Abinitio", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					} else {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Abinitio", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					}
+
+					if (sample.data.fitCount > 0) {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Fit", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					} else {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Fit", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					}
+
+					if (sample.data.superposisitionCount > 0) {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Superposition", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					} else {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Superposition", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					}
+					if (sample.data.rigidbodyCount > 0) {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Rigid Body", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					} else {
+						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Rigid Body", {
+							width : 90,
+							height : 15 }) + "</td></tr>";
+					}
+
+					return html + "</table>";
+				}
+
+			}
+		];
 };
 
 QueueGrid.prototype.load = function(data) {
@@ -570,7 +598,9 @@ QueueGrid.prototype.getPanel = function() {
 		border : true,
 		cls : 'defaultGridPanel',
 		maxHeight : this.maxHeight,
-		minHeight : 300,
+//		minHeight : 300,
+		overflow : 'auto', 
+		margin : 5,
 		store : this.store,
 		columns : this.getColumns(),
 		allowDeselect : true,
@@ -586,7 +616,7 @@ QueueGrid.prototype.getPanel = function() {
 				cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 //					if (grid.getGridColumns()[cellIndex].getId() == _this.id + 'buttonAction') {
 						if (e.target.defaultValue == 'Data Reduction') {
-							_this.onDataReductionButtonClicked(record.data);
+							location.hash = "/datacollection/dataCollectionId/" + record.data.dataCollectionId + "/primaryviewer";
 						}
 
 						if (e.target.defaultValue == 'Abinitio') {
@@ -609,9 +639,6 @@ QueueGrid.prototype.getPanel = function() {
 			}
 		}
 	});
-	
-
-    
 	return this.panel;
 };
 

@@ -8,7 +8,6 @@ function ExperimentDesignerMainView() {
 	MainView.call(this);
 
 	this.templateGrid = new TemplateGrid({
-//		width : this.width,
 		minHeight : 300,
 		height : 440,
 		gridType : 'Ext.grid.Panel',
@@ -22,17 +21,6 @@ function ExperimentDesignerMainView() {
 	this.onDeselect = new Event(this);
 }
 
-ExperimentDesignerMainView.prototype.getHeader = function(beamlineName, startDate) {
-	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";
-};
-
-ExperimentDesignerMainView.prototype.getSelected = function() {
-	var selected = [];
-	for (var i = 0; i < this.queueGridList.length; i++) {
-		selected = this.queueGridList[i].getSelected().concat(selected);
-	}
-	return selected;
-};
 
 ExperimentDesignerMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {

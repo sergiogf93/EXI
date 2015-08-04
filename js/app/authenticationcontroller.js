@@ -11,18 +11,25 @@ function AuthenticationManager(){
  */
 AuthenticationManager.prototype.login = function(user, password, url){
 	var _this = this;
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, data) {
+	var fn = function onSuccess(sender, data) {
+		debugger
 		_this.onSuccess.notify({
 			user : user,
+			roles : data.roles,
 			token : data.cookie,
 			url : url
-		});
-		
 	});
-	adapter.onError.attach(function(sender, data) {
+	};
+		
+	EXI.getDataAdapter().proposal.authentication.onError.attach(function(sender, data) {
 		Ext.Msg.alert('Failed', "Error on authentication");
 	});
-	adapter.authenticate(user, password, url);
+	debugger
+	EXI.getDataAdapter({
+		onSuccess :fn
+	}).proposal.authentication.authenticate(user, password, url);
+	
+	
+	
 };
 

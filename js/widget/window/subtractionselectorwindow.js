@@ -3,7 +3,7 @@ function SubtractionSelectorWindow(){
 	this.grid = new QueueGrid({
 		height : 450,
 		maxHeight : 300,
-		width : 1000,
+//		width : 1000,
 		title : false,
 		collapsible : false,
 		selectionMode : 'single',
@@ -52,13 +52,12 @@ SubtractionSelectorWindow.prototype.getToolBar = function(){
 	            listeners: {
 	                specialkey: function(field, e){
 	                    if (e.getKey() == e.ENTER) {
-	                    	 var adapter = new DataAdapter();
-	        	        	 adapter.onSuccess.attach(function(sender, data){
+	        	        	 var onSuccess = (function(sender, data){
 	        	        		 _this.grid.load(data);
 	        	        		 _this.window.setLoading(false);
 	        	        	 });
 	        	        	 _this.window.setLoading();
-	        	        	 adapter.getDataCollectionsByKey('macromoleculeAcronym', field.getValue());
+	        	        	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey('macromoleculeAcronym', field.getValue());
 	        	        	 
 	                    }
 	                }

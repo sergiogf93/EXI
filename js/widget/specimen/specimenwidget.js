@@ -39,7 +39,6 @@ function SpecimenWidget(args){
 	});
 
 	this.specimenGrid.onSelected.attach(function(sender, specimens) {
-		debugger
 		if (specimens.length > 0) {
 			_this.specimenSelected = specimens[0];
 		} else {
@@ -64,7 +63,6 @@ function SpecimenWidget(args){
 
 	this.samplePlateGroupWidget.onClick.attach(function(sender, args) {
 		/** Clicking on a plate * */
-		debugger
 		var row = args.row;
 		var column = args.column;
 		var samplePlateId = args.samplePlate.samplePlateId;
@@ -85,18 +83,17 @@ function SpecimenWidget(args){
 				};
 
 				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
-				var adapter = new DataAdapter();
 				/** If success * */
-				adapter.onSuccess.attach(function(sender, experiment) {
+				var onSuccess = (function(sender, experiment) {
 					_this.samplePlateGroupWidget.panel.setLoading(false);
 				});
 
-				adapter.onError.attach(function(sender, error) {
-					_this.samplePlateGroupWidget.panel.setLoading(false);
-					showError(error);
-				});
+//				adapter.onError.attach(function(sender, error) {
+//					_this.samplePlateGroupWidget.panel.setLoading(false);
+//					showError(error);
+//				});
 
-				adapter.saveSpecimen(specimen);
+				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
 
 				_this.samplePlateGroupWidget.refresh(_this.experiment);
 				_this.specimenGrid.refresh(_this.experiment);
@@ -115,19 +112,14 @@ function SpecimenWidget(args){
 				if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
 					if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
 							((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
-						var adapter = new DataAdapter();
-						adapter.onSuccess.attach(function(sender, data) {
+						var onSuccess = (function(sender, data) {
 							_this.refresh(new Experiment(data));
 							_this.samplePlateGroupWidget.panel.setLoading(false);
 							
 							_this.onExperimentChanged.notify(experiment);
 						});
-						adapter.onError.attach(function(sender, error) {
-							_this.samplePlateGroupWidget.panel.setLoading(false);
-							showError(error);
-						});
 						_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
-						adapter.mergeSpecimens(specimen.specimenId, target.specimenId);
+						EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
 						_this.specimenSelected = null;
 						_this.specimenGrid.deselectAll();
 					}

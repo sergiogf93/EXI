@@ -27,12 +27,9 @@ FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
 							return _this.measurements[i].macromoleculeAcronym + ":  " + _this.measurements[i].concentration + "mg/ml";
 						}
 						return "";
-					}
-					;
-				}
-				;
-			}
-			;
+					};
+				};
+			};
 			title = title + " " + getMeasurementTitle(dataCollection.measurementtodatacollection3VOs[i].measurementId);
 		}
 		return title;
@@ -127,23 +124,26 @@ FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
 FrameSelectorGrid.prototype.load = function(data) {
 	var _this = this;
 	this.measurements = data;
+	this.subtractionIds = [];
+	
 	var dataCollectionIdList = [];
 	if (this.measurements != null) {
 		for (var i = 0; i < this.measurements.length; i++) {
 			if (this.measurements[i].dataCollectionId != null) {
 				dataCollectionIdList.push(this.measurements[i].dataCollectionId);
+				this.subtractionIds.push(this.measurements[i].subtractionId);
 			}
 		}
 	}
-
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, data) {
+	this.subtractionIds = $.unique(this.subtractionIds);
+	
+	var onSuccess = (function(sender, data) {
 		if (data != null) {
 			_this.loadData(_this.measurements, data);
 		}
 
 	});
-	adapter.getDataCollectionsByIdList(dataCollectionIdList);
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByIdList(dataCollectionIdList);
 
 };
 
@@ -187,16 +187,12 @@ FrameSelectorGrid.prototype.getPanel = function() {
 					}
 
 					/** Event is only triggered if node is a leaf **/
-					//					if (selections.length>0){
-					//						if (selections[selections.length - 1]){
 					_this.onSelectionChange.notify({
 						frame : frameIds,
 						average : [],
 						sampleaverage : sampleAverages,
 						bufferaverage : bufferAverages,
 						subtracted : subtractions });
-					//						}
-					//					}
 				}
 
 			}
@@ -205,15 +201,17 @@ FrameSelectorGrid.prototype.getPanel = function() {
 
 	this.treePanel = Ext.create('Ext.tree.Panel', {
 		title : 'Data Collections',
-//		width : 150,
-//		border : 1,
-//		style : {
-//			borderColor : '#000000',
-//			borderStyle : 'solid',
-//			borderWidth : '1px' },
 		selModel : selModel,
 		store : this.store,
 		rootVisible : false,
+		buttons : [ {
+			text : "Download",
+			xtype : 'button',
+			handler : function(sender) {
+//				var params = _this.getParams();
+				window.open(EXI.getDataAdapter().saxs.subtraction.getZip(_this.subtractionIds.toString()));
+			}
+		}],
 		columns : [ {
 			xtype : 'treecolumn',
 			dataIndex : 'text',

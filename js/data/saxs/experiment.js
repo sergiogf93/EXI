@@ -17,7 +17,7 @@ function Experiment(json) {
 	/** For all specimens asynchronous **/
 	this.onPlateSaved = new Event(this);
 
-	this.bufferColors =  $.extend({}, ProposalManager.getBufferColors());
+	this.bufferColors =  $.extend({}, EXI.proposalManager.getBufferColors());
 	
 	this.specimenBuffersColors = this.getSpecimenColors();
 	
@@ -79,7 +79,7 @@ Experiment.prototype.getSpecimenColors = function() {
 	}
 
 	var colors = {};
-	var buffercolors = ProposalManager.getBufferColors();
+	var buffercolors =  EXI.proposalManager.getBufferColors();
 	for ( i = 0; i < bufferSamples.length; i++) {
 		colors[bufferSamples[i].specimenId] = buffercolors[i % buffercolors.length];
 	}
@@ -103,7 +103,7 @@ Experiment.prototype.getBuffers = function() {
 
 /** BUFFER **/
 Experiment.prototype.getBufferById = function(bufferId) {
-	return ProposalManager.getBufferById(bufferId);
+	return  EXI.proposalManager.getBufferById(bufferId);
 };
 
 /** STOCK SOLUTION **/

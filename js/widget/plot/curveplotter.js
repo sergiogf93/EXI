@@ -91,5 +91,5 @@ CurvePlotter.prototype.loadHPLCFrame = function(experimentId, frameNumber) {
 
 
 CurvePlotter.prototype.load = function(selections) {
-	this.render(new DataAdapter().getFramesURL(selections.frame, selections.average, selections.subtracted, selections.sampleaverage, selections.bufferaverage));
+	this.render(EXI.getDataAdapter().saxs.frame.getFramesURL(selections.frame, selections.average, selections.subtracted, selections.sampleaverage, selections.bufferaverage));
 };

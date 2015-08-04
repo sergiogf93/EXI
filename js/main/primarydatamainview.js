@@ -4,8 +4,9 @@ PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
 function PrimaryDataMainView() {
 	this.title = "Primary Data View";
 	this.icon = 'images/icon/ic_blur_on_black_18dp.png';
-	this.queueGridList = [];
 
+	MainView.call(this);
+	
 	this.onMeasurementSelectionChange = new Event(this);
 	
 	var _this = this;
@@ -18,25 +19,18 @@ function PrimaryDataMainView() {
 	/** Curve plotter * */
 	this.plotter = new CurvePlotter({
 	});
-	
-	
 
 	this.grid = new QueueGrid({
 		maxHeight : 300
-
 	});
 	
 	/** measurementId : [{frame}] **/
 	this.selected = {}; 
-	
-	
 }
 
 PrimaryDataMainView.prototype.getHeader = function(beamlineName, startDate) {
 	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";
 };
-
-
 
 PrimaryDataMainView.prototype.getSelected = function() {
 	var selected = [];
@@ -53,6 +47,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		xtype : 'container',
 		layout : 'hbox',
 		cls 	: 'defaultGridPanel',
+		margin : 5,
 		border : 0,
 		defaults : {
 			height : 600 
@@ -99,26 +94,13 @@ PrimaryDataMainView.prototype.getContainer = function() {
 
 PrimaryDataMainView.prototype.load = function(selected) {
 	var _this = this;
-
-
 	this.panel.setTitle(" Primary Data Viewer");
-//	this.container.insert(0, grid.getPanel());
-
-//	this.container.insert(1, this.getSlavePanel());
-
-	var adapter = new DataAdapter();
-	/** * Trick for JS compiler * */
-	adapter.grid = this.grid;
-	adapter.grid.panel.setLoading();
-	adapter.grid.panel.setTitle(selected.length + " items selected");
-	adapter.onSuccess.attach(function(sender, data) {
-		sender.grid.load(data);
-		sender.grid.panel.setLoading(false);
+	this.grid.panel.setLoading();
+	var onSuccess = (function(sender, data) {
+		_this.grid.load(data);
+		_this.grid.panel.setLoading(false);
 		/** Measurements Grid * */
 		_this.frameSelectorGrid.load(data);
-	});
-	adapter.onError.attach(function(sender, data) {
-		sender.grid.panel.setLoading(false);
 	});
 
 	var dataCollectionIds = [];
@@ -126,6 +108,6 @@ PrimaryDataMainView.prototype.load = function(selected) {
 		dataCollectionIds.push(selected[i].dataCollectionId);
 
 	}
-	adapter.getDataCollectionsByDataCollectionId(dataCollectionIds);
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
 };
 

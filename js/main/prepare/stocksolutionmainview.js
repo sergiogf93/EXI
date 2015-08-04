@@ -23,17 +23,25 @@ function StockSolutionMainView() {
 	
 	
 	this.stockSolutionGrid.onSaved.attach(function(sender, stockSolution){
-		var adapter = new DataAdapter();
-		adapter.onSuccess.attach(function(sender){
-			_this.panel.setLoading(true);
-			var manager = new ProposalUpdater(); 
-			manager.onSuccess.attach(function(sender, proposals){
-				_this.stockSolutionGrid.load(ProposalManager.getStockSolutions());	
-				_this.panel.setLoading(false);
-			});
-			manager.get(true);
-		});
-		adapter.saveStockSolution(stockSolution);
+//		var adapter = new DataAdapter();
+//		adapter.onSuccess.attach(function(sender){
+//			_this.panel.setLoading(true);
+//			var manager = new ProposalUpdater(); 
+//			manager.onSuccess.attach(function(sender, proposals){
+//				_this.stockSolutionGrid.load(ProposalManager.getStockSolutions());	
+//				_this.panel.setLoading(false);
+//			});
+//			manager.get(true);
+//		});
+//		adapter.saveStockSolution(stockSolution);
+		
+		var onSuccess2 = function(sender, proposals){
+			_this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutions());	
+			_this.panel.setLoading(false);
+		};
+		_this.panel.setLoading("Updading proposal information");
+		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
+		
 	});
 	
 	this.onSelect = new Event(this);
@@ -63,13 +71,6 @@ StockSolutionMainView.prototype.getContainer = function() {
 
 
 StockSolutionMainView.prototype.load = function() {
-	var _this = this;
-	this.panel.setLoading();
-	var manager = new ProposalUpdater(); 
-	manager.onSuccess.attach(function(sender, proposals){
-		_this.stockSolutionGrid.load(ProposalManager.getStockSolutions());	
-		_this.panel.setLoading(false);
-	});
-	manager.get();
+	this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutions());	
 	this.panel.setTitle("Stock Solutions");
 };

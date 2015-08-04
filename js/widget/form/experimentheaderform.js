@@ -23,13 +23,12 @@ ExperimentHeaderForm.prototype.getToolBar = function() {
 	            text: 'Save',
 	            width : 100,
 	            handler : function(){
-	            	var adapter = new DataAdapter();
 	            	_this.panel.setLoading();
-	            	adapter.onSuccess.attach(function(sender){
+	            	var onSuccess = (function(sender){
 	            		_this.panel.setLoading(false);
 	            		
 	            	});
-	            	adapter.saveExperiment(_this.experiment.experimentId, 
+	            	EXI.getDataAdapter({ onSuccess : onSuccess}).saxs.experiment.saveExperiment(_this.experiment.experimentId, 
 	            			Ext.getCmp(_this.id + "name").getValue(), 
 	            			Ext.getCmp(_this.id + "comments").getValue());
 	            }
@@ -40,11 +39,11 @@ ExperimentHeaderForm.prototype.getToolBar = function() {
 	            menu: new Ext.menu.Menu({
 	                items: [
 	                    {text: 'For BsxCube on bm29', handler: function(){
-	                    		window.open(new DataAdapter().getTemplateSourceFile(_this.experiment.experimentId, "bsxcube")); 
+	                    		window.open(EXI.getDataAdapter().saxs.template.getTemplateSourceFile(_this.experiment.experimentId, "bsxcube")); 
 	                    	}
 	                    },
 	                    {text: 'For Becquerel on p12', handler: function(){
-	                    		window.open(new DataAdapter().getTemplateSourceFile(_this.experiment.experimentId, "becquerel"));
+	                    		window.open(EXI.getDataAdapter().saxs.template.getTemplateSourceFile(_this.experiment.experimentId, "becquerel"));
 	                    	}
 	                    }
 	                ]

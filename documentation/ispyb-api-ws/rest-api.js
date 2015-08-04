@@ -31,6 +31,70 @@ function getMeasurement(){
 	};
 };
 
+function getFrame(){
+	return {
+		name:'frame',
+		children : [
+					{name : 'datplot', method : 'GET', queryParams : ['frame', 'average', 'subtracted', 'sampleaverage', 'bufferaverage']},
+					{	
+						name:'average',
+						children : [
+						            {	
+										name:'{averageIdList}',
+										children : [
+										           {name : 'list', method : 'GET'}
+										 ]
+											
+									}
+									
+						 ]
+							
+					},
+					{	
+						name:'measurement',
+						children : [
+										{	
+											name:'{measurementIdList}',
+											children : [
+											           {name : 'list', method : 'GET'}
+											 ]
+												
+										}
+						 ]
+							
+					},
+					{	
+						name:'subtraction',
+						children : [
+										{	
+											name:'{subtractionIdList}',
+											children : [
+											           {name : 'list', method : 'GET'}
+											 ]
+												
+										}
+						 ]
+							
+					}
+//					{	
+//						name:'session',
+//						children : [
+//						            {   name:'{sessionId}', children : [ {name : 'list', method : 'GET'}]}
+//						 ]
+//							
+//					},
+//					{	
+//						name:'{key}',
+//						children : [
+//						            {   name:'{value}', children : [ {name : 'list', method : 'GET'}]}
+//						 ]
+//							
+//					}
+		]
+		
+	};
+}
+
 function getExperiment(){
 	return {
 		name:'experiment',
@@ -92,13 +156,12 @@ function getShipping(){
 										{
 											name:'dewar',
 											children : [
-														{name:'add', method : 'GET'},
+														{name:'save', method : 'POST'},
 														{
 															name:'{dewarId}',
 															children : [
 																			{name:'label', method : 'GET'},
-																			{name:'remove', method : 'GET'},
-																			{name:'save', method : 'POST'}
+																			{name:'remove', method : 'GET'}
 															] 
 														}
 											] 
@@ -127,13 +190,26 @@ function getSubtractions(){
 																{name:'guinier', method : 'GET'}
 																
 												] 
+											},
+											{
+												name:'sampleaverage',
+												children : [
+																{name:'download', method : 'GET'}
+												] 
+											},
+											{
+												name:'bufferaverage',
+												children : [
+																{name:'download', method : 'GET'}
+												] 
 											}
 							] 
 						},
 						{
 							name:'{subtractionIdList}',
 							children : [
-											{name:'list', method : 'GET'}
+											{name:'list', method : 'GET'},
+											{name:'download', method : 'GET'}
 							]
 						}
 		]
@@ -194,6 +270,7 @@ function getSAXS(){
 		            getDataCollection(),
 		            getSubtractions(),
 		            getExperiment(),
+		            getFrame(),
 					{
 						name:'macromolecule',
 						children : [

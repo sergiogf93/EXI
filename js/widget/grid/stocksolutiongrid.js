@@ -110,7 +110,9 @@ StockSolutionGrid.prototype._getColumns = function() {
 		id : _this.id + 'macromolecule',
 		type : 'string',
 		renderer : function(val, y, specimen) {
-			return '<span style="color:blue;">' + val + '</span>';
+			if (val != null){
+				return '<span style="color:blue;">' + val + '</span>';
+			}
 		},
 		hidden : false,
 		flex : 1
@@ -287,7 +289,7 @@ StockSolutionGrid.prototype._getTopButtons = function() {
 
 				}).show();
 
-				stockSolutionGrid.load(ProposalManager.getUnpackedStockSolutions());
+				stockSolutionGrid.load(EXI.proposalManager.getUnpackedStockSolutions());
 			}
 		}));
 	}
@@ -299,12 +301,12 @@ StockSolutionGrid.prototype.load = function(stockSolutions) {
 	var data = [];
 	for ( var i = 0; i < stockSolutions.length; i++) {
 		var stockSolution = stockSolutions[i];
-		if (ProposalManager.getBufferById(stockSolution.bufferId) != null){
-			stockSolution.buffer = ProposalManager.getBufferById(stockSolution.bufferId).acronym;
+		if (EXI.proposalManager.getBufferById(stockSolution.bufferId) != null){
+			stockSolution.buffer = EXI.proposalManager.getBufferById(stockSolution.bufferId).acronym;
 		}
-		stockSolution.proposal = ProposalManager.getProposalById(stockSolution.proposalId).code + ProposalManager.getProposalById(stockSolution.proposalId).number;
-		if (ProposalManager.getMacromoleculeById(stockSolution.macromoleculeId) != null){
-			stockSolution.macromolecule = ProposalManager.getMacromoleculeById(stockSolution.macromoleculeId).acronym;
+		stockSolution.proposal = EXI.proposalManager.getProposalById(stockSolution.proposalId).code + EXI.proposalManager.getProposalById(stockSolution.proposalId).number;
+		if (EXI.proposalManager.getMacromoleculeById(stockSolution.macromoleculeId) != null){
+			stockSolution.macromolecule = EXI.proposalManager.getMacromoleculeById(stockSolution.macromoleculeId).acronym;
 		}
 		data.push(stockSolution);
 	}
@@ -324,7 +326,7 @@ StockSolutionGrid.prototype.edit = function(stockSolutionId) {
 	stockSolutionWindow.onSaved.attach(function(sender, stockSolution) {
 		_this.onSaved.notify(stockSolution);
 	});
-	stockSolutionWindow.draw(ProposalManager.getStockSolutionById(stockSolutionId));
+	stockSolutionWindow.draw(EXI.proposalManager.getStockSolutionById(stockSolutionId));
 };
 
 StockSolutionGrid.prototype.unpack = function(stockSolution) {

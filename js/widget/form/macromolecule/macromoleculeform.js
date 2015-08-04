@@ -29,7 +29,6 @@ function MacromoleculeForm(args) {
 /** Type : is the Ext type then requiredtext or textfield * */
 MacromoleculeForm.prototype._getFieldTextWithHelp = function(type, fieldLabel, fieldName, help) {
 	return Ext.create('Ext.container.Container', {
-//		margin : "10 0 0 10",
 		items : [ {
 			xtype : type,
 			fieldLabel : fieldLabel,
@@ -83,12 +82,19 @@ MacromoleculeForm.prototype._getButtons = function() {
 
 /** It persits the macromolecule in the database **/
 MacromoleculeForm.prototype._persist = function(macromoleculeId, acronym, name, molecularMass, extintionCoefficient, comments, refractiveIndex, solventViscosity) {
-	/** Checking not duplicated acronym **/
-	if (((macromoleculeId == null) && (BIOSAXS.proposal.getMacromoleculeByAcronym(acronym) == null))== true){
-		BUI.showError("Duplicated acronym");
-		return;
+	var proposalId = Ext.getCmp("proposalIdCombo").getValue();
+	if (proposalId == null){
+			BUI.showError("Please select a proposal");
+			return;
 	}
 	
+	/** Checking not duplicated acronym **/
+	if (macromoleculeId == null){
+		if (EXI.proposalManager.getMacromoleculeByAcronym(acronym) != null){
+			BUI.showError("Duplicated acronym");
+			return;
+		}
+	}
 	
 	if (macromoleculeId == null){
 		/** new macromolecule **/
@@ -107,25 +113,32 @@ MacromoleculeForm.prototype._persist = function(macromoleculeId, acronym, name, 
 	this.macromolecule["symmetry"] =  Ext.getCmp(this.id + 'comboSym').getValue();
 	this.macromolecule["refractiveIndex"] =  refractiveIndex;
 	this.macromolecule["solventViscosity"] =  solventViscosity;
+	this.macromolecule["proposalId"] =  proposalId;
 	
 	var _this = this;
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, proposal) {
-
-		
-		var manager = new ProposalUpdater(); 
-		manager.onSuccess.attach(function(sender, proposals){
-//			_this.load(ProposalManager.getBuffers());	
+	
+	var onSuccess = (function(sender, proposal) {
+		var onSuccess2 = function(sender, proposals){
 			_this.panel.setLoading(false);
+			_this.onSave.notify();
 			_this.onClose.notify();
-		});
-		_this.panel.setLoading();
-		manager.get(true);
+		};
+		_this.panel.setLoading("Updading proposal information");
+		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
+		
+//		var manager = new ProposalUpdater(); 
+//		manager.onSuccess.attach(function(sender, proposals){
+//			_this.load(ProposalManager.getBuffers());	
+//			_this.panel.setLoading(false);
+//			_this.onClose.notify();
+//		});
+//		_this.panel.setLoading();
+//		manager.get(true);
 		
 	});
 	
 	this.panel.setLoading("Saving Macromolecule")
-	adapter.saveMacromolecule(this.macromolecule);
+	EXI.getDataAdapter({onSuccess: onSuccess }).saxs.macromolecule.saveMacromolecule(this.macromolecule);
 };
 
 /** Save the macromolecule in the DB **/
@@ -190,7 +203,8 @@ MacromoleculeForm.prototype._getItems = function() {
 		margin : "0 0 0 30",
 		width : 220
 	});
-	return [ this._getFieldTextWithHelp("requiredtextfield", "Name", "name", "Long name. i.e: Bovine serum albumin"),
+	return [ BIOSAXS_COMBOMANAGER.getComboProposal({labelWidth : 100}),
+	         this._getFieldTextWithHelp("requiredtextfield", "Name", "name", "Long name. i.e: Bovine serum albumin"),
 			 this._getFieldTextWithHelp("requiredtextfield", "Acronym", "acronym", "Acronym will be used in the files and analisys. i.e: BSA"),
 			 this._getFieldTextWithHelp("textfield", "Mol. Mass (Da)", "molecularMass", "Atomic mass estimation measured in Da"),
 			{
@@ -293,6 +307,11 @@ MacromoleculeForm.prototype.refresh = function(macromolecule) {
 		if (macromolecule.symmetry != null){
 			Ext.getCmp(this.id + 'comboSym').setValue(macromolecule.symmetry);
 		}
+		if (this.macromolecule.proposalId != null){
+			Ext.getCmp("proposalIdCombo").setValue(this.macromolecule.proposalId);
+			Ext.getCmp("proposalIdCombo").disable();
+		}
+		
 	}
 };
 

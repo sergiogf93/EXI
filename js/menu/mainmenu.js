@@ -1,272 +1,114 @@
 function MainMenu() {
 	this.id = BUI.id();
+	this.loginButtonId = 'loginButton' + this.id;
 }
 
-MainMenu.prototype.getPreparationMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Macromolecules") {
-			location.hash = "/prepare/macromolecule/main";
-		}
-		if (item.text == "Buffers") {
-			location.hash = "/prepare/buffer/main";
-		}
-		
-		if (item.text == "Stock Solutions") {
-			location.hash = "/prepare/stocksolution/main";
-		}
-		
-		if (item.text == "Sample Tracking") {
-			location.hash = "/shipping/nav";
-		}
-		
+MainMenu.prototype.getMenuItems = function() { return [];};
 
-		if (item.text == "Experiment Designer") {
-			location.hash = "/prepare/designer";
-		}
-		
-		if (item.text == "My Experiments") {
-			location.hash = "/template/nav";
+MainMenu.prototype.getAddCredentialMenu = function() {
+	if (EXI.credentialManager.getCredentials() != null){
+		if (EXI.credentialManager.getCredentials().length > 0){
+			return {
+				icon : 'images/icon/rsz_1ic_input_black_24dp.png',
+				height : 30,
+				text : 'Add',
+				handler : function() {
+						window.location.href = '#/login';
+				} 
+			};
 		}
 	}
+};
 
-	return Ext.create('Ext.menu.Menu', {
-		items : [ {
-				text : 'Macromolecules',
-//				checked : false,
-				icon : 'images/icon/macromolecule.png',
-	//			group : 'theme',
-				handler : onItemCheck 
-			},
-			 {
-				text : 'Buffers',
-//				group : 'theme',
-				icon : 'images/icon/buffer.jpg',
-//				checked : false,
-				handler : onItemCheck 
-			},
-			"-",
-			{
-				text : 'Stock Solutions',
-//				group : 'theme',
-				icon : 'images/icon/testtube.png',
-//				checked : false,
-				handler : onItemCheck 
-			}
-			
-			, {
-				text : 'Sample Tracking',
-//				checked : false,
-				icon : 'images/icon/shipping.png',
-//				group : 'theme',
-				handler : onItemCheck }, "-" ,
-				{
-						text : 'Experiment Designer',
-						icon : 'images/icon/tool.png',
-						handler : onItemCheck 
-				},
-				{
-					text : 'My Experiments',
-					icon : 'images/icon/edit.png',
-					handler : onItemCheck 
+MainMenu.prototype.populateCredentialsMenu = function() {
+	this.credentialsMenu.removeAll();
+	if (EXI.credentialManager.getCredentials() != null) {
+		for (var i = 0; i < EXI.credentialManager.getCredentials().length; i++) {
+			var text = EXI.credentialManager.getCredentials()[i].username;
+			if (EXI.credentialManager.getCredentials()[i].activeProposals.length > 0) {
+				for (var j = 0; j < EXI.credentialManager.getCredentials()[i].activeProposals.length; j++) {
+					this.credentialsMenu.add({
+						text : EXI.credentialManager.getCredentials()[i].activeProposals[j] + "@" + EXI.credentialManager.getCredentials()[i].username,
+						icon : "images/icon/rsz_esrflogo80.gif",
+						disabled : true });
 				}
-				
-				] });
-};
-
-MainMenu.prototype.getDataExplorerMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Sessions") {
-			location.hash = "/session/nav";
-		}
-		if (item.text == "Macromolecules") {
-//			_this.onMacromoleculeClicked.notify();
-		}
-		if (item.text == "Experiments") {
-//			_this.onExperimentClicked.notify();
-			location.hash = "/experiment/nav";
-		}
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [ {
-			text : 'Sessions',
-			icon : 'images/icon/sessions.png',
-			checked : false,
-			group : 'theme',
-			checkHandler : onItemCheck }, {
-			text : 'Macromolecules',
-			checked : false,
-			group : 'theme',
-			checkHandler : onItemCheck }, {
-			text : 'Experiments',
-			checked : false,
-			group : 'theme',
-			checkHandler : onItemCheck } ] });
-};
-
-MainMenu.prototype.getDataReductionMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Sessions") {
-			_this.onSessionClicked.notify();
-		}
-		if (item.text == "Subtraction") {
-			location.hash = "/tool/subtraction/main";
-		}
-		if (item.text == "Experiments") {
-			_this.onExperimentClicked.notify();
-		}
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [ {
-			text : '<span class="menuCategoryItem">SEC</span>' }, "-", {
-			text : 'Background Test' }, {
-			text : 'Baseline Checker' }, {
-			text : 'Frame Merge' }, "-", {
-			text : '<span class="menuCategoryItem">INDIVIDUAL CONCENTRATION</span>' }, "-",
-			{
-				text : 'Subtraction',
-				checked : false,
-				group : 'theme',
-				checkHandler : onItemCheck
-			}, 
-			{
-			text : 'Average' }, "-", {
-			text : '<span class="menuCategoryItem">COMBINING</span>' }, "-", {
-			text : 'Merging tool' } ] });
-};
-
-MainMenu.prototype.init = function() {
-	this.menu.removeAll();
-	this.menu.add([
-			 		{
-			 			icon : 'images/icon/rsz_1ic_input_black_24dp.png', 
-			 			height : 30,
-			 			text : 'Add',
-			 			handler: function(){
-			 				
-			 				if (exiSAXS.localExtorage.tokenManager.getTokens().length < 2){
-//			 					exiSAXS.openAuthentication();
-			 					window.location.href = '#/login';
-			 				}
-			 				else{
-			 					Ext.Msg.alert(':(', "Max number of users already reached... not bad for a beta version, isn't it?");
-			 				}
-			 				
-			 			}},
-		        "-"
-				]);
-	for (var i = 0; i < exiSAXS.localExtorage.tokenManager.getTokens().length; i++) {
-		this.menu.add(
-				{
-					text : exiSAXS.localExtorage.tokenManager.getTokens()[i].user,
-					icon: "images/icon/rsz_esrflogo80.gif"}
-		);
-	}
-};
-
-MainMenu.prototype.addLoggin = function() {
-	this.init();
-};
-
-
-MainMenu.prototype.getOnlineDataAnalisysMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Structure Validation") {
-			location.hash = "/tool/crysol/main";
-		}
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-//		          {
-//			text : 'Abinitio Modeling' }, {
-//			text : 'Rambo and Tainer mass estimation' }, 
-//			 "-", {
-//			text : '<span class="menuCategoryItem">Apriori</span>' }, 
-//			 "-", 
-			 {
-				text : 'Structure Validation',
-				checked : false,
-				group : 'theme',
-				checkHandler : onItemCheck
+			} else {
+				this.credentialsMenu.add({
+					text : text,
+					icon : "images/icon/rsz_esrflogo80.gif",
+					disabled : true });
 			}
-//			, {
-//			text : 'PepsiSAXS' }, {
-//			text : 'SASRef' } 
-			] 
-			});
+		}
+	} 
+	
+	if (EXI.credentialManager.getCredentials().length > 0){
+		Ext.getCmp(this.loginButtonId).setText("<span style='color:white'>Log out</span>");
+		Ext.getCmp(this.loginButtonId).setIcon("images/rsz_logout.png");
+	}
+	else{
+		Ext.getCmp(this.loginButtonId).setText("<span style='color:white'>Sign In</span>");
+		Ext.getCmp(this.loginButtonId).setIcon("images/rsz_login.png");
+	}
+};
+
+MainMenu.prototype._convertToHTMLWhiteSpan = function(text) {
+	return '<span style="color:white">' + text +'</span>';
+};
+
+MainMenu.prototype.isLoggedIn = function() {
+	return (EXI.credentialManager.getCredentials().length > 0);
+};
+
+
+MainMenu.prototype.getLoginButton = function() {
+	var icon =  "images/rsz_login.png";
+	var text =  this._convertToHTMLWhiteSpan("Sign In");
+	
+	if (EXI.credentialManager.getCredentials().length > 0){
+		icon =  "images/rsz_logout.png";
+		text =  this._convertToHTMLWhiteSpan("log out");
+	}
+	
+	return {
+		xtype 	: 'splitbutton',
+		id		: this.loginButtonId,
+		text 	: text,
+		cls 	: 'button_log_out',
+		icon 	: icon,
+		menu 	: this.credentialsMenu,
+		handler : function() {
+			if (EXI.credentialManager.getCredentials().length == 0){
+				location.hash = "/login";
+			}
+			else{
+				location.hash = "/logout";
+			}
+		} 
+	};
 };
 
 MainMenu.prototype.getPanel = function() {
 	var _this = this;
-	this.menu = new Ext.menu.Menu({
-	 	id : _this.id + "menu",
-	    items: [
-	    ]
+	
+	this.credentialsMenu = new Ext.menu.Menu({
+		id : _this.id + "menu",
+		items : [
+		         _this.getAddCredentialMenu()
+         ] 
 	});
 	
+	var items  = this.getMenuItems();
+	items.push('->');
+	items.push(this.getLoginButton());
+	
 	var tb = Ext.create('Ext.toolbar.Toolbar', {
-		cls : 'exiSAXSMenuToolBar',
+		cls : 'mainMenu',
 		listeners : {
 			afterrender : function(component, eOpts) {
-						_this.init();
-			} },
-		items : [ {
-				text : '<span style="color:white">Prepare Experiment</span>',
-				cls : 'exiSAXSMenuToolBar',
-				menu : _this.getPreparationMenu()
-			},{
-					text : '<span style="color:white">Data Explorer</span>',
-					cls : 'exiSAXSMenuToolBar',
-					menu : _this.getDataExplorerMenu()
-			}, 
-//			{
-//					text : '<span style="color:white">Data Reduction Tools</span>',
-//					cls : 'exiSAXSMenuToolBar',
-//					menu : _this.getDataReductionMenu()
-//			},
-			{
-				text : '<span style="color:white">Offline Data Analysis</span>',
-				cls : 'exiSAXSMenuToolBar',
-				menu : _this.getOnlineDataAnalisysMenu() 
-			},
-			{
-				text : '<span style="color:white">About</span>',
-				cls : 'exiSAXSMenuToolBar'
-			},
-			'->',
-	        {
-	            xtype    : 'textfield',
-	            name     : 'field1',
-	            emptyText: 'search macromolecule',
-	            listeners: {
-	                specialkey: function(field, e){
-	                    if (e.getKey() == e.ENTER) {
-	                      location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
-	                    }
-	                }
-	            }
-	        },
-			{
-				xtype : 'splitbutton',
-				text  : '<span style="color:white">log out</span>',
-				cls   : 'button_log_out',
-				icon  : "images/rsz_logout.png",
-				 menu : this.menu,
-				handler : function() {
-					location.hash = "/logout";
-				} 
-			}
-			
-			
-			
-			] });
-
+			} 
+		},
+		items : items
+		}
+	);
 	return tb;
-
 };

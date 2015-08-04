@@ -5,7 +5,7 @@ AuthenticationForm.prototype.show = function(){
 	this.window = Ext.create('Ext.window.Window', {
 	    title: 'Authentication',
 	    height: 250,
-	    closable :  exiSAXS.localExtorage.tokenManager.getTokens().length > 0,
+//	    closable :  EXI.localExtorage.tokenManager.getTokens().length > 0,
 	    width: 400,
 	    modal : true,
 	    layout: 'fit',

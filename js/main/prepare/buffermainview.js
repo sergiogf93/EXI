@@ -56,14 +56,6 @@ BufferMainView.prototype.getContainer = function() {
 
 
 BufferMainView.prototype.load = function() {
-	var _this = this;
-	this.panel.setLoading();
-	var manager = new ProposalUpdater(); 
-	manager.onSuccess.attach(function(sender, proposals){
-		_this.bufferGrid.load(ProposalManager.getBuffers());
-		_this.panel.setLoading(false);
-	});
-	manager.get();
-	
+	this.bufferGrid.load(EXI.proposalManager.getBuffers());
 	this.panel.setTitle("Buffers");
 };

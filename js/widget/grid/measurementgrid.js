@@ -237,7 +237,7 @@ MeasurementGrid.prototype.load = function(data) {
 
 MeasurementGrid.prototype.loadExperiment = function(experiment) {
 	this.experimentList = new ExperimentList([ experiment ]);
-	var data = this._prepareData(this.experimentList.getMeasurementsNotCollected(), this.experimentList);
+	var data = this._prepareData(this.experimentList.getMeasurements(), this.experimentList);
 	this.load(data);
 };
 
@@ -247,7 +247,7 @@ MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
 	for (var i = 0; i < measurements.length; i++) {
 		var measurement = measurements[i];
 		var specimen = experiments.getSampleById(measurement.specimenId);
-		var buffer = ProposalManager.getBufferById(specimen.bufferId);
+		var buffer = EXI.proposalManager.getBufferById(specimen.bufferId);
 		measurement.buffer_acronym = buffer.acronym;
 		measurement.bufferId = buffer.bufferId;
 		measurement.volume = specimen.volume;
@@ -266,6 +266,7 @@ MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
 			measurement.status = "DONE";
 
 			try {
+				
 				if (measurement.run3VO.timeStart != null) {
 					if (measurement.run3VO.timeStart != "") {
 						measurement.miliseconds = moment(measurement.run3VO.timeStart).format("X");
@@ -367,7 +368,7 @@ MeasurementGrid.prototype.getColumns = function() {
 						width : 120,
 						renderer : function(val, y, sample) {
 							if (sample.data.bufferSampleplateposition3VO != null) {
-								return ProposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
+								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
 										+ sample.data.bufferSampleplate.slotPositionColumn + ", "
 										+ BUI.getSamplePlateLetters()[sample.data.bufferSampleplateposition3VO.rowNumber - 1] + "-"
 										+ sample.data.bufferSampleplateposition3VO.columnNumber + "]</span>";
@@ -439,8 +440,14 @@ MeasurementGrid.prototype.getColumns = function() {
 		}, {
 			text : 'Status',
 			dataIndex : 'status',
-			width : 50,
+//			width : 50,
+			flex : 1,
 			hidden : _this.isStatusColumnHidden,
+			renderer : function(val, record, r){
+				if (val != null){
+					return "<span style='font-weight: bold;'>" + val +"</span>"
+				}
+			}
 		}, {
 			text : 'Time',
 			dataIndex : 'time',
@@ -537,17 +544,12 @@ MeasurementGrid.prototype._getPlugins = function() {
 					/** Comments are always updatable* */
 					e.record.data.comments = e.newValues.comments;
 					
-					var adapter = new DataAdapter();
-					adapter.onSuccess.attach(function(sender, measurement) {
+					var onSuccess = (function(sender, measurement) {
 						_this.onMeasurementChanged.notify(measurement);
 						_this.grid.setLoading(false);
 					});
-					adapter.onError.attach(function() {
-						alert("Error");
-						_this.grid.setLoading(false);
-					});
 					_this.grid.setLoading();
-					adapter.saveMeasurement(e.record.data);
+					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.saveMeasurement(e.record.data);
 				}
 			}
 		}));
@@ -619,6 +621,11 @@ MeasurementGrid.prototype.getPanel = function() {
 		cls : 'border-grid',
 		viewConfig : {
 			stripeRows : true,
+			getRowClass : function(record, index, rowParams, store) {
+				if (record.data.status == "DONE") {
+					return 'green-row';
+				}
+			},
 			listeners : {
 				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 				},
@@ -630,34 +637,22 @@ MeasurementGrid.prototype.getPanel = function() {
 						if (record.data.measurementId != null) {
 							/** For testing * */
 							grid.setLoading("ISPyB: Removing measurement");
-							var adapter = new DataAdapter();
-							adapter.onSuccess.attach(function(sender, data) {
+							var onSuccess = (function(sender, data) {
 								grid.setLoading(false);
 								/**
 								 * We get and refresh experiment
 								 * because specimens has changed *
 								 */
-								var adapter2 = new DataAdapter();
-								adapter2.onSuccess.attach(function(sender, experiment) {
+								var onExperimentRetrievedSuccess =  (function(sender, experiment) {
 									_this.onRemoved.notify(experiment);
 									_this._showStatusBarReady('Ready');
 								});
-	//							if (_this.experiments.experiments[0].experimentId != null) {
-									adapter2.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
-									_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
-	//							}
+								EXI.getDataAdapter({onSuccess : onExperimentRetrievedSuccess}).saxs.experiment.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
+								_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
 							});
-	
-							adapter.onError.attach(function(sender, data) {
-								grid.setLoading(false);
-							});
-	
-							adapter.removeMeasurement(record.data);
+							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.removeMeasurement(record.data);
 						}
 					}
-					
-					
-					
 				}
 
 			}
@@ -712,19 +707,18 @@ MeasurementGrid.prototype._openAddMeasurementWindow = function(measurements, exp
 		width : 1200
 	});
 	wizardWidget.onFinished.attach(function(sender, result) {
-		var adapter = new DataAdapter();
 		_this.grid.setLoading();
 		wizardWidget.window.close();
-		adapter.onSuccess.attach(function(sender, data) {
+		var onSuccess = (function(sender, data) {
 			_this.onExperimentChanged.notify(data);
 			_this.grid.setLoading(false);
 			
 		});
 		wizardWidget.current.setLoading("ISPyB: Adding measurements");
-		adapter.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
 	});
 
-	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(ProposalManager.getMacromolecules(),ProposalManager.getBuffers(), {
+	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers(), {
 		noNext : true
 	}));
 };
@@ -814,17 +808,17 @@ MeasurementGrid.prototype._getMenu = function() {
 MeasurementGrid.prototype._sortBy = function(sort) {
 	var _this = this;
 	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, data) {
+	var onSuccess = (function(sender, data) {
 		_this.onExperimentChanged.notify(data);
 		_this.grid.setLoading(false);
 		// wizardWidget.window.close();
 	});
-	adapter.onError.attach(function(sender, data) {
-		_this.grid.setLoading(false);
-		alert("Oops, there was a problem");
-	});
+//	adapter.onError.attach(function(sender, data) {
+//		_this.grid.setLoading(false);
+//		alert("Oops, there was a problem");
+//	});
 	_this.grid.setLoading("Sorting");
-	adapter.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
 };
 
 

@@ -99,11 +99,11 @@ MeasurementCreatorStepWizardForm.prototype.getSingleMeasurementForm = function()
 				measurements.push(
 						{
 //							acronym : BIOSAXS.proposal.getMacromoleculeById(macromoleculesComboManager.getValue()).acronym,
-							acronym : ProposalManager.getMacromoleculeById(macromoleculesComboManager.getValue()).acronym,
+							acronym : EXI.proposalManager.getMacromoleculeById(macromoleculesComboManager.getValue()).acronym,
 							
 							macromoleculeId : macromoleculesComboManager.getValue(),
 							bufferId : buffersCombo.getValue(),
-							buffer_acronym :ProposalManager.getBufferById(buffersCombo.getValue()).acronym,
+							buffer_acronym :EXI.proposalManager.getBufferById(buffersCombo.getValue()).acronym,
 							concentration : Ext.getCmp(this.id + "conc").getValue(),
 							volumeToLoad : Ext.getCmp(this.id + "volume").getValue(),
 							exposureTemperature : Ext.getCmp(this.id + "seu").getValue(),
@@ -272,10 +272,10 @@ MeasurementCreatorStepWizardForm.prototype.getConcentrationMeasurementForm = fun
 			var dataToBeLoaded = [];
 			for ( var i = 1; i <= concentrationCount; i++) {
 				dataToBeLoaded.push({
-					acronym : ProposalManager.getMacromoleculeById(macromoleculeId).acronym,
+					acronym : EXI.proposalManager.getMacromoleculeById(macromoleculeId).acronym,
 					macromoleculeId : macromoleculeId,
 					bufferId : bufferId,
-					buffer_acronym : ProposalManager.getBufferById(bufferId).acronym,
+					buffer_acronym : EXI.proposalManager.getBufferById(bufferId).acronym,
 					concentration : i,
 					volumeToLoad : volume,
 					exposureTemperature : seu,
@@ -508,7 +508,7 @@ MeasurementCreatorStepWizardForm.prototype.getBuffers = function(measurements) {
 			record = buffers[buffer];
 			bufferSpecimens.push({
 				bufferId : record.bufferId,
-				buffer : ProposalManager.getBufferById(record.bufferId).acronym,
+				buffer : EXI.proposalManager.getBufferById(record.bufferId).acronym,
 				concentration : record.concentration,
 				volume : record.volume,
 				volumeToLoad : record.volumeToLoad,
@@ -562,7 +562,7 @@ MeasurementCreatorStepWizardForm.prototype.parseMeasurements = function(measurem
 		var macromolecule = "";
 		if (measurement.macromoleculeId != null) {
 			type = "Sample";
-			macromolecule = ProposalManager.getMacromoleculeById(measurement.macromoleculeId).acronym;
+			macromolecule = EXI.proposalManager.getMacromoleculeById(measurement.macromoleculeId).acronym;
 		}
 
 		parsed.push({
@@ -613,7 +613,7 @@ function SampleAutomaticPositionFactory(sampleParsed){
 };
 
 SampleAutomaticPositionFactory.prototype.getAvailablePlates = function() {
-	var plates = ProposalManager.getPlateByFlavour();
+	var plates = EXI.proposalManager.getPlateByFlavour();
 	var bufferPositions = [];
 	var samplePositions = [];
 	

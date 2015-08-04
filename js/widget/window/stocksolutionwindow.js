@@ -30,10 +30,15 @@ function StockSolutionWindow(args){
  
 StockSolutionWindow.prototype.save = function (){
 	var _this = this;
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, stockSolution){
-		_this.panel.close();
-		_this.onSaved.notify(stockSolution);
+	var onSuccess = (function(sender, stockSolution){
+		/** Updating proposal **/
+		var onSuccess2 = function(sender, proposals){
+			_this.panel.close();
+			_this.onSaved.notify(stockSolution);
+		};
+		_this.panel.setLoading("Updading proposal information");
+		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
+	
 	});
 	
 	if (this.form.getStockSolution().bufferId == null){
@@ -57,7 +62,8 @@ StockSolutionWindow.prototype.save = function (){
 	}
 	
 	this.panel.setLoading("ISPyB: saving stock solution");
-	adapter.saveStockSolution(this.form.getStockSolution());
+//	adapter.saveStockSolution(this.form.getStockSolution());
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(this.form.getStockSolution());
 	
 };
 

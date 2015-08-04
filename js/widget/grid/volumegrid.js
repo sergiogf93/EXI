@@ -3,6 +3,7 @@ function VolumeGrid() {
 }
 
 VolumeGrid.prototype.load= function(experiment) {
+	this.experiment = experiment;
 	this.store.loadData(this._prepareData(experiment));
 };
 
@@ -25,13 +26,14 @@ VolumeGrid.prototype.getPanel = function(data, title) {
 		width : 900,
 		store : this.store,
 		margin : '10 0 50 10',
-		tbar : [ {
-			text : 'Go to Shipment',
-			icon : '../images/plane-small.gif',
-			handler : function() {
-				window.location = BUI.getCreateShipmentList();
-			}
-		} ],
+//		tbar : [ 
+//         {
+//			text : 'Go to Shipment',
+//			icon : '../images/plane-small.gif',
+//			handler : function() {
+//				window.location = BUI.getCreateShipmentList();
+//			}
+//		} ],
 		viewConfig : {
 			stripeRows : true,
 			listeners : {
@@ -39,20 +41,17 @@ VolumeGrid.prototype.getPanel = function(data, title) {
 					if (grid.getGridColumns()[cellIndex].getId() == _this.id + 'buttonCreate') {
 						var stockSolutionWindow = new StockSolutionWindow();
 						/** On stock solution SAVED **/
-//						stockSolutionWindow.onSaved.attach(function(sender, stockSolution) {
-//							BIOSAXS.proposal.onInitialized.attach(function(sender, data) {
-//								_this.refresh(_this.experiment);
-//							});
-//							BIOSAXS.proposal.init();
-//						});
+						stockSolutionWindow.onSaved.attach(function(sender) {
+							/** Proposal should be refreshed **/
+							
+						});
 						var acronym = "ST";
 						if (record.data.macromoleculeId != null) {
-							acronym = acronym + "_" + ProposalManager.getMacromoleculeById(record.data.macromoleculeId).acronym;
+							acronym = acronym + "_" + EXI.proposalManager.getMacromoleculeById(record.data.macromoleculeId).acronym;
 						}
 						if (record.data.bufferId != null) {
-							acronym = acronym + "_" + ProposalManager.getBufferById(record.data.bufferId).acronym;
+							acronym = acronym + "_" + EXI.proposalManager.getBufferById(record.data.bufferId).acronym;
 						}
-						debugger
 						stockSolutionWindow.draw({
 							concentration : record.data.concentration,
 							macromoleculeId : record.data.macromoleculeId,
@@ -86,7 +85,7 @@ VolumeGrid.prototype.getPanel = function(data, title) {
 							} ]
 
 						}).show();
-						stockSolutionGrid.refresh(ProposalManager.getStockSolutionsBySpecimen(record.data.macromoleculeId, record.data.bufferId));
+						stockSolutionGrid.refresh(EXI.proposalManager.getStockSolutionsBySpecimen(record.data.macromoleculeId, record.data.bufferId));
 					}
 				}
 			}
@@ -143,7 +142,7 @@ VolumeGrid.prototype.getPanel = function(data, title) {
 				renderer : function(value, metaData, record, rowIndex, colIndex, store) {
 					var macromoleculeId = record.data.macromoleculeId;
 					var bufferId = record.data.bufferId;
-					var stockSolutions = ProposalManager.getStockSolutionsBySpecimen(macromoleculeId, bufferId);
+					var stockSolutions = EXI.proposalManager.getStockSolutionsBySpecimen(macromoleculeId, bufferId);
 					if (stockSolutions.length > 0) {
 //						icon : 'images/icon/testtube.png',
 						return "<div><span style='font-size:18px'>" + stockSolutions.length + "</span> x<img height='15px' src='images/icon/testtube.png'></div>";
@@ -153,6 +152,7 @@ VolumeGrid.prototype.getPanel = function(data, title) {
 			}, {
 				id : _this.id + 'buttonCreate',
 				text : '',
+				hidden : true,
 				tooltip : 'Create a new stock solution for shipping',
 				width : 170,
 				sortable : false,
@@ -190,7 +190,7 @@ VolumeGrid.prototype._prepareData = function(experiment) {
 			if (sample.macromoleculeId == null) {
 				sample.macromoleculeId = sample.macromolecule3VO.macromoleculeId;
 			}
-			key = ProposalManager.getMacromoleculeById(sample.macromoleculeId).acronym + " + " + experiment.getBufferById(sample.bufferId).acronym;
+			key = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId).acronym + " + " + experiment.getBufferById(sample.bufferId).acronym;
 			if (keys[key] == null) {
 				keys[key] = {
 					macromoleculeId : sample.macromoleculeId,

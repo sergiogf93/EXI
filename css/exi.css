@@ -1,7 +1,11 @@
 .exi-top-bar{
     background-color: #F5F5F5;
-   
 }
+
+.green-row{
+	 background-color: #BCF5A9;
+}
+
 .btn-red{
 	border : solid 1px #8a0000;
 	border-radius : 3px;
@@ -53,17 +57,6 @@
 }
 
 
-.exiSAXSMenuToolBar{
-	background-color: #207a7a;
-	border-color: #207a7a;
-	color : #fff;
-}
-
-.button_log_out  {
-	border-color: #207a7a;
-	background-color: #207a7a;
-	color : black;
-}
 
 
 

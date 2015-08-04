@@ -89,6 +89,7 @@ MacromoleculeGrid.prototype.edit = function(macromolecule) {
 	window.onSave.attach(function(sender) {
 //		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
 //		_this.onMacromoleculesChanged.notify();
+		_this.store.loadData(EXI.proposalManager.getMacromolecules());
 	});
 	window.draw(macromolecule);
 };
@@ -184,7 +185,7 @@ MacromoleculeGrid.prototype.getColumns = function() {
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var rec = grid.getStore().getAt(rowIndex);
-                    _this.edit(ProposalManager.getMacromoleculeById(rec.get('macromoleculeId')));
+                    _this.edit(EXI.proposalManager.getMacromoleculeById(rec.get('macromoleculeId')));
                 }
             }]
         });
@@ -258,11 +259,11 @@ MacromoleculeGrid.prototype.getPanel = function(macromolecules) {
 			stripeRows : true,
 			listeners : {
 				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-					_this.edit(ProposalManager.getMacromoleculeById(record.data.macromoleculeId));
+					_this.edit(EXI.proposalManager.getMacromoleculeById(record.data.macromoleculeId));
 				},
 				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 					if (grid.getGridColumns()[cellIndex].getId() == _this.id + 'buttonEditMacromolecule') {
-						_this.edit(ProposalManager.getMacromoleculeById(record.data.macromoleculeId));
+						_this.edit(EXI.proposalManager.getMacromoleculeById(record.data.macromoleculeId));
 					}
 					if (grid.getGridColumns()[cellIndex].getId() == _this.id + 'buttonRemoveMacromolecule') {
 						BUI.showBetaWarning();

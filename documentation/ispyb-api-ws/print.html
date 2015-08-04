@@ -45,6 +45,20 @@ function init(target, items){
 				a.setAttribute("style", "color:black;background-color:#F5F6CE;border:1px solid black;");
 			}
 		}
+
+		if (item.queryParams != null){
+			var methodNodeSpace = document.createElement("br");
+			a.appendChild(methodNodeSpace);
+			for ( var i in item.queryParams) {
+				var methodNode = document.createElement("span");
+				methodNode.setAttribute("style", "color:gray; font-size:9px;");
+				methodNode.appendChild(document.createTextNode("@" + item.queryParams[i]));
+				a.appendChild(methodNode);
+				var methodNodeSpace = document.createElement("br");
+				a.appendChild(methodNodeSpace);
+				
+			}
+		}
 		 
 		node.appendChild(a);
 		
@@ -72,6 +86,7 @@ function init(target, items){
 	}
 	document.getElementById(target).appendChild(ul);
 }
+
 
 init("ws_tree", getData(getProposalChildren()));
 </script>
