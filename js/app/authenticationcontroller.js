@@ -12,21 +12,22 @@ function AuthenticationManager(){
 AuthenticationManager.prototype.login = function(user, password, url){
 	var _this = this;
 	var fn = function onSuccess(sender, data) {
-		debugger
 		_this.onSuccess.notify({
 			user : user,
 			roles : data.roles,
-			token : data.cookie,
+			token : data.token,
 			url : url
 	});
 	};
 		
-	EXI.getDataAdapter().proposal.authentication.onError.attach(function(sender, data) {
-		Ext.Msg.alert('Failed', "Error on authentication");
+	var err = (function(sender, data) {
+		debugger
+		EXI.showError("Permission denied");
 	});
-	debugger
+	
 	EXI.getDataAdapter({
-		onSuccess :fn
+		onSuccess :fn,
+		onError :err
 	}).proposal.authentication.authenticate(user, password, url);
 	
 	

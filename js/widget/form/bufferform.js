@@ -4,6 +4,7 @@
  * #onRemoveAdditive
  */
 function BufferForm(args) {
+	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
 	if (args != null) {
@@ -20,12 +21,12 @@ function BufferForm(args) {
 }
 
 BufferForm.prototype.getBuffer = function() {
-	this.buffer["name"] = Ext.getCmp("buffer_name").getValue();
-	this.buffer["acronym"] = Ext.getCmp("buffer_acronym").getValue();
-	this.buffer["comments"] = Ext.getCmp("buffer_comments").getValue();
-	this.buffer["ph"] = Ext.getCmp("buffer_ph").getValue();
-	this.buffer["composition"] = Ext.getCmp("buffer_composition").getValue();
-	this.buffer["proposalId"] = Ext.getCmp("proposalIdCombo").getValue();
+	this.buffer["name"] = Ext.getCmp(this.id + "buffer_name").getValue();
+	this.buffer["acronym"] = Ext.getCmp(this.id + "buffer_acronym").getValue();
+	this.buffer["comments"] = Ext.getCmp(this.id + "buffer_comments").getValue();
+	this.buffer["ph"] = Ext.getCmp(this.id + "buffer_ph").getValue();
+	this.buffer["composition"] = Ext.getCmp(this.id + "buffer_composition").getValue();
+	this.buffer["proposalId"] = Ext.getCmp(this.id + "proposalIdCombo").getValue();
 	return this.buffer;
 };
 
@@ -33,17 +34,18 @@ BufferForm.prototype.load = function(buffer) {
 	this.buffer = buffer;
 	
 	if (buffer != null){
-		Ext.getCmp("buffer_name").setValue(this.buffer.name);
-		Ext.getCmp("buffer_acronym").setValue(this.buffer.acronym);
-		Ext.getCmp("buffer_comments").setValue(this.buffer.comments);
-		Ext.getCmp("buffer_ph").setValue(this.buffer.ph);
-		Ext.getCmp("buffer_composition").setValue(this.buffer.composition);
+		Ext.getCmp(this.id + "buffer_name").setValue(this.buffer.name);
+		Ext.getCmp(this.id + "buffer_acronym").setValue(this.buffer.acronym);
+		Ext.getCmp(this.id + "buffer_comments").setValue(this.buffer.comments);
+		Ext.getCmp(this.id + "buffer_ph").setValue(this.buffer.ph);
+		Ext.getCmp(this.id + "buffer_composition").setValue(this.buffer.composition);
 	}
 	
 		if (this.buffer != null){
 			if (this.buffer.proposalId != null){
-				Ext.getCmp("proposalIdCombo").setValue(this.buffer.proposalId);
-				Ext.getCmp("proposalIdCombo").disable();
+				          
+				Ext.getCmp(this.id + "proposalIdCombo").setValue(this.buffer.proposalId);
+				Ext.getCmp(this.id + "proposalIdCombo").disable();
 			}
 		}
 };
@@ -66,14 +68,14 @@ BufferForm.prototype._getTopPanel = function() {
 //				defaultType : 'textfield',
 				items : [ {
 					xtype: 'requiredtextfield',
-					id : 'buffer_name',
+					id : this.id + 'buffer_name',
 					fieldLabel : 'Name',
 					name : 'name',
 					width : 300
 //					value : this.buffer.name 
 					}, {
 						xtype: 'requiredtextfield',
-					id : 'buffer_acronym',
+					id : this.id + 'buffer_acronym',
 					fieldLabel : 'Acronym',
 					maskRe:/[a-zA-Z0-9]+/,
 					name : 'acronym',
@@ -86,7 +88,7 @@ BufferForm.prototype._getTopPanel = function() {
 			defaultType : 'textfield',
 			margin : '0 0 0 10',
 			items : [ {
-				id : 'buffer_ph',
+				id : this.id + 'buffer_ph',
 				fieldLabel : 'pH',
 				name : 'ph',
 //				value : this.buffer.ph,
@@ -106,7 +108,7 @@ BufferForm.prototype._getTopPanel = function() {
 				{
 //					              xtype: 'searchfield',
 					              fieldLabel: 'Composition',
-					              id : 'buffer_composition',
+					              id : this.id + 'buffer_composition',
 					              name: 'composition',
 					              width : 300
 					          }
@@ -115,56 +117,55 @@ BufferForm.prototype._getTopPanel = function() {
 				] } ] };
 };
 
-BufferForm.prototype.getPanel = function() {
-	
-	this.panel = Ext.createWidget({
-		xtype : 'container',
-		layout : 'vbox',
-		height : this.height,
-		width : this.width,
-		style : {
-			padding : '10px' },
-		fieldDefaults : {
-			labelAlign : 'left',
-			labelWidth : 50
 
-		},
+BufferForm.prototype.getToolBar = function() {
+	var _this = this;
+	return [
+	        {
+	            text: 'Save',
+	            width : 100,
+	            handler : function(){
+	            	_this.panel.setLoading();
+	            	var onSuccess = (function(sender){
+	            		_this.panel.setLoading(false);
+	            		EXI.getDataAdapter().proposal.proposal.update();
+	            	});
+	            	EXI.getDataAdapter({ onSuccess : onSuccess}).saxs.buffer.saveBuffer(_this.getBuffer());
+	            }
+	        }
+	];
+};
+
+BufferForm.prototype.getPanel = function() {
+	var _this =this;
+	this.panel = Ext.create('Ext.panel.Panel', {
+		layout : 'vbox',
+		buttons : this.getToolBar(),
+		cls : 'border-grid',
+//		margin : '10 0 0 20',
+		layout : 'vbox',
 		items : [ 
-		           BIOSAXS_COMBOMANAGER.getComboProposal(), 
-		          this._getTopPanel(), {
-						id : 'buffer_comments',
-						xtype : 'textareafield',
-						name : 'comments',
-						fieldLabel : 'Comments',
-						width : '100%',
-						height : 100
-//						value : buffer.comments 
-					}
+		         {
+						xtype : 'container',
+						margin : '10 0 0 20',
+						layout : 'vbox',
+						items : [ 
+										BIOSAXS_COMBOMANAGER.getComboProposal({id : _this.id + "proposalIdCombo" ,labelWidth : 100}), 
+										this._getTopPanel(), 
+		          						{
+											id : this.id + 'buffer_comments',
+											xtype : 'textareafield',
+											name : 'comments',
+											fieldLabel : 'Comments',
+											width : 600 ,
+											height : 80
+										}
+						]
+		         }
 		
-		          ] 
+		         ] 
 		}
 	);
 	return this.panel;
 };
-
-BufferForm.prototype.input = function() {
-	return {
-		buffer : {
-			"bufferId" : 422,
-			"proposalId" : 10,
-			"safetyLevelId" : null,
-			"name" : "B1",
-			"acronym" : "B1",
-			"ph" : null,
-			"composition" : null,
-			"bufferhasadditive3VOs" : [],
-			"comments" : null } };
-};
-
-BufferForm.prototype.test = function(targetId) {
-	var bufferForm = new BufferForm();
-	var panel = bufferForm.getPanel(bufferForm.input().buffer);
-	panel.render(targetId);
-};
-
 

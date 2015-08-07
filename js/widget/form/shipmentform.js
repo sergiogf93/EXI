@@ -23,8 +23,8 @@ function ShipmentForm(args) {
 
 ShipmentForm.prototype.fillStores = function() {
 	this.panel.setLoading("Loading Labcontacts from database");
-	this.labContactForSendingStore.loadData(ProposalManager.getLabcontacts(), false);
-	this.labContactForReturnStore.loadData(ProposalManager.getLabcontacts(), false);
+	this.labContactForSendingStore.loadData(EXI.proposalManager.getLabcontacts(), false);
+	this.labContactForReturnStore.loadData(EXI.proposalManager.getLabcontacts(), false);
 	this.panel.setLoading(false);
 	if (this.shipment != null) {
 		this.setShipment(this.shipment);
@@ -71,14 +71,11 @@ ShipmentForm.prototype._saveShipment = function() {
 		comments : Ext.getCmp(_this.id + "comments").getValue()
 	};
 
-	var dataAdapter = new DataAdapter();
-	dataAdapter.onSuccess.attach(function(sender, shipment) {
+	var onSuccess = (function(sender, shipment) {
 		_this.panel.setLoading(false);
+		_this.onSaved.notify(shipment);
 	});
 
-	dataAdapter.onError.attach(function(sender, error) {
-		_this.onError.notify(error);
-	});
 
 	/** Cheking params **/
 	if (json.name == "") {
@@ -97,7 +94,7 @@ ShipmentForm.prototype._saveShipment = function() {
 	}
 	
 	this.panel.setLoading();
-	dataAdapter.saveShipment({
+	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveShipment({
 			shippingId : shippingId,
 			name : Ext.getCmp(_this.id + "shippingName").getValue(),
 			status : Ext.getCmp(_this.id + "shippingStatus").getValue(),
@@ -185,7 +182,7 @@ ShipmentForm.prototype.getPanel = function() {
 	if (this.panel == null) {
 		this.panel = Ext.create('Ext.form.Panel', {
 			bodyPadding : 10,
-			width : 600,
+//			width : 600,
 			cls : 'border-grid',
 //			border : 1,
 			items : [ 

@@ -13,7 +13,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 			/** Load panel * */
 			EXI.addNavigationPanel(listView);
 			/** Load data * */
-			listView.store.loadData(data);
+			listView.load(data);
 			EXI.setLoadingNavigationPanel(false);
 		});
 		
@@ -44,6 +44,19 @@ SAXSExiController.prototype.routeNavigation = function() {
 			var adapter = loadNavigationPanel(listView);
 			adapter.proposal.session.getSessions();
 		}
+		
+		if (this.params['navigation'] == "buffer") {
+			EXI.clearNavigationPanel();
+			EXI.setLoadingNavigationPanel(true);
+			var listView = new BufferListView();
+			listView.onSelect.attach(function(sender, selected) {
+				location.hash = "/buffer/" + selected[0].bufferId + "/main";
+			});
+			EXI.addNavigationPanel(listView);
+			listView.load(EXI.proposalManager.getBuffers());
+			EXI.setLoadingNavigationPanel(false);
+			
+		}
 
 		if (this.params['navigation'] == "shipping") {
 			var listView = new ShippingListView();
@@ -53,13 +66,22 @@ SAXSExiController.prototype.routeNavigation = function() {
 			});
 			var adapter = loadNavigationPanel(listView);
 			adapter.proposal.shipping.getShippings();
+			
 		}
 
 		if (this.params['navigation'] == "experiment") {
 			var listView = new ExperimentListView();
 			/** When selected move to hash * */
 			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
+				if (selected[0].experimentType == "HPLC"){
+					location.hash = "/experiment/hplc/" + selected[0].experimentId + "/main";
+				}
+				if ((selected[0].experimentType == "STATIC")||(selected[0].experimentType == "CALIBRATION")){
+					location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
+				}
+				if (selected[0].experimentType == "TEMPLATE"){
+					location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
+				}
 			});
 			var adapter = loadNavigationPanel(listView);
 			adapter.saxs.experiment.getExperiments();
@@ -115,6 +137,21 @@ SAXSExiController.prototype.routeExperiment = function() {
 		});
 
 	}).enter(this.setPageBackground);
+	
+	Path.map("#/experiment/hplc/:experimentId/main").to(function() {
+		var mainView = new HPLCMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['experimentId']);
+		/** Selecting data collections from experiment * */
+		mainView.onSelect.attach(function(sender, element) {
+			EXI.localExtorage.selectedSubtractionsManager.append(element);
+		});
+		mainView.onDeselect.attach(function(sender, element) {
+			EXI.localExtorage.selectedSubtractionsManager.remove(element);
+		});
+
+	}).enter(this.setPageBackground);
+	
 
 	/** Loading Experiments * */
 	Path.map("#/experiment/:key/:value/main").to(function() {
@@ -177,8 +214,7 @@ SAXSExiController.prototype.routeTool = function() {
 SAXSExiController.prototype.routeDataCollection = function() {
 	Path.map("#/datacollection/:key/:value/main").to(function() {
 		EXI.setLoadingMainPanel();
-		var adapter = EXI.getDataAdapter();
-		adapter.onSuccess.attach(function(sender, data) {
+		var onSuccess = (function(sender, data) {
 			var mainView = new DataCollectionMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load(data);
@@ -191,7 +227,7 @@ SAXSExiController.prototype.routeDataCollection = function() {
 				EXI.localExtorage.selectedSubtractionsManager.remove(element);
 			});
 		});
-		adapter.getDataCollectionsByKey(this.params['key'], this.params['value']);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 
 	}).enter(this.setPageBackground);
 
@@ -232,23 +268,29 @@ SAXSExiController.prototype.routeTool = function() {
 };
 
 SAXSExiController.prototype.routePrepare = function() {
-	Path.map("#/prepare/designer/main").to(function() {
-		var mainView = new ExperimentDesignerMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load();
-	}).enter(this.setPageBackground);
+//	Path.map("#/prepare/designer/main").to(function() {
+//		var mainView = new ExperimentDesignerMainView();
+//		EXI.addMainPanel(mainView);
+//		mainView.load();
+//	}).enter(this.setPageBackground);
 
-	Path.map("#/prepare/buffer/main").to(function() {
+//	Path.map("#/prepare/buffer/main").to(function() {
+//		var mainView = new BufferMainView();
+//		EXI.addMainPanel(mainView);
+//		mainView.load();
+//	}).enter(this.setPageBackground);
+	
+	Path.map("#/buffer/:bufferId/main").to(function() {
+		debugger
 		var mainView = new BufferMainView();
 		EXI.addMainPanel(mainView);
-		mainView.load();
+		mainView.load(this.params['bufferId']);
 	}).enter(this.setPageBackground);
 
 	Path.map("#/shipping/:shippingId/main").to(function() {
 		var mainView = new ShippingMainView();
-		var shippindId = this.params['shippingId'];
 		EXI.addMainPanel(mainView);
-		mainView.load(shippindId);
+		mainView.load(this.params['shippingId']);
 	}).enter(this.setPageBackground);
 
 	Path.map("#/prepare/stocksolution/main").to(function() {
@@ -260,7 +302,6 @@ SAXSExiController.prototype.routePrepare = function() {
 	Path.map("#/prepare/macromolecule/main").to(function() {
 		var mainView = new MacromoleculeMainView();
 		EXI.addMainPanel(mainView);
-		debugger
 		mainView.load();
 	}).enter(this.setPageBackground);
 
@@ -269,6 +310,27 @@ SAXSExiController.prototype.routePrepare = function() {
 		EXI.addMainPanel(mainView);
 		mainView.load();
 	}).enter(this.setPageBackground);
+	
+	Path.map("#/prepare/shipment").to(function() {
+		var _this = this;
+		var shipmentForm = new ShipmentForm({
+			creationMode : true,
+			showTitle : false
+		});
+		shipmentForm.onSaved.attach(function(sender, shipment) {
+			location.hash = "/shipping/" + shipment.shippingId + "/main";
+			window.close();
+		});
+		var window = Ext.create('Ext.window.Window', {
+			title : 'New Shipment',
+			height : 600,
+			width : 800,
+			modal : true,
+			layout : 'fit',
+			items : [ shipmentForm.getPanel() ]
+		}).show();
+	}).enter(this.setPageBackground);
+	
 
 	Path.map("#/prepare/designer").to(
 			function() {
@@ -280,7 +342,7 @@ SAXSExiController.prototype.routePrepare = function() {
 					wizardWidget.window.close();
 					EXI.setLoading();
 					var onSuccess = (function(sender, experiment) {
-						location.hash = "/experiment/experimentId/" + experiment.experimentId + "/main";
+						location.hash = "/experiment/templateId/" + experiment.experimentId + "/main";
 					});
 					wizardWidget.current.setLoading("ISPyB: Creating experiment");
 					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data);

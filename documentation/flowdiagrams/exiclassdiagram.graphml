@@ -19,7 +19,7 @@
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="171.0" width="196.0" x="-112.5" y="-95.015625"/>
+          <y:Geometry height="171.0" width="196.0" x="987.0734479945647" y="-287.67284071130103"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="25.7216796875" x="85.13916015625" y="3.0">Exi<y:LabelModel>
@@ -50,7 +50,7 @@ getDataAdapter
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="100.0" x="760.8750000000002" y="-191.2302496151231"/>
+          <y:Geometry height="28.0" width="100.0" x="1559.7421875" y="-224.7817051035704"/>
           <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="64.53125" x="17.734375" y="3.0">ExiSAXS<y:LabelModel>
@@ -213,7 +213,7 @@ setActiveProposal
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="134.0" width="155.0" x="289.0" y="430.984375"/>
+          <y:Geometry height="134.0" width="155.0" x="254.0" y="506.984375"/>
           <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="137.95458984375" x="8.522705078125" y="3.0">SAXSExiController<y:LabelModel>
@@ -261,7 +261,7 @@ routePrepare</y:MethodLabel>
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="28.0" width="155.0" x="462.0" y="430.984375"/>
+          <y:Geometry height="28.0" width="155.0" x="474.0" y="506.984375"/>
           <y:Fill color="#99CCFF" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="120.466796875" x="17.2666015625" y="3.0">MxExiController<y:LabelModel>
@@ -424,7 +424,7 @@ saveShipment</y:MethodLabel>
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="58.0" width="267.96875" x="760.8750000000002" y="506.984375"/>
+          <y:Geometry height="58.0" width="267.96875" x="946.5" y="506.984375"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="206.083984375" x="30.9423828125" y="3.0">ProposalDataAdapterGroup<y:LabelModel>
@@ -759,7 +759,7 @@ saveTemplate</y:MethodLabel>
       <data key="d5"/>
       <data key="d6">
         <y:UMLClassNode>
-          <y:Geometry height="68.0" width="255.9999999999999" x="772.8437500000002" y="130.96875"/>
+          <y:Geometry height="68.0" width="255.9999999999999" x="957.073447994565" y="210.984375"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="152.8271484375" x="51.58642578124994" y="3.0">DataAdapterFactory<y:LabelModel>
@@ -772,6 +772,48 @@ saveTemplate</y:MethodLabel>
           <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
             <y:AttributeLabel/>
             <y:MethodLabel/>
+          </y:UML>
+        </y:UMLClassNode>
+      </data>
+    </node>
+    <node id="n32">
+      <data key="d4"/>
+      <data key="d5"/>
+      <data key="d6">
+        <y:UMLClassNode>
+          <y:Geometry height="227.8539884902168" width="333.16298657191965" x="462.0" y="210.984375"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="13" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="custom" textColor="#000000" visible="true" width="132.34326171875" x="100.40986242658482" y="3.0">ProposalManager<y:LabelModel>
+              <y:SmartNodeLabelModel distance="4.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="-0.03703090122767855" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:UML clipContent="true" constraint="" omitDetails="false" stereotype="" use3DEffect="true">
+            <y:AttributeLabel/>
+            <y:MethodLabel>get
+getSessions
+getBufferColors
+getLabcontacts
+getPlateTypeById
+getPlateTypes
+getPlateByFlavour
+update
+getBufferById
+getMacromoleculeById
+getMacromoleculeByAcronym
+getStockSolutionById
+getBuffers
+getMacromolecules
+getProposals
+getProposalById
+getStockSolutions
+getStockSolutionsBySpecimen
+getUnpackedStockSolutions
+getStockSolutionsByDewarId
+</y:MethodLabel>
           </y:UML>
         </y:UMLClassNode>
       </data>
@@ -1260,13 +1302,33 @@ saveTemplate</y:MethodLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e44" source="n31" target="n17">
+    <edge id="e44" source="n0" target="n31">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="900.8437500000002" y="504.3948346390855"/>
-          </y:Path>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="plain"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e45" source="n0" target="n32">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="plain"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e46" source="n31" target="n17">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="diamond" target="none"/>
           <y:BendStyle smoothed="false"/>

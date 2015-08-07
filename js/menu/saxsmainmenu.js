@@ -13,7 +13,6 @@ function SAXSMainMenu() {
 SAXSMainMenu.prototype.getMenuItems = function() {
 	return [{
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
-				disabled : false,
 				cls : 'ExiSAXSMenuToolBar',
 				menu : this.getPreparationMenu() 
 		}, {
@@ -21,28 +20,57 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				cls : 'ExiSAXSMenuToolBar',
 				menu : this.getDataExplorerMenu() 
 		},
-	//			{
-//	//					text : '<span style="color:white">Data Reduction Tools</span>',
-//	//					cls : 'ExiSAXSMenuToolBar',
-//	//					menu : _this.getDataReductionMenu()
-//	//			},
-	{
-		text : '<span style="color:white">Offline Data Analysis</span>',
-		cls : 'ExiSAXSMenuToolBar',
-		menu : this.getOnlineDataAnalisysMenu() }, {
-		text : '<span style="color:white">About</span>',
-		cls : 'ExiSAXSMenuToolBar' }, '->', {
-		xtype : 'textfield',
-		name : 'field1',
-		emptyText : 'search macromolecule',
-		listeners : {
-			specialkey : function(field, e) {
-				if (e.getKey() == e.ENTER) {
-					location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
-				}
-			} } }
+		{
+			text : '<span style="color:white">Offline Data Analysis</span>',
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getOnlineDataAnalisysMenu() 
+		}, 
+		{
+			text : '<span style="color:white">About</span>',
+			cls : 'ExiSAXSMenuToolBar' 
+		}, 
+		'->', 
+		{
+			xtype : 'textfield',
+			name : 'field1',
+			emptyText : 'search macromolecule',
+			listeners : {
+				specialkey : function(field, e) {
+					if (e.getKey() == e.ENTER) {
+						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
+					}
+				} 
+			} 
+	}
+	];
+};
 
-	]
+SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
+	var _this = this;
+	function onItemCheck(item, checked) {
+		if (item.text == "Create a new Shipment") {
+			location.hash = "/prepare/shipment";
+		}
+		if (item.text == "Shipments") {
+			location.hash = "/shipping/nav";
+		}
+		
+	}
+
+	return Ext.create('Ext.menu.Menu', {
+		items : [ 
+	          {
+				text : 'Create a new Shipment',
+				icon : 'images/icon/macromolecule.png',
+				handler : onItemCheck 
+			}, 
+			{
+				text : 'Shipments',
+				icon : 'images/icon/buffer.jpg',
+				handler : onItemCheck 
+			} 
+
+		] });
 };
 
 SAXSMainMenu.prototype.getPreparationMenu = function() {
@@ -52,7 +80,8 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 			location.hash = "/prepare/macromolecule/main";
 		}
 		if (item.text == "Buffers") {
-			location.hash = "/prepare/buffer/main";
+//			location.hash = "/prepare/buffer/main";
+			location.hash = "/buffer/nav";
 		}
 
 		if (item.text == "Stock Solutions") {
@@ -73,69 +102,68 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 	}
 
 	return Ext.create('Ext.menu.Menu', {
-		items : [ {
-			text : 'Macromolecules',
-			//				checked : false,
-			icon : 'images/icon/macromolecule.png',
-			//			group : 'theme',
-			handler : onItemCheck }, {
-			text : 'Buffers',
-			//				group : 'theme',
-			icon : 'images/icon/buffer.jpg',
-			//				checked : false,
-			handler : onItemCheck }, "-", {
-			text : 'Stock Solutions',
-			//				group : 'theme',
-			icon : 'images/icon/testtube.png',
-			//				checked : false,
-			handler : onItemCheck }
-
-		, {
-			text : 'Sample Tracking',
-			//				checked : false,
-			icon : 'images/icon/shipping.png',
-			//				group : 'theme',
-			handler : onItemCheck }, "-", {
-			text : 'Experiment Designer',
-			icon : 'images/icon/tool.png',
-			handler : onItemCheck }, {
-			text : 'My Experiments',
-			icon : 'images/icon/edit.png',
-			handler : onItemCheck }
+		items : [ 
+	          {
+				text : 'Macromolecules',
+				icon : 'images/icon/macromolecule.png',
+				handler : onItemCheck 
+			}, 
+			{
+				text : 'Buffers',
+				icon : 'images/icon/buffer.jpg',
+				handler : onItemCheck 
+			}, 
+			"-", 
+			{
+				text : 'Stock Solutions',
+				icon : 'images/icon/testtube.png',
+				handler : onItemCheck 
+			}, 
+			{
+				text : 'Sample Tracking',
+				icon : 'images/icon/shipping.png',
+//				handler : onItemCheck 
+				menu:this.getSampleTrackingMenu()
+			}, 
+			"-", 
+			{
+				text : 'Experiment Designer',
+				icon : 'images/icon/tool.png',
+				handler : onItemCheck 
+			}, 
+			{
+				text : 'My Experiments',
+				icon : 'images/icon/edit.png',
+				handler : onItemCheck 
+			}
 
 		] });
 };
 
 SAXSMainMenu.prototype.getDataExplorerMenu = function() {
-	var _this = this;
 	function onItemCheck(item, checked) {
 		if (item.text == "Sessions") {
 			location.hash = "/session/nav";
 		}
-		if (item.text == "Macromolecules") {
-			//			_this.onMacromoleculeClicked.notify();
-		}
 		if (item.text == "Experiments") {
-			//			_this.onExperimentClicked.notify();
 			location.hash = "/experiment/nav";
 		}
 	}
-
 	return Ext.create('Ext.menu.Menu', {
-		items : [ {
-			text : 'Sessions',
-			icon : 'images/icon/sessions.png',
-			checked : false,
-			group : 'theme',
-			checkHandler : onItemCheck }, {
-			text : 'Macromolecules',
-			checked : false,
-			group : 'theme',
-			checkHandler : onItemCheck }, {
-			text : 'Experiments',
-			checked : false,
-			group : 'theme',
-			checkHandler : onItemCheck } ] });
+		items : [ 
+			{
+				text : 'Sessions',
+				icon : 'images/icon/sessions.png',
+				handler : onItemCheck 
+			},
+			{
+				text : 'Experiments',
+				checked : false,
+				group : 'theme',
+				handler : onItemCheck 
+			} 
+		] 
+	});
 };
 
 SAXSMainMenu.prototype.getDataReductionMenu = function() {

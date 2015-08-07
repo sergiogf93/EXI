@@ -50,61 +50,13 @@ ExperimentHeaderForm.prototype.getToolBar = function() {
 	            })
 	        })
 	];
-//	return Ext.create('Ext.toolbar.Toolbar', {
-//		cls : 'exi-top-bar',
-//		height : 45,
-//	    items: [
-//	        {
-//	            text: 'Save',
-//	            width : 100,
-//	            handler : function(){
-//	            	var adapter = new DataAdapter();
-//	            	_this.panel.setLoading();
-//	            	adapter.onSuccess.attach(function(sender){
-//	            		_this.panel.setLoading(false);
-//	            		
-//	            	});
-//	            	adapter.saveExperiment(_this.experiment.experimentId, 
-//	            			Ext.getCmp(_this.id + "name").getValue(), 
-//	            			Ext.getCmp(_this.id + "comments").getValue());
-//	            }
-//	        },
-//	        '->',
-//	        Ext.create('Ext.button.Split', {
-//	            text: 'Download',
-//	            // handle a click on the button itself
-//	            handler: function() {
-//	                alert("The button was clicked");
-//	            },
-//	            menu: new Ext.menu.Menu({
-//	                items: [
-//	                    {text: 'For BsxCube on bm29', handler: function(){
-//	                    		console.log(new DataAdapter().getTemplateSourceFile(_this.experiment.experimentId, "bsxcube"));
-//	                    		window.open(new DataAdapter().getTemplateSourceFile(_this.experiment.experimentId, "bsxcube")); 
-//	                    	}
-//	                    },
-//	                    {text: 'For Becquerel on p12', handler: function(){
-//	                    		window.open(new DataAdapter().getTemplateSourceFile(_this.experiment.experimentId, "becquerel"));
-//	                    	}
-//	                    }
-//	                ]
-//	            })
-//	        })
-//	        
-//	    ]
-//	});
 };
 
 ExperimentHeaderForm.prototype.getPanel = function() {
 	this.panel = Ext.create('Ext.panel.Panel', {
 		layout : 'vbox',
 		buttons : this.getToolBar(),
-		style : {
-						borderColor : 'gray',
-						borderStyle : 'solid',
-						borderWidth : '1px',
-						backgroundColor : 'white' 
-		},
+		cls : 'border-grid',
 		items : [
 		         {
 				xtype : 'container',

@@ -6,7 +6,8 @@ function MainView() {
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
 	
-	this.bodyStyle = {"background-color":"#E6E6E6"};
+	this.bodyStyle = {"background-color":"#FAFAFA"};
+//	this.bodyStyle = {"background-color":"rgb(255,253,236)"};
 }
 
 MainView.prototype.getContainer = function() {

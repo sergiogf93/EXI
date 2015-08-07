@@ -23,9 +23,9 @@
 
 function StockSolutionGrid(args) {
 	this.id = BUI.id();
-	this.height = 100;
-	this.width = null;
-	this.minHeight = null;
+//	this.height = 100;
+//	this.width = null;
+//	this.minHeight = null;
 	this.tbar = true;
 
 	this.title = "Stock Solutions";
@@ -371,13 +371,15 @@ StockSolutionGrid.prototype._renderGrid = function() {
 	this.store.sort("stockSolutionId", "desc");
 
 	this.grid = Ext.create('Ext.grid.Panel', {
-		style : {
-			padding : 5
-		},
+//		style : {
+//			padding : 5
+//		},
+//		margin : 10,
+//		cls : 'defaultGridPanel',
 		title : this.title,
-		height : this.height,
-		width : this.width,
-		minWidth : this.minWidth,
+//		height : this.height,
+//		width : this.width,
+//		minWidth : this.minWidth,
 		selModel : selModel,
 		store : this.store,
 		columns : this._getColumns(),

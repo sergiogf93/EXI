@@ -320,7 +320,7 @@ MeasurementGrid.prototype.getColumns = function() {
 	var columns = [{
 			text : 'Order',
 			dataIndex : 'priority',
-			width : 50,
+			flex : 0.3,
 			hidden : _this.isPriorityColumnHidden,
 			sortable : true,
 			hidden : true
@@ -328,7 +328,7 @@ MeasurementGrid.prototype.getColumns = function() {
 		{
 			text : 'Run Number',
 			dataIndex : 'code',
-			width : 50,
+			flex : 0.5,
 			hidden : true,
 			sortable : true
 		},
@@ -339,33 +339,33 @@ MeasurementGrid.prototype.getColumns = function() {
 					{
 						text : '',
 						dataIndex : 'macromoleculeId',
-						width : 30,
+						flex : 1,
 						hidden : true,
 						sortable : true
 					},
 					{
 						text : 'Macromolecule',
 						dataIndex : 'acronym',
-						width : 80,
+						flex : 1,
 						sortable : true
 					},
 					{
 						text : 'Conc. ',
 						dataIndex : 'concentration',
-						width : 80,
+						flex : 1,
 						sortable : true
 					},
 					{
 						text : '',
 						dataIndex : 'bufferId',
-						width : 30,
+						flex : 1,
 						hidden : true,
 						sortable : true
 					},
 					{
 						text : 'Buffer',
 						dataIndex : 'buffer_acronym',
-						width : 120,
+						flex : 1,
 						renderer : function(val, y, sample) {
 							if (sample.data.bufferSampleplateposition3VO != null) {
 								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
@@ -378,7 +378,7 @@ MeasurementGrid.prototype.getColumns = function() {
 						sortable : true
 					}, {
 						text : 'Position',
-						width : 100,
+						flex : 1,
 						hidden : true,
 					} ]
 		},
@@ -388,20 +388,20 @@ MeasurementGrid.prototype.getColumns = function() {
 					{
 						text : 'Ex. Flow. time (s)',
 						dataIndex : 'extraFlowTime',
-						width : 100,
+						flex : 1,
 						hidden : true,
 					},
 					{
 						text : 'Exp. Temp.',
 						dataIndex : 'exposureTemperature',
-						width : 140,
+						flex : 1,
 						sortable : true,
 						editor : this._getEditor("exposureTemperature")
 					},
 					{
 						text : 'Vol. Load',
 						dataIndex : 'volumeToLoad',
-						width : 120,
+						flex : 0.5,
 						hidden : false,
 						editor : this._getEditor("volumeToLoad"),
 					},
@@ -410,32 +410,32 @@ MeasurementGrid.prototype.getColumns = function() {
 						dataIndex : 'volume',
 						hidden : true,
 						editor : this._getEditor("volume"),
-						width : 120,
+						flex : 1
 					},
 					{
 						text : 'Trans.',
 						dataIndex : 'transmission',
-						width : 120,
+						flex : 1,
 						editor : this._getEditor("transmission"),
 					},
 					{
 						text : 'Wait T.',
 						dataIndex : 'waitTime',
 						editor : this._getEditor("waitTime"),
-						width : 120,
+						flex : 0.5
 					},
 					{
 						text : 'Flow',
 						dataIndex : 'flow',
 						editor : this._getEditor("flow"),
-						width : 100,
+						flex : 0.3
 					},
 					{
 						text : 'Viscosity',
 						dataIndex : 'viscosity',
 						tooltip : 'The viscosity of a fluid is a measure of its resistance to gradual deformation by shear stress or tensile stress. For liquids, it corresponds to the informal notion of "thickness"',
 						editor : this._getEditor("viscosity"),
-						width : 160,
+						flex : 0.5
 					} ]
 		}, {
 			text : 'Status',
@@ -451,37 +451,37 @@ MeasurementGrid.prototype.getColumns = function() {
 		}, {
 			text : 'Time',
 			dataIndex : 'time',
-			width : 80,
+			flex : 1,
 			hidden : _this.isTimeColumnHidden,
 		}, {
 			text : 'Energy',
 			dataIndex : 'energy',
-			width : 100,
+			flex : 1,
 			hidden : true
 		}, {
 			text : 'Real Exp. Temp.(C)',
-			width : 100,
+			flex : 1,
 			dataIndex : 'expExposureTemperature',
 			hidden : true
 		}, {
 			text : 'Storage Temp.(C)',
-			width : 100,
+			flex : 1,
 			dataIndex : 'storageTemperature',
 			hidden : true
 		}, {
 			text : 'Time/Frame (s)',
-			width : 100,
+			flex : 1,
 			dataIndex : 'timePerFrame',
 			hidden : true
 		}, {
 			text : 'Radiation Relative',
 			dataIndex : 'radiationRelative',
-			width : 100,
+			flex : 1,
 			hidden : true
 		}, {
 			text : 'Radiation Absolute',
 			dataIndex : 'radiationAbsolute',
-			width : 100,
+			flex : 1,
 			hidden : true
 		}, {
 			text : 'Comments',

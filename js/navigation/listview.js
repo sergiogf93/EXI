@@ -2,7 +2,7 @@
  * Main class used for the west panel. Main purpose is the navigation
  */
 
-function NavigationListView(){
+function ListView(){
 	this.width = 250;
 	this.height = Ext.getBody().getHeight() - 215;
 
@@ -10,15 +10,20 @@ function NavigationListView(){
 	this.onSelect = new Event();
 }
 
-NavigationListView.prototype.getSorters = function(){
+ListView.prototype.getSorters = function(){
 	return {};
 };
 
-NavigationListView.prototype.load = function(data){
+ListView.prototype.getFilter = function(value){
+	return null;
+};
+
+ListView.prototype.load = function(data){
+	this.data = data;
 	this.store.loadData(data);
 };
 
-NavigationListView.prototype.getPanel = function(){
+ListView.prototype.getPanel = function(){
 	var _this =this;
 	this.store = Ext.create('Ext.data.Store', {
 	    fields:this.getFields(),
@@ -39,8 +44,36 @@ NavigationListView.prototype.getPanel = function(){
 	    width: this.width,
 	    height : this.height,
 	    multiSelect : true,
+	    dockedItems: [{
+	        xtype: 'toolbar',
+	        dock: 'bottom',
+	        cls : 'x-toolbar',
+	        height : 42,
+	        items: [
+	            {
+            xtype: 'textfield',
+            name: 'searchField',
+            hideLabel: true,
+            width: 200,
+            hidden : _this.getFilter() == null,
+            emptyText : 'Search...',
+            listeners : {
+    			'change' : function(field, e) {
+    						var value = field.getValue();
+    						if (value != ""){
+    							_this.store.filter(_this.getFilter(value));
+    						}
+    						else{
+    							_this.store.clearFilter(true);
+    							_this.load(_this.data);
+    						}
+    					} 
+            		} 
+	            }
+	        ]
+	    }],
 	    viewConfig : {
-	    	 emptyText: 'No items to display',
+	    	emptyText: 'No items to display',
 	    	enableTextSelection : true,
 	    	preserveScrollOnRefresh : true,
 			stripeRows : true
@@ -57,3 +90,5 @@ NavigationListView.prototype.getPanel = function(){
 	    });
 	return this.panel; 
 };
+
+

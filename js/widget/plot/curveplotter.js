@@ -81,11 +81,11 @@ CurvePlotter.prototype.render = function(url) {
 };
 
 CurvePlotter.prototype.loadMerge = function(subtractionIdList, from, to, scale) {
-	this.render(new DataAdapter().getFramesMergeURL(subtractionIdList, from, to, scale));
+	this.render(EXI.getDataAdapter().saxs.hplc.getFramesMergeURL(subtractionIdList, from, to, scale));
 };
 
 CurvePlotter.prototype.loadHPLCFrame = function(experimentId, frameNumber) {
-	this.render(new DataAdapter().getHPLCFramesScatteringURL(experimentId, frameNumber));
+	this.render(EXI.getDataAdapter().saxs.hplc.getHPLCFramesScatteringURL(experimentId, frameNumber));
 };
 
 

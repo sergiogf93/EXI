@@ -44,7 +44,7 @@ function HPLCMainView() {
 		interactionModel : {
 			'dblclick' : function(event, g, context) {
 				_this.selectedFrameNumber.push(g.lastx_);
-				_this.plotter.loadHPLCFrame(_this.experiment.experimentId, _this.selectedFrameNumber);
+				_this.plotter.loadHPLCFrame(_this.experimentId, _this.selectedFrameNumber);
 
 				_this.annotations.push({
 					series : g.selPoints_[0].name,
@@ -135,8 +135,7 @@ HPLCMainView.prototype.getSelected = function() {
 
 HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 	var _this = this;
-	var adapter = new DataAdapter();
-	adapter.onSuccess.attach(function(sender, data) {
+	var onSuccess = (function(sender, data) {
 		data = JSON.parse(data);
 		var zeroArray = [];
 		for (var i = 0; i < data.I0.length; i++) {
@@ -182,36 +181,25 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 
 	});
 
-	adapter.getHPLCOverviewByExperimentId(experimentId);
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.hplc.getHPLCOverviewByExperimentId(experimentId);
 };
 
-HPLCMainView.prototype.load = function(selected) {
-	var _this = this;
-
-	this.experiment = selected[0];
-	for (var i = 0; i < selected.length; i++) {
-		var experiment = selected[i];
+HPLCMainView.prototype.load = function(experimentId) {
+		var _this = this;
+		this.experimentId = experimentId;
 
 		this.grid.panel.setLoading();
 
-		var adapter = new DataAdapter();
-		/*** Trick for JS compiler **/
-		adapter.onSuccess.attach(function(sender, data) {
-
-			_this.panel.setTitle(experiment.name);
-			_this.grid.panel.setTitle(_this.getHeader(experiment.name, experiment.creationDate));
+		var onSuccess = (function(sender, data) {
+//			_this.panel.setTitle(data[0].name);
+//			_this.grid.panel.setTitle(_this.getHeader(data[0].name, data[0].creationDate));
 			_this.grid.load(data);
 			_this.grid.panel.setLoading(false);
 
 		});
-		adapter.onError.attach(function(sender, data) {
-			sender.grid.panel.setLoading(false);
-		});
 
-		adapter.getDataCollectionsByExperimentId(selected[i].experimentId);
-
-		this.loadHPLCGraph(experiment.experimentId);
-	}
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		this.loadHPLCGraph(experimentId);
 };
 
 /**
@@ -344,7 +332,6 @@ DygraphWidget.prototype.draw = function(data, colors, labels) {
 		labelsDivStyles : this.labelsDivStyles,
 		interactionModel : this.interactionModel,
 		underlayCallback : function(canvas, area, g) {
-			debugger
 			if (_this.ranges != null) {
 				for ( var key in _this.ranges) {
 					var bottom_left = g.toDomCoords(_this.ranges[key].start, -20);

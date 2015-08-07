@@ -1,9 +1,9 @@
-MacromoleculeListView.prototype.getPanel = NavigationListView.prototype.getPanel;
-MacromoleculeListView.prototype.load = NavigationListView.prototype.load;
+MacromoleculeListView.prototype.getPanel = ListView.prototype.getPanel;
+MacromoleculeListView.prototype.load = ListView.prototype.load;
 
 function MacromoleculeListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
-	NavigationListView.call(this);
+	ListView.call(this);
 }
 
 MacromoleculeListView.prototype.getRow = function(record){
@@ -11,6 +11,10 @@ MacromoleculeListView.prototype.getRow = function(record){
 		html = html + "<tr><td>Acronym:</td><td>" + record.data.acronym+ "</td></tr>";
 		html = html + "<tr><td>name:</td><td>" + record.data.name+ "</td></tr>";
 	return html + "</table>";
+};
+
+MacromoleculeListView.prototype.getFilter = function(value){
+	return [{property : "acronym", value : value, anyMacth : true}];
 };
 
 MacromoleculeListView.prototype.getColumns = function(){

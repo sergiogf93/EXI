@@ -208,8 +208,11 @@ ProposalManager.prototype.clear = function() {
 
 
 ProposalManager.prototype.getSessions = function() {
-	if (localStorage.getItem("sessions") == null) {
-		new ProposalUpdater().getSessions();
+	if (localStorage.getItem("sessions") == null){
+		var onSuccess= (function(sender, sessions){
+			localStorage.setItem("sessions", JSON.stringify(sessions));
+		});
+		EXI.getDataAdapter({async : false, onSuccess : onSuccess}).proposal.session.getSessions();
 	}
 	return JSON.parse(localStorage.getItem("sessions"));
 };

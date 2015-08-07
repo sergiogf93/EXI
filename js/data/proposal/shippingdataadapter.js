@@ -18,7 +18,5 @@ ShippingDataAdapter.prototype.getShipment = function(shippingId){
 };
 
 ShippingDataAdapter.prototype.saveShipment = function(shipment ){
-	var proposal = exiSAXS.localExtorage.tokenManager.getTokens()[0].user;
-	var url = ('/{0}/proposal/{2}/shipping/save'.format( ['%TOKEN%', '%PROPOSAL%', proposal]));
-	this.post(url, shipment);
+	this.post('/{token}/proposal/{proposal}/shipping/save', shipment);
 };

@@ -121,9 +121,6 @@ function ExperimentMainView() {
 	
 }
 
-ExperimentMainView.prototype.getHeader = function(beamlineName, startDate) {
-	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";
-};
 
 ExperimentMainView.prototype.getSelected = function() {
 	var selected = [];

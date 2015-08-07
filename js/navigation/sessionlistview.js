@@ -1,16 +1,21 @@
-SessionListView.prototype.getPanel = NavigationListView.prototype.getPanel;
+SessionListView.prototype.getPanel = ListView.prototype.getPanel;
+SessionListView.prototype.load = ListView.prototype.load;
 
 function SessionListView(){
 	this.sorters = [{property : 'sessionId', direction: 'DESC'}];
-	NavigationListView.call(this);
+	ListView.call(this);
 }
+
+SessionListView.prototype.getFilter = function(value){
+	return [{property : "startDate", value : value, anyMatch : true}];
+};
 
 SessionListView.prototype.getRow = function(record){
 	var html = "<table class='listView'>";
 	
 		if (record.data.startDate != null){
 			try{
-				html = html + "<tr><td>Date:</td><td style='font-weight:bold;'>" + moment(record.data.startDate).format("MMM Do YY") + "</td></tr>";
+				html = html + "<tr><td>Date:</td><td style='color:#207a7a;font-weight:bold;'>" + moment(record.data.startDate).format("MMM Do YY") + "</td></tr>";
 			}
 			catch(e){
 				html = html + "<tr><td>Date:</td><td>Format Error</td></tr>";

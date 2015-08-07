@@ -256,13 +256,13 @@ CaseGrid.prototype.edit = function(dewar) {
 							var adapter = new DataAdapter();
 							_this.panel.setLoading();
 							var dewar = caseForm.getDewar();
-							adapter.onSuccess.attach(function(sender, shipment) {
+							var onSuccess = (function(sender, shipment) {
 								_this.load(shipment);
 								window.close();
 								_this.panel.setLoading(false);
 							});
 							dewar["sessionId"] = dewar.firstExperimentId;
-							adapter.saveDewar(_this.shipment.shippingId, dewar);
+							EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
 						}
 					}, {
 						text : 'Cancel',

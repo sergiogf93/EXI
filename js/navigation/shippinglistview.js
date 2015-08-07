@@ -1,8 +1,9 @@
-ShippingListView.prototype.getPanel = NavigationListView.prototype.getPanel;
+ShippingListView.prototype.getPanel = ListView.prototype.getPanel;
+ShippingListView.prototype.load = ListView.prototype.load;
 
 function ShippingListView(){
 	this.sorters = [{property : 'sessionId', direction: 'DESC'}];
-	NavigationListView.call(this);
+	ListView.call(this);
 }
 
 ShippingListView.prototype.getRow = function(record){
@@ -12,13 +13,17 @@ ShippingListView.prototype.getRow = function(record){
 		html = html + "<tr><td>Type:</td><td>" + record.data.shippingType+ "</td></tr>";
 		if (record.data.creationDate != null){
 			try{
-				html = html + "<tr><td>Date:</td><td style='font-weight:bold;'>" + moment(record.data.creationDate).format("MMM Do YY") + "</td></tr>";
+				html = html + "<tr><td>Date:</td><td style='color:#207a7a;font-weight:bold;'>" + moment(record.data.creationDate).format("MMM Do YY") + "</td></tr>";
 			}
 			catch(e){
 				html = html + "<tr><td>Date:</td><td>Format Error</td></tr>";
 			}
 		}
 	return html + "</table>";
+};
+
+ShippingListView.prototype.getFilter = function(value){
+	return [{property : "creationDate", value : value, anyMatch : true}];
 };
 
 ShippingListView.prototype.getColumns = function(){

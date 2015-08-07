@@ -836,9 +836,13 @@ var BUI = {
 var BIOSAXS_COMBOMANAGER = {
 	getComboProposal : function(args) {
 		var labelWidth = null;
+		var id ='proposalIdCombo';
 		if (args != null){
 			if (args.labelWidth != null){
 				labelWidth = args.labelWidth;
+			}
+			if (args.id != null){
+				id = args.id;
 			}
 		}
 		var proposalStore = Ext.create('Ext.data.Store', {
@@ -847,7 +851,7 @@ var BIOSAXS_COMBOMANAGER = {
 
 		return Ext.create('Ext.form.ComboBox', {
 			fieldLabel : 'Proposal',
-			id : 'proposalIdCombo',
+			id : id,
 			store : proposalStore,
 			labelWidth : labelWidth,
 			queryMode : 'local',

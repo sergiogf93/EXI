@@ -38,6 +38,26 @@ DataAdapter.prototype.get = function(url){
 			  url: this.getUrl(connections[0], url),
 			  type: 'get',
 			  async : this.async,
+			  statusCode: {
+		            400 : function(){
+		                alert('400 : bad request');
+		            },
+		            401 : function(){
+		                EXI.setError('401 : Unauthorized. Your session is not valid or may have expired');
+		            },
+		            403 : function(){
+		                alert('403 : forbidden');
+		            },
+		            404 : function(){
+		                alert('404 : not found');
+		            },
+		            415 : function(){
+		                alert('415 : type not allowed');
+		            },
+		            500 : function(){
+		                alert('500 : internal server error');
+		            }
+		        },
 			  success: function(data){ 
 				  _this.onSuccess.notify(data);
 				  if (EXI != null){
@@ -45,6 +65,7 @@ DataAdapter.prototype.get = function(url){
 				  }
 			  },
 			  error: function(error){
+				  debugger
 				  _this.onError.notify(error);
 				   EXI.setError(error.responseText);
 			  }
@@ -99,14 +120,14 @@ DataAdapter.prototype.post = function(url, data){
 		  data: data,
 		  success: function(data){ 
 			  _this.onSuccess.notify(data);
-			  if (exiSAXS != null){
-				  exiSAXS.setLoading(false);
+			  if (EXI != null){
+				  EXI.setLoading(false);
 			  }
 		  },
 		  error: function(error){
 			  _this.onError.notify(error);
-			  if (exiSAXS != null){
-				  exiSAXS.setError(error);
+			  if (EXI != null){
+				  EXI.setError(error);
 			  }
 		  }
 	});

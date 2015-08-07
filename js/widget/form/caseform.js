@@ -59,21 +59,29 @@ function CaseForm(args) {
 
 CaseForm.prototype.saveStockSolution = function(stockSolution) {
 	var _this = this;
-	var adapter = new DataAdapter();
 	this.stockSolutionGrid.grid.setLoading();
-	adapter.onSuccess.attach(function(sender, stockSolution) {
-		var updater = new ProposalUpdater();
-		updater.onSuccess.attach(function(sender){
-			_this.stockSolutionGrid.load(ProposalManager.getStockSolutionsByDewarId(_this.dewar.dewarId));
+	var onSuccess = (function(sender, stockSolution) {
+//		var updater = new ProposalUpdater();
+//		updater.onSuccess.attach(function(sender){
+//			_this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutionsByDewarId(_this.dewar.dewarId));
+//			_this.stockSolutionGrid.grid.setLoading(false);
+//		});
+//		updater.get(true);
+		
+		var onSuccess2 = function(sender, proposals){
+			_this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutionsByDewarId(_this.dewar.dewarId));
 			_this.stockSolutionGrid.grid.setLoading(false);
-		});
-		updater.get(true);
+		};
+		_this.stockSolutionGrid.grid.setLoading("Updading proposal information");
+		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
+		
+		
 	});
-	adapter.onError.attach(function(sender, data) {
-		_this.stockSolutionGrid.grid.setLoading(false);
-		BUI.showError(data);
-	});
-	adapter.saveStockSolution(stockSolution);
+//	adapter.onError.attach(function(sender, data) {
+//		_this.stockSolutionGrid.grid.setLoading(false);
+//		BUI.showError(data);
+//	});
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
 };
 
 CaseForm.prototype.fillStores = function() {
@@ -92,7 +100,7 @@ CaseForm.prototype.fillStores = function() {
 
 CaseForm.prototype.refresh = function(dewar) {
 	this.setDewar(dewar);
-	this.stockSolutionGrid.load(ProposalManager.getStockSolutionsByDewarId(dewar.dewarId));
+	this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutionsByDewarId(dewar.dewarId));
 };
 
 CaseForm.prototype.getDewar = function() {
@@ -121,7 +129,7 @@ CaseForm.prototype.setDewar = function(dewar) {
 };
 
 CaseForm.prototype.getSessionCombo = function() {
-	this.sessionsCombo = BIOSAXS_COMBOMANAGER.getComboSessions(ProposalManager.getSessions(), {
+	this.sessionsCombo = BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {
 		labelWidth : 100,
 		margin : '5 0 00 0',
 		width : 450
@@ -220,23 +228,77 @@ CaseForm.prototype.getInformationPanel = function() {
 
 CaseForm.prototype.getPanel = function(dewar) {
 	this.dewar = dewar;
-	this.panel = Ext.createWidget({
-		xtype : 'container',
-		layout : 'vbox',
-		width : this.width,
-		border : 0,
-		items : [ {
-			items : {
-				xtype : "container",
-				layout : "vbox",
-				margin : "5 5 5 5",
-				items : [ 
-				          this.getInformationPanel(dewar), 
-				          this.stockSolutionGrid.getPanel() ]
-
-			}
-		} ]
-	});
+	this.panel =  Ext.createWidget('tabpanel',
+			{
+				plain : true,
+				style : {
+//					borderColor : 'gray',
+//					borderStyle : 'solid',
+//					borderWidth : '1px',
+					'background-color' : '#E6E6E6' 
+				},
+				items : [
+							{
+								tabConfig : {
+									title : 'Case',
+										bodyStyle : {"background-color":"#E6E6E6"},
+								},
+								items : [ {
+									xtype : 'container',
+									layout : 'fit',
+//									height : 700,
+									padding : 20,
+									margin : 10,
+									cls : 'defaultGridPanel',
+									
+									items : [ 
+									         	this.getInformationPanel(dewar)
+									]
+								}
+							
+								]
+							},
+							{
+								tabConfig : {
+									title : 'Stock Solutions'
+								},
+								items : [ {
+									xtype : 'container',
+									layout : 'fit',
+									minHeight : 200,
+									margin : 10,
+									style : {
+										borderColor : 'gray',
+										borderStyle : 'solid',
+										borderWidth : '1px',
+										'background-color' : 'white' 
+									},
+									items : [ 
+									         	this.stockSolutionGrid.getPanel()
+									]
+								}
+							
+								]
+							}
+		        ]
+			});
+//	this.panel = Ext.createWidget({
+//		xtype : 'container',
+//		layout : 'vbox',
+//		width : this.width,
+//		border : 0,
+//		items : [ {
+//			items : {
+//				xtype : "container",
+//				layout : "vbox",
+//				margin : "5 5 5 5",
+//				items : [ 
+//				          this.getInformationPanel(dewar), 
+//				          this.stockSolutionGrid.getPanel() ]
+//
+//			}
+//		} ]
+//	});
 
 	this.refresh(dewar);
 	return this.panel;
