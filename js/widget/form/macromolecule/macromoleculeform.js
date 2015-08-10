@@ -71,13 +71,15 @@ MacromoleculeForm.prototype._getButtons = function() {
 		handler : function() {
 			_this._save();
 		}
-	},{
-		text : 'Close',
-		handler : function() {
-			_this.onClose.notify();
-			
-		}
-	} ];
+	}
+//	,{
+//		text : 'Close',
+//		handler : function() {
+//			_this.onClose.notify();
+//			
+//		}
+//	}
+	];
 };
 
 /** It persits the macromolecule in the database **/
@@ -238,6 +240,15 @@ MacromoleculeForm.prototype._getItems = function() {
 				width : this.width - 100,
 				height : 100
 			} ];
+	
+	return  Ext.create('Ext.form.Panel', {
+		width : this.width,
+		height : this.height,
+//		margin : 10,
+//		border : 1,
+		items : this._getItems()
+//		buttons : this._getButtons()
+	});
 };
 
 MacromoleculeForm.prototype._getSymmetries = function() {
@@ -267,14 +278,18 @@ MacromoleculeForm.prototype._getSymmetries = function() {
 };
 
 MacromoleculeForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.form.Panel', {
-		width : this.width,
-		height : this.height,
-		margin : 10,
-//		border : 1,
-		defaultType : 'textfield',
-		items : this._getItems(),
-		buttons : this._getButtons()
+	this.panel =  Ext.create('Ext.panel.Panel', {
+		layout : 'hbox',
+		buttons : this._getButtons(),
+		cls : 'border-grid',
+		items : [
+		         {
+					xtype : 'container',
+					margin : '10 0 0 20',
+					layout : 'vbox',
+					items : this._getItems(),
+//					buttons : this._getButtons()
+		         }]
 	});
 	return this.panel;
 };
@@ -294,7 +309,7 @@ MacromoleculeForm.prototype._getField = function(fieldName) {
 
 
 /** It populates the form **/
-MacromoleculeForm.prototype.refresh = function(macromolecule) {
+MacromoleculeForm.prototype.load = function(macromolecule) {
 	this.macromolecule = macromolecule;
 	if (macromolecule != null){
 		this._populateField("name", macromolecule.name);

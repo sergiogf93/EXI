@@ -73,6 +73,14 @@
 	font-size: 25px;
 }
 
+.mxTitlePanel{
+	background-color: #0B0B61;
+	color: white;
+	font-weight: bold;
+	font-size: 25px;
+	
+}
+
 .subtitle {
 	font-size: 15px;
 	margin-left: 15px;

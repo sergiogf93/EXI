@@ -8,8 +8,8 @@ function MacromoleculeListView(){
 
 MacromoleculeListView.prototype.getRow = function(record){
 	var html = "<table class='listView'>";
-		html = html + "<tr><td>Acronym:</td><td>" + record.data.acronym+ "</td></tr>";
-		html = html + "<tr><td>name:</td><td>" + record.data.name+ "</td></tr>";
+	html = html + "<tr><td>Acronym:</td><td style='color:#207a7a;font-weight:bold;'>" + record.data.acronym+ "</td></tr>";
+	html = html + "<tr><td>name:</td><td>" + record.data.name+ "</td></tr>";
 	return html + "</table>";
 };
 
@@ -28,6 +28,6 @@ MacromoleculeListView.prototype.getColumns = function(){
 };
 
 MacromoleculeListView.prototype.getFields = function(){
-	return  ['acronym', 'name'];
+	return  ['acronym', 'name', 'comments'];
 };
 

@@ -89,15 +89,8 @@ function TemplateMainView() {
 		}
 	});
 
-//	this.measurementGrid.onSelected.attach(function(sender, measurements) {
-//		var specimens = [];
-//		for ( var i = 0; i < measurements.length; i++) {
-//			specimens.push(_this.experiment.getSampleById(measurements[i].specimenId));
-//		}
-//	});
 
 	this.measurementGrid.onMeasurementChanged.attach(function(sender, measurement) {
-//		debugger
 		_this.experiment.setMeasurement(measurement);
 		_this.measurementGrid.loadExperiment(_this.experiment);
 		_this.volumePlanificator.load(_this.experiment);
@@ -116,13 +109,7 @@ function TemplateMainView() {
 		_this.volumePlanificator.load(_this.experiment);
 	});
 
-//	this.measurementGrid.onUpdateTime.attach(function(sender, args) {
-//		document.getElementById(_this.id + "_counter").innerHTML = args.hours + 'h,  ' + args.minutes + 'min and ' + args.seconds + ' seconds';
-//	});
-	
 	this.volumePlanificator = new VolumeGrid();
-	
-	
 }
 
 TemplateMainView.prototype.getHeader = function(beamlineName, startDate) {

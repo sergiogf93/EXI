@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>ExiSAXS</title>
+<link rel="stylesheet" type="text/css" href="../js/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
+<link rel="stylesheet" type="text/css" href="../css/jquery-qtip-css-min.css">
+
+<script type="text/javascript" src="../js/ext/build/ext-all.js"></script>
+<script type="text/javascript" src="../js/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
+
+<script type="text/javascript" src="../js/dependency/jquery-2.1.3.min.js"></script>
+<script type="text/javascript" src="../js/dependency/jquery.cookie.js"></script>
+<script type="text/javascript" src="../js/dependency/moment.min.js"></script>
+<script type="text/javascript" src="../js/dependency/jquery.qtip.min.js"></script>
+<script type="text/javascript" src="../js/event.js"></script>
+<script type="text/javascript" src="../js/security/credential.js"></script>
+<script type="text/javascript" src="../js/security/credentialmanager.js"></script>
+
+<script type="text/javascript" src="../js/data/dataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/saxsdataadapterfactory.js"></script>
+
+
+<script type="text/javascript" src="../js/data/saxs/buffersaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/datacollectionsaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/experimentsaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/hplcsaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/macromoleculesaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/measurementsaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/specimensaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/stocksolutionsaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/subtractionsaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/framesaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/templatesaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/saxsdataadaptergroup.js"></script>
+
+<script type="text/javascript" src="../js/data/proposal/authenticationdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/proposal/dewardataadapter.js"></script>
+<script type="text/javascript" src="../js/data/proposal/proposaldataadapter.js"></script>
+<script type="text/javascript" src="../js/data/proposal/sessiondataadapter.js"></script>
+<script type="text/javascript" src="../js/data/proposal/shippingdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/proposal/proposaldataadaptergroup.js"></script>
+<script type="text/javascript" src="../js/data/proposal/dataadapterfactory.js"></script>
+
+
+
+
+<script type="text/javascript" src="../js/data/extlocalstorage.js"></script>
+
+<script type="text/javascript" src="../js/data/saxs/experiment.js"></script>
+<script type="text/javascript" src="../js/data/saxs/experimentlist.js"></script>
+
+<script type="text/javascript" src="../js/app/exi.js"></script>
+<script type="text/javascript" src="../js/app/exisaxs.js"></script>
+<script type="text/javascript" src="../js/app/mainstatusbar.js"></script>
+<script type="text/javascript" src="../js/menu/mainmenu.js"></script>
+<script type="text/javascript" src="../js/menu/saxsmainmenu.js"></script>
+<script type="text/javascript" src="../js/menu/selectionmenu.js"></script>
+
+
+<script type="text/javascript" src="../js/widget/form/authenticationform.js"></script>
+
+<script type="text/javascript" src="../js/app/authenticationcontroller.js"></script>
+
+<script type="text/javascript" src="../js/navigation/listview.js"></script>
+<script type="text/javascript" src="../js/navigation/shippinglistview.js"></script>
+<script type="text/javascript" src="../js/navigation/sessionlistview.js"></script>
+<script type="text/javascript" src="../js/navigation/saxs/bufferlistview.js"></script>
+<script type="text/javascript" src="../js/navigation/saxs/templatelistview.js"></script>
+<script type="text/javascript" src="../js/navigation/saxs/experimentlistview.js"></script>
+<script type="text/javascript" src="../js/navigation/saxs/macromoleculelistview.js"></script>
+<script type="text/javascript" src="../js/navigation/saxs/datacollectionlistview.js"></script>
+ 
+<script type="text/javascript" src="../js/main/mainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/landing/welcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/landing/macromoleculewelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/landing/bufferwelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/landing/shippingwelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/landing/experimentwelcomemainview.js"></script>
+
+
+<script type="text/javascript" src="../js/main/saxs/landing/userwelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/prepare/buffermainview.js"></script>
+<script type="text/javascript" src="../js/main/shippingmainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/prepare/stocksolutionmainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/prepare/macromoleculemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/prepare/experimentdesignermainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/prepare/templatemainview.js"></script>
+<script type="text/javascript" src="../js/main/sessionmainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/experimentmainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/datacollectionmainview.js"></script>
+<!-- <script type="text/javascript" src="../js/main/macromoleculemainview.js"></script> -->
+<script type="text/javascript" src="../js/main/saxs/primarydatamainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/mergemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/hplc/hplcmainview.js"></script>
+
+<script type="text/javascript" src="../js/main/tool/crysolmainview.js"></script>
+<script type="text/javascript" src="../js/main/tool/subtractionmainview.js"></script>
+<script type="text/javascript" src="../js/main/run/runmainview.js"></script>
+
+<script type="text/javascript" src="../js/util/progressbar.js"></script>
+
+
+<script type="text/javascript" src="../js/widget/plot/network/svg.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/dom.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/itemgraphformatter.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/vertexgraphformatter.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/graphitem.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/vertex.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/dataset.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/graphdataset.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/graphcanvas.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/layoutdataset.js"></script>
+<script type="text/javascript" src="../js/widget/plot/network/networkdatasetformatter.js"></script>
+
+<script type="text/javascript" src="../js/widget/plot/network/networkwidget.js"></script>
+
+<script type="text/javascript" src="../js/widget/plot/curveplotter.js"></script>
+<script type="text/javascript" src="../js/widget/hplc/hplcgraph.js"></script>
+
+<script type="text/javascript" src="../js/widget/sampleplate/sampleplatewidget.js"></script>
+<script type="text/javascript" src="../js/widget/sampleplate/sampleplategroupwidget.js"></script>
+<script type="text/javascript" src="../js/widget/grid/specimengrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/volumegrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/proposalgrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/casegrid.js"></script>
+<script type="text/javascript" src="../js/widget/specimen/specimenwidget.js"></script>
+
+<script type="text/javascript" src="../js/widget/grid/molaritygrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/queuegrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/stocksolutiongrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/frameselectorgrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/buffergrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/macromoleculegrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/aprioririgidbodygrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/experimentgrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/templategrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/measurementgrid.js"></script>
+<script type="text/javascript" src="../js/widget/form/datareductionform.js"></script>
+<script type="text/javascript" src="../js/widget/form/caseform.js"></script>
+<script type="text/javascript" src="../js/widget/form/experimentheaderform.js"></script>
+<script type="text/javascript" src="../js/widget/form/bufferform.js"></script>
+<script type="text/javascript" src="../js/widget/form/shipmentform.js"></script>
+<script type="text/javascript" src="../js/widget/form/stocksolutionform.js"></script>
+<script type="text/javascript" src="../js/widget/form/macromolecule/macromoleculeform.js"></script>
+<script type="text/javascript" src="../js/widget/form/macromolecule/assemblyform.js"></script>
+<script type="text/javascript" src="../js/widget/form/macromolecule/molarityform.js"></script>
+<script type="text/javascript" src="../js/widget/form/macromolecule/rigidbodymodelingform.js"></script>
+
+<script type="text/javascript" src="../js/widget/wizard/wizardwidget.js"></script>
+<script type="text/javascript" src="../js/widget/wizard/finalstepwizardform.js"></script>
+<script type="text/javascript" src="../js/widget/wizard/genericstepwizardform.js"></script>
+<script type="text/javascript" src="../js/widget/wizard/measurementcreatorstepwizardform.js"></script>
+
+
+<script type="text/javascript" src="../js/widget/window/genericwindow.js"></script>
+<script type="text/javascript" src="../js/widget/window/casewindow.js"></script>
+<script type="text/javascript" src="../js/widget/window/stocksolutionwindow.js"></script>
+<script type="text/javascript" src="../js/widget/window/macromoleculewindow.js"></script>
+<script type="text/javascript" src="../js/widget/window/subtractionselectorwindow.js"></script>
+
+
+
+<script type="text/javascript" src="../js/widget/tabs/macromoleculetabs.js"></script>
+<script type="text/javascript" src="../js/widget/tabs/shipmenttabs.js"></script>
+<script type="text/javascript" src="../js/widget/tabs/templatetabs.js"></script>
+
+
+<!-- <script type="text/javascript" src="../js/widget/window/genericwindow.js"></script> -->
+<!-- <script type="text/javascript" src="../js/widget/window/bufferwindow.js"></script> -->
+
+<script type="text/javascript" src="../js/data/proposalmanager.js"></script>
+<script type="text/javascript" src="../js/bui.js"></script>
+<script type="text/javascript" src="../js/config.js"></script>
+
+
+<script type="text/javascript" src="../js/workspace/workspacelistview.js"></script>
+<script type="text/javascript" src="http://pc593.embl.fr:8082/dygraphs-master/dygraph-dev.js"></script>
+<script type="text/javascript" src="http://pc593.embl.fr:8082/dev/pathjs/path.js"></script>
+
+<script type="text/javascript" src="../js/controller/exicontroller.js"></script>
+<script type="text/javascript" src="../js/controller/saxsexicontroller.js"></script>
+
+<link rel="stylesheet" type="text/css" href="../css/exi.css">
+<link rel="stylesheet" type="text/css" href="../css/menu/mainmenu.css">
+<link rel="stylesheet" type="text/css" href="../css/override.css">
+</head>
+
+<script>
+
+function isNumber(value) {
+	if (value=="") return false;
+
+	var d = parseInt(value);
+	if (!isNaN(d)) return true; else return false;		
+
+} 
+
+	var exiSAXS;
+
+	Ext.onReady(function(){
+		Ext.Loader.setConfig({
+		    enabled: true
+		});
+
+		Ext.Loader.setPath('Ext.ux', '../js/ext/examples/ux/');
+		Ext.Loader.setPath('Ext.Extended', '../js/extended/');
+
+		Ext.require([
+		  'Ext.ux.statusbar.StatusBar',
+		  'Ext.Extended.RequiredTextField',
+		  'Ext.Extended.RequiredNumberField'
+		]);
+
+			
+		
+		EXI = new ExiSAXS();
+		EXI.show();
+
+
+		EXI.onAfterRender.attach(function(){
+			Path.listen();	
+		});
+	});
+</script>
+
+<body>
+
+</body>
+</html>

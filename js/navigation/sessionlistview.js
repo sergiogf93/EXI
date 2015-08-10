@@ -7,7 +7,15 @@ function SessionListView(){
 }
 
 SessionListView.prototype.getFilter = function(value){
-	return [{property : "startDate", value : value, anyMatch : true}];
+	return [{property : "date", value : value, anyMatch : true}];
+};
+
+SessionListView.prototype.formatData = function(data){
+	for (var i = 0; i < data.length; i++) {
+		data[i]["date"] =  moment(data[i].startDate).format("MMM Do YY");
+	}
+	console.log(data);
+	return data;
 };
 
 SessionListView.prototype.getRow = function(record){
@@ -43,7 +51,7 @@ SessionListView.prototype.getColumns = function(){
 };
 
 SessionListView.prototype.getFields = function(){
-	return  ['startDate', 'nbShifts', 'endDate', 'comments', 'sessionId', 'beamlineName'];
+	return  ['date', 'startDate', 'nbShifts', 'endDate', 'comments', 'sessionId', 'beamlineName'];
 };
 
 

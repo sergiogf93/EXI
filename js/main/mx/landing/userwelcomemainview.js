@@ -1,8 +1,8 @@
-WelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-WelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+UserWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+UserWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
-function WelcomeMainView() {
-	this.icon = 'images/icon/rsz_ic_home_black_24dp.png';
+function UserWelcomeMainView() {
+	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Home";
@@ -20,11 +20,11 @@ function WelcomeMainView() {
 	
 }
 
-WelcomeMainView.prototype.activeProposal = function(proposal) {
+UserWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
 };
 
-WelcomeMainView.prototype.getContainer = function() {
+UserWelcomeMainView.prototype.getContainer = function() {
 	return {
 		  layout: {
 		        type: 'anchor'
@@ -37,12 +37,15 @@ WelcomeMainView.prototype.getContainer = function() {
 				"background-color" : "#E6E6E6" 
 			},
 		items : [
+		         	{
+		         		html : "<h1>Welcome User Page</h1>"
+		         	},
 		         	this.proposalGrid.getPanel()
 		]
 	};
 };
 
-WelcomeMainView.prototype.loadUserView = function() {
+UserWelcomeMainView.prototype.loadUserView = function() {
 	var _this = this;
 	
 	var onSuccess = function(sender, proposals){
@@ -55,7 +58,7 @@ WelcomeMainView.prototype.loadUserView = function() {
 	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
 };
 
-WelcomeMainView.prototype.load = function(username) {
+UserWelcomeMainView.prototype.load = function(username) {
 	var _this = this;
 	this.username = username;
 	/** Loading proposals depending on your role **/

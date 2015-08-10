@@ -10,12 +10,14 @@ ExiSAXS.prototype.setError = Exi.prototype.setError;
 ExiSAXS.prototype.setLoading = Exi.prototype.setLoading;
 ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiSAXS.prototype.show = Exi.prototype.show;
-
+ExiSAXS.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
+ExiSAXS.prototype.setUserMenu = Exi.prototype.setUserMenu;
 
 
 function ExiSAXS() {
 	 Exi.call(this, {
 		 					menu: new SAXSMainMenu(),
+		 					anonymousMenu: new MainMenu(),
 		 					controllers : [new SAXSExiController()]
 	 
 	 });
@@ -23,7 +25,7 @@ function ExiSAXS() {
 
 
 ExiSAXS.prototype.getHeader = function(){
-	return '<img class="titleImage" src="images/logo_EMBL.png"><span class="title">ExiSAXS</span><span class="subtitle">Extended ISPyB for SAXS<sub style="font-size:10px;color:orange">BETA</sub></span>';
+	return '<img class="titleImage" src="../images/logo_EMBL.png"><span class="title">ExiSAXS</span><span class="subtitle">Extended ISPyB for SAXS<sub style="font-size:10px;color:orange">BETA</sub></span>';
 };
 
 ExiSAXS.prototype.getDataAdapter = function(args){

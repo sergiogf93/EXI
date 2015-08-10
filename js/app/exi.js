@@ -1,13 +1,31 @@
 function Exi(args) {
 	var _this = this;
 	
+	this.headerCssClass = "titlePanel";
+	
+	/** Active Menu **/
 	this.mainMenu = new MainMenu();
+	/** When user is not logged in **/
+	this.anonymousMenu = null;
+	/** When user is logged in **/
+	this.userMenu = null;
+	
+	
 	this.controllers = [new ExiController()];
 	
 	if (args != null){
 		if (args.menu != null){
 			this.mainMenu = args.menu;
+			this.userMenu = args.menu;
 		}
+		if (args.anonymousMenu != null){
+			this.anonymousMenu = args.anonymousMenu;
+		}
+		
+		if (args.headerCssClass != null){
+			this.headerCssClass = args.headerCssClass;
+		}
+		
 		if (args.controllers != null){
 			for (var i = 0; i < args.controllers.length; i++) {
 				this.controllers.push(args.controllers[i]);
@@ -47,10 +65,14 @@ function Exi(args) {
 		_this.mainMenu.populateCredentialsMenu();
 		_this.clearMainPanel();
 		_this.clearNavigationPanel();
+		_this.setAnonymousMenu();
+		location.hash = '/welcome';
 	});
+	
 	
 	this.credentialManager.onLogin.attach(function(sender){
 		_this.mainMenu.populateCredentialsMenu();
+		_this.setUserMenu();
 	});
 	
 	this.credentialManager.onActiveProposalChanged.attach(function(sender){
@@ -72,12 +94,27 @@ function Exi(args) {
 	});
 	
 	
+	
+	
 	this.onAfterRender = new Event(this);
 }
 
 Exi.prototype.getDataAdapter = function(args) {
 	return new DataAdapterFactory(args);
 };
+
+Exi.prototype.setAnonymousMenu = function() {
+	this.mainMenu = this.anonymousMenu;
+	Ext.getCmp("mainMenu").removeAll();
+	Ext.getCmp("mainMenu").add(EXI.mainMenu.getPanel());
+};
+
+Exi.prototype.setUserMenu = function() {
+	this.mainMenu = this.userMenu;
+	Ext.getCmp("mainMenu").removeAll();
+	Ext.getCmp("mainMenu").add(EXI.mainMenu.getPanel());
+};
+
 
 Exi.prototype.loadSelected = function(selected) {
 //	this.workspacePanel.setSelectedItems(selected);
@@ -120,6 +157,9 @@ Exi.prototype.getSelectedDataCollections = function() {
 
 Exi.prototype.addNavigationPanel = function(listView) {
 	Ext.getCmp('navigation').add(listView.getPanel());
+	if (Ext.getCmp("navigation") != null){
+		Ext.getCmp("navigation").expand();
+	}
 };
 
 Exi.prototype.clearNavigationPanel = function() {
@@ -172,11 +212,12 @@ Exi.prototype.show = function() {
 													height : 75,
 													html : _this.getHeader(),
 													xtype : 'component',
-													cls : 'titlePanel'
+													cls : _this.headerCssClass
 
 												}, {
 													region : 'north',
 													cls : 'toolbarPanel',
+													id : 'mainMenu',
 													xtype : 'panel',
 													width : 400,
 													items : _this.mainMenu.getPanel() },
@@ -189,7 +230,9 @@ Exi.prototype.show = function() {
 													split : false,
 													title : 'Browse by',
 													cls : 'navigation',
-													collapsible : true
+													collapsible : true,
+													collapsed : true
+													
 
 												},
 //												{
@@ -224,12 +267,16 @@ Exi.prototype.show = function() {
 													],
 										listeners : {
 											afterrender : function(component, eOpts) {
-//														if (_this.localExtorage.selectedSubtractionsManager.getSelected().length > 0){
-//															_this.loadSelected(_this.localExtorage.selectedSubtractionsManager.getSelected());
-//														}
 														_this.mainMenu.populateCredentialsMenu();
 														_this.onAfterRender.notify();
 														
+//														/** If there is a user login then we show the menu **/
+														if (_this.credentialManager.getCredentials() == 0){
+															_this.setAnonymousMenu();
+														}
+														else{
+															_this.setUserMenu();
+														}
 											} } });
 				}
 

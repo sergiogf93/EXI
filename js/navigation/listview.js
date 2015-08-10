@@ -20,7 +20,12 @@ ListView.prototype.getFilter = function(value){
 
 ListView.prototype.load = function(data){
 	this.data = data;
-	this.store.loadData(data);
+	if (this.formatData != null){
+		this.store.loadData(this.formatData(data));
+	}
+	else{
+		this.store.loadData(data);
+	}
 };
 
 ListView.prototype.getPanel = function(){

@@ -11,10 +11,17 @@ ExiController.prototype.init = function(){
 	}
 
 	/** Welcome Page **/
-	Path.map("#/").to(function() {}).enter(setPageBackground);
+	Path.map("#/").to(function() {
+		location.hash = '/welcome';
+	}).enter(setPageBackground);
 	
 	Path.map("#/login").to(function() {
 		EXI.authenticationForm.show();
+	}).enter(setPageBackground);
+	
+	
+	Path.map("#/welcome").to(function() {
+		EXI.addMainPanel(new WelcomeMainView());
 	}).enter(setPageBackground);
 	
 	

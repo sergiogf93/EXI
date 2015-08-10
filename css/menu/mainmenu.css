@@ -23,3 +23,9 @@
 	 #background-color: gray;
 	 border: 1px solid gray;
 }
+
+.mxMainMenu{
+	background-color: #207a7a;
+	border-color: #207a7a;
+	color : #fff;
+}

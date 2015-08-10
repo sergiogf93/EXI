@@ -2,12 +2,12 @@ MacromoleculeMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 function MacromoleculeMainView() {
 	
-	this.icon = 'images/icon/ic_satellite_black_18dp.png';
+	this.icon = '../images/icon/macromolecule.png';
 	this.queueGridList = [];
 
 	MainView.call(this);
 
-	this.macromoleculeGrid = new MacromoleculeGrid({
+	this.macromoleculeForm = new MacromoleculeForm({
 		height : 800,
 		collapsed : false,
 		tbar : true
@@ -34,33 +34,65 @@ MacromoleculeMainView.prototype.getSelected = function() {
 	return selected;
 };
 
+MacromoleculeMainView.prototype.getTabs = function() {
+	return  Ext.createWidget('tabpanel',
+			{
+				plain : true,
+				margin : '20 0 0 0',
+				items : [
+					{
+						tabConfig : {
+							title : 'General'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							height : 700,
+							padding : 20,
+							style : {
+								borderColor : 'gray',
+								borderStyle : 'solid',
+								borderWidth : '1px',
+								'background-color' : 'white' 
+							},
+							items : [ 
+							         
+							         this.macromoleculeForm.getPanel()
+							]
+						}
+
+						]
+					}
+			]});
+};
+
+
 MacromoleculeMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
 	    layout: {
-	        type: 'hbox'
+	        type: 'anchor'
 	    },
+	    defaults : {
+			anchor : '100%',
+			hideEmptyLabel : false },
 	    margin : 30,
 		bodyStyle : {
 			"background-color" : "#E6E6E6" 
 		},
-	    border: 1,
-	    style: {borderColor:'#000000', borderStyle:'solid', borderWidth:'1px'},
-	    defaults: {
-	        labelWidth: 80,
-	        xtype: 'datefield',
-	        flex: 1,
-	    },
-	    items: [this.macromoleculeGrid.getPanel([])]
+	    items: [
+	            this.getTabs()
+	            ]
 	});
 };
 
 
-MacromoleculeMainView.prototype.load = function() {
+MacromoleculeMainView.prototype.load = function(macromoleculeId) {
 	this.panel.setLoading();
-	this.panel.setTitle("Macromolecules");
+	var macromolecule = EXI.proposalManager.getMacromoleculeById(macromoleculeId);
+	this.panel.setTitle(macromolecule.acronym);
 //	manager.onSuccess.attach(function(sender, proposals){
 //		_this.macromoleculeGrid.load(EXI.proposalManager.getMacromolecules());
 //	});
-	this.macromoleculeGrid.load(EXI.proposalManager.getMacromolecules());
+	this.macromoleculeForm.load(macromolecule);
 	this.panel.setLoading(false);
 };

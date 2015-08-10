@@ -8,21 +8,24 @@ SAXSMainMenu.prototype.setText = MainMenu.prototype.setText;
 
 function SAXSMainMenu() {
 	this.id = BUI.id();
-	 MainMenu.call(this);
+	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
 }
 SAXSMainMenu.prototype.getMenuItems = function() {
 	return [{
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
+				hidden : this.isHidden,
 				menu : this.getPreparationMenu() 
 		}, {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
+				hidden : this.isHidden,
 				menu : this.getDataExplorerMenu() 
 		},
 		{
 			text : '<span style="color:white">Offline Data Analysis</span>',
 			cls : 'ExiSAXSMenuToolBar',
+			hidden : this.isHidden,
 			menu : this.getOnlineDataAnalisysMenu() 
 		}, 
 		{
@@ -34,6 +37,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 			xtype : 'textfield',
 			name : 'field1',
 			emptyText : 'search macromolecule',
+			hidden : this.isHidden,
 			listeners : {
 				specialkey : function(field, e) {
 					if (e.getKey() == e.ENTER) {
@@ -61,12 +65,12 @@ SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
 		items : [ 
 	          {
 				text : 'Create a new Shipment',
-				icon : 'images/icon/macromolecule.png',
+				icon : '../images/icon/macromolecule.png',
 				handler : onItemCheck 
 			}, 
 			{
 				text : 'Shipments',
-				icon : 'images/icon/buffer.jpg',
+				icon : '../images/icon/buffer.jpg',
 				handler : onItemCheck 
 			} 
 
@@ -77,7 +81,8 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
 		if (item.text == "Macromolecules") {
-			location.hash = "/prepare/macromolecule/main";
+//			location.hash = "/prepare/macromolecule/main";
+			location.hash = "/macromolecule/nav";
 		}
 		if (item.text == "Buffers") {
 //			location.hash = "/prepare/buffer/main";
@@ -105,35 +110,35 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 		items : [ 
 	          {
 				text : 'Macromolecules',
-				icon : 'images/icon/macromolecule.png',
+				icon : '../images/icon/macromolecule.png',
 				handler : onItemCheck 
 			}, 
 			{
 				text : 'Buffers',
-				icon : 'images/icon/buffer.jpg',
+				icon : '../images/icon/buffer.jpg',
 				handler : onItemCheck 
 			}, 
 			"-", 
 			{
 				text : 'Stock Solutions',
-				icon : 'images/icon/testtube.png',
+				icon : '../images/icon/testtube.png',
 				handler : onItemCheck 
 			}, 
 			{
 				text : 'Sample Tracking',
-				icon : 'images/icon/shipping.png',
+				icon : '../images/icon/shipping.png',
 //				handler : onItemCheck 
 				menu:this.getSampleTrackingMenu()
 			}, 
 			"-", 
 			{
 				text : 'Experiment Designer',
-				icon : 'images/icon/tool.png',
+				icon : '../images/icon/tool.png',
 				handler : onItemCheck 
 			}, 
 			{
 				text : 'My Experiments',
-				icon : 'images/icon/edit.png',
+				icon : '../images/icon/edit.png',
 				handler : onItemCheck 
 			}
 
@@ -153,7 +158,7 @@ SAXSMainMenu.prototype.getDataExplorerMenu = function() {
 		items : [ 
 			{
 				text : 'Sessions',
-				icon : 'images/icon/sessions.png',
+				icon : '../images/icon/sessions.png',
 				handler : onItemCheck 
 			},
 			{
