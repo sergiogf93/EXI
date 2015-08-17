@@ -67,6 +67,7 @@ CurvePlotter.prototype.render = function(url) {
 		      document.getElementById(this.targetId),
 		      url,
 		      {
+		    	  title : this.title,
 		          errorBars: true,
 		          connectSeparatedPoints: false
 		      }
@@ -88,6 +89,9 @@ CurvePlotter.prototype.loadHPLCFrame = function(experimentId, frameNumber) {
 	this.render(EXI.getDataAdapter().saxs.hplc.getHPLCFramesScatteringURL(experimentId, frameNumber));
 };
 
+CurvePlotter.prototype.loadUrl = function(url) {
+	this.render(url);
+};
 
 
 CurvePlotter.prototype.load = function(selections) {

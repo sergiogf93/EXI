@@ -10,6 +10,9 @@ function Exi(args) {
 	/** When user is logged in **/
 	this.userMenu = null;
 	
+	/** If false when opening a new tab it will close the already open ones **/
+	this.keepTabs = false;
+	
 	
 	this.controllers = [new ExiController()];
 	
@@ -66,6 +69,7 @@ function Exi(args) {
 		_this.clearMainPanel();
 		_this.clearNavigationPanel();
 		_this.setAnonymousMenu();
+		Ext.getCmp("navigation").collapse();
 		location.hash = '/welcome';
 	});
 	
@@ -87,7 +91,14 @@ function Exi(args) {
 			/** This user has been authenticated **/
 			_this.credentialManager.addCredential(args.user, args.roles, args.token, args.url);
 			_this.authenticationForm.window.close();
-			location.hash = "/welcome/" + args.user + "/main";
+			
+			var credential = EXI.credentialManager.getCredentialByUserName(args.user);
+			if (credential.isManager()){
+				location.hash = "/welcome/manager/" + args.user + "/main";
+			}
+			else{
+				location.hash = "/welcome/user/" + args.user + "/main";
+			}
 		});
 		
 		authenticationManager.login(args.user, args.password, args.site);
@@ -143,6 +154,9 @@ Exi.prototype.loadSelected = function(selected) {
  * @param mainView
  */
 Exi.prototype.addMainPanel = function(mainView) {
+	if (!this.keepTabs){
+		Ext.getCmp('main_panel').removeAll();
+	}
 	Ext.getCmp('main_panel').add(mainView.getPanel());
 	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
 };

@@ -59,6 +59,26 @@ MXExiController.prototype.routeNavigation = function() {
 		loadNavigationPanel(listView).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']);
 
 	}).enter(this.setPageBackground);
+	
+	
+	
+	Path.map("#/autoprocintegration/datacollection/:datacollectionId/main").to(function() {
+		
+		var mainView = new AutoProcIntegrationMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['datacollectionId']);
+		/** Selecting data collections from experiment * */
+		mainView.onSelect.attach(function(sender, element) {
+			EXI.localExtorage.selectedSubtractionsManager.append(element);
+		});
+		mainView.onDeselect.attach(function(sender, element) {
+			EXI.localExtorage.selectedSubtractionsManager.remove(element);
+		});
+
+	}).enter(this.setPageBackground);
+	
+	
+	
 };
 
 MXExiController.prototype.setPageBackground = function() {

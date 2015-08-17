@@ -84,7 +84,6 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 PrimaryDataMainView.prototype.getContainer = function() {
 	return {
 		xtype : 'container',
-//		layout : 'fit',
 		items : [
 		         	this.grid.getPanel(),
 		        	this.getSlavePanel()         

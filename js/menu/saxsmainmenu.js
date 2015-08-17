@@ -12,6 +12,31 @@ function SAXSMainMenu() {
 }
 SAXSMainMenu.prototype.getMenuItems = function() {
 	return [{
+				text : this._convertToHTMLWhiteSpan("Home"),
+				cls : 'ExiSAXSMenuToolBar',
+				icon : '../images/icon/rsz_ic_home_black_24dp.png',
+				handler : function(){
+					debugger
+						if (EXI.credentialManager.getCredentials() != null){
+							if (EXI.credentialManager.getCredentials().length > 0){
+								var username = EXI.credentialManager.getCredentials()[0].username;
+								var credential = EXI.credentialManager.getCredentialByUserName(EXI.credentialManager.getCredentials()[0].username);
+								if (credential.isManager()){
+									location.hash = "/welcome/manager/" + username + "/main";
+								}
+								else{
+									location.hash = "/welcome/user/" + username + "/main";
+								}
+							}
+							else{
+								BUI.showError("You should sign up");
+							}
+						}
+						else{
+							BUI.showError("You should sign up");
+						}
+				}
+		},{
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,

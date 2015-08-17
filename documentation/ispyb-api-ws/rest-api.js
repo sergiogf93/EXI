@@ -312,26 +312,23 @@ function getData(proposalChildrenFn) {
 																		name : 'proposal',
 																		children : [
 																				{
+																					name:'list',
+																					method : 'GET'
+																				},
+																				{
 																					name:'{proposalId}',
 																					children : proposalChildrenFn
-																								
 																				},
+																				
 																				{
-																					name:'user',
+																					name:'session',
 																					children : [
 																								{
-																									name:'{user}', children : [{name : 'list', method : 'GET'}]
-																								}
-																								]
-																				},
-																				{
-																					name:'technique',
-																					children : [
-																								{
-																									name:'{technique}', children : [{name : 'get', method : 'GET'}]
+																									name:'list', children : [{name : 'list', method : 'GET', roles:['manager', 'localcontact']}]
 																								}
 																								]
 																				}
+																				
 																				]
 																	}	
 																	]
@@ -346,6 +343,14 @@ function getData(proposalChildrenFn) {
 
 function getProposalChildren() {
 	return [	getSAXS(),
+	        	{
+					name:'technique',
+					children : [
+								{
+									name:'{technique}', children : [{name : 'get', method : 'GET'}]
+								}
+								]
+				},
 				{
 					name:'session',
 					children : [

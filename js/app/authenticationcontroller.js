@@ -21,8 +21,8 @@ AuthenticationManager.prototype.login = function(user, password, url){
 	};
 		
 	var err = (function(sender, data) {
-		debugger
-		EXI.showError("Permission denied");
+		EXI.setError("Permission denied");
+		BUI.showError("Your credentials are invalid");
 	});
 	
 	EXI.getDataAdapter({

@@ -7,8 +7,9 @@ function ProposalDataAdapter(args){
 }
 
 ProposalDataAdapter.prototype.getProposals= function(){
-	this.get('/{token}/proposal/user/{username}/list');
+	this.get('/{token}/proposal/list');
 };
+
 
 ProposalDataAdapter.prototype.getProposalsInfo= function(){
 	this.get('/{token}/proposal/{proposal}/technique/saxs/get');

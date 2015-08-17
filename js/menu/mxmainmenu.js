@@ -16,6 +16,20 @@ MXMainMenu.prototype.getMenuItems = function() {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
 				menu : this.getDataExplorerMenu() 
+		},
+		'->',
+		{
+			xtype : 'textfield',
+			name : 'field1',
+			value : '1340366',
+			emptyText : 'search by data collection Id',
+			listeners : {
+				specialkey : function(field, e) {
+					if (e.getKey() == e.ENTER) {
+						location.hash = "/autoprocintegration/datacollection/" + field.getValue() + "/main";
+					}
+				} 
+			} 
 		}
 	];
 };

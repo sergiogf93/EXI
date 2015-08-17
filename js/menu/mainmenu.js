@@ -32,32 +32,39 @@ MainMenu.prototype.getAddCredentialMenu = function() {
 
 MainMenu.prototype.populateCredentialsMenu = function() {
 	this.credentialsMenu.removeAll();
+	var credentialDisplay = "";
 	if (EXI.credentialManager.getCredentials() != null) {
 		for (var i = 0; i < EXI.credentialManager.getCredentials().length; i++) {
-			var text = EXI.credentialManager.getCredentials()[i].username;
+			var credentialDisplay = EXI.credentialManager.getCredentials()[i].username;
 			if (EXI.credentialManager.getCredentials()[i].activeProposals.length > 0) {
 				for (var j = 0; j < EXI.credentialManager.getCredentials()[i].activeProposals.length; j++) {
+					credentialDisplay = EXI.credentialManager.getCredentials()[i].activeProposals[j] + "@" + EXI.credentialManager.getCredentials()[i].username;
 					this.credentialsMenu.add({
-						text : EXI.credentialManager.getCredentials()[i].activeProposals[j] + "@" + EXI.credentialManager.getCredentials()[i].username,
+						text : credentialDisplay,
 						icon : "../images/icon/rsz_esrflogo80.gif",
 						disabled : true });
 				}
 			} else {
 				this.credentialsMenu.add({
-					text : text,
+					text : credentialDisplay,
 					icon : "../images/icon/rsz_esrflogo80.gif",
 					disabled : true });
+				
 			}
+			
+			
 		}
 	} 
 	if (EXI.credentialManager.getCredentials().length > 0){
-		Ext.getCmp(this.loginButtonId).setText("<span style='color:white'>Log out</span>");
+		Ext.getCmp(this.loginButtonId).setText("<span style='color:white'>Log out <span style='font-weight:bold;'>" + credentialDisplay + " </span> </span>");
 		Ext.getCmp(this.loginButtonId).setIcon("../images/rsz_logout.png");
 	}
 	else{
 		Ext.getCmp(this.loginButtonId).setText("<span style='color:white'>Sign In</span>");
 		Ext.getCmp(this.loginButtonId).setIcon("../images/rsz_login.png");
 	}
+	
+	
 };
 
 MainMenu.prototype._convertToHTMLWhiteSpan = function(text) {

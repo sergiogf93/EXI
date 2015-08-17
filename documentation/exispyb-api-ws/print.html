@@ -14,7 +14,7 @@
 
 
 <body style='margin: 25px'>
-	<div style='margin:0 0 500 0;width:4000px' class="tree" id='ws_tree'></div>
+	<div style='margin:0 0 500 0;width:8000px;height:6000px' class="tree" id='ws_tree'></div>
 </body>
 </html>
 
@@ -43,6 +43,10 @@ function init(target, items){
 			}
 			if (item.method == "GET"){
 				a.setAttribute("style", "color:black;background-color:#F5F6CE;border:1px solid black;");
+			}
+
+			if (item.roles != null){
+				a.setAttribute("style", "color:black;background-color:red;border:1px solid black;");
 			}
 		}
 		 

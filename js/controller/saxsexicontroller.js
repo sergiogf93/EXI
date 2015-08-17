@@ -458,12 +458,7 @@ SAXSExiController.prototype.init = function() {
 
 	
 
-	Path.map("#/welcome/:user/main").to(function() {
-		var user = this.params['user'];
-		var mainView = new UserWelcomeMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load(user);
-	}).enter(this.setPageBackground);
+	
 
 	Path.rescue(notFound);
 

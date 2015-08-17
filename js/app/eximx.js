@@ -10,12 +10,15 @@ ExiMX.prototype.setError = Exi.prototype.setError;
 ExiMX.prototype.setLoading = Exi.prototype.setLoading;
 ExiMX.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiMX.prototype.show = Exi.prototype.show;
+ExiMX.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
+ExiMX.prototype.setUserMenu = Exi.prototype.setUserMenu;
 
 
 
 function ExiMX() {
 	 Exi.call(this, {
 		 					menu: new MXMainMenu(),
+		 					anonymousMenu: new MainMenu(),
 		 					controllers : [new MXExiController()],
 		 					headerCssClass : 'mxTitlePanel'
 	 

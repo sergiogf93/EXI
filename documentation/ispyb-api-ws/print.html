@@ -14,7 +14,7 @@
 
 
 <body style='margin: 25px'>
-	<div style='margin:0 0 500 0;width:4000px' class="tree" id='ws_tree'></div>
+	<div style='margin:0 0 500 0;width:6000px' class="tree" id='ws_tree'></div>
 </body>
 </html>
 
@@ -53,6 +53,20 @@ function init(target, items){
 				var methodNode = document.createElement("span");
 				methodNode.setAttribute("style", "color:gray; font-size:9px;");
 				methodNode.appendChild(document.createTextNode("@" + item.queryParams[i]));
+				a.appendChild(methodNode);
+				var methodNodeSpace = document.createElement("br");
+				a.appendChild(methodNodeSpace);
+				
+			}
+		}
+
+		if (item.roles != null){
+			var methodNodeSpace = document.createElement("br");
+			a.appendChild(methodNodeSpace);
+			for ( var i in item.roles) {
+				var methodNode = document.createElement("span");
+				methodNode.setAttribute("style", "font-weight:bold; color:red; font-size:12px;");
+				methodNode.appendChild(document.createTextNode(item.roles[i]));
 				a.appendChild(methodNode);
 				var methodNodeSpace = document.createElement("br");
 				a.appendChild(methodNodeSpace);

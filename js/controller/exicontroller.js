@@ -24,6 +24,21 @@ ExiController.prototype.init = function(){
 		EXI.addMainPanel(new WelcomeMainView());
 	}).enter(setPageBackground);
 	
+	Path.map("#/welcome/user/:user/main").to(function() {
+		var user = this.params['user'];
+		var mainView = new UserWelcomeMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(user);
+	}).enter(setPageBackground);
+	
+
+	Path.map("#/welcome/manager/:user/main").to(function() {
+		var user = this.params['user'];
+		var mainView = new ManagerWelcomeMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(user);
+	}).enter(setPageBackground);
+	
 	
 	Path.map("#/logout").to(function() {
 		EXI.credentialManager.logout();

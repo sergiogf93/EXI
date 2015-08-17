@@ -30,20 +30,47 @@ function ProposalGrid(args) {
 
 
 ProposalGrid.prototype.load = function(proposals) {
+	this.data = proposals;
 	this.store.loadData(proposals, false);
+};
+
+ProposalGrid.prototype.getFilter = function(value){
+	return [{property : "number", value : value, anyMacth : true}];
+};
+
+ProposalGrid.prototype.filter = function(value) {
+	
 };
 
 ProposalGrid.prototype._getTbar = function() {
 	var _this = this;
 	var actions = [];
-
-	actions.push(Ext.create('Ext.Action', {
-		text : 'Add',
-		icon: 'images/icon/add.png',
-		disabled : false,
-		handler : function(widget, event) {
-		}
-	}));
+	actions.push({
+		xtype : 'textfield',
+		name : 'field1',
+		emptyText : 'search by number',
+		hidden : this.isHidden,
+		  listeners : {
+  			'change' : function(field, e) {
+  						var value = field.getValue();
+  						if (value != ""){
+  							_this.store.filter(_this.getFilter(field.getValue()));
+  						}
+  						else{
+  							_this.store.clearFilter(true);
+  							_this.load(_this.data);
+  						}
+  					} 
+          		} 
+	    }
+//		listeners : {
+//			specialkey : function(field, e) {
+//				if (e.getKey() == e.ENTER) {
+//					_this.filter(field.getValue());
+//				}
+//			} 
+//		} 
+	);
 	return actions;
 };
 
@@ -60,6 +87,7 @@ ProposalGrid.prototype.getPanel = function() {
 		title : 'Proposals',
 		store : this.store,
 		cls : 'border-grid',
+		tbar : this._getTbar(),
 		height : this.height,
 		width : this.width,
 		columns : [ 
