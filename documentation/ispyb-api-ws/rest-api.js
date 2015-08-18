@@ -358,12 +358,65 @@ function getProposalChildren() {
 					]
 				},
 				getShipping(),
-				{
-					name:'mx'
-				}
+				getMX()
 			];
 }
 
+function getMX(){
+	return {
+		name:'mx',
+		children : [
+					{
+						name:'autoprocintegration',
+						children : [
+									{
+										name:'{autoprocintegrationId}', 
+										children : [
+														{
+															name:'xscale', 
+															children : [
+															            {name : 'rfactor', method : 'GET'}]
+														},
+														{
+															name:'xscale', 
+															children : [
+															            {name : 'cc2', method : 'GET'}]
+														},
+														{
+															name:'xscale', 
+															children : [
+															            {name : 'completeness', method : 'GET'}]
+																			
+														},
+														{
+															name:'xscale', 
+															children : [
+															            {name : 'isigma', method : 'GET'}]
+														}
+										]
+									},
+									{
+										name:'datacollection', 
+										children : [
+														{
+															name:'{dataCollectionId}', 
+															children : [
+																			{
+																				name:'analysis', 
+																				children : [
+																				            {name : 'list', method : 'GET'}]
+																			}
+															            ]
+														}
+										]
+									}
+						]
+					}
+					
+		]
+		
+	};
+};
 
 function getMainData() {
 	return getData(function(){return []});

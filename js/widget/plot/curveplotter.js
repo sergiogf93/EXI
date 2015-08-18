@@ -6,15 +6,19 @@ function CurvePlotter(args) {
 	this.margin = '0 0 0 5';
 	this.ruleColor ="black";
 	this.targetId = "plotCanvas" + BUI.id();
-	
+	this.legend = 'onmouseover';
 	
 	if (args != null){
 		if (args.margin != null){
 			this.margin = args.margin;
 		}
+		if (args.legend != null){
+			this.legend = args.legend;
+		}
 	}
 	
 	this.onRendered = new Event(this);
+	this.onPointClickCallback = new Event();
      
 }
 
@@ -52,6 +56,7 @@ CurvePlotter.prototype.getLabels = function() {
 };
 
 CurvePlotter.prototype.render = function(url) {
+	var _this = this;
 	document.getElementById(this.targetId).innerHTML = "";
 	 
 	this.width = this.plotPanel.getWidth();
@@ -68,9 +73,16 @@ CurvePlotter.prototype.render = function(url) {
 		      url,
 		      {
 		    	  title : this.title,
+		    	  titleHeight : 20,
+		    	  legend: this.legend,
+		    	  labelsSeparateLines : true,
 		          errorBars: true,
-		          connectSeparatedPoints: false
+		          connectSeparatedPoints: false,
+		          pointClickCallback: function(e, p) {
+		        	  _this.onPointClickCallback.notify(p.name);
+		          }
 		      }
+
 		 );
 	
 	var _this = this;
@@ -90,6 +102,7 @@ CurvePlotter.prototype.loadHPLCFrame = function(experimentId, frameNumber) {
 };
 
 CurvePlotter.prototype.loadUrl = function(url) {
+//	url = "http://pc593.embl.fr:8082/test/auto.json";
 	this.render(url);
 };
 

@@ -16,7 +16,6 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				cls : 'ExiSAXSMenuToolBar',
 				icon : '../images/icon/rsz_ic_home_black_24dp.png',
 				handler : function(){
-					debugger
 						if (EXI.credentialManager.getCredentials() != null){
 							if (EXI.credentialManager.getCredentials().length > 0){
 								var username = EXI.credentialManager.getCredentials()[0].username;

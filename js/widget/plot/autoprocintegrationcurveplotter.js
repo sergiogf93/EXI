@@ -7,6 +7,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = CurvePlotter.prototype.loadU
 function AutoProcIntegrationCurvePlotter(args) {
 	CurvePlotter.call(this, args);
 	
+	this.margin = '10 0 0 0';
 	this.height = null;
 	this.title = "";
 	if (args != null){
@@ -21,9 +22,9 @@ function AutoProcIntegrationCurvePlotter(args) {
 
 
 AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
-	this.plotPanel = Ext.create('Ext.container.Container', {
+	this.plotPanel = Ext.create('Ext.panel.Panel', {
 	    layout: {
-	        type: 'hbox'
+	        type: 'fit'
 	    },
 	    height : this.height,
 	    margin : this.margin,

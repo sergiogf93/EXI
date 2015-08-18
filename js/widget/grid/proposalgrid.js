@@ -92,14 +92,24 @@ ProposalGrid.prototype.getPanel = function() {
 		width : this.width,
 		columns : [ 
 		{
+			text : 'Proposal',
+			dataIndex : 'code',
+			width : 125,
+			renderer : function(grid, a, record){
+				return record.data.code + record.data.number 
+			}
+		}, 
+		{
 			text : 'Code',
 			dataIndex : 'code',
-			width : 50
+			width : 75,
+			hidden : true
 		}, 
 		{
 			text : 'Number',
 			dataIndex : 'number',
-			width : 75
+			width : 75,
+			hidden : true
 		}, 
 		{
 			text : 'Title',

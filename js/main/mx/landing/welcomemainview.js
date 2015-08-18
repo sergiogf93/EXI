@@ -11,21 +11,17 @@ function WelcomeMainView() {
 	
 }
 
+
+
 WelcomeMainView.prototype.getContainer = function() {
 	return {
 		  layout: {
-		        type: 'anchor'
+		        type: 'fit'
 		    },
-		    defaults : {
-				anchor : '100%',
-				hideEmptyLabel : false },
-		    margin : 30,
-			bodyStyle : {
-				"background-color" : "#E6E6E6" 
-			},
 		items : [
 		         	{
-		         		html : "<h1>Welcome Page</h1>"
+		         		html : "<iframe style='width:900px;height:900px;' frameBorder='0' src='../html/mx/welcome.html'></iframe>",
+		         		margin : '50 0 0 50'
 		         	}
 		]
 	};
