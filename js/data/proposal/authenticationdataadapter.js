@@ -11,7 +11,7 @@ function AuthenticationDataAdapter(args){
 AuthenticationDataAdapter.prototype.authenticate = function(user, password, url){
 	var _this = this;
 	$.ajax({
-		  url: url + '/authenticate',
+		  url: url + '/authenticate?site=EMBL',
 		  type: 'post',
 		  data: {
 			  		login : user,
