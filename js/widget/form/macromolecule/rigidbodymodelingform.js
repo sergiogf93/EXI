@@ -4,7 +4,7 @@
  * @witdh
  * @height
  */
-function RigibBodyModelingForm(args) {
+function RigidBodyModelingForm(args) {
 	this.id = BUI.id();
 	this.width = 700;
 	this.height = 500;
@@ -22,26 +22,49 @@ function RigibBodyModelingForm(args) {
 	this.rigidBodyGrid = new AprioriRigidBodyGrid();
 	
 	this.rigidBodyGrid.onUploadFile.attach(function(sender, type, title){
-		_this._openUploadDialog(_this.macromolecule.macromoleculeId,  type, title);
+		_this.openUploadManager(EXI.getDataAdapter().saxs.macromolecule.getAddPDBURL(_this.macromolecule.macromoleculeId));	
 	});
 	
 	this.rigidBodyGrid.onRemove.attach(function(sender, type, title){
 		_this._update();
 	});
 	
+	this.onSave = new Event(this);
+	
 }
 
-RigibBodyModelingForm.prototype._getItems = function() {
+RigidBodyModelingForm.prototype.openUploadManager = function(url) {
 	var _this = this;
+	var widget = new UploaderWidget(url);
+	widget.onUploaded.attach(function(sender){
+		_this.panel.setLoading();
+		EXI.proposalManager.get(true);
+		_this.load(EXI.proposalManager.getMacromoleculeById(_this.macromolecule.macromoleculeId));
+		_this.panel.setLoading(false);
+	});
+	widget.show();
+};
 
+RigidBodyModelingForm.prototype._getItems = function() {
+	var _this = this;
+	
 
 	return [ {
 		xtype : 'label',
 		forId : 'myFieldId',
-		text : 'This is required information for rigib body modeling',
+		text : 'Information for model fit, mixture analysis and rigid body modeling',
 		margin : '15 0 20 10',
 		cls : "inline-help"
-	}, {
+	},
+	this.rigidBodyGrid.getPanel(), 
+	{
+		xtype : 'label',
+		forId : 'myFieldId',
+		text : 'Distance restraints may be imposed on the model using contacts conditions file (OPTIONAL)',
+		margin : '25 0 5 10',
+		cls : "inline-help"
+	},
+	{
 		xtype : 'container',
 		layout : 'hbox',
 		items : [ {
@@ -51,23 +74,43 @@ RigibBodyModelingForm.prototype._getItems = function() {
 			items : [ {
 				xtype : 'label',
 				forId : 'myFieldId',
-				text : 'Contact Description File:',
+				text : 'Contact Description File: (Optional)',
 				width : 150,
-				margin : '25 0 0 10'
+				margin : '10 0 0 10'
 			}, {
 				id : this.id + "contactsDescriptionFilePath",
 				xtype : 'textfield',
 				hideLabel : true,
-				margin : '20 0 0 0',
-				width : 280,
-				disabled: true
+				margin : '10 0 0 0',
+				width : 400
+//				disabled: true
 			}, {
 				text : 'Upload',
 				xtype : 'button',
-				margin : "20 0 0 10",
+				margin : "10 0 0 10",
 				width : 80,
 				handler : function() {
-					_this._openUploadDialog(_this.macromolecule.macromoleculeId, "CONTACTS", "Upload Contact Description File");
+					_this.openUploadManager(EXI.getDataAdapter().saxs.macromolecule.getContactDescriptionUploadFileURL(_this.macromolecule.macromoleculeId));
+				}
+			}, {
+				text : 'Remove',
+				id : _this.id + "_remove",
+				xtype : 'button',
+				margin : "10 0 0 10",
+				width : 80,
+				handler : function() {
+					_this.panel.setLoading(true);
+					var onSuccess = function onSuccess(){
+						EXI.proposalManager.get(true);
+						_this.load(EXI.proposalManager.getMacromoleculeById(_this.macromolecule.macromoleculeId));
+						_this.panel.setLoading(false);
+					}
+					
+					
+					
+					EXI.getDataAdapter({
+						onSuccess : onSuccess,
+					}).saxs.macromolecule.removeContactDescriptionFile(_this.macromolecule.macromoleculeId)
 				}
 			} ]
 		} ]
@@ -77,19 +120,13 @@ RigibBodyModelingForm.prototype._getItems = function() {
 		margin : "10 0 0 160",
 		border : 0
 		
-	},
-	this.rigidBodyGrid.getPanel(), {
-		xtype : 'checkbox',
-		margin : '20 0 0 5',
-		boxLabel : "<span style='font-weight:bold;'>I want rigid body modeling run on this stuff</span>",
-		checked : true,
-		width : 300
-	} ]
+	}
+	];
 
 };
 
-/** Because update is a jsp page we don't if the user has uploaded a file or not  then we need to refresh **/
-RigibBodyModelingForm.prototype._update = function(macromoleculeId, type, title) {
+/** Because update is a jsp page we don't know if the user has uploaded a file or not  then we need to refresh **/
+RigidBodyModelingForm.prototype._update = function(macromoleculeId, type, title) {
 	var _this = this;
 	BIOSAXS.proposal.onInitialized.attach(function() {
 		if (BIOSAXS.proposal != null) {
@@ -101,58 +138,19 @@ RigibBodyModelingForm.prototype._update = function(macromoleculeId, type, title)
 	BIOSAXS.proposal.init();
 };
 
-RigibBodyModelingForm.prototype._openUploadDialog = function(macromoleculeId, type, title) {
-	var _this = this;
-	function onClose() {
-		w.destroy();
-		_this._update();
-		
-	}
 
-	var w = Ext.create('Ext.window.Window', {
-		title : title,
-		height : 200,
-		width : 400,
-		modal : true,
-		buttons : [ {
-			text : 'Close',
-			handler : function() {
-				onClose();
-			}
-		} ],
-		layout : 'fit',
-		items : {
-			html : "<iframe style='width:500px' src='uploadPdbFileSAXS.do?reqCode=display&macromoleculeId=" + macromoleculeId + "&type=" + type + "'></iframe>"
-		},
-		listeners : {
-			onEsc : function() {
-				onClose();
-			},
-			close : function() {
-				onClose();
-			}
-		}
-	}).show();
-};
-
-RigibBodyModelingForm.prototype._getButtons = function() {
-	return [];
-};
-
-RigibBodyModelingForm.prototype.getPanel = function() {
+RigidBodyModelingForm.prototype.getPanel = function() {
 	var _this = this;
 	this.panel = Ext.create('Ext.form.Panel', {
 		width : this.width,
 		height : this.height,
-		margin : 10,
-		border : 1,
+		cls : 'border-grid',
 		defaultType : 'textfield',
 		items : this._getItems(),
-		buttons : this._getButtons(),
+		padding : 20,
 		listeners : {
 			afterrender : function(){
 				_this._populate();
-				
 			}
 		}
 	});
@@ -160,29 +158,37 @@ RigibBodyModelingForm.prototype.getPanel = function() {
 };
 
 /** Populates could be call when the DOM is not filled yet **/ 
-RigibBodyModelingForm.prototype._populate = function() {
+RigidBodyModelingForm.prototype._populate = function() {
 	if (this.macromolecule != null){
 		if (Ext.getCmp(this.id + "contactsDescriptionFilePath") != null){
-			Ext.getCmp(this.id + "contactsDescriptionFilePath").setValue(this.macromolecule.contactsDescriptionFilePath);
+			if (this.macromolecule.contactsDescriptionFilePath != null){
+				Ext.getCmp(this.id + "contactsDescriptionFilePath").setValue(this.macromolecule.contactsDescriptionFilePath);
+				Ext.getCmp(this.id + "_remove").enable();
+			}
+			else{
+				Ext.getCmp(this.id + "_remove").disable();
+				Ext.getCmp(this.id + "contactsDescriptionFilePath").setValue("");
+				
+			}
 		}
 	}
 };
 
 /** It populates the form * */
-RigibBodyModelingForm.prototype.refresh = function(macromolecule) {
+RigidBodyModelingForm.prototype.load = function(macromolecule) {
 	this.macromolecule = macromolecule;
-	this.rigidBodyGrid.refresh(macromolecule);
+	this.rigidBodyGrid.load(macromolecule);
 	this._populate();
 };
 
-RigibBodyModelingForm.prototype.input = function() {
+RigidBodyModelingForm.prototype.input = function() {
 	return {};
 };
 
 
 /** It populates the form **/
-RigibBodyModelingForm.prototype.test = function(targetId) {
-	var macromoleculeForm = new RigibBodyModelingForm();
+RigidBodyModelingForm.prototype.test = function(targetId) {
+	var macromoleculeForm = new RigidBodyModelingForm();
 	var panel = macromoleculeForm.getPanel();
 	panel.render(targetId);
 };

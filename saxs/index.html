@@ -61,6 +61,7 @@
 
 
 <script type="text/javascript" src="../js/widget/form/authenticationform.js"></script>
+<script type="text/javascript" src="../js/widget/upload/uploaderwidget.js"></script>
 
 <script type="text/javascript" src="../js/app/authenticationcontroller.js"></script>
 
@@ -68,6 +69,7 @@
 <script type="text/javascript" src="../js/navigation/shippinglistview.js"></script>
 <script type="text/javascript" src="../js/navigation/sessionlistview.js"></script>
 <script type="text/javascript" src="../js/navigation/saxs/bufferlistview.js"></script>
+<script type="text/javascript" src="../js/navigation/saxs/stocksolutionlistview.js"></script>
 <script type="text/javascript" src="../js/navigation/saxs/templatelistview.js"></script>
 <script type="text/javascript" src="../js/navigation/saxs/experimentlistview.js"></script>
 <script type="text/javascript" src="../js/navigation/saxs/macromoleculelistview.js"></script>
@@ -76,10 +78,13 @@
 <script type="text/javascript" src="../js/main/mainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/landing/welcomemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/landing/macromoleculewelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/saxs/landing/stocksolutionwelcomemainview.js"></script>
+
+
 <script type="text/javascript" src="../js/main/saxs/landing/bufferwelcomemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/landing/shippingwelcomemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/landing/experimentwelcomemainview.js"></script>
-
+<script type="text/javascript" src="../js/main/saxs/landing/shipmentpreparationmainview.js"></script>
 
 <script type="text/javascript" src="../js/main/saxs/landing/userwelcomemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/landing/managerwelcomemainview.js"></script>
@@ -96,6 +101,8 @@
 <script type="text/javascript" src="../js/main/saxs/primarydatamainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/mergemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/hplc/hplcmainview.js"></script>
+
+
 
 <script type="text/javascript" src="../js/main/tool/crysolmainview.js"></script>
 <script type="text/javascript" src="../js/main/tool/subtractionmainview.js"></script>
@@ -125,6 +132,7 @@
 <script type="text/javascript" src="../js/widget/sampleplate/sampleplategroupwidget.js"></script>
 <script type="text/javascript" src="../js/widget/grid/specimengrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/volumegrid.js"></script>
+<script type="text/javascript" src="../js/widget/grid/rigidmodelgrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/proposalgrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/casegrid.js"></script>
 <script type="text/javascript" src="../js/widget/specimen/specimenwidget.js"></script>
@@ -178,8 +186,8 @@
 
 
 <script type="text/javascript" src="../js/workspace/workspacelistview.js"></script>
-<script type="text/javascript" src="http://pc593.embl.fr:8082/dygraphs-master/dygraph-dev.js"></script>
-<script type="text/javascript" src="http://pc593.embl.fr:8082/dev/pathjs/path.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
+<script type="text/javascript" src="../js/third-party-libraries/pathjs/path.js"></script>
 
 <script type="text/javascript" src="../js/controller/exicontroller.js"></script>
 <script type="text/javascript" src="../js/controller/saxsexicontroller.js"></script>
@@ -187,6 +195,11 @@
 <link rel="stylesheet" type="text/css" href="../css/exi.css">
 <link rel="stylesheet" type="text/css" href="../css/menu/mainmenu.css">
 <link rel="stylesheet" type="text/css" href="../css/override.css">
+
+<!--  Timer -->
+   <link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
+   <script src="http://www.simile-widgets.org/timeline/api/timeline-api.js" type="text/javascript"></script>
+   <script src="local_data.js" type="text/javascript"></script>
 </head>
 
 <script>

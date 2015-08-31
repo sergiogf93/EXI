@@ -188,7 +188,7 @@ StockSolutionGrid.prototype._getColumns = function() {
             width:40,
             text : 'Edit',
             items: [{
-                icon: 'images/icon/edit.png',  // Use a URL in the icon config
+                icon: '../images/icon/edit.png',  // Use a URL in the icon config
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var rec = grid.getStore().getAt(rowIndex);
@@ -218,7 +218,7 @@ StockSolutionGrid.prototype._getColumns = function() {
             width:40,
             text : 'Unpack',
             items: [{
-                icon: 'images/icon/ic_highlight_remove_black_24dp.png',  // Use a URL in the icon config
+                icon: '../images/icon/ic_highlight_remove_black_24dp.png',  // Use a URL in the icon config
                 tooltip: 'Unpack',
                 handler: function(grid, rowIndex, colIndex) {
                     var stockSolution = grid.getStore().getAt(rowIndex).data;
@@ -238,7 +238,7 @@ StockSolutionGrid.prototype._getTopButtons = function() {
 	/** ADD BUTTON **/
 	if (this.btnAddVisible) {
 		actions.push(Ext.create('Ext.Action', {
-			icon: 'images/icon/add.png',
+			icon: '../images/icon/add.png',
 			text : 'Add',
 			tooltip : 'Will create a new stock solution',
 			disabled : false,

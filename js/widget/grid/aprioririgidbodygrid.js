@@ -50,7 +50,7 @@ AprioriRigidBodyGrid.prototype._getTopButtons = function() {
 	return actions;
 };
 
-AprioriRigidBodyGrid.prototype.refresh = function(macromolecule) {
+AprioriRigidBodyGrid.prototype.load = function(macromolecule) {
 	this.macromolecule = macromolecule;
 	if (macromolecule != null){
 		this.pdbStore.loadData(macromolecule.structure3VOs);
@@ -65,6 +65,16 @@ AprioriRigidBodyGrid.prototype._prepareData = function() {
 	return data;
 };
 
+
+
+AprioriRigidBodyGrid.prototype._updateProposalInformation = function() {
+	
+	EXI.proposalManager.get(true);
+	this.load(EXI.proposalManager.getMacromoleculeById(this.macromolecule.macromoleculeId));
+	this.panel.setLoading(false);
+	
+};
+
 AprioriRigidBodyGrid.prototype._getPlugins = function() {
 	var _this = this;
 	var plugins = [];
@@ -73,21 +83,26 @@ AprioriRigidBodyGrid.prototype._getPlugins = function() {
 		listeners : {
 			validateedit : function(grid, e) {
 				/** Comments are always updatable* */
-				e.record.raw.symmetry = e.newValues.symmetry;
-				e.record.raw.multiplicity = e.newValues.multiplicity;
-
-				var adapter = new BiosaxsDataAdapter();
-				adapter.onSuccess.attach(function(sender, proposal) {
-					BIOSAXS.proposal.setItems(proposal);
-					_this.refresh(BIOSAXS.proposal.getMacromoleculeById(_this.macromolecule.macromoleculeId));
-					_this.panel.setLoading(false);
-				});
-				adapter.onError.attach(function() {
-					alert("Error");
-				});
+				var multiplicity = e.newValues.multiplicity;
+				var symmetry = e.newValues.symmetry;
+				var macromoleculeId = e.record.data.macromoleculeId;
+				var structureId = e.record.data.structureId;
+				
+				_this.panel.setLoading();
+				var onSuccess = function (){
+					_this._updateProposalInformation();
+				};
+				
+				var onError = function (error){
+					BUI.showError("Ops, there was a problem");
+					_this._updateProposalInformation();
+				};
 
 				_this.panel.setLoading();
-				adapter.saveStructure(e.record.raw);
+				EXI.getDataAdapter({
+					onSuccess : onSuccess,
+					onError : onError
+				}).saxs.macromolecule.saveStructure(macromoleculeId, structureId, multiplicity, symmetry);
 			}
 		}
 	}));
@@ -106,30 +121,20 @@ AprioriRigidBodyGrid.prototype.getPanel = function() {
 		}
 	});
 
-	var groupingFeature = Ext.create('Ext.grid.feature.Grouping', {
-		groupHeaderTpl : Ext.create('Ext.XTemplate',
-				"<div style='background:#0ca3d2; color:white; float:left; font-size:10px; margin:6px 8px 0 0; padding:5px 8px;'>{name:this.formatName}</div>", {
-					formatName : function(name) {
-						return name;
-					}
-				}),
-		hideGroupedHeader : true,
-		startCollapsed : false
-	});
 
 	this.panel = Ext.create('Ext.grid.Panel', {
 		margin : "15 10 0 10",
 		height : this.height,
 		store : this.pdbStore,
 		plugins : _this._getPlugins(),
+		cls : 'border-grid',
 		tbar : [ {
 			text : 'Add Modeling Option (PDB)',
-			icon : '../images/add.png',
+			icon : '../images/icon/add.png',
 			handler : function() {
 				_this.onUploadFile.notify('PDB', 'Upload PDB File');
 			}
 		}
-
 		],
 		columns : [
 				{
@@ -141,7 +146,7 @@ AprioriRigidBodyGrid.prototype.getPanel = function() {
 				},
 				{
 					text : "File",
-					flex : 0.5,
+					flex : 1,
 					dataIndex : 'filePath',
 					sortable : true,
 					hidden : true
@@ -187,63 +192,58 @@ AprioriRigidBodyGrid.prototype.getPanel = function() {
 					sortable : true,
 					hidden : true
 				},
-
 				{
-					id : this.id + 'REMOVE',
-					flex : 0.2,
-					sortable : false,
-					renderer : function(value, metaData, record, rowIndex, colIndex, store) {
-						return BUI.getRedButton('REMOVE');
-					}
-				}, ],
+		            xtype:'actioncolumn',
+		            flex : 0.1,
+		            text : 'Remove',
+		            editor : {
+						xtype : 'textfield'
+					},
 
-		listeners : {
-			itemdblclick : function(dataview, record, item, e) {
-				_this._editExperiment(record.raw.experimentId);
-			},
-			cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-
-				if (grid.getGridColumns()[cellIndex].getId() == _this.id + 'REMOVE') {
-					var dataAdapter = new BiosaxsDataAdapter();
-					dataAdapter.onSuccess.attach(function() {
-						_this.panel.setLoading(false);
-						_this.onRemove.notify();
-					});
-					_this.panel.setLoading("Removing PDB file");
-					dataAdapter.removeStructure(record.data.structureId);
-				}
-
-			}
-		},
-		viewConfig : {
-			getRowClass : function(record, rowIdx, params, store) {
-				if (record.raw.isSubunit != null) {
-					return "blue-row";
-				}
-			}
-		}
+		            items: [{
+		                icon: '../images/icon/ic_delete_black_24dp.png',  // Use a URL in the icon config
+		                tooltip: 'Remove',
+		                handler: function(grid, rowIndex, colIndex) {
+		                	var rec = grid.getStore().getAt(rowIndex);
+		                	
+		                	var structureId = rec.data.structureId;
+		                	var macromoleculeId = rec.data.macromoleculeId;
+		                	function showResult(btn){
+		                	       if (btn == 'yes'){
+		                	    	   var onSuccess = function(){
+		                	    		   _this._updateProposalInformation();
+		                	    	   };
+		                	    	   
+		                	    	    var onError = function onSuccess(){
+		                	    		   BUI.showWarning("ISPyB could not remove this structure. Have it been already used?");
+		                	    		   _this._updateProposalInformation();
+		           						};
+		           						_this.panel.setLoading();
+			                	    	EXI.getDataAdapter({
+			               					onSuccess : onSuccess,
+			               					onError : onError
+			               				}).saxs.macromolecule.removeStructure(macromoleculeId, structureId);
+		                	       }
+		                	};
+		                	    
+		                    Ext.MessageBox.show({
+		                        title:'Warning',
+		                        fn: showResult,
+		                        msg: 'You are removing a PDB structure option. <br />Sure?',
+		                        buttons: Ext.MessageBox.YESNO,
+		                        icon: Ext.MessageBox.QUESTION
+		                    });
+		                }
+		            }]
+		        }
+		],
+		listeners: { 
+		     beforeedit: function (grid, e, eOpts) { 
+		    	 	return e.column.xtype != 'actioncolumn'; 
+		       } 
+		 }  
+				
 	});
 
 	return this.panel;
-};
-
-
-
-
-AprioriRigidBodyGrid.prototype.input = function() {
-	return {
-		proposal : DATADOC.getProposal_10(),
-		dewars : DATADOC.getDewars_10()
-
-	};
-};
-
-AprioriRigidBodyGrid.prototype.test = function(targetId) {
-	var AprioriRigidBodyGrid = new AprioriRigidBodyGrid({
-		height : 150
-	});
-	BIOSAXS.proposal = new Proposal(AprioriRigidBodyGrid.input().proposal);
-	var panel = AprioriRigidBodyGrid.getPanel(AprioriRigidBodyGrid.input().dewars);
-	panel.render(targetId);
-
 };

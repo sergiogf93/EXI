@@ -114,7 +114,7 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 		}
 
 		if (item.text == "Stock Solutions") {
-			location.hash = "/prepare/stocksolution/main";
+			location.hash = "/stocksolution/nav";
 		}
 
 		if (item.text == "Sample Tracking") {

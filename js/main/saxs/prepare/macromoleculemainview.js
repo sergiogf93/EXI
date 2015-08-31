@@ -13,10 +13,17 @@ function MacromoleculeMainView() {
 		tbar : true
 	});
 	
+	this.rigidBodyModelingForm = new RigidBodyModelingForm({
+//		width : this.width - 30,
+//		height : this.height - 50,
+	});
+	
+	this.rigidBodyModelingForm.onSave.attach(function(sender, macromolecule) {
+//		_this.onSave.notify(macromolecule);
+	});
+	
+	
 	var _this = this;
-//	this.bufferGrid.onUpdated.attach(function(sender){
-//		_this.load();
-//	});
 	
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
@@ -38,7 +45,7 @@ MacromoleculeMainView.prototype.getTabs = function() {
 	return  Ext.createWidget('tabpanel',
 			{
 				plain : true,
-				margin : '20 0 0 0',
+//				margin : '5 0 0 0',
 				items : [
 					{
 						tabConfig : {
@@ -47,17 +54,27 @@ MacromoleculeMainView.prototype.getTabs = function() {
 						items : [ {
 							xtype : 'container',
 							layout : 'fit',
-							height : 700,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
+							height : 600,
+							padding : 0,
 							items : [ 
 							         
 							         this.macromoleculeForm.getPanel()
+							]
+						}
+
+						]
+					},
+					{
+						tabConfig : {
+							title : 'Advanced'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							height : 500,
+							padding : 0,
+							items : [ 
+							         this.rigidBodyModelingForm.getPanel()
 							]
 						}
 
@@ -90,9 +107,7 @@ MacromoleculeMainView.prototype.load = function(macromoleculeId) {
 	this.panel.setLoading();
 	var macromolecule = EXI.proposalManager.getMacromoleculeById(macromoleculeId);
 	this.panel.setTitle(macromolecule.acronym);
-//	manager.onSuccess.attach(function(sender, proposals){
-//		_this.macromoleculeGrid.load(EXI.proposalManager.getMacromolecules());
-//	});
 	this.macromoleculeForm.load(macromolecule);
+	this.rigidBodyModelingForm.load(macromolecule);
 	this.panel.setLoading(false);
 };

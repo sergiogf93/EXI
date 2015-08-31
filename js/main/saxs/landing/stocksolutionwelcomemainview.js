@@ -1,7 +1,7 @@
-MacromoleculeWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-MacromoleculeWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+StockSolutionWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+StockSolutionWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
-function MacromoleculeWelcomeMainView() {
+function StockSolutionWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
@@ -11,20 +11,19 @@ function MacromoleculeWelcomeMainView() {
 	
 }
 
-MacromoleculeWelcomeMainView.prototype.getOptions = function() {
+StockSolutionWelcomeMainView.prototype.getOptions = function() {
 	var html =  "<ul><li>Define beforehand an experiment</li>";
 	html = html + "<li>Send your samples by courier</li>";
-	html = html + "<li>Online data analysis to run apriori data analysis (PDB information will be required on the advanced tab in the macromolecule view)</li>";
 	return html + "</ul>";
 };
 
 
 
-MacromoleculeWelcomeMainView.prototype.getContainer = function() {
+StockSolutionWelcomeMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('panel',
 			{
 				plain : true,
-				margin : '10',
+				margin : '20',
 				layout : 'fit',
 				items : [
 					{
@@ -34,21 +33,23 @@ MacromoleculeWelcomeMainView.prototype.getContainer = function() {
 						items : [ {
 							xtype : 'container',
 							layout : 'fit',
-							padding : 20,
+//							height : 700,
+							padding : 10,
 							margin : 0,
 							cls : 'border-grid',
 							items : [ 
 							        
 							         {
-							        	 html : '<div class="landing-title" ><h2>Macromolecules on ISPyB</h2></div>'
+							        	 html : '<div class="landing-title" ><h2>Stock Solutions on ISPyB</h2></div>',
+							        	 margin : '0 0 0 20'
 							         },
 							         {
-							        	 html : '<div class="landing-text">A macromolecule is a biological contruct for investigation.</div><br/>',
-							        	 margin : '0 0 0 20'
+							        	 html : '<div class="landing-text">A buffer is the matched solution which in a sample is suspended</div><br/>',
+							        	 margin : '0 0 0 40'
 							         },
 							         {
 							        	 html : '<div class="landing-text">You should define a macromolecule on ISPyB if you want:</div>',
-							        	 margin : '0 0 0 20'
+							        	 margin : '0 0 0 40'
 							         },
 							         {
 							        	 html : this.getOptions(),
@@ -72,11 +73,11 @@ MacromoleculeWelcomeMainView.prototype.getContainer = function() {
 										        	 minWidth : 200,
 										        	 margin : '0 0 0 150',
 										        	 height : 100,
-										        	 text : '<div class="square-option-text"; >Add a new macromolecule</div>',
+										        	 text : '<div class="square-option-text"; >Add a new Stock Solution</div>',
 										        	 icon : '../images/icon/add.png',
 										        	 iconAlign : 'top',
 										        	 handler : function(){
-										        		 location.hash = '/macromolecule/add';
+										        		 location.hash = '/stocksolution/add';
 										        	 }
 										         }]
 							         }
@@ -91,6 +92,6 @@ MacromoleculeWelcomeMainView.prototype.getContainer = function() {
 	};
 
 
-MacromoleculeWelcomeMainView.prototype.load = function() {
+StockSolutionWelcomeMainView.prototype.load = function() {
 	
 };

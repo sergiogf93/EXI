@@ -7,7 +7,7 @@ function StockSolutionMainView() {
 
 	MainView.call(this);
 
-	this.stockSolutionGrid = new StockSolutionGrid({
+	this.stockSolutionForm = new StockSolutionForm({
 //		width : this.width - 10,
 		minHeight : 800,
 		height : 800,
@@ -22,26 +22,14 @@ function StockSolutionMainView() {
 	var _this = this;
 	
 	
-	this.stockSolutionGrid.onSaved.attach(function(sender, stockSolution){
-//		var adapter = new DataAdapter();
-//		adapter.onSuccess.attach(function(sender){
-//			_this.panel.setLoading(true);
-//			var manager = new ProposalUpdater(); 
-//			manager.onSuccess.attach(function(sender, proposals){
-//				_this.stockSolutionGrid.load(ProposalManager.getStockSolutions());	
-//				_this.panel.setLoading(false);
-//			});
-//			manager.get(true);
-//		});
-//		adapter.saveStockSolution(stockSolution);
-		
+	this.stockSolutionForm.onSaved.attach(function(sender, stockSolution){
 		var onSuccess2 = function(sender, proposals){
-			_this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutions());	
+			_this.stockSolutionForm.load(EXI.proposalManager.getStockSolutionById(_this.stockSolutionId));	
 			_this.panel.setLoading(false);
 		};
 		_this.panel.setLoading("Updading proposal information");
 		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
-		
+//		
 	});
 	
 	this.onSelect = new Event(this);
@@ -52,25 +40,24 @@ function StockSolutionMainView() {
 StockSolutionMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
 	    layout: {
-	        type: 'hbox'
+	        type: 'anchor'
 	    },
+	    defaults : {
+			anchor : '100%',
+			hideEmptyLabel : false },
 	    margin : 30,
 		bodyStyle : {
 			"background-color" : "#E6E6E6" 
 		},
-	    border: 1,
-	    style: {borderColor:'#000000', borderStyle:'solid', borderWidth:'1px'},
-	    defaults: {
-	        labelWidth: 80,
-	        xtype: 'datefield',
-	        flex: 1,
-	    },
-	    items: [this.stockSolutionGrid.getPanel([])]
+		 items: [this.stockSolutionForm.getPanel([])]
 	});
+	
 };
 
 
-StockSolutionMainView.prototype.load = function() {
-	this.stockSolutionGrid.load(EXI.proposalManager.getStockSolutions());	
+StockSolutionMainView.prototype.load = function(stockSolutionId) {
+	this.stockSolutionId = stockSolutionId;
+	
+	this.stockSolutionForm.load(EXI.proposalManager.getStockSolutionById(stockSolutionId));	
 	this.panel.setTitle("Stock Solutions");
 };

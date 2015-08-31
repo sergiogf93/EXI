@@ -64,6 +64,22 @@ SAXSExiController.prototype.routeNavigation = function() {
 			
 		}
 		
+		if (this.params['navigation'] == "stocksolution") {
+			EXI.clearNavigationPanel();
+			EXI.setLoadingNavigationPanel(true);
+			var listView = new StockSolutionListView();
+			listView.onSelect.attach(function(sender, selected) {
+				location.hash = "/stocksolution/" + selected[0].stockSolutionId + "/main";
+			});
+			EXI.addNavigationPanel(listView);
+			listView.load(EXI.proposalManager.getStockSolutions());
+			EXI.setLoadingNavigationPanel(false);
+			
+			/** Loading welcome page **/
+			EXI.addMainPanel(new StockSolutionWelcomeMainView());
+			
+		}
+		
 
 		if (this.params['navigation'] == "macromolecule") {
 			EXI.clearNavigationPanel();
@@ -345,13 +361,36 @@ SAXSExiController.prototype.routePrepare = function() {
 		mainView.load(this.params['bufferId']);
 	}).enter(this.setPageBackground);
 	
+	Path.map("#/buffer/add").to(function() {
+		var mainView = new BufferMainView();
+		EXI.addMainPanel(mainView);
+	}).enter(this.setPageBackground);
+	
+	
 	Path.map("#/macromolecule/:macromoleculeId/main").to(function() {
 		var mainView = new MacromoleculeMainView();
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['macromoleculeId']);
 	}).enter(this.setPageBackground);
 	
-
+	Path.map("#/macromolecule/add").to(function() {
+		var mainView = new MacromoleculeMainView();
+		EXI.addMainPanel(mainView);
+	}).enter(this.setPageBackground);
+	
+	Path.map("#/stocksolution/:stocksolutionId/main").to(function() {
+		var mainView = new StockSolutionMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['stocksolutionId']);
+	}).enter(this.setPageBackground);
+	
+	Path.map("#/stocksolution/add").to(function() {
+		var mainView = new StockSolutionMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load();
+	}).enter(this.setPageBackground);
+	
+	
 	Path.map("#/shipping/:shippingId/main").to(function() {
 		var mainView = new ShippingMainView();
 		EXI.addMainPanel(mainView);
@@ -375,6 +414,14 @@ SAXSExiController.prototype.routePrepare = function() {
 		EXI.addMainPanel(mainView);
 		mainView.load();
 	}).enter(this.setPageBackground);
+	
+	Path.map("#/prepare/shipmentpreparation").to(function() {
+		var mainView = new ShipmentPreparationMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load();
+	}).enter(this.setPageBackground);
+	
+	
 	
 	Path.map("#/prepare/shipment").to(function() {
 		var _this = this;

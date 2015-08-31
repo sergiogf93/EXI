@@ -93,14 +93,13 @@ function getFrame(){
 		]
 		
 	};
-}
+} 
 
 function getExperiment(){
 	return {
 		name:'experiment',
 		children : [
 					{   name:'list', method : 'GET'},
-					{   name:'list', method : 'POST'},
 					{	
 						name:'{experimentId}',
 						children : [
@@ -275,7 +274,31 @@ function getSAXS(){
 						name:'macromolecule',
 						children : [
 									{   name:'list', method : 'GET'},
-									{	name:'save', method : 'POST'}
+									{	name:'save', method : 'POST'},
+									{
+										name:'{macromoleculeId}',
+										children : [
+													{
+														name:'contactfile',
+														children : [
+																	{name:'upload', method : 'POST'},
+																	{name:'remove', method : 'GET'}
+														]
+													},
+													{
+														name:'pdb',
+														children : [
+																	{name:'upload', method : 'POST'},
+																	{
+																		name:'{structureId}',
+																		children : [
+																					{name:'remove', method : 'GET'}
+																		]
+																	}
+														]
+													}
+										]
+									}
 						]
 						
 					},

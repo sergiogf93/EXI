@@ -13,8 +13,6 @@ function AutoProcIntegrationMainView() {
 			ids.push(records[i].autoProcIntegrationId);
 		}
 		_this.loadPlots(ids);
-		
-		
 		if (records.length == 1){
 			var record = _this.getByAutoProcId(records[0].autoProcId);
 			if (record != null){
@@ -22,7 +20,6 @@ function AutoProcIntegrationMainView() {
 			}
 		}
 	});
-	
 	
 	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({margin : '0 20 0 10', maxHeight: 400});
 	
@@ -98,6 +95,71 @@ function AutoProcIntegrationMainView() {
 		_this.onPlotClicked(id);
 	});
 	
+	
+	/** Phasing **/
+	this.autoProcIntegrationPhasingGrid = new AutoProcIntegrationGrid({ maxHeight: 800});
+
+	this.autoProcIntegrationPhasingGrid.onSelected.attach(function(sender, records){
+		var ids = [];
+		for (var i = 0; i < records.length; i++) {
+			ids.push(records[i].autoProcId);
+		}
+		
+		_this.phasingGrid.panel.setLoading(); 
+		
+		var onSuccessPhasing = function(sender, data){
+			var parsed = [];
+			if (data != null){
+				if (data.length > 0){
+					if (data[0].phasinganalysis != null){
+						for (var i = 0; i < data[0].phasinganalysis.length; i++) {
+							if (data[0].phasinganalysis[i].modelbuilding.length > 0){
+								for (var j = 0; j < data[0].phasinganalysis[i].modelbuilding.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].modelbuilding[j]);
+									parsed[parsed.length -1]["name"] = "modelbuilding";
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].modelbuilding[j].spaceGroupVO);
+								}
+							}
+							
+							if (data[0].phasinganalysis[i].preparephasingdata.length > 0){
+								for (var j = 0; j < data[0].phasinganalysis[i].preparephasingdata.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].preparephasingdata[j]);
+									parsed[parsed.length -1]["name"] = "preparephasingdata";
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].preparephasingdata[j].spaceGroupVO);
+								}
+							}
+							
+							if (data[0].phasinganalysis[i].phasing.length > 0){
+								for (var j = 0; j < data[0].phasinganalysis[i].phasing.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].phasing[j]);
+									parsed[parsed.length -1]["name"] = "phasing";
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].phasing[j].spaceGroup3VO);
+								}
+							}
+		
+							if (data[0].phasinganalysis[i].substructureDetermination3VO.length > 0){
+								for (var j = 0; j < data[0].phasinganalysis[i].substructureDetermination3VO.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].substructureDetermination3VO[j]);
+									parsed[parsed.length -1]["name"] = "substructureDetermination";
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].substructureDetermination3VO[j].spaceGroupVO);
+								}
+							}
+							
+							
+						}
+					}
+				}
+			}
+			
+			_this.phasingGrid.load(parsed);
+			_this.phasingGrid.panel.setLoading(false);
+			
+		};
+		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(ids);
+		
+	});
+	
+	this.phasingGrid = new PhasingGrid({margin : '0 0 0 10'});
 }
 
 
@@ -159,7 +221,7 @@ AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 		        	 margin : '10 0 0 20',
 		        	 items : [
 		        	          	this.autoProcIntegrationGrid.getPanel(),
-		        	          	this.autoProcIntegrationAttachmentGrid.getPanel(),
+		        	          	this.autoProcIntegrationAttachmentGrid.getPanel()
 		        	          ]
 		         }),
 		         Ext.create('Ext.container.Container', {
@@ -192,7 +254,17 @@ AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
 	        type: 'fit'
 	    },
 		margin : 5,
+		height : 600,
 		items : [ 
+		         Ext.create('Ext.container.Container', {
+		        	 layout: 'hbox',
+		        	 margin : '10 0 0 20',
+		        	 items : [
+		        	          	this.autoProcIntegrationPhasingGrid.getPanel(),
+		        	          	this.phasingGrid.getPanel()
+		        	          ]
+		         }),
+		         		
 		    ]
 	});
 };
@@ -236,6 +308,7 @@ AutoProcIntegrationMainView.prototype.getContainer = function() {
 								'background-color' : 'white' 
 							},
 							items : [ 
+							         this.getPhasingPanel()
 							]
 						}
 						]
@@ -264,7 +337,6 @@ AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsI
 	this.isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleISigma(autoProcIntegrationsIds.toString()));
 	this.cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCC2(autoProcIntegrationsIds.toString()));
 	this.sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleSigmaAno(autoProcIntegrationsIds.toString()));
-//	this.wilsonPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleWilson(autoProcIntegrationsIds.toString()));
 	this.annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleAnnoCorrection(autoProcIntegrationsIds.toString()));
 };
 	
@@ -276,12 +348,40 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 		_this.data = data;
 		var autoProcIntegrationsIds = []; 
 		var autoProcs = [];
+		var autoProcIds = [];
 		for (var i = 0; i < data.length; i++) {
 			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
 			autoProcs.push(data[i].autoproc);
+			autoProcIds.push(data[i].autoproc.autoProcId);
 		}
 		_this.autoProcIntegrationGrid.load(data);
 		_this.loadPlots(autoProcIntegrationsIds);
+		
+		
+		var onSuccessPhasing = function(sender, phasing){
+			var autoprocIdWithPhasing = [];
+			var autoProcWithPhasing = [];
+			for (var i = 0; i < phasing.length; i++) {
+				if (phasing[i].phasinganalysis != null){
+					autoprocIdWithPhasing.push(autoProcIds[i]);
+				}
+			}
+			
+			
+			for (var j = 0; j < data.length; j++) {
+				for (var k = 0; k < autoprocIdWithPhasing.length; k++) {
+					if (data[j].autoproc.autoProcId == autoprocIdWithPhasing[k]){
+						autoProcWithPhasing.push(data[j]);
+					}
+				}
+				
+			}
+			_this.autoProcIntegrationPhasingGrid.load(autoProcWithPhasing);
+		};
+		
+		
+		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(autoProcIds);
+		
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoProcIntegrationDataAdapter.getByDataCollectionId(dataCollectionId);
 };

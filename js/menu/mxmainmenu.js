@@ -21,7 +21,7 @@ MXMainMenu.prototype.getMenuItems = function() {
 		{
 			xtype : 'textfield',
 			name : 'field1',
-			value : '1340366',
+			value : '1460800',
 			emptyText : 'search by data collection Id',
 			listeners : {
 				specialkey : function(field, e) {

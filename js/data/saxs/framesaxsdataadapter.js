@@ -10,9 +10,9 @@ function FrameSaxsDataAdapter(args){
 
 
 
-FrameSaxsDataAdapter.prototype.downloadFrameURL = function(frameId){
-	return this.server + ('/{0}/saxs/{1}/frame/{2}/download'.format([ '%TOKEN%', '%PROPOSAL%',frameId]));
-};
+//FrameSaxsDataAdapter.prototype.downloadFrameURL = function(frameId){
+//	return this.server + ('/{0}/saxs/{1}/frame/{2}/download'.format([ '%TOKEN%', '%PROPOSAL%',frameId]));
+//};
 
 //FrameSaxsDataAdapter.prototype.downloadFrameURL = function(frameId){
 //	return this.server + ('/{0}/saxs/{1}/frame/{2}/download'.format([ '%TOKEN%', '%PROPOSAL%',frameId]));

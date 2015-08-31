@@ -54,3 +54,8 @@ AutoProcIntegrationDataAdapter.prototype.getDownloadAttachmentUrl= function(auto
 	var connection = EXI.credentialManager.getConnections()[0];
 	return this.getUrl(connection, '/{token}/proposal/{proposal}/mx/autoproc/autoprocattachmentid/{0}/download'.format( [autoProcAttachmentId.toString()]));
 };
+
+
+AutoProcIntegrationDataAdapter.prototype.getPhasingByAutoprocIds= function(autoProcListId){
+	 this.get('/{token}/proposal/{proposal}/mx/phasing/autoprocid/{0}/list'.format( [autoProcListId.toString()]));
+};

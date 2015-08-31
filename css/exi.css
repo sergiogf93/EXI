@@ -1,3 +1,30 @@
+.welcome-title{
+	text-align: center;
+	font-size: 15px;
+	line-height: 42px;
+	font-weight: 300;
+	color: #444;
+	font-family: "open sans",arial,sans-serif;
+	
+}
+
+
+.landing-title{
+	font-size: 15px;
+	font-weight: 300;
+	color : #207a7a;
+	
+	font-family: "open sans",arial,sans-serif;
+}
+
+.landing-text{
+	font-size: 15px;
+	font-weight: 300;
+	color: #444;
+	font-family: "open sans",arial,sans-serif;
+	
+}
+
 .exi-top-bar{
     background-color: #F5F5F5;
 }
@@ -100,6 +127,35 @@
 .menuCategoryItem {
 	color: #333;
 	font-weight: bold;
+}
+
+.square-option{
+	background-color: rgb(204, 213, 205);
+	border: 2px #207a7a solid;
+}
+
+
+.option-bar-menu{
+	margin: auto;
+    width: 50%;
+    #border:3px solid #8AC007;
+    #padding: 10px;
+}
+
+
+
+.square-option-text{
+	font-size: 14px;
+	font-weight : bold;
+	color: #444;
+	font-family: "open sans",arial,sans-serif;
+}
+
+.help-text{
+	text-align: center;
+	font-size: 12px;
+	color: #444;
+	font-family: "open sans",arial,sans-serif;
 }
 
 .browsers {

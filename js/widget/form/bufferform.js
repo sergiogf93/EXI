@@ -21,6 +21,9 @@ function BufferForm(args) {
 }
 
 BufferForm.prototype.getBuffer = function() {
+	if (this.buffer == null){
+		this.buffer = {};
+	}
 	this.buffer["name"] = Ext.getCmp(this.id + "buffer_name").getValue();
 	this.buffer["acronym"] = Ext.getCmp(this.id + "buffer_acronym").getValue();
 	this.buffer["comments"] = Ext.getCmp(this.id + "buffer_comments").getValue();

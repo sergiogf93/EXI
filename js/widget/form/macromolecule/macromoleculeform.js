@@ -72,13 +72,6 @@ MacromoleculeForm.prototype._getButtons = function() {
 			_this._save();
 		}
 	}
-//	,{
-//		text : 'Close',
-//		handler : function() {
-//			_this.onClose.notify();
-//			
-//		}
-//	}
 	];
 };
 
@@ -139,7 +132,7 @@ MacromoleculeForm.prototype._persist = function(macromoleculeId, acronym, name, 
 		
 	});
 	
-	this.panel.setLoading("Saving Macromolecule")
+	this.panel.setLoading("Saving Macromolecule");
 	EXI.getDataAdapter({onSuccess: onSuccess }).saxs.macromolecule.saveMacromolecule(this.macromolecule);
 };
 
@@ -244,10 +237,7 @@ MacromoleculeForm.prototype._getItems = function() {
 	return  Ext.create('Ext.form.Panel', {
 		width : this.width,
 		height : this.height,
-//		margin : 10,
-//		border : 1,
 		items : this._getItems()
-//		buttons : this._getButtons()
 	});
 };
 
@@ -285,10 +275,9 @@ MacromoleculeForm.prototype.getPanel = function() {
 		items : [
 		         {
 					xtype : 'container',
-					margin : '10 0 0 20',
+					margin : '20 0 0 20',
 					layout : 'vbox',
-					items : this._getItems(),
-//					buttons : this._getButtons()
+					items : this._getItems()
 		         }]
 	});
 	return this.panel;

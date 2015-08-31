@@ -162,7 +162,7 @@ CaseGrid.prototype._getColumns = function() {
             flex : 0.25,
             text : 'Edit',
             items: [{
-                icon: 'images/icon/edit.png',  // Use a URL in the icon config
+                icon: '../images/icon/edit.png',  // Use a URL in the icon config
                 tooltip: 'Edit',
                 handler: function(grid, rowIndex, colIndex) {
                     var rec = grid.getStore().getAt(rowIndex);
@@ -180,7 +180,7 @@ CaseGrid.prototype._getColumns = function() {
 				 	flex : 0.25,
 		            text : 'Remove',
 		            items: [{
-		                icon: 'images/icon/ic_delete_black_24dp.png',  // Use a URL in the icon config
+		                icon: '../images/icon/ic_delete_black_24dp.png',  // Use a URL in the icon config
 		                tooltip: 'Remove',
 		                handler: function(grid, rowIndex, colIndex) {
 		                	function showResult(btn){
@@ -197,7 +197,7 @@ CaseGrid.prototype._getColumns = function() {
 	columns.push({
 		dataIndex : 'comments',
 		 xtype:'actioncolumn',
-		 icon: 'images/icon/ic_view_headline_black_24dp.png',  
+		 icon: '../images/icon/ic_view_headline_black_24dp.png',  
 		text : 'Labels',
 		flex : 0.25,
 		hidden : false,
@@ -216,7 +216,7 @@ CaseGrid.prototype._getTopButtons = function() {
 
 	/** ADD BUTTON **/
 	actions.push(Ext.create('Ext.Action', {
-		icon : 'images/icon/add.png',
+		icon : '../images/icon/add.png',
 		text : 'Add',
 		disabled : false,
 		handler : function(widget, event) {

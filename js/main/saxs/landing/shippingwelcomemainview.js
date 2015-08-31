@@ -24,9 +24,9 @@ ShippingWelcomeMainView.prototype.getContainer = function() {
 				"background-color" : "#E6E6E6" 
 			},
 		items : [
-		         	{
-		         		html : "<h1>Shipping Welcome Page</h1>"
-		         	}
+//		         	{
+//		         		html : "<h1>Shipping Welcome Page</h1>"
+//		         	}
 		]
 	};
 };

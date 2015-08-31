@@ -187,7 +187,7 @@ MeasurementGrid.prototype.getTbar = function() {
 	var actions = [];
 
 	actions.push(Ext.create('Ext.Action', {
-		icon: 'images/icon/add.png',
+		icon: '../images/icon/add.png',
 		text : 'Add',
 		disabled : false,
 		handler : function(widget, event) {
@@ -196,7 +196,7 @@ MeasurementGrid.prototype.getTbar = function() {
 	}));
 	actions.push("->");
 	actions.push(Ext.create('Ext.Action', {
-		icon : 'images/icon/refresh.png',
+		icon : '../images/icon/refresh.png',
 		text : 'Update From SMIS',
 		tooltip : "Retrieve all the macromolecules of your proposal from SMIS database",
 		disabled : false,
@@ -513,7 +513,7 @@ MeasurementGrid.prototype.getColumns = function() {
 //			sortable : false,
 //			editable : false,
 //			items : [{
-//			         	icon : 'images/icon/ic_delete_black_24dp.png',
+//			         	icon : '../images/icon/ic_delete_black_24dp.png',
 //		                tooltip: 'Remove',
 //		                handler: function(grid, rowIndex, colIndex) {
 //		                    grid.getStore().removeAt(rowIndex);
@@ -606,18 +606,14 @@ MeasurementGrid.prototype.getPanel = function() {
 	this.grid = Ext.create('Ext.grid.Panel', {
 		id : this.id,
 		title : this.title,
-//		  selType: 'rowmodel',
 		plugins : this._getPlugins(),
 		margin : this.margin,
 		store : this.store,
 		height : this.height,
 		maxHeight : this.maxHeight,
-//		selModel : this.selModel,
-//		allowDeselect : true,
 		columns : this.getColumns(),
 		bbar : bbar,
 		tbar :  this._getMenu(),
-//		width : this.width,
 		cls : 'border-grid',
 		viewConfig : {
 			stripeRows : true,
@@ -730,7 +726,7 @@ MeasurementGrid.prototype._getMenu = function() {
 		var items = [];
 		if (_this.addBtnEnable) {
 			items.push({
-				icon: 'images/icon/add.png',
+				icon: '../images/icon/add.png',
 				text : 'Add',
 				handler : function() {
 					_this._openAddMeasurementWindow();
@@ -740,7 +736,7 @@ MeasurementGrid.prototype._getMenu = function() {
 
 		if (_this.addBtnMultipleEdit) {
 //			items.push({
-//				icon: 'images/icon/edit.png',
+//				icon: '../images/icon/edit.png',
 //				text : 'Edit',
 //				handler : function() {
 //					var multipleEditMeasurementGridWindow = new MultipleEditMeasurementGridWindow();
@@ -759,7 +755,7 @@ MeasurementGrid.prototype._getMenu = function() {
 		if (_this.sortingBtnEnable) {
 			var split = Ext.create('Ext.button.Split', {
 				text : 'Sort by',
-				icon: 'images/icon/sort.png',
+				icon: '../images/icon/sort.png',
 				// handle a click on the button itself
 				handler : function() {
 					// alert("The button was clicked");
@@ -811,12 +807,7 @@ MeasurementGrid.prototype._sortBy = function(sort) {
 	var onSuccess = (function(sender, data) {
 		_this.onExperimentChanged.notify(data);
 		_this.grid.setLoading(false);
-		// wizardWidget.window.close();
 	});
-//	adapter.onError.attach(function(sender, data) {
-//		_this.grid.setLoading(false);
-//		alert("Oops, there was a problem");
-//	});
 	_this.grid.setLoading("Sorting");
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
 };

@@ -18,6 +18,45 @@ function StockSolutionForm(args) {
 	this.onSaved = new Event(this);
 }
 
+
+StockSolutionForm.prototype._getButtons = function() {
+	var _this = this;
+	return [ {
+		text : 'Save',
+		handler : function() {
+			var onSuccess = (function(sender, stockSolution){
+					_this.panel.setLoading(false);
+					_this.onSaved.notify();
+			});
+			if (_this.getStockSolution().bufferId == null){
+				BUI.showError("Buffer field is mandatory");
+				return;
+			}
+			
+			if (_this.getStockSolution().name == ""){
+				BUI.showError("Acronym field is mandatory");
+				return;
+			}
+			
+			if (_this.getStockSolution().concentration == ""){
+				BUI.showError("Concentration field is mandatory");
+				return;
+			}
+			
+			if (_this.getStockSolution().volume == ""){
+				BUI.showError("Volume field is mandatory");
+				return;
+			}
+			
+			_this.panel.setLoading("ISPyB: saving stock solution");
+			EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(_this.getStockSolution());
+			
+			
+		}
+	}
+	];
+};
+
 StockSolutionForm.prototype.getStockSolution = function() {
 	if (this.stockSolution != null) {
 		this.stockSolution.concentration = Ext.getCmp(this.id + "stockSolution_concentration").getValue();
@@ -50,7 +89,8 @@ StockSolutionForm.prototype.getStockSolution = function() {
 	return this.stockSolution;
 };
 
-StockSolutionForm.prototype.setStockSolution = function(stockSolution) {
+StockSolutionForm.prototype.load = function(stockSolution) {
+	this.stockSolution = stockSolution;
 	if (stockSolution != null) {
 		if (stockSolution.macromoleculeId != null) {
 			this.macromoleculeCombo.setValue(stockSolution.macromoleculeId);
@@ -100,6 +140,7 @@ StockSolutionForm.prototype._getTopPanel = function() {
 		xtype : 'container',
 		layout : 'hbox',
 		border : 0,
+		buttons : this._getButtons(),
 		items : [ {
 			xtype : 'container',
 			layout : 'hbox',
@@ -150,36 +191,29 @@ StockSolutionForm.prototype._getTopPanel = function() {
 
 };
 
-StockSolutionForm.prototype.getPanel = function(stockSolution) {
-	this.stockSolution = stockSolution;
-	this.panel = Ext.createWidget({
-		xtype : 'container',
-		layout : 'vbox',
-		border : 0,
-		height : this.height,
-		style : {
-			padding : '10px'
-		},
-		fieldDefaults : {
-			labelAlign : 'left',
-			labelWidth : 50
-		},
-		items : [ 
-		         BIOSAXS_COMBOMANAGER.getComboProposal({labelWidth : 150}),
-		         this._getTopPanel(stockSolution), {
-			id : this.id + 'stockSolution_comments',
-			xtype : 'textareafield',
-			name : 'comments',
-			fieldLabel : 'Comments',
-			labelWidth : 150,
-			width : '100%',
-			height : 100
-		} ]
-		
-		
-	});
 
-	this.setStockSolution(stockSolution);
+StockSolutionForm.prototype.getPanel = function() {
+	this.panel =  Ext.create('Ext.panel.Panel', {
+		padding : 0,
+		buttons : this._getButtons(),
+		cls : 'border-grid',
+		items : [
+		         {
+		        	 	 xtype : 'container',
+		        	 	 padding : 20,
+				         items : [BIOSAXS_COMBOMANAGER.getComboProposal({labelWidth : 150}),
+							         this._getTopPanel(), 
+							         {
+							        	 id : this.id + 'stockSolution_comments',
+							        	 xtype : 'textareafield',
+							        	 name : 'comments',
+							        	 fieldLabel : 'Comments',
+							        	 labelWidth : 150,
+							        	 width : '100%',
+							        	 height : 100
+							         }]
+		         }]
+	});
 	return this.panel;
 };
 

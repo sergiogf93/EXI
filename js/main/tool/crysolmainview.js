@@ -100,8 +100,7 @@ CrysolMainView.prototype.getContainer = function() {
 									id : _this.id + 'pdbFileName',
 									name : 'pdbFileName',
 									value : '' },
-								this
-										.getToolDescription(
+								this.getToolDescription(
 												"CRYSOL: ",
 												"Evaluation of the solution scattering from macromolecules with known atomic structure and fitting to experimental data",
 												"Written by D. Svergun, C. Barberato, M. Malfois, V. Volkov, P. Konarev1, M. Petoukhov & A. Shkumatov"
@@ -121,31 +120,20 @@ CrysolMainView.prototype.getContainer = function() {
 							handler : function() {
 								var form = this.up('form').getForm();
 								if (form.isValid()) {
-									Ext.getCmp(_this.id + "hiddenProject").setValue(
-											exiSAXS.localExtorage.userManager.getActiveProject().internalId);
+									Ext.getCmp(_this.id + "hiddenProject").setValue(exiSAXS.localExtorage.userManager.getActiveProject().internalId);
 									var fileUploadFilePath = Ext.getCmp(_this.id + 'fileupload').value;
-									Ext.getCmp(_this.id + "pdbFileName").setValue(
-											fileUploadFilePath.split("\\")[fileUploadFilePath.split("\\").length - 1]);
+									Ext.getCmp(_this.id + "pdbFileName").setValue(fileUploadFilePath.split("\\")[fileUploadFilePath.split("\\").length - 1]);
 									form.submit({
 										url : new ExiDataAdapter().server + '/token/tool/crysol/run',
-										//                    url: new ExiDataAdapter().server +'/files/upload',
-										//                	url: new ExiDataAdapter().server +'/run',
 										waitMsg : 'Sending job to server...',
 										success : function(fp, o) {
 											msg('Success', 'Processed file "' + o.result.file + '" on the server');
 										},
 										failure : function(fp, o) {
-
 											msg('Failure', 'Processed file "' + o.result.file + '" on the server');
 										} });
 								}
 							} }
-						//    ,{
-						//        text: 'Reset',
-						//        handler: function() {
-						//            this.up('form').getForm().reset();
-						//        }
-						//    }
 						] });
 };
 
