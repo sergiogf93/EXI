@@ -18,32 +18,79 @@ function ManagerWelcomeMainView() {
 		_this.activeProposal(proposal);
 	});
 	
+	
+	this.timeLineWidget = new TimeLineWidget();
+	
+	this.timeLineWidget.onSelected.attach(function(sender, record){
+		var onSuccess = function(sender, proposal){
+			_this.activeProposal(proposal);
+			location.hash = "/session/nav/" + record.sessionId +"/session";
+			
+		} 
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getProposalBySessionId(record.sessionId);
+	});
 }
 
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
 };
 
+
 ManagerWelcomeMainView.prototype.getContainer = function() {
-	return {
-		  layout: {
-		        type: 'anchor'
-		    },
-		    defaults : {
-				anchor : '100%',
-				hideEmptyLabel : false },
-		    margin : 30,
-			bodyStyle : {
-				"background-color" : "#E6E6E6" 
-			},
-		items : [
-		         	{
-		         		html : "<h1>Welcome Manager Page</h1>"
-		         	},
-		         	this.proposalGrid.getPanel()
-		]
+	return  Ext.createWidget('tabpanel',
+			{
+				plain : true,
+				margin : '20 0 0 10',
+				items : [
+					{
+						tabConfig : {
+							title : 'Proposal'
+						},
+						items : [
+						         {
+							xtype : 'container',
+							layout : 'fit',
+							padding : 20,
+							cls : 'border-grid',
+							items : [ 
+							        
+							         {
+							        	 html : '<div class="welcome-title"><h2>Please select a proposal</h2></div>'
+							         },
+							         this.proposalGrid.getPanel()
+							]
+						}
+						]
+					},
+					{
+						tabConfig : {
+							title : 'Sessions'
+						},
+						items : [
+						         {
+							xtype : 'container',
+							layout : 'fit',
+							padding : 20,
+							cls : 'border-grid',
+							items : [ 
+							        
+							         {
+							        	 html : '<div class="welcome-title"><h2>Please select a Session</h2></div>'
+							         },
+							         {
+							        	 xtype : 'container',
+							        	 layout : 'vbox',
+							        	 items : [
+											         this.timeLineWidget.getPanel()
+							        	 ]
+							         }
+							]
+						}
+						]
+					}
+			]});
 	};
-};
+	
 
 ManagerWelcomeMainView.prototype.loadUserView = function() {
 	var _this = this;
@@ -58,17 +105,35 @@ ManagerWelcomeMainView.prototype.loadUserView = function() {
 	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
 };
 
-ManagerWelcomeMainView.prototype.load = function(username) {
+ManagerWelcomeMainView.prototype.loadSessions = function() {
 	var _this = this;
+	var onSuccess = function(sender, sessions){
+
+		/** Parsing box to be showed on the calendar **/
+		function parseContent(session){
+			if (!session.beamlineOperator){
+				session.beamlineOperator = "<span style='color:orange;'>Unknown</span>";
+			}
+			return ("<div style='font-size:12px;font-weight:bold;'>{0}<span style='font-size:10px;margin:5px;font-weight:normal;'>{1}</span><span style='color:gray; font-size:10px;'>{2} shifts</span></div>").format([session.beamlineName, session.beamlineOperator, session.nbShifts]);
+		}
+		var parsed = [];
+		for (var i = 0; i < sessions.length; i++) {
+			parsed.push({
+				start :  moment(sessions[i].startDate).toDate(),
+				end :  moment(sessions[i].endDate).toDate(),
+				content : parseContent(sessions[i]),
+				group : sessions[i].beamlineName,
+				sessionId : sessions[i].sessionId
+			});
+		}
+		_this.timeLineWidget.load(parsed);
+	};
+	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(moment().subtract(0, 'days').format("YYYYMMDD"), moment().add(0, 'days').format("YYYYMMDD"));
+};
+
+ManagerWelcomeMainView.prototype.load = function(username) {
 	this.username = username;
 	/** Loading proposals depending on your role **/
-//	var credential = EXI.credentialManager.getCredentialByUserName(username);
-//	if (credential != null){
-//		if (credential.roles != null){
-//			if (credential.isManager() || credential.isLocalContact()){
-				this.loadUserView();
-//			}
-//		}
-//	}
-	
+	this.loadUserView();
+	this.loadSessions();
 };

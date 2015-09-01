@@ -12,24 +12,61 @@ function ExperimentWelcomeMainView() {
 }
 
 ExperimentWelcomeMainView.prototype.getContainer = function() {
-	return {
-		  layout: {
-		        type: 'anchor'
-		    },
-		    defaults : {
-				anchor : '100%',
-				hideEmptyLabel : false },
-		    margin : 30,
-			bodyStyle : {
-				"background-color" : "#E6E6E6" 
-			},
-		items : [
-		         	{
-		         		html : "<h1>Exp Welcome Page</h1>"
-		         	}
-		]
+	return  Ext.createWidget('panel',
+			{
+				plain : true,
+				margin : '10',
+				layout : 'fit',
+				items : [
+					{
+						tabConfig : {
+							title : 'Welcome'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							padding : 20,
+							margin : 0,
+							cls : 'border-grid',
+							items : [ 
+							        
+							         {
+							        	 html : '<div class="landing-title" ><h2>Designing your experiment on ISPyB</h2></div>'
+							         },
+							         {
+							        	 html : '<div class="landing-text">A experiment is a set of measurements of samples.</div><br/>',
+							        	 margin : '0 0 0 20'
+							         },
+							         {
+							        	xtype : 'container',
+							        	layout : 'hbox',
+							        	cls : 'option-bar-menu',
+							        	items :[
+							        	    
+										         {
+										        	 xtype : 'button',
+										        	 cls : 'square-option',
+										        	 maxWidth : 200,
+										        	 minWidth : 200,
+										        	 margin : '0 0 0 150',
+										        	 height : 100,
+										        	 text : '<div class="square-option-text"; >Create a new Experiment</div>',
+										        	 icon : '../images/icon/add.png',
+										        	 iconAlign : 'top',
+										        	 handler : function(){
+										        		 location.hash = '/prepare/designer';
+										        	 }
+										         }]
+							         }
+							       
+							        
+							]
+						}
+					
+						]
+					}
+			]});
 	};
-};
 
 
 ExperimentWelcomeMainView.prototype.load = function() {

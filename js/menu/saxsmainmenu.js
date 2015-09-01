@@ -121,9 +121,9 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 			location.hash = "/shipping/nav";
 		}
 
-		if (item.text == "Experiment Designer") {
-			location.hash = "/prepare/designer";
-		}
+//		if (item.text == "Experiment Designer") {
+//			location.hash = "/prepare/designer";
+//		}
 
 		if (item.text == "My Experiments") {
 			location.hash = "/template/nav";
@@ -155,11 +155,11 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 				menu:this.getSampleTrackingMenu()
 			}, 
 			"-", 
-			{
-				text : 'Experiment Designer',
-				icon : '../images/icon/tool.png',
-				handler : onItemCheck 
-			}, 
+//			{
+//				text : 'Experiment Designer',
+//				icon : '../images/icon/tool.png',
+//				handler : onItemCheck 
+//			}, 
 			{
 				text : 'My Experiments',
 				icon : '../images/icon/edit.png',

@@ -348,6 +348,9 @@ function getData(proposalChildrenFn) {
 																					children : [
 																								{
 																									name:'list', children : [{name : 'list', method : 'GET', roles:['manager', 'localcontact']}]
+																								},
+																								{
+																									name:'{sessionId}', children : [{name : 'list', method : 'GET'}]
 																								}
 																								]
 																				}

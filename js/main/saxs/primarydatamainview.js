@@ -24,21 +24,14 @@ function PrimaryDataMainView() {
 		maxHeight : 300
 	});
 	
-	/** measurementId : [{frame}] **/
-	this.selected = {}; 
+	
+	/** Abinitio **/
+	this.abinitioForm = new AbinitioForm({
+		height : 700
+	});
+	
 }
 
-PrimaryDataMainView.prototype.getHeader = function(beamlineName, startDate) {
-	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";
-};
-
-PrimaryDataMainView.prototype.getSelected = function() {
-	var selected = [];
-	for (var i = 0; i < this.queueGridList.length; i++) {
-		selected = this.queueGridList[i].getSelected().concat(selected);
-	}
-	return selected;
-};
 
 
 
@@ -80,26 +73,103 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 };
 
 
-
 PrimaryDataMainView.prototype.getContainer = function() {
-	return {
-		xtype : 'container',
-		items : [
-		         	this.grid.getPanel(),
-		        	this.getSlavePanel()         
-		]
-	};
+	return  Ext.createWidget('tabpanel',
+			{
+				plain : true,
+				height : 900,
+				margin : '10 0 0 0',
+				items : [
+					{
+						tabConfig : {
+							title : 'Primary Data Reduction'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							height : 850,
+							padding : 20,
+							style : {
+								borderColor : 'gray',
+								borderStyle : 'solid',
+								borderWidth : '1px',
+								'background-color' : 'white' 
+							},
+							items : [ 
+										{
+											xtype : 'container',
+											items : [
+											         	this.grid.getPanel(),
+											        	this.getSlavePanel()         
+											]
+										}
+							]
+						}
+
+						]
+					},
+					{
+						tabConfig : {
+							title : 'Abinitio Modeling'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							height : 850,
+							padding : 20,
+							style : {
+								borderColor : 'gray',
+								borderStyle : 'solid',
+								borderWidth : '1px',
+								'background-color' : 'white' 
+							},
+							items : [ 
+										{
+											xtype : 'container',
+											items : [
+											         	this.abinitioForm.getPanel()
+											]
+										}
+							]
+						}
+
+						]
+					}
+			]
+			});
 };
+
+
+//PrimaryDataMainView.prototype.getContainer = function() {
+//	return {
+//		xtype : 'container',
+//		items : [
+//		         	this.grid.getPanel(),
+//		        	this.getSlavePanel()         
+//		]
+//	};
+//};
 
 PrimaryDataMainView.prototype.load = function(selected) {
 	var _this = this;
-	this.panel.setTitle(" Primary Data Viewer");
+	this.panel.setTitle(" Data Collection");
 	this.grid.panel.setLoading();
 	var onSuccess = (function(sender, data) {
 		_this.grid.load(data);
 		_this.grid.panel.setLoading(false);
 		/** Measurements Grid * */
 		_this.frameSelectorGrid.load(data);
+		
+		/** Getting abinitio **/
+		if (data[0].subtractionId){
+			var onSuccessSubtraction = (function(sender, subtractions) {
+				debugger
+				_this.abinitioForm.load(subtractions);
+			});
+			
+			EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
+			
+		}
 	});
 
 	var dataCollectionIds = [];
@@ -108,5 +178,8 @@ PrimaryDataMainView.prototype.load = function(selected) {
 
 	}
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
+	
+	
+	
 };
 

@@ -15,6 +15,10 @@
 <script type="text/javascript" src="../js/dependency/jquery.cookie.js"></script>
 <script type="text/javascript" src="../js/dependency/moment.min.js"></script>
 <script type="text/javascript" src="../js/dependency/jquery.qtip.min.js"></script>
+<script type="text/javascript" src="../js/dependency/three49custom.js"></script>
+<script type="text/javascript" src="../js/dependency/glmol.js"></script>
+
+
 <script type="text/javascript" src="../js/event.js"></script>
 <script type="text/javascript" src="../js/security/credential.js"></script>
 <script type="text/javascript" src="../js/security/credentialmanager.js"></script>
@@ -34,6 +38,7 @@
 <script type="text/javascript" src="../js/data/saxs/subtractionsaxsdataadapter.js"></script>
 <script type="text/javascript" src="../js/data/saxs/framesaxsdataadapter.js"></script>
 <script type="text/javascript" src="../js/data/saxs/templatesaxsdataadapter.js"></script>
+<script type="text/javascript" src="../js/data/saxs/modelsaxsdataadapter.js"></script>
 <script type="text/javascript" src="../js/data/saxs/saxsdataadaptergroup.js"></script>
 
 <script type="text/javascript" src="../js/data/proposal/authenticationdataadapter.js"></script>
@@ -61,6 +66,7 @@
 
 
 <script type="text/javascript" src="../js/widget/form/authenticationform.js"></script>
+
 <script type="text/javascript" src="../js/widget/upload/uploaderwidget.js"></script>
 
 <script type="text/javascript" src="../js/app/authenticationcontroller.js"></script>
@@ -122,7 +128,7 @@
 <script type="text/javascript" src="../js/widget/plot/network/graphcanvas.js"></script>
 <script type="text/javascript" src="../js/widget/plot/network/layoutdataset.js"></script>
 <script type="text/javascript" src="../js/widget/plot/network/networkdatasetformatter.js"></script>
-
+<script type="text/javascript" src="../js/widget/pdb/pdbviewer.js"></script>
 <script type="text/javascript" src="../js/widget/plot/network/networkwidget.js"></script>
 
 <script type="text/javascript" src="../js/widget/plot/curveplotter.js"></script>
@@ -136,7 +142,7 @@
 <script type="text/javascript" src="../js/widget/grid/proposalgrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/casegrid.js"></script>
 <script type="text/javascript" src="../js/widget/specimen/specimenwidget.js"></script>
-
+<script type="text/javascript" src="../js/widget/grid/abinitiogrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/molaritygrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/queuegrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/stocksolutiongrid.js"></script>
@@ -148,6 +154,7 @@
 <script type="text/javascript" src="../js/widget/grid/templategrid.js"></script>
 <script type="text/javascript" src="../js/widget/grid/measurementgrid.js"></script>
 <script type="text/javascript" src="../js/widget/form/datareductionform.js"></script>
+<script type="text/javascript" src="../js/widget/form/abinitioform.js"></script>
 <script type="text/javascript" src="../js/widget/form/caseform.js"></script>
 <script type="text/javascript" src="../js/widget/form/experimentheaderform.js"></script>
 <script type="text/javascript" src="../js/widget/form/bufferform.js"></script>
@@ -169,7 +176,7 @@
 <script type="text/javascript" src="../js/widget/window/stocksolutionwindow.js"></script>
 <script type="text/javascript" src="../js/widget/window/macromoleculewindow.js"></script>
 <script type="text/javascript" src="../js/widget/window/subtractionselectorwindow.js"></script>
-
+<script type="text/javascript" src="../js/widget/timeline/timelinewidget.js"></script>
 
 
 <script type="text/javascript" src="../js/widget/tabs/macromoleculetabs.js"></script>
@@ -189,6 +196,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/1.1.1/dygraph-combined.js"></script>
 <script type="text/javascript" src="../js/third-party-libraries/pathjs/path.js"></script>
 
+
 <script type="text/javascript" src="../js/controller/exicontroller.js"></script>
 <script type="text/javascript" src="../js/controller/saxsexicontroller.js"></script>
 
@@ -196,13 +204,16 @@
 <link rel="stylesheet" type="text/css" href="../css/menu/mainmenu.css">
 <link rel="stylesheet" type="text/css" href="../css/override.css">
 
-<!--  Timer -->
-   <link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
-   <script src="http://www.simile-widgets.org/timeline/api/timeline-api.js" type="text/javascript"></script>
-   <script src="local_data.js" type="text/javascript"></script>
+
+
+<link rel="stylesheet" type="text/css" href="../js/dependency/timeline/timeline.css">
+<script type="text/javascript" src="../js/dependency/timeline/timeline.js"></script>
+
 </head>
 
 <script>
+
+
 
 function isNumber(value) {
 	if (value=="") return false;
@@ -213,8 +224,10 @@ function isNumber(value) {
 } 
 
 	var exiSAXS;
-
+	
+    
 	Ext.onReady(function(){
+		
 		Ext.Loader.setConfig({
 		    enabled: true
 		});
@@ -241,6 +254,6 @@ function isNumber(value) {
 </script>
 
 <body>
-
+<div id="mytimeline"></div>
 </body>
 </html>

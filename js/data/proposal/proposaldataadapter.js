@@ -15,6 +15,10 @@ ProposalDataAdapter.prototype.getProposalsInfo= function(){
 	this.get('/{token}/proposal/{proposal}/technique/saxs/get');
 };
 
+ProposalDataAdapter.prototype.getProposalBySessionId= function(sessionId){
+	this.get('/{token}/proposal/session/{0}/list'.format([sessionId]));
+};
+
 ProposalDataAdapter.prototype.update= function(){
 	if (EXI != null){
 		if (EXI.proposalManager != null){

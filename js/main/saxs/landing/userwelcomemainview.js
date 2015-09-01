@@ -24,26 +24,6 @@ UserWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
 };
 
-//UserWelcomeMainView.prototype.getContainer = function() {
-//	return {
-//		  layout: {
-//		        type: 'anchor'
-//		    },
-//		    defaults : {
-//				anchor : '100%',
-//				hideEmptyLabel : false },
-//		    margin : 30,
-//			bodyStyle : {
-//				"background-color" : "#E6E6E6" 
-//			},
-//		items : [
-//		         	{
-//		         		html : "<h1>Welcome User Page</h1>"
-//		         	},
-//		         	this.proposalGrid.getPanel()
-//		]
-//	};
-//};
 
 
 
@@ -60,7 +40,6 @@ return  Ext.createWidget('tabpanel',
 					items : [ {
 						xtype : 'container',
 						layout : 'fit',
-//						height : 700,
 						padding : 20,
 						cls : 'border-grid',
 						items : [ 
@@ -71,9 +50,6 @@ return  Ext.createWidget('tabpanel',
 						         {
 						        	 html : '<div class="welcome-title">If you are new on ISPyB these are the main actions you may be interested in doing </div>'
 						         },
-//						         {
-//						        	 html : '<div><div class="square-option">Text</div></div>'
-//						         }
 						         {
 						        	xtype : 'container',
 						        	layout : 'hbox',
@@ -105,7 +81,7 @@ return  Ext.createWidget('tabpanel',
 									        	 icon : '../images/icon/edit.png',
 									        	 iconAlign : 'top',
 									        	 handler : function(){
-									        		 alert("aada")
+									        		 alert("To be imlemented");
 									        	 }
 									         },
 									         {
@@ -119,7 +95,7 @@ return  Ext.createWidget('tabpanel',
 									        	 icon : '../images/icon/sessions.png',
 									        	 iconAlign : 'top',
 									        	 handler : function(){
-									        		 alert("aada")
+									        		 alert("To be imlemented");
 									        	 }
 									         }]
 						         }

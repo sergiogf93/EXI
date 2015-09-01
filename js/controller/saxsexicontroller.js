@@ -113,6 +113,9 @@ SAXSExiController.prototype.routeNavigation = function() {
 		}
 
 		if (this.params['navigation'] == "template") {
+			EXI.clearNavigationPanel();
+			EXI.setLoadingNavigationPanel(true);
+			
 			var listView = new TemplateListView();
 			/** When selected move to hash * */
 			listView.onSelect.attach(function(sender, selected) {

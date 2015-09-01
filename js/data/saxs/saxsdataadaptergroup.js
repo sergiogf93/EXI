@@ -10,6 +10,7 @@ function SaxsDataAdapterGroup(args){
 	this.dataCollection = new DataCollectionSaxsDataAdapter(args);
 	this.template = new TemplateSaxsDataAdapter(args);
 	this.frame = new FrameSaxsDataAdapter(args);
+	this.model = new ModelSaxsDataAdapter(args);
 }
 
 
