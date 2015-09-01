@@ -15,7 +15,11 @@ function ManagerWelcomeMainView() {
 	
 	var _this = this;
 	this.proposalGrid.onSelected.attach(function(sender, proposal){
+		_this.panel.setLoading(true);
+		EXI.proposalManager.get(true);
 		_this.activeProposal(proposal);
+		_this.panel.setLoading(false);
+		
 	});
 	
 	
@@ -37,7 +41,7 @@ ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 
 
 ManagerWelcomeMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('tabpanel',
+	this.panel =  Ext.createWidget('tabpanel',
 			{
 				plain : true,
 				margin : '20 0 0 10',
@@ -89,6 +93,7 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 						]
 					}
 			]});
+			return this.panel;
 	};
 	
 
@@ -128,7 +133,7 @@ ManagerWelcomeMainView.prototype.loadSessions = function() {
 		}
 		_this.timeLineWidget.load(parsed);
 	};
-	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(moment().subtract(0, 'days').format("YYYYMMDD"), moment().add(0, 'days').format("YYYYMMDD"));
+	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(moment().subtract(3, 'days').format("YYYYMMDD"), moment().add(3, 'days').format("YYYYMMDD"));
 };
 
 ManagerWelcomeMainView.prototype.load = function(username) {

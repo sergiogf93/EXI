@@ -15,7 +15,10 @@ function UserWelcomeMainView() {
 	
 	var _this = this;
 	this.proposalGrid.onSelected.attach(function(sender, proposal){
+		_this.panel.setLoading(true);
+		EXI.proposalManager.get(true);
 		_this.activeProposal(proposal);
+		_this.panel.setLoading(false);
 	});
 	
 }
@@ -28,7 +31,7 @@ UserWelcomeMainView.prototype.activeProposal = function(proposal) {
 
 
 UserWelcomeMainView.prototype.getContainer = function() {
-return  Ext.createWidget('tabpanel',
+		this.panel =  Ext.createWidget('tabpanel',
 		{
 			plain : true,
 			margin : '20 0 0 10',
@@ -130,6 +133,7 @@ return  Ext.createWidget('tabpanel',
 					]
 				}
 		]});
+		return this.panel;
 };
 
 
