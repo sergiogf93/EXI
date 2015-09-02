@@ -58,7 +58,6 @@ CurvePlotter.prototype.getLabels = function() {
 CurvePlotter.prototype.render = function(url) {
 	var _this = this;
 	document.getElementById(this.targetId).innerHTML = "";
-	 debugger
 	this.width = this.plotPanel.getWidth();
 	this.height = this.plotPanel.getHeight();
 	

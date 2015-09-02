@@ -23,7 +23,7 @@ function ManagerWelcomeMainView() {
 	});
 	
 	
-	this.timeLineWidget = new TimeLineWidget();
+	this.timeLineWidget = new SessionTimeLineWidget();
 	
 	this.timeLineWidget.onSelected.attach(function(sender, record){
 		var onSuccess = function(sender, proposal){
@@ -83,7 +83,7 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 							         },
 							         {
 							        	 xtype : 'container',
-							        	 layout : 'vbox',
+							        	 layout : 'fit',
 							        	 items : [
 											         this.timeLineWidget.getPanel()
 							        	 ]
@@ -111,29 +111,7 @@ ManagerWelcomeMainView.prototype.loadUserView = function() {
 };
 
 ManagerWelcomeMainView.prototype.loadSessions = function() {
-	var _this = this;
-	var onSuccess = function(sender, sessions){
-
-		/** Parsing box to be showed on the calendar **/
-		function parseContent(session){
-			if (!session.beamlineOperator){
-				session.beamlineOperator = "<span style='color:orange;'>Unknown</span>";
-			}
-			return ("<div style='font-size:12px;font-weight:bold;'>{0}<span style='font-size:10px;margin:5px;font-weight:normal;'>{1}</span><span style='color:gray; font-size:10px;'>{2} shifts</span></div>").format([session.beamlineName, session.beamlineOperator, session.nbShifts]);
-		}
-		var parsed = [];
-		for (var i = 0; i < sessions.length; i++) {
-			parsed.push({
-				start :  moment(sessions[i].startDate).toDate(),
-				end :  moment(sessions[i].endDate).toDate(),
-				content : parseContent(sessions[i]),
-				group : sessions[i].beamlineName,
-				sessionId : sessions[i].sessionId
-			});
-		}
-		_this.timeLineWidget.load(parsed);
-	};
-	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(moment().subtract(3, 'days').format("YYYYMMDD"), moment().add(3, 'days').format("YYYYMMDD"));
+	this.timeLineWidget.loadSessions(moment().startOf('week').format("YYYYMMDD"),moment().endOf('week').add(1, 'days').format("YYYYMMDD"));
 };
 
 ManagerWelcomeMainView.prototype.load = function(username) {

@@ -9,7 +9,7 @@ var ExtISPyB = {
 //		         		url : 'http://pc593.embl.fr:8080/ispyb-ws/rest'
 //		         	},
 		         	{
-		         		name : 'ISPyB_TEST_DB@ESRF',
+		         		name : 'ISPyB TESTDB @ ESRF',
 		         		url : 'http://ispyvalid.esrf.fr:8080/ispyb-ws/rest'
 		         	}
 		]	

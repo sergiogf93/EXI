@@ -163,7 +163,6 @@ PrimaryDataMainView.prototype.load = function(selected) {
 		/** Getting abinitio **/
 		if (data[0].subtractionId){
 			var onSuccessSubtraction = (function(sender, subtractions) {
-				debugger
 				_this.abinitioForm.load(subtractions);
 			});
 			
