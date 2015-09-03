@@ -18,7 +18,7 @@ function ExiSAXS() {
 	 Exi.call(this, {
 		 					menu: new SAXSMainMenu(),
 		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new SAXSExiController()]
+		 					controllers : [new SAXSExiController(), new OfflineExiController()]
 	 
 	 });
 }

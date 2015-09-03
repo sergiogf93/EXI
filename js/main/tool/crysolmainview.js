@@ -120,18 +120,28 @@ CrysolMainView.prototype.getContainer = function() {
 							handler : function() {
 								var form = this.up('form').getForm();
 								if (form.isValid()) {
-									Ext.getCmp(_this.id + "hiddenProject").setValue(exiSAXS.localExtorage.userManager.getActiveProject().internalId);
-									var fileUploadFilePath = Ext.getCmp(_this.id + 'fileupload').value;
-									Ext.getCmp(_this.id + "pdbFileName").setValue(fileUploadFilePath.split("\\")[fileUploadFilePath.split("\\").length - 1]);
-									form.submit({
-										url : new ExiDataAdapter().server + '/token/tool/crysol/run',
-										waitMsg : 'Sending job to server...',
-										success : function(fp, o) {
-											msg('Success', 'Processed file "' + o.result.file + '" on the server');
-										},
-										failure : function(fp, o) {
-											msg('Failure', 'Processed file "' + o.result.file + '" on the server');
-										} });
+									
+									var onSuccess = function(sender, projects){
+										Ext.getCmp(_this.id + "hiddenProject").setValue(projects[0].internalId);
+										var fileUploadFilePath = Ext.getCmp(_this.id + 'fileupload').value;
+										Ext.getCmp(_this.id + "pdbFileName").setValue(fileUploadFilePath.split("\\")[fileUploadFilePath.split("\\").length - 1]);
+										form.submit({
+											url : EXI.getDataAdapter().exi.offline.getToolUrl() + "/crysol/run",
+											waitMsg : 'Sending job to server...',
+											success : function(fp, o) {
+												debugger
+												msg('Success', 'Processed file "' + o.result.file + '" on the server');
+											},
+											failure : function(fp, o) {
+												debugger
+												msg('Failure', 'Processed file "' + o.result.file + '" on the server');
+											} });
+									
+									}
+									var onError = function(sender, error){
+									
+									}
+									EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getProject();
 								}
 							} }
 						] });

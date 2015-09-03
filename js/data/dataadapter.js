@@ -13,10 +13,7 @@ function DataAdapter(args) {
 		if (args.onError != null) {
 			this.onError.attach(args.onError);
 		}
-		
 	}
-	
-
 }
 
 DataAdapter.prototype.getUrl = function(connection, url){
@@ -33,7 +30,6 @@ DataAdapter.prototype.get = function(url){
 
 	var connections = EXI.credentialManager.getConnections();
 	if (connections.length == 1){
-		console.log(this.getUrl(connections[0], url));
 		$.ajax({
 			  url: this.getUrl(connections[0], url),
 			  type: 'get',
@@ -65,7 +61,6 @@ DataAdapter.prototype.get = function(url){
 				  }
 			  },
 			  error: function(error){
-				  debugger
 				  _this.onError.notify(error);
 				   EXI.setError(error.responseText);
 			  }

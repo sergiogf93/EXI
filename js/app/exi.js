@@ -87,18 +87,22 @@ function Exi(args) {
 	this.authenticationForm = new AuthenticationForm();
 	this.authenticationForm.onAuthenticate.attach(function(sender, args){
 		var authenticationManager = new AuthenticationManager();
-		authenticationManager.onSuccess.attach(function(sender, args){
+		authenticationManager.onSuccess.attach(function(sender, data){
 			/** This user has been authenticated **/
-			_this.credentialManager.addCredential(args.user, args.roles, args.token, args.url);
+			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl);
 			_this.authenticationForm.window.close();
 			
-			var credential = EXI.credentialManager.getCredentialByUserName(args.user);
+			var credential = EXI.credentialManager.getCredentialByUserName(data.user);
 			if (credential.isManager()){
-				location.hash = "/welcome/manager/" + args.user + "/main";
+				location.hash = "/welcome/manager/" + data.user + "/main";
 			}
 			else{
-				location.hash = "/welcome/user/" + args.user + "/main";
+				location.hash = "/welcome/user/" + data.user + "/main";
 			}
+			
+			/** Authenticating EXI **/
+			_this.getDataAdapter().exi.offline.authenticate();
+			
 		});
 		
 		authenticationManager.login(args.user, args.password, args.site);

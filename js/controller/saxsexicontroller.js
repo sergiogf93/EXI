@@ -232,19 +232,7 @@ SAXSExiController.prototype.routeExperiment = function() {
 };
 
 
-SAXSExiController.prototype.routeTool = function() {
-	Path.map("#/tool/crysol/main").to(function() {
-		var mainView = new CrysolMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load();
-	}).enter(this.setPageBackground);
 
-	Path.map("#/tool/subtraction/main").to(function() {
-		var mainView = new SubtractionMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load();
-	}).enter(this.setPageBackground);
-};
 
 
 SAXSExiController.prototype.routeDataCollection = function() {
@@ -331,19 +319,6 @@ SAXSExiController.prototype.routeDataCollection = function() {
 };
 
 
-SAXSExiController.prototype.routeTool = function() {
-	Path.map("#/tool/crysol/main").to(function() {
-		var mainView = new CrysolMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load();
-	}).enter(this.setPageBackground);
-
-	Path.map("#/tool/subtraction/main").to(function() {
-		var mainView = new SubtractionMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load();
-	}).enter(this.setPageBackground);
-};
 
 SAXSExiController.prototype.routePrepare = function() {
 //	Path.map("#/prepare/designer/main").to(function() {
@@ -463,11 +438,7 @@ SAXSExiController.prototype.routePrepare = function() {
 					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data);
 				});
 
-//				var manager = new ProposalUpdater();
-//				manager.onSuccess.attach(function(sender, proposals) {
 				wizardWidget.draw(this.targetId, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers()));
-//				});
-//				manager.get();
 
 			}).enter(this.setPageBackground);
 };
@@ -484,7 +455,6 @@ SAXSExiController.prototype.init = function() {
 
 	this.routeNavigation();
 	this.routeExperiment();
-	this.routeTool();
 	this.routeDataCollection();
 	this.routePrepare();
 
@@ -493,8 +463,8 @@ SAXSExiController.prototype.init = function() {
 	Path.map("#/project/:projectId/run/:runId/main").to(function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];
-		var exidataAdapter = EXI.getDataAdapter();
-		exidataAdapter.onSuccess.attach(function(sender, runs) {
+
+		var onSuccess = (function(sender, runs) {
 			for (var i = 0; i < runs.length; i++) {
 				if (runs[i].internalId == runId) {
 					var main = new RunMainView();
@@ -503,11 +473,14 @@ SAXSExiController.prototype.init = function() {
 				}
 			}
 		});
-		exidataAdapter.getRuns(projectId);
+		
+		var onError = (function(sender, runs) {
+			
+		});
+		
+		EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getRuns(projectId);
+//		exidataAdapter.getRuns(projectId);
 	}).enter(this.setPageBackground);
-
-	
-
 	
 
 	Path.rescue(notFound);

@@ -31,8 +31,8 @@ function RunMainView() {
 RunMainView.prototype.getContainer = function() {
 	var _this = this;
 	this.container =  Ext.create('Ext.form.Panel', {
-		height : 500,
-		margin : 30,
+//		height : 500,
+//		margin : 30,
 		
 		border : 1,
 		style: {borderColor:'gray', borderStyle:'solid', borderWidth:'1px'},
@@ -67,7 +67,6 @@ RunMainView.prototype.getOutputGrid = function(job) {
 	return Ext.create('Ext.grid.Panel', {
 	    title: this.getJob(job),
 	    store: this.outputStore,
-//	    padding : "10 0 0 50",
 	    margin : 20,
 	    border : 1,
 		style: {borderColor:'gray', borderStyle:'solid', borderWidth:'1px'},
@@ -78,9 +77,8 @@ RunMainView.prototype.getOutputGrid = function(job) {
 	        { text: 'target', dataIndex: 'targetId', flex : 1 },
 	        { text: '', dataIndex: 'targetId', flex : 1, renderer : function(grid, opt, record){
 	        	if (record.data.type == "file"){
-	        		var url = new ExiDataAdapter().server + "/file/" + record.data.targetId + "/download";
+	        		var url =EXI.credentialManager.getConnections()[0].exiUrl + "/file/" + record.data.targetId + "/download";
 	        		return "<div><a style='color:blue;' href='"+ url +"'>Download</a></div>";
-//	        		
 	        	}
 	        } 
         }

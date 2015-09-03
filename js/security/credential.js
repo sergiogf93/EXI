@@ -1,8 +1,9 @@
 
-function Credential(username, roles, token, url, activeProposals) {
+function Credential(username, roles, token, url, exiUrl,activeProposals) {
 	this.username = username.toLowerCase();
 	this.roles = roles;
 	this.url = url;
+	this.exiUrl = exiUrl;
 	this.token = token;
 	this.activeProposals = activeProposals;
 }

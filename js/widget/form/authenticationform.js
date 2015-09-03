@@ -19,7 +19,7 @@ AuthenticationForm.prototype.show = function(){
 AuthenticationForm.prototype.getPanel = function(){
 	var _this = this;
 	var sites = Ext.create('Ext.data.Store', {
-	    fields: ['name', 'url'],
+	    fields: ['name', 'url', 'exiUrl'],
 	    data : ExtISPyB.sites
 	});
 	
@@ -60,10 +60,20 @@ AuthenticationForm.prototype.getPanel = function(){
 	        disabled: true,
 	        handler: function() {
 	        	var form = this.up('form').getForm();
+	        	
+	        	var exiUrl;
+	        	for (var i =0; i< ExtISPyB.sites.length; i++){
+	        		if (ExtISPyB.sites[i].url == form.getFieldValues().site){
+	        			exiUrl = ExtISPyB.sites[i].exiUrl;
+	        		}
+	        		
+	        	}
 	        	_this.onAuthenticate.notify({
 	        		user : form.getFieldValues().user, 
 	        		password : form.getFieldValues().password, 
-	        		site : form.getFieldValues().site
+	        		site : form.getFieldValues().site,
+	        		exiUrl : exiUrl 
+	        		
 	        	});
 
 	        }

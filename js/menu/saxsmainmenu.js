@@ -233,6 +233,9 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 		if (item.text == "Structure Validation") {
 			location.hash = "/tool/crysol/main";
 		}
+		if (item.text == "Job list") {
+			location.hash = "/tool/list";
+		}
 	}
 
 	return Ext.create('Ext.menu.Menu', {
@@ -247,7 +250,13 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 			text : 'Structure Validation',
 			checked : false,
 			group : 'theme',
-			checkHandler : onItemCheck }
+			handler : onItemCheck },
+			"-",
+			{
+				text : 'Job list',
+				checked : false,
+				group : 'theme',
+				handler : onItemCheck }
 		//			, {
 		//			text : 'PepsiSAXS' }, {
 		//			text : 'SASRef' } 
