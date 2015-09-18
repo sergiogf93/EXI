@@ -294,6 +294,7 @@ Exi.prototype.show = function() {
 														}
 														else{
 															_this.setUserMenu();
+															_this.mainMenu.populateCredentialsMenu();
 														}
 											} } });
 				}

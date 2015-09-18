@@ -115,7 +115,6 @@ FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
 	}
 
 	_this.treePanel.setRootNode({
-//		text : 'Root',
 		expanded : true,
 		children : parsed }
 	);
@@ -150,7 +149,6 @@ FrameSelectorGrid.prototype.load = function(data) {
 FrameSelectorGrid.prototype.getPanel = function() {
 	var _this = this;
 	this.store = Ext.create('Ext.data.TreeStore', {
-		//		fields : [ 'text', 'type' ]
 		 proxy: {
 		        type: 'memory'
 		    },

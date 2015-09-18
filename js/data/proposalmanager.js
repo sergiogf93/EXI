@@ -192,14 +192,6 @@ function ProposalManager() {
 
 ProposalManager.prototype.get = function(forceUpdate) {
 	if ((localStorage.getItem("proposals") == null)||(forceUpdate)){
-		/** Not cached proposals  **/
-//		var adapter = new ProposalDataAdapter({async : false});
-//		adapter.onSuccess.attach(function(sender, proposals){
-//			localStorage.setItem("proposals", JSON.stringify(proposals));
-//		});
-//		adapter.getProposalsInfo();
-		
-		
 		var onSuccess= (function(sender, proposals){
 			localStorage.setItem("proposals", JSON.stringify(proposals));
 		});

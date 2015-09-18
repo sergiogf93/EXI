@@ -52,7 +52,8 @@ PhasingGrid.prototype.getPanel = function() {
 
 	this.store = Ext.create('Ext.data.Store', {
 		
-		fields : [ 'name',
+		fields : [ 'phasingAnalysisId',
+		           'name',
 		           'highRes',
 		           'lowRes', 
 		           'method',
@@ -76,6 +77,11 @@ PhasingGrid.prototype.getPanel = function() {
 		maxHeight : this.maxHeight,
 		minHeight : this.maxHeight,
 		columns : [
+		{
+			text : 'phasingAnalysisId',
+			dataIndex : 'phasingAnalysisId',
+			flex : 1
+		},
 		{
 			text : 'name',
 			dataIndex : 'name',

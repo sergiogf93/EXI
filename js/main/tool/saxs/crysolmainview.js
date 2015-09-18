@@ -12,12 +12,13 @@ function CrysolMainView() {
 	this.queueGridList = [];
 
 	this.id = BUI.id();
+	
 	MainView.call(this);
 
-	this.subtractionSelectorWindow = new SubtractionSelectorWindow();
+	
 
 	var _this = this;
-
+	this.subtractionSelectorWindow = new SubtractionSelectorWindow();
 	this.subtractionSelectorWindow.onSelect.attach(function(sender, selected) {
 		_this.grid.store.removeAll();
 		_this.grid.load(selected);
@@ -73,11 +74,10 @@ CrysolMainView.prototype.getFirstStepContainer = function() {
 
 CrysolMainView.prototype.getContainer = function() {
 	var _this = this;
-	return Ext
-			.create(
+	return Ext.create(
 					'Ext.form.Panel',
 					{
-						height : 500,
+						height : 800,
 						margin : 30,
 						border : 1,
 						bodyStyle : {
@@ -85,6 +85,7 @@ CrysolMainView.prototype.getContainer = function() {
 						style: {borderColor:'#000000', borderStyle:'solid', borderWidth:'1px'},
 						bodypadding : 10,
 						items : [
+								
 								{
 									xtype : 'hiddenfield',
 									id : _this.id + 'hiddenSutractions',
@@ -105,16 +106,36 @@ CrysolMainView.prototype.getContainer = function() {
 												"Evaluation of the solution scattering from macromolecules with known atomic structure and fitting to experimental data",
 												"Written by D. Svergun, C. Barberato, M. Malfois, V. Volkov, P. Konarev1, M. Petoukhov & A. Shkumatov"
 
-										), this.getFirstStepContainer(), {
-									xtype : 'fileuploadfield',
-									id : _this.id + 'fileupload',
-									width : 600,
-									labelWidth : 150,
-									margin : 30,
-									fieldLabel : '<span class="toolPanelText">2) Upload PDB</span>',
-									cls : 'toolPanelText',
-									name : 'file',
-									hideLabel : false } ],
+										), 
+										
+									{
+									    xtype: 'textfield',
+									    name: 'name',
+									    fieldLabel: 'Name',
+									    margin : 30,
+									    allowBlank: false  
+									},
+									{
+								        xtype     : 'textareafield',
+								        grow      : true,
+								        margin : 30,
+									    allowBlank: false , 
+								        name      : 'message',
+								        fieldLabel: 'Description',
+								        anchor    : '100%'
+								    },
+									this.getFirstStepContainer(), 
+									{
+										xtype : 'fileuploadfield',
+										id : _this.id + 'fileupload',
+										width : 600,
+										labelWidth : 150,
+										margin : 30,
+										fieldLabel : '<span class="toolPanelText">2) Upload PDB</span>',
+										cls : 'toolPanelText',
+										name : 'file',
+										hideLabel : false 
+									} ],
 						buttons : [ {
 							text : 'Run',
 							handler : function() {
@@ -122,25 +143,33 @@ CrysolMainView.prototype.getContainer = function() {
 								if (form.isValid()) {
 									
 									var onSuccess = function(sender, projects){
+										
 										Ext.getCmp(_this.id + "hiddenProject").setValue(projects[0].internalId);
 										var fileUploadFilePath = Ext.getCmp(_this.id + 'fileupload').value;
 										Ext.getCmp(_this.id + "pdbFileName").setValue(fileUploadFilePath.split("\\")[fileUploadFilePath.split("\\").length - 1]);
+										
+										
+										function onSubmitted(){
+											location.hash = "/tool/list";
+										}
+										
 										form.submit({
 											url : EXI.getDataAdapter().exi.offline.getToolUrl() + "/crysol/run",
 											waitMsg : 'Sending job to server...',
 											success : function(fp, o) {
-												debugger
-												msg('Success', 'Processed file "' + o.result.file + '" on the server');
+//												BUI.showWarning('Success', 'Job has been set to the server');
+												onSubmitted();
 											},
 											failure : function(fp, o) {
-												debugger
-												msg('Failure', 'Processed file "' + o.result.file + '" on the server');
+												onSubmitted();
+//												debugger
+//												BUI.showError('Error', 'There was an error');
 											} });
 									
-									}
+									};
 									var onError = function(sender, error){
 									
-									}
+									};
 									EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getProject();
 								}
 							} }

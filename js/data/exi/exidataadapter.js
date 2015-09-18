@@ -61,6 +61,7 @@ ExiDataAdapter.prototype.postcall = function(url, data){
 			  }
 		  },
 		  error: function(error){
+			  debugger
 			  _this.onError.notify(error);
 			  if (exiSAXS != null){
 				  exiSAXS.setError(error);
@@ -74,11 +75,15 @@ ExiDataAdapter.prototype.getToolUrl = function(){
 	return this.getUrl('/{token}/tool');
 };
 
+
+
+
 ExiDataAdapter.prototype.authenticate = function(){
 	this.call('/{token}/user/{username}/authenticate');
 };
 
 ExiDataAdapter.prototype.getProject = function(){
+	debugger
 	this.call('/{token}/project/list');
 };
 
@@ -89,3 +94,12 @@ ExiDataAdapter.prototype.getRuns = function(projectId){
 ExiDataAdapter.prototype.save = function(user){
 	this.postcall('/{token}/user/save'.format([ tokens[0].token]), {user : JSON.stringify(user)});
 };
+
+ExiDataAdapter.prototype.getFileContent = function(fileId){
+	this.call('/file/{0}/content'.format([ fileId]));
+};
+
+ExiDataAdapter.prototype.getFileImage = function(fileId){
+	return this.getUrl('/file/{0}/image'.format([ fileId]));
+};
+

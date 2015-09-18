@@ -97,7 +97,7 @@ function AutoProcIntegrationMainView() {
 	
 	
 	/** Phasing **/
-	this.autoProcIntegrationPhasingGrid = new AutoProcIntegrationGrid({ maxHeight: 800});
+	this.autoProcIntegrationPhasingGrid = new AutoProcIntegrationGrid({ maxHeight: 500});
 
 	this.autoProcIntegrationPhasingGrid.onSelected.attach(function(sender, records){
 		var ids = [];
@@ -118,6 +118,7 @@ function AutoProcIntegrationMainView() {
 									parsed.push(data[0].phasinganalysis[i].modelbuilding[j]);
 									parsed[parsed.length -1]["name"] = "modelbuilding";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].modelbuilding[j].spaceGroupVO);
+									parsed[parsed.length -1]["phasingAnalysisId"] =  data[0].phasinganalysis[i].modelbuilding[j].phasingAnalysisVO.phasingAnalysisId;
 								}
 							}
 							
@@ -126,6 +127,7 @@ function AutoProcIntegrationMainView() {
 									parsed.push(data[0].phasinganalysis[i].preparephasingdata[j]);
 									parsed[parsed.length -1]["name"] = "preparephasingdata";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].preparephasingdata[j].spaceGroupVO);
+									parsed[parsed.length -1]["phasingAnalysisId"] =  data[0].phasinganalysis[i].preparephasingdata[j].phasingAnalysisVO.phasingAnalysisId;
 								}
 							}
 							
@@ -134,6 +136,7 @@ function AutoProcIntegrationMainView() {
 									parsed.push(data[0].phasinganalysis[i].phasing[j]);
 									parsed[parsed.length -1]["name"] = "phasing";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].phasing[j].spaceGroup3VO);
+									parsed[parsed.length -1]["phasingAnalysisId"] =  data[0].phasinganalysis[i].phasing[j].phasingAnalysisVO.phasingAnalysisId;
 								}
 							}
 		
@@ -142,6 +145,7 @@ function AutoProcIntegrationMainView() {
 									parsed.push(data[0].phasinganalysis[i].substructureDetermination3VO[j]);
 									parsed[parsed.length -1]["name"] = "substructureDetermination";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].substructureDetermination3VO[j].spaceGroupVO);
+									parsed[parsed.length -1]["phasingAnalysisId"] =  data[0].phasinganalysis[i].substructureDetermination3VO[j].phasingAnalysisVO.phasingAnalysisId;
 								}
 							}
 							
@@ -260,8 +264,16 @@ AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
 		        	 layout: 'hbox',
 		        	 margin : '10 0 0 20',
 		        	 items : [
-		        	          	this.autoProcIntegrationPhasingGrid.getPanel(),
-		        	          	this.phasingGrid.getPanel()
+			        	          Ext.create('Ext.container.Container', {
+			     		        	 layout: 'hbox',
+//			     		        	 margin : '10 0 0 20',
+			     		        	 flex : 0.4,
+			     		        	 items : [
+			     		        	          	this.autoProcIntegrationPhasingGrid.getPanel()
+			     		        	          ]
+			     		         }),
+		        	          
+		        	          		this.phasingGrid.getPanel()
 		        	          ]
 		         }),
 		         		
@@ -269,12 +281,55 @@ AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
 	});
 };
 
+//AutoProcIntegrationMainView.prototype.getDataCollectionPanel = function() {
+//	console.log(this.id)
+//	return Ext.create('Ext.container.Container', {
+//		layout: {
+//	        type: 'fit'
+//	    },
+//		margin : 5,
+//		
+//		height : 600,
+//		items : [ 
+//						Ext.create('Ext.Panel', {
+//						    id : this.id + "general",
+//						    layout: 'form',
+//						    autoScroll : true,
+//						    bodyPadding: 5,
+//						    items: []
+//						})
+//		         		
+//		    ]
+//	});
+//};
+
+
+
 AutoProcIntegrationMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('tabpanel',
 			{
 				plain : true,
 				margin : '10 30 10 10',
 				items : [
+//					{
+//						tabConfig : {
+//							title : 'General'
+//						},
+//						items : [ {
+//							xtype : 'container',
+//							layout : 'fit',
+//							style : {
+//								borderColor : 'gray',
+//								borderStyle : 'solid',
+//								borderWidth : '1px',
+//								'background-color' : 'white' 
+//							},
+//							items : [ 
+//							         this.getDataCollectionPanel()
+//							]
+//						}
+//						]
+//					},
 					{
 						tabConfig : {
 							title : 'Auto Processing'
@@ -339,7 +394,34 @@ AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsI
 	this.sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleSigmaAno(autoProcIntegrationsIds.toString()));
 	this.annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleAnnoCorrection(autoProcIntegrationsIds.toString()));
 };
+
+
+AutoProcIntegrationMainView.prototype.loadGeneral = function(dataCollection) {
+	for (var key in dataCollection){
+		Ext.getCmp(this.id + "general").insert({
+			xtype : 'container',
+			
+			layout : 'hbox',
+			items : [ 
+			          {
+					        xtype: 'label',
+					        forId: 'myFieldId',
+					        text: key + ':',
+					        margin: '0 0 0 10'
+					  },
+					  {
+					        xtype: 'label',
+					        forId: 'myFieldId',
+					        text: dataCollection[key],
+					        margin: '0 0 0 10'
+					    }
+			]
+		});
+	}
+};
 	
+
+
 	
 AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
@@ -354,8 +436,7 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 			autoProcs.push(data[i].autoproc);
 			autoProcIds.push(data[i].autoproc.autoProcId);
 		}
-		_this.autoProcIntegrationGrid.load(data);
-		_this.loadPlots(autoProcIntegrationsIds);
+		
 		
 		
 		var onSuccessPhasing = function(sender, phasing){
@@ -377,8 +458,13 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 				
 			}
 			_this.autoProcIntegrationPhasingGrid.load(autoProcWithPhasing);
+			
+			_this.autoProcIntegrationGrid.load(data);
+			_this.loadPlots(autoProcIntegrationsIds);
+			
+//			_this.loadGeneral(data[0].datacollection);
 		};
-		
+	
 		
 		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(autoProcIds);
 		

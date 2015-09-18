@@ -10,8 +10,15 @@ function AuthenticationDataAdapter(args){
 
 AuthenticationDataAdapter.prototype.authenticate = function(user, password, url){
 	var _this = this;
+	
+	var site = "ESRF";
+	/** SITE **/
+	if (url.indexOf("embl-hamburg") != -1){
+		site = "EMBL";
+	}
+	
 	$.ajax({
-		  url: url + '/authenticate?site=EMBL',
+		  url: url + '/authenticate?site=' + site,
 		  type: 'post',
 		  data: {
 			  		login : user,

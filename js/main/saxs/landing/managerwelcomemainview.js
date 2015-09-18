@@ -16,7 +16,6 @@ function ManagerWelcomeMainView() {
 	var _this = this;
 	this.proposalGrid.onSelected.attach(function(sender, proposal){
 		_this.panel.setLoading(true);
-		EXI.proposalManager.get(true);
 		_this.activeProposal(proposal);
 		_this.panel.setLoading(false);
 		
@@ -30,13 +29,14 @@ function ManagerWelcomeMainView() {
 			_this.activeProposal(proposal);
 			location.hash = "/session/nav/" + record.sessionId +"/session";
 			
-		} 
+		} ;
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getProposalBySessionId(record.sessionId);
 	});
 }
 
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
+	EXI.proposalManager.get(true);
 };
 
 

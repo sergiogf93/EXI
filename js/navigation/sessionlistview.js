@@ -7,14 +7,13 @@ function SessionListView(){
 }
 
 SessionListView.prototype.getFilter = function(value){
-	return [{property : "date", value : value, anyMatch : true}];
+	return [{property : "beamlineName", value : value, anyMatch : true}];
 };
 
 SessionListView.prototype.formatData = function(data){
 	for (var i = 0; i < data.length; i++) {
 		data[i]["date"] =  moment(data[i].startDate).format("MMM Do YY");
 	}
-	console.log(data);
 	return data;
 };
 
@@ -23,15 +22,14 @@ SessionListView.prototype.getRow = function(record){
 	
 		if (record.data.startDate != null){
 			try{
-				html = html + "<tr><td>Date:</td><td style='color:#207a7a;font-weight:bold;'>" + moment(record.data.startDate).format("MMM Do YY") + "</td></tr>";
+				html = html + "<tr><td>Date:</td><td>" + moment(record.data.startDate).format("MMM Do YY") + "</td></tr>";
 			}
 			catch(e){
 				html = html + "<tr><td>Date:</td><td>Format Error</td></tr>";
 			}
 		}
 		html = html + "<tr><td>Shifts:</td><td>" + record.data.nbShifts+ "</td></tr>";
-		html = html + "<tr><td>Beamline:</td><td>" + record.data.beamlineName+ "</td></tr>";
-		html = html + "<tr><td>Comments:</td><td>" + record.data.comments+ "</td></tr>";
+		html = html + "<tr><td>Beamline:</td><td style='color:#207a7a;font-weight:bold;'>" + record.data.beamlineName+ "</td></tr>";
 	return html + "</table>";
 };
 

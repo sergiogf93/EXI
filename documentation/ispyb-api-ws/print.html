@@ -10,11 +10,53 @@
 .chapter{
 	margin : 50 0 0 0;
 }
+body {
+    margin : 10px;
+}
+
+table, th, td {
+    border: 1px solid gray;
+    border-collapse: collapse;
+    font-size : 14px;
+    margin : 10px;
+  
+}
+th {
+	 background-color: #0B0B61;
+   	border: 0px solid white;
+   	color : white;
+}
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+.parameter{
+	color : #0B0B61;
+	font-weight : bold;
+}
 </style>
 
 
-<body style='margin: 25px'>
-	<div style='margin:0 0 500 0;width:6000px' class="tree" id='ws_tree'></div>
+<body >
+		<h1>ISPyB Web service API</h1>
+		<br />
+		This is the list of web services available. Some comments:
+		<li>Token is a ASCII string that will identify and validate the web service call</li>
+		<li>Two HTTP methods are used: GET and POST</li>
+		<li>If no role then all roles are available: User, Manager and labcontact</li>
+		<br />
+		<table id='tb'> 
+			<tr>
+			    <th>Name</th>
+			    <th>Method</th>
+			    <th>Roles</th>
+			    <th>Query Params</th>
+			    <th>Comments</th>
+			</tr>
+  		</table>
+  		<br />
+		<h1>Tree View</h1>
+		<div style='margin:0 0 500 0;width:6000px' class="tree" id='ws_tree'></div>
 </body>
 </html>
 
@@ -103,5 +145,80 @@ function init(target, items){
 
 
 init("ws_tree", getData(getProposalChildren()));
+
+function getPrettyPath(path){
+	var re = new RegExp("{", 'g');
+	path = path.replace(re, "<span class='parameter'>{");
+	var re = new RegExp("}", 'g');
+	path = path.replace(re, "}</span>");
+	return path;	
+}
+
+function addMethod(path, method, roles, queryParams, comments){
+	var table = document.getElementById("tb");
+	var tr = document.createElement("tr");
+	
+	var td1 = document.createElement("td");
+// 	td1.appendChild(document.createTextNode(path));
+	td1.innerHTML = getPrettyPath(path);
+	tr.appendChild(td1);
+
+	var td2 = document.createElement("td");
+	if (method != null){
+		td2.appendChild(document.createTextNode(method));
+	}
+	tr.appendChild(td2);
+
+	var td3 = document.createElement("td");
+	if (roles != null){
+		td3.appendChild(document.createTextNode(roles));
+	}
+	tr.appendChild(td3);
+
+	var td4 = document.createElement("td");
+	if (queryParams != null){
+		td4.appendChild(document.createTextNode(queryParams));
+	}
+	tr.appendChild(td4);
+
+	var td5 = document.createElement("td");
+	if (comments != null){
+		td5.appendChild(document.createTextNode(comments));
+	}
+	tr.appendChild(td5);
+	
+	table.appendChild(tr);
+
+	
+}
+
+var data = getData();
+function exploreNode(node, path){
+	path = path + "/" +node.name;
+	console.log(path);
+	if (node.children != null){
+		for(var i = 0; i < node.children.length; i++){
+			exploreNode(node.children[i], path);
+		}
+	}
+	else{
+		// It is a leaf 
+		if (node.method != null){
+			console.log(node.method);
+		}
+		if (node.roles != null){
+			console.log(node.roles);
+		}
+		if (node.queryParams != null){
+			console.log(node.queryParams);
+		}
+		var comments = "No comments";
+		addMethod(path, node.method, node.roles, node.queryParams, node.comments);
+	}
+
+	
+	
+}
+exploreNode(getData(getProposalChildren())[0], "");
 </script>
 

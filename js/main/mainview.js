@@ -1,5 +1,6 @@
 
 function MainView() {
+	this.id = BUI.id();
 	this.title = "New Tab";
 	this.closable = true; 
 	this.onSelectionChange = new Event(this);

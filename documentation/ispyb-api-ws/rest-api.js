@@ -164,6 +164,22 @@ function getShipping(){
 															] 
 														}
 											] 
+										},
+										{
+											name:'labcontact',
+											children : [
+															{
+																		name:'smis', children : [
+																						{name:'list', method : 'GET'}
+																		] 
+															},
+															{
+																name:'{labContactId}', children : [
+																				{name:'get', method : 'GET'}
+																] 
+															},
+															{name:'list', method : 'GET'}
+											] 
 										}
 							] 
 						}	
@@ -229,7 +245,7 @@ function getSpecimen(){
 	return {
 		name:'specimen',
 		children : [
-						{name:'merge', method : 'GET'},	
+						{name:'merge', method : 'POST'},	
 						{name:'save', method : 'POST'}
 		]
 	};
@@ -346,9 +362,7 @@ function getData(proposalChildrenFn) {
 																				{
 																					name:'session',
 																					children : [
-																								{
-																									name:'list', children : [{name : 'list', method : 'GET', roles:['manager', 'localcontact']}]
-																								},
+																								{name : 'list', method : 'GET', roles:['manager', 'localcontact']},
 																								{
 																									name:'{sessionId}', children : [{name : 'list', method : 'GET'}]
 																								}
@@ -392,6 +406,26 @@ function getMX(){
 	return {
 		name:'mx',
 		children : [
+		            {
+		            	name:'crystal',
+		            	children : [
+										{
+											name:'datacollection',
+											children : [
+													{
+														name:'{datacollectionId}',
+														children : [
+																		{
+																			name:'pdb', 
+																			children : [
+																			            {name : 'download', method : 'GET'}]
+																		}
+														]
+													}
+											]
+										}  
+		            	]
+		            },
 					{
 						name:'autoprocintegration',
 						children : [

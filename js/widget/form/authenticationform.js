@@ -3,7 +3,7 @@ function AuthenticationForm(){
 }
 AuthenticationForm.prototype.show = function(){
 	this.window = Ext.create('Ext.window.Window', {
-	    title: 'Authentication',
+	    title: 'Authentication <span style="FONT-SIZE:9PX;color:red;">[INTRANET ONLY]</span>',
 	    height: 250,
 //	    closable :  EXI.localExtorage.tokenManager.getTokens().length > 0,
 	    width: 400,

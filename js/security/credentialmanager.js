@@ -76,6 +76,7 @@ CredentialManager.prototype.setActiveProposal = function(username, proposal){
 		if (credentials[i].username.toLowerCase() == username.toLowerCase()) {
 			credentials[i].activeProposals = [proposal];
 			localStorage.setItem("credentials", JSON.stringify(credentials));
+			localStorage.removeItem("sessions");
 			this.onActiveProposalChanged.notify();
 		}
 	}

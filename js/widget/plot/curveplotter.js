@@ -57,39 +57,41 @@ CurvePlotter.prototype.getLabels = function() {
 
 CurvePlotter.prototype.render = function(url) {
 	var _this = this;
-	document.getElementById(this.targetId).innerHTML = "";
-	this.width = this.plotPanel.getWidth();
-	this.height = this.plotPanel.getHeight();
+	if (document.getElementById(this.targetId) != null){
+		document.getElementById(this.targetId).innerHTML = "";
 	
-	document.getElementById(this.targetId).setAttribute("style", "border: 1px solid #000000; height:" + (this.plotPanel.getHeight() - 1) + "px;width:" + (this.plotPanel.getWidth() - 2) + "px;");
+		this.width = this.plotPanel.getWidth();
+		this.height = this.plotPanel.getHeight();
+		
+		document.getElementById(this.targetId).setAttribute("style", "border: 1px solid #000000; height:" + (this.plotPanel.getHeight() - 1) + "px;width:" + (this.plotPanel.getWidth() - 2) + "px;");
+		
+		Ext.getCmp(this.id).setHeight(this.plotPanel.getHeight());
+		Ext.getCmp(this.id).setWidth(this.plotPanel.getWidth());
+		
+		
+		this.dygraph = new Dygraph(
+			      document.getElementById(this.targetId),
+			      url,
+			      {
+			    	  title : this.title,
+			    	  titleHeight : 20,
+			    	  legend: this.legend,
+			    	  labelsSeparateLines : true,
+			          errorBars: true,
+			          connectSeparatedPoints: true,
+			          pointClickCallback: function(e, p) {
+			        	  _this.onPointClickCallback.notify(p.name);
+			          }
+			      }
 	
-	Ext.getCmp(this.id).setHeight(this.plotPanel.getHeight());
-	Ext.getCmp(this.id).setWidth(this.plotPanel.getWidth());
+			 );
+		
+		var _this = this;
+		this.dygraph.ready(function() {
+			_this.onRendered.notify();
+		});
 	
-	
-	this.dygraph = new Dygraph(
-		      document.getElementById(this.targetId),
-		      url,
-		      {
-		    	  title : this.title,
-		    	  titleHeight : 20,
-		    	  legend: this.legend,
-		    	  labelsSeparateLines : true,
-		          errorBars: true,
-		          connectSeparatedPoints: false,
-		          pointClickCallback: function(e, p) {
-		        	  _this.onPointClickCallback.notify(p.name);
-		          }
-		      }
-
-		 );
-	
-	var _this = this;
-	this.dygraph.ready(function() {
-		_this.onRendered.notify();
-	});
-	
-	
+	}
 };
 
 CurvePlotter.prototype.loadMerge = function(subtractionIdList, from, to, scale) {

@@ -82,16 +82,25 @@ SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
 		if (item.text == "Shipments") {
 			location.hash = "/shipping/nav";
 		}
+		if (item.text == "Manage shipping addresses") {
+			location.hash = "/addresses/nav";
+		}
 		
 	}
 
 	return Ext.create('Ext.menu.Menu', {
 		items : [ 
-	          {
+			{
+				text : 'Manage shipping addresses',
+				icon : '../images/icon/contacts.png',
+				handler : onItemCheck 
+			}, 
+			{
 				text : 'Create a new Shipment',
 				icon : '../images/icon/macromolecule.png',
 				handler : onItemCheck 
 			}, 
+			
 			{
 				text : 'Shipments',
 				icon : '../images/icon/buffer.jpg',
@@ -184,13 +193,13 @@ SAXSMainMenu.prototype.getDataExplorerMenu = function() {
 				text : 'Sessions',
 				icon : '../images/icon/sessions.png',
 				handler : onItemCheck 
-			},
-			{
-				text : 'Experiments',
-				checked : false,
-				group : 'theme',
-				handler : onItemCheck 
-			} 
+			}
+//			{
+//				text : 'Experiments',
+//				checked : false,
+//				group : 'theme',
+//				handler : onItemCheck 
+//			} 
 		] 
 	});
 };

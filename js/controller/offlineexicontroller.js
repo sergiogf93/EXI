@@ -22,6 +22,13 @@ OfflineExiController.prototype.init = function() {
 		}
 
 
+		Path.map("#/tool/dimple/main").to(function() {
+			var mainView = new DimpleMainView();
+			EXI.addMainPanel(mainView);
+			mainView.load();
+		}).enter(this.setPageBackground);
+		
+		
 		Path.map("#/tool/crysol/main").to(function() {
 			var mainView = new CrysolMainView();
 			EXI.addMainPanel(mainView);
@@ -41,7 +48,12 @@ OfflineExiController.prototype.init = function() {
 			listView.onSelect.attach(function(sender, selected) {
 				var runId = selected[0].internalId;
 				var projectId = project.internalId;
-				location.hash = "/project/" +projectId + "/run/" + runId + "/main";
+				if (selected[0].tool == "Dimple"){
+					location.hash = "/project/" +projectId + "/dimple/" + runId + "/main";
+				}
+				else{
+					location.hash = "/project/" +projectId + "/run/" + runId + "/main";
+				}
 			});
 
 			/** Cleaning up navigation panel * */
@@ -88,6 +100,26 @@ OfflineExiController.prototype.init = function() {
 	}).enter(this.setPageBackground);
 
 
+	Path.map("#/project/:projectId/dimple/:runId/main").to(function() {
+		var projectId = this.params['projectId'];
+		var runId = this.params['runId'];
+
+		var onSuccess = (function(sender, runs) {
+			for (var i = 0; i < runs.length; i++) {
+				if (runs[i].internalId == runId) {
+					var main = new DimpleRunMainView();
+					EXI.addMainPanel(main);
+					main.load(runs[i]);
+				}
+			}
+		});
+		var onError = (function(sender, runs) {
+			
+		});
+		
+		EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getRuns(projectId);
+	}).enter(this.setPageBackground);
+	
 	Path.rescue(notFound);
 
 };

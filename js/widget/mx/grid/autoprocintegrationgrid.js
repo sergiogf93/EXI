@@ -42,10 +42,8 @@ AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
 		record["anomalous"] = autoProcIntegrations[i].autointegration.anomalous;
 		record["autoProcIntegrationId"] = autoProcIntegrations[i].autointegration.autoProcIntegrationId;
 		record["processingPrograms"] = autoProcIntegrations[i].autoprocprogram.processingPrograms;
-		
 		data.push(record);
 	}
-	
 	this.store.loadData(data, false);
 };
 

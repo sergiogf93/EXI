@@ -35,7 +35,9 @@ SessionTimeLineWidget.prototype.getTopBar = function() {
 		        	id 			: this.id + 'week',
 		            xtype    	: 'textfield',
 		            name     	: 'field1',
-		            width 		: 40,
+		            fieldLabel  : 'Week',
+		            labelWidth : 40,
+		            width 		: 100,
 		            value		: this.week,
 		            listeners : {
 						specialkey : function(field, e) {
@@ -45,7 +47,6 @@ SessionTimeLineWidget.prototype.getTopBar = function() {
 							}
 						} 
 					} 
-//		            emptyText: 'enter search term'
 		        },
 		        {
 		            text: '>>',
@@ -54,14 +55,6 @@ SessionTimeLineWidget.prototype.getTopBar = function() {
 		            	
 		            }
 		        }
-//		        ,
-		        // begin using the right-justified button container
-//		        '->', // same as {xtype: 'tbfill'}, // Ext.toolbar.Fill
-//		        {
-//		            xtype    : 'textfield',
-//		            name     : 'field1',
-//		            emptyText: 'enter search term'
-//		        }
 		    ]
 		});
 };
@@ -81,7 +74,7 @@ SessionTimeLineWidget.prototype.loadSessions = function(start, end) {
 			var parsed = [];
 			for (var i = 0; i < sessions.length; i++) {
 				parsed.push({
-					start :  moment(sessions[i].startDate).toDate(),
+					start :  startSession,
 					end :  moment(sessions[i].endDate).toDate(),
 					content : parseContent(sessions[i]),
 					group : sessions[i].beamlineName,

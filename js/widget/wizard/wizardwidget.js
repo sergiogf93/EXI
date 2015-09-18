@@ -99,6 +99,18 @@ WizardWidget.prototype.getButtons = function(step, onNext, onBack) {
 
 };
 
+
+WizardWidget.prototype.getPanel = function(form) {
+	this.forms.push(form);
+	
+	return Ext.create('Ext.form.Panel', {
+		width : this.width,
+		height : 800,
+		items : [  this.forms[this.step].getForm() ],
+		buttons : this.getButtons(this.step, this.forms[this.step].onNext, this.forms[this.step].onBack)
+	});
+};
+
 WizardWidget.prototype.renderMasterContainer = function() {
 	var _this = this;
 
@@ -108,12 +120,7 @@ WizardWidget.prototype.renderMasterContainer = function() {
 	if (this.window != null) {
 		this.window.destroy();
 	}
-	this.current = Ext.create('Ext.form.Panel', {
-		width : this.width,
-		height : 800,
-		items : [  this.forms[this.step].getForm() ],
-		buttons : this.getButtons(this.step, this.forms[this.step].onNext, this.forms[this.step].onBack)
-	});
+	this.current = this.getPanel();
 
 	if (this.windowMode == false) {
 		this.current.render(this.targetId);

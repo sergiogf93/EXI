@@ -40,7 +40,7 @@ RunListView.prototype.getRow = function(record){
 RunListView.prototype.getColumns = function(){
 	var _this = this;
 	return  [
-		        { text: 'Session',  flex: 1, dataIndex: 'sessionId', 
+		        { text: 'Jobs',  flex: 1, dataIndex: 'sessionId', 
 		        	renderer : function(list, token, record){
 		        		return _this.getRow(record);
 		        } }

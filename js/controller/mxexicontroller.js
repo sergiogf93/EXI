@@ -40,9 +40,10 @@ MXExiController.prototype.routeNavigation = function() {
 			EXI.setLoadingNavigationPanel(true);
 			var listView = new SessionListView();
 			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/buffer/" + selected[0].bufferId + "/main";
+				location.hash = "/datacollection/session/" + selected[0].sessionId + "/main";
 			});
 			EXI.addNavigationPanel(listView);
+			
 			listView.load(EXI.proposalManager.getSessions());
 			EXI.setLoadingNavigationPanel(false);
 		}
@@ -51,12 +52,9 @@ MXExiController.prototype.routeNavigation = function() {
 
 	/** Loading a single session on the navigation panel * */
 	Path.map("#/session/nav/:sessionId/session").to(function() {
-		var listView = new ExperimentListView();
-		/** When selected move to hash * */
-		listView.onSelect.attach(function(sender, selected) {
-			location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
-		});
-		loadNavigationPanel(listView).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']);
+		
+		location.hash = "/datacollection/session/" + this.params['sessionId'] +"/main";
+		
 
 	}).enter(this.setPageBackground);
 	
@@ -78,6 +76,20 @@ MXExiController.prototype.routeNavigation = function() {
 	}).enter(this.setPageBackground);
 	
 	
+	Path.map("#/datacollection/session/:sessionId/main").to(function() {
+		var mainView = new DataCollectionMxMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['sessionId']);
+		/** Selecting data collections from experiment * */
+		mainView.onSelect.attach(function(sender, element) {
+			EXI.localExtorage.selectedSubtractionsManager.append(element);
+		});
+		mainView.onDeselect.attach(function(sender, element) {
+			EXI.localExtorage.selectedSubtractionsManager.remove(element);
+		});
+
+	}).enter(this.setPageBackground);
+
 	
 };
 

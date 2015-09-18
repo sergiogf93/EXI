@@ -136,6 +136,7 @@ ExperimentMainView.prototype.getTabs = function() {
 			{
 				plain : true,
 				margin : '20 0 0 0',
+				activeTab: 2,
 				items : [
 					{
 						tabConfig : {
