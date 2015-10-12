@@ -107,15 +107,6 @@ BufferGrid.prototype.load = function(buffers) {
 	this.proposalKey = {};
 	this.proposalColor = {};
 	var colors = ["#006633", "#999966", "#CC0066"];
-//	var adapter = new DataAdapter();
-//	adapter.onSuccess.attach(function(sender, proposals){
-//		for (var i = 0; i < proposals.length; i++) {
-//			_this.proposalKey[proposals[i].proposalId] = proposals[i];
-//			_this.proposalColor[proposals[i].proposalId] = colors[i];
-//		}
-//		_this.store.loadData(buffers, false);
-//	});
-//	adapter.getProposals();
 	for (var i = 0; i < buffers.length; i++) {
 		var proposal = EXI.proposalManager.getProposalById(buffers[i].proposalId);
 		buffers[i]["proposal"] = proposal.code + proposal.number;

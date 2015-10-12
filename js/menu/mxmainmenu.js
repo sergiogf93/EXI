@@ -131,38 +131,38 @@ MXMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 
 	return Ext.create('Ext.menu.Menu', {
 		items : [
+//		{
+//		    text: 'Radio Options',
+//		    menu: {        // <-- submenu by nested config object
+//		        items: [
+//		            // stick any markup in a menu
+//		            '<b class="menu-title">Choose a Theme</b>',
+//		            {
+//		                text: 'Aero Glass',
+//		                checked: true,
+//		                group: 'theme',
+//		                checkHandler: onItemCheck
+//		            }, {
+//		                text: 'Vista Black',
+//		                checked: false,
+//		                group: 'theme',
+//		                checkHandler: onItemCheck
+//		            }, {
+//		                text: 'Gray Theme',
+//		                checked: false,
+//		                group: 'theme',
+//		                checkHandler: onItemCheck
+//		            }, {
+//		                text: 'Default Theme',
+//		                checked: false,
+//		                group: 'theme',
+//		                checkHandler: onItemCheck
+//		            }
+//		        ]
+//		    }
+//		},
 		{
-		    text: 'Radio Options',
-		    menu: {        // <-- submenu by nested config object
-		        items: [
-		            // stick any markup in a menu
-		            '<b class="menu-title">Choose a Theme</b>',
-		            {
-		                text: 'Aero Glass',
-		                checked: true,
-		                group: 'theme',
-		                checkHandler: onItemCheck
-		            }, {
-		                text: 'Vista Black',
-		                checked: false,
-		                group: 'theme',
-		                checkHandler: onItemCheck
-		            }, {
-		                text: 'Gray Theme',
-		                checked: false,
-		                group: 'theme',
-		                checkHandler: onItemCheck
-		            }, {
-		                text: 'Default Theme',
-		                checked: false,
-		                group: 'theme',
-		                checkHandler: onItemCheck
-		            }
-		        ]
-		    }
-		},
-		{
-			text : 'Dimple22',
+			text : 'Dimple',
 			checked : false,
 			group : 'theme',
 			handler : onItemCheck },

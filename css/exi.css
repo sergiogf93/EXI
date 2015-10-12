@@ -1,3 +1,62 @@
+.th-component{
+	width : 150px;
+	
+	font-size: 10px;
+	font-family: helvetica, arial, verdana, sans-serif;
+	color: rgb(102, 102, 102);
+	
+	border-top-color:#cecece !important;
+	border-top-style: solid !important;
+    border-top-width: 1px !important;
+    border-bottom-color:#cecece !important;
+	border-bottom-style: solid !important;
+    border-bottom-width: 1px !important;
+}
+
+
+.table-component{
+	border-collapse: collapse;
+	width: 600px !important;
+	border : 1px solid #cecece !important;
+	margin : 2px !important;
+}
+
+
+.tr-component{
+	border-top-color:#cecece !important;
+	border-top-style: solid !important;
+    border-top-width: 1px !important;
+    border-bottom-color:#cecece !important;
+	border-bottom-style: solid !important;
+    border-bottom-width: 1px !important;
+}
+
+.btn-component{
+	cursor : pointer;	
+	width : 100px !important;
+	height  : 25px !important;
+	margin : 2px;
+}
+
+.btn-component-remove{
+	cursor : pointer;	
+	width : 100px !important;
+	height  : 25px !important;
+	margin : 2px;
+	background-image: url(../images/cancel.png);
+	background-repeat: no-repeat;
+	background-position: left;
+	padding-left: 10px;
+}
+
+.exi-toolBar{
+	border-top-color:#E6E6E6 !important;
+	border-top-style: solid !important;
+    border-top-width: 1px !important;
+    border-bottom-color:#E6E6E6 !important;
+	border-bottom-style: solid !important;
+    border-bottom-width: 1px !important;
+}
 
 .welcome-title{
 	text-align: center;
@@ -14,7 +73,6 @@
 	font-size: 15px;
 	font-weight: 300;
 	color : #207a7a;
-	
 	font-family: "open sans",arial,sans-serif;
 }
 
@@ -84,8 +142,13 @@
 	
 }
 
-
-
+.custom-row-text-required {    
+    background-color: #faafbe !important; 
+    background-image: url(http://skirtlesden.com/static/lib/silk/bullet_red.png); 
+    background-position: right center; 
+    background-repeat:no-repeat;
+    color: #090; 
+}
 
 
 .title {

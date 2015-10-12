@@ -12,12 +12,13 @@ function ShippingMainView() {
 	});
 	
 	this.caseGrid.onAdd.attach(function(sender){
-		_this.panel.setLoading();
-		var onSuccess = (function(sender){
-			_this.load(_this.shippingId);
-			_this.panel.setLoading(false);
-		});
-		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.addDewar(_this.shippingId );
+//		_this.panel.setLoading();
+//		var onSuccess = (function(sender){
+//			_this.load(_this.shippingId);
+//			_this.panel.setLoading(false);
+//		});
+//		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.addDewar(_this.shippingId );
+		_this.caseGrid.edit();
 	});
 	
 	this.caseGrid.onRemove.attach(function(sender, dewar){
@@ -29,23 +30,6 @@ function ShippingMainView() {
 	});
 }
 
-ShippingMainView.prototype.getTabs = function() {
-	return  Ext.createWidget('tabpanel',
-			{
-				plain : true,
-				margin : '20 0 0 0',
-				items : [
-					{
-						tabConfig : {
-							title : 'Cases'
-						},
-						items : [ 
-						         	this.caseGrid.getPanel()
-						]
-					}
-					]
-			});
-};
 
 
 ShippingMainView.prototype.getContainer = function() {
@@ -58,7 +42,7 @@ ShippingMainView.prototype.getContainer = function() {
 				items : [
 				     	{
 							tabConfig : {
-								title : 'Shipment'
+								title : 'Delivery Details'
 							},
 							items : [ 
 							         	this.shipmentForm.getPanel()
@@ -66,7 +50,9 @@ ShippingMainView.prototype.getContainer = function() {
 						},
 						{
 							tabConfig : {
-								title : 'Cases'
+								id : this.id + "grid",
+								title : 'Content',
+								icon : '../images/icon/shipping.png'
 							},
 							items : [ 
 							         	this.caseGrid.getPanel()
@@ -74,33 +60,25 @@ ShippingMainView.prototype.getContainer = function() {
 						}
 					]
 			});
-//	return {
-//		  layout: {
-//		        type: 'anchor'
-//		    },
-//		    defaults : {
-//				anchor : '100%',
-//				hideEmptyLabel : false },
-//		    margin : 30,
-//			bodyStyle : {
-//				"background-color" : "#E6E6E6" 
-//			},
-//		items : [
-//		         	this.shipmentForm.getPanel(),
-//		         	this.getTabs()
-//		]
-//	};
+
 };
 
 
 ShippingMainView.prototype.load = function(shippingId) {
 	this.shippingId = shippingId;
-	this.panel.setTitle("Sample Tracking");
-	var _this = this;
-	var onSuccess = (function(sender, shipment){
-		_this.shipmentForm.load(shipment);
-		_this.caseGrid.load(shipment);
-	});
 	
-	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	if (shippingId == null){
+		Ext.getCmp(this.id + "grid").disable(true);
+	}
+	this.panel.setLoading();
+	this.panel.setTitle("Shipment");
+	var _this = this;
+	if (shippingId != null){
+		var onSuccess = (function(sender, shipment){
+			_this.shipmentForm.load(shipment);
+			_this.caseGrid.load(shipment);
+			_this.panel.setLoading(false);
+		});
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	}
 };

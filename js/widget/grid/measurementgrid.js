@@ -182,40 +182,40 @@ MeasurementGrid.prototype.edit = function(macromolecule) {
 	window.draw(macromolecule);
 };
 
-MeasurementGrid.prototype.getTbar = function() {
-	var _this = this;
-	var actions = [];
-
-	actions.push(Ext.create('Ext.Action', {
-		icon: '../images/icon/add.png',
-		text : 'Add',
-		disabled : false,
-		handler : function(widget, event) {
-			_this.edit();
-		}
-	}));
-	actions.push("->");
-	actions.push(Ext.create('Ext.Action', {
-		icon : '../images/icon/refresh.png',
-		text : 'Update From SMIS',
-		tooltip : "Retrieve all the macromolecules of your proposal from SMIS database",
-		disabled : false,
-		handler : function(widget, event) {
-			_this.grid.setLoading("Connecting to SMIS");
-			var adapter = new BiosaxsDataAdapter();
-			adapter.onSuccess.attach(function(sender, data) {
-				BIOSAXS.proposal.setMacromolecules(data.macromolecules);
-				_this.refresh(BIOSAXS.proposal.macromolecules);
-				_this.grid.setLoading(false);
-			});
-			adapter.onError.attach(function(sender, data) {
-				_this.grid.setLoading(false);
-			});
-			adapter.updateDataBaseFromSMIS();
-		}
-	}));
-	return actions;
-};
+//MeasurementGrid.prototype.getTbar = function() {
+//	var _this = this;
+//	var actions = [];
+//
+//	actions.push(Ext.create('Ext.Action', {
+//		icon: '../images/icon/add.png',
+//		text : 'Add',
+//		disabled : false,
+//		handler : function(widget, event) {
+//			_this.edit();
+//		}
+//	}));
+//	actions.push("->");
+//	actions.push(Ext.create('Ext.Action', {
+//		icon : '../images/icon/refresh.png',
+//		text : 'Update From SMIS',
+//		tooltip : "Retrieve all the macromolecules of your proposal from SMIS database",
+//		disabled : false,
+//		handler : function(widget, event) {
+//			_this.grid.setLoading("Connecting to SMIS");
+//			var adapter = new BiosaxsDataAdapter();
+//			adapter.onSuccess.attach(function(sender, data) {
+//				BIOSAXS.proposal.setMacromolecules(data.macromolecules);
+//				_this.refresh(BIOSAXS.proposal.macromolecules);
+//				_this.grid.setLoading(false);
+//			});
+//			adapter.onError.attach(function(sender, data) {
+//				_this.grid.setLoading(false);
+//			});
+//			adapter.updateDataBaseFromSMIS();
+//		}
+//	}));
+//	return actions;
+//};
 
 MeasurementGrid.prototype.deselectAll = function() {
 	this.grid.getSelectionModel().deselectAll();

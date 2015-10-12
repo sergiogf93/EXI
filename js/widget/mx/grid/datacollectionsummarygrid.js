@@ -389,40 +389,13 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 			stripeRows : true,
 			listeners : {
 				itemdblclick : function(dataview, record, item, e) {
-					_this.edit(record.data.stockSolutionId);
+					location.hash =  "/autoprocintegration/datacollection/" + record.data.DataCollection_dataCollectionId + "/main";
 				}
 			}
 		}
 
 	});
 
-//	var actions = _this._getTopButtons();
-//	this.grid.addDocked({
-//		xtype : 'toolbar',
-//		height : 50,
-//		items : actions
-//	});
-
-//	var i = null;
-//	this.grid.getSelectionModel().on({
-//		selectionchange : function(sm, selections) {
-//			if (selections.length) {
-//				for ( i = 0; i < actions.length; i++) {
-//					if (actions[i].enable) {
-//						actions[i].enable();
-//					}
-//				}
-//			} else {
-//				for ( i = 0; i < actions.length; i++) {
-//					if (actions[i].alwaysEnabled == false) {
-//						if (actions[i].disable) {
-//							actions[i].disable();
-//						}
-//					}
-//				}
-//			}
-//		}
-//	});
 	return this.grid;
 };
 

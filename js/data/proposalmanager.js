@@ -226,6 +226,15 @@ ProposalManager.prototype.getLabcontacts = function() {
 	return proposals[0].labcontacts;
 };
 
+ProposalManager.prototype.getLabcontactById = function(labContactId) {
+	var labContacts = this.getLabcontacts();
+	for (var i = 0; i < labContacts.length; i++) {
+		if (labContacts[i].labContactId == labContactId){
+			return labContacts[i];
+		}
+	}
+};
+
 ProposalManager.prototype.getPlateTypeById = function(plateTypeId) {
 	var types = this.getPlateTypes();
 	for (var i = 0; i < types.length; i++) {
@@ -332,6 +341,20 @@ ProposalManager.prototype.getProposalById = function(proposalId) {
 
 ProposalManager.prototype.getStockSolutions = function() {
 	return this.get()[0].stockSolutions;
+};
+
+ProposalManager.prototype.getProteins = function() {
+	return this.get()[0].proteins;
+};
+
+ProposalManager.prototype.getProteinByAcronym = function(acronym) {
+	var proteins = this.getProteins();
+	for (var i = 0; i < proteins.length; i++) {
+		if (proteins[i].acronym == acronym){
+			return proteins[i];
+		}
+	}
+	return null;
 };
 
 ProposalManager.prototype.getStockSolutionsBySpecimen = function(macromoleculeId, bufferId) {

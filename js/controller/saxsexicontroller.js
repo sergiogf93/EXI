@@ -1,31 +1,14 @@
+SAXSExiController.prototype.loadNavigationPanel = ExiController.prototype.loadNavigationPanel;
+
 function SAXSExiController() {
 	this.init();
 };
 
-SAXSExiController.prototype.routeNavigation = function() {
-	
-	
-	function loadNavigationPanel(listView) {
-		/** Cleaning up navigation panel * */
-		EXI.clearNavigationPanel();
-		EXI.setLoadingNavigationPanel(true);
-		
-		var onSuccess = (function(sender, data) {
-			/** Load panel * */
-			EXI.addNavigationPanel(listView);
-			/** Load data * */
-			listView.load(data);
-			EXI.setLoadingNavigationPanel(false);
-		});
-		
-		/** Handle error * */
-		var onError = (function(sender, data) {
-			EXI.setLoadingNavigationPanel(false);
-		});
-		
-		/** Load data data * */
-		return EXI.getDataAdapter({ onSuccess : onSuccess, onError : onError });
 
+SAXSExiController.prototype.routeNavigation = function() {
+	var _this = this;
+	function loadNavigationPanel(listView) {
+		return _this.loadNavigationPanel(listView);
 	}
 
 	/**
@@ -35,16 +18,6 @@ SAXSExiController.prototype.routeNavigation = function() {
 	 * 
 	 */
 	Path.map("#/:navigation/nav").to(function() {
-		/** Session navigation * */
-		if (this.params['navigation'] == "session") {
-			var listView = new SessionListView();
-			/** When selected move to hash * */
-			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/session/nav/" + selected[0].sessionId + "/session";
-			});
-			var adapter = loadNavigationPanel(listView);
-			adapter.proposal.session.getSessions();
-		}
 		
 		if (this.params['navigation'] == "buffer") {
 			EXI.clearNavigationPanel();
@@ -63,26 +36,6 @@ SAXSExiController.prototype.routeNavigation = function() {
 		}
 		
 		
-		if (this.params['navigation'] == "addresses") {
-			EXI.clearNavigationPanel();
-			EXI.setLoadingNavigationPanel(true);
-			var listView = new AddressListView();
-			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/address/" + selected[0].labContactId + "/main";
-			});
-			
-			EXI.addNavigationPanel(listView);
-			
-			var adapter = loadNavigationPanel(listView);
-			adapter.proposal.shipping.getLabContacts();
-			
-			/** Loading welcome page **/
-			EXI.addMainPanel(new AddressWelcomeMainView());
-			
-		}
-		
-		
-		
 		if (this.params['navigation'] == "stocksolution") {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
@@ -99,7 +52,6 @@ SAXSExiController.prototype.routeNavigation = function() {
 			
 		}
 		
-
 		if (this.params['navigation'] == "macromolecule") {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
@@ -116,21 +68,6 @@ SAXSExiController.prototype.routeNavigation = function() {
 			
 		}
 		
-
-		if (this.params['navigation'] == "shipping") {
-			var listView = new ShippingListView();
-			/** When selected move to hash * */
-			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/shipping/" + selected[0].shippingId + "/main";
-			});
-			var adapter = loadNavigationPanel(listView);
-			adapter.proposal.shipping.getShippings();
-			
-			/** Loading welcome page **/
-			EXI.addMainPanel(new ShippingWelcomeMainView());
-			
-		}
-
 		if (this.params['navigation'] == "template") {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
@@ -372,22 +309,6 @@ SAXSExiController.prototype.routePrepare = function() {
 		mainView.load();
 	}).enter(this.setPageBackground);
 	
-	Path.map("#/shipping/:shippingId/main").to(function() {
-		var mainView = new ShippingMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load(this.params['shippingId']);
-	}).enter(this.setPageBackground);
-
-	
-	Path.map("#/address/:lacontactId/main").to(function() {
-		var mainView = new AddressMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load(this.params['lacontactId']);
-	}).enter(this.setPageBackground);
-
-	
-	
-	
 	
 	Path.map("#/prepare/stocksolution/main").to(function() {
 		var mainView = new StockSolutionMainView();
@@ -417,25 +338,25 @@ SAXSExiController.prototype.routePrepare = function() {
 	
 	
 	
-	Path.map("#/prepare/shipment").to(function() {
-		var _this = this;
-		var shipmentForm = new ShipmentForm({
-			creationMode : true,
-			showTitle : false
-		});
-		shipmentForm.onSaved.attach(function(sender, shipment) {
-			location.hash = "/shipping/" + shipment.shippingId + "/main";
-			window.close();
-		});
-		var window = Ext.create('Ext.window.Window', {
-			title : 'New Shipment',
-			height : 600,
-			width : 800,
-			modal : true,
-			layout : 'fit',
-			items : [ shipmentForm.getPanel() ]
-		}).show();
-	}).enter(this.setPageBackground);
+//	Path.map("#/prepare/shipment").to(function() {
+//		var _this = this;
+//		var shipmentForm = new ShipmentForm({
+//			creationMode : true,
+//			showTitle : false
+//		});
+//		shipmentForm.onSaved.attach(function(sender, shipment) {
+//			location.hash = "/shipping/" + shipment.shippingId + "/main";
+//			window.close();
+//		});
+//		var window = Ext.create('Ext.window.Window', {
+//			title : 'New Shipment',
+//			height : 600,
+//			width : 800,
+//			modal : true,
+//			layout : 'fit',
+//			items : [ shipmentForm.getPanel() ]
+//		}).show();
+//	}).enter(this.setPageBackground);
 	
 
 	Path.map("#/prepare/designer").to(function() {

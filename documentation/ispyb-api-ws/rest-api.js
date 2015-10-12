@@ -46,9 +46,7 @@ function getFrame(){
 										 ]
 											
 									}
-									
 						 ]
-							
 					},
 					{	
 						name:'measurement',
@@ -58,10 +56,8 @@ function getFrame(){
 											children : [
 											           {name : 'list', method : 'GET'}
 											 ]
-												
 										}
 						 ]
-							
 					},
 					{	
 						name:'subtraction',
@@ -74,24 +70,8 @@ function getFrame(){
 												
 										}
 						 ]
-							
 					}
-//					{	
-//						name:'session',
-//						children : [
-//						            {   name:'{sessionId}', children : [ {name : 'list', method : 'GET'}]}
-//						 ]
-//							
-//					},
-//					{	
-//						name:'{key}',
-//						children : [
-//						            {   name:'{value}', children : [ {name : 'list', method : 'GET'}]}
-//						 ]
-//							
-//					}
 		]
-		
 	};
 } 
 
@@ -156,11 +136,24 @@ function getShipping(){
 											name:'dewar',
 											children : [
 														{name:'save', method : 'POST'},
+														{name:'list', method : 'GET'},
 														{
 															name:'{dewarId}',
 															children : [
 																			{name:'label', method : 'GET'},
-																			{name:'remove', method : 'GET'}
+																			{name:'remove', method : 'GET'},
+																			{
+																				name:'puck',
+																				children : [
+																								{name:'add', method : 'GET'},
+																								{
+																									name:'{containerId}',
+																									children : [
+																													{name:'get', method : 'GET'}
+																									] 
+																								}
+																				] 
+																			}
 															] 
 														}
 											] 
@@ -178,7 +171,8 @@ function getShipping(){
 																				{name:'get', method : 'GET'}
 																] 
 															},
-															{name:'list', method : 'GET'}
+															{name:'list', method : 'GET'},
+															{name:'save', method : 'POST'}
 											] 
 										}
 							] 

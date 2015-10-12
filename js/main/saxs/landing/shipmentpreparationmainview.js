@@ -18,26 +18,23 @@ ShipmentPreparationMainView.prototype.getContainer = function() {
 			"under physiological conditions. In order to define an experiment or create a shipment ISPyB needs to know the macromolecules and buffers that compose your samples";
 	
 	return {
-//		  layout: {
-//		        type: 'fit'
-//		    },
 		    cls : 'border-grid',
 		    margin : 10,
-		items : [
-					{
-						 html : '<div class="welcome-title"><h2>How to define my samples on ISPyB?</h2> </div>'
-					},
-					{
-						 html : '<div class="help-text"> ' + text +'</div>'
-					},
-					{
-						 html :'<div class="welcome-title"><h4>What is a macromolecule and how can I define it on ISPyB?</h4> </div>'
-					},
-					{
-						 html : '<div class="help-text">A macromolecule is a biological construct in solution for investigation</div>'
-					},
-					
-		]
+			items : [
+						{
+							 html : '<div class="welcome-title"><h2>How to define my samples on ISPyB?</h2> </div>'
+						},
+						{
+							 html : '<div class="help-text"> ' + text +'</div>'
+						},
+						{
+							 html :'<div class="welcome-title"><h4>What is a macromolecule and how can I define it on ISPyB?</h4> </div>'
+						},
+						{
+							 html : '<div class="help-text">A macromolecule is a biological construct in solution for investigation</div>'
+						},
+						
+			]
 	};
 };
 

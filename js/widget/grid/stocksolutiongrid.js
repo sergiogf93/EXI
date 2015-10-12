@@ -374,8 +374,8 @@ StockSolutionGrid.prototype._renderGrid = function() {
 //		style : {
 //			padding : 5
 //		},
-//		margin : 10,
-//		cls : 'defaultGridPanel',
+		margin : 10,
+		cls : 'defaultGridPanel',
 		title : this.title,
 //		height : this.height,
 //		width : this.width,
@@ -433,11 +433,11 @@ StockSolutionGrid.prototype._renderGrid = function() {
 	});
 
 	var actions = _this._getTopButtons();
-	this.grid.addDocked({
-		xtype : 'toolbar',
-		height : 50,
-		items : actions
-	});
+//	this.grid.addDocked({
+//		xtype : 'toolbar',
+//		height : 50,
+//		items : actions
+//	});
 
 	var i = null;
 	this.grid.getSelectionModel().on({
@@ -462,22 +462,22 @@ StockSolutionGrid.prototype._renderGrid = function() {
 	return this.grid;
 };
 
-StockSolutionGrid.prototype.input = function() {
-	return {
-		proposal : DATADOC.getProposal_10()
-	};
-};
-
-StockSolutionGrid.prototype.test = function(targetId) {
-	var stockSolutionGrid = new StockSolutionGrid({
-		height : 300,
-		width : 900
-	});
-	BIOSAXS.proposal = new Proposal(stockSolutionGrid.input().proposal);
-	var panel = stockSolutionGrid.getPanel();
-	stockSolutionGrid.load(BIOSAXS.proposal.getStockSolutions());
-	panel.render(targetId);
-};
+//StockSolutionGrid.prototype.input = function() {
+//	return {
+//		proposal : DATADOC.getProposal_10()
+//	};
+//};
+//
+//StockSolutionGrid.prototype.test = function(targetId) {
+//	var stockSolutionGrid = new StockSolutionGrid({
+//		height : 300,
+//		width : 900
+//	});
+//	BIOSAXS.proposal = new Proposal(stockSolutionGrid.input().proposal);
+//	var panel = stockSolutionGrid.getPanel();
+//	stockSolutionGrid.load(BIOSAXS.proposal.getStockSolutions());
+//	panel.render(targetId);
+//};
 
 
 

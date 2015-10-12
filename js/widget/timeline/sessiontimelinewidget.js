@@ -74,7 +74,7 @@ SessionTimeLineWidget.prototype.loadSessions = function(start, end) {
 			var parsed = [];
 			for (var i = 0; i < sessions.length; i++) {
 				parsed.push({
-					start :  startSession,
+					start :   moment(sessions[i].startDate).toDate(),
 					end :  moment(sessions[i].endDate).toDate(),
 					content : parseContent(sessions[i]),
 					group : sessions[i].beamlineName,

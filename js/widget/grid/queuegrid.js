@@ -614,7 +614,6 @@ QueueGrid.prototype.getPanel = function() {
 			rowLines : true,
 			listeners : {
 				cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//					if (grid.getGridColumns()[cellIndex].getId() == _this.id + 'buttonAction') {
 						if (e.target.defaultValue == 'Data Reduction') {
 							location.hash = "/datacollection/dataCollectionId/" + record.data.dataCollectionId + "/primaryviewer";
 						}
@@ -634,7 +633,6 @@ QueueGrid.prototype.getPanel = function() {
 						if (e.target.defaultValue == 'Rigid Body') {
 							_this.onRigidBodyButtonClicked(record.raw);
 						}
-//					}
 				}
 			}
 		}

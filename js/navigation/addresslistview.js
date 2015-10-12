@@ -2,7 +2,7 @@ AddressListView.prototype.getPanel = ListView.prototype.getPanel;
 AddressListView.prototype.load = ListView.prototype.load;
 
 function AddressListView(){
-	this.sorters = [{property : 'cardName', direction: 'DESC'}];
+	this.sorters = [{property : 'cardName', direction: 'ASC'}];
 	ListView.call(this);
 }
 

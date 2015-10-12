@@ -19,6 +19,11 @@ var ExtISPyB = {
                        name         : 'EMBL',
                        url          : 'http://ispyb.embl-hamburg.de:8080/ispyb-ws/rest',
                        exiUrl       : 'http://pc593.embl.fr:8080/extispyb-ws/rest'
+                   },
+				   {
+                       name         : 'Local',
+                       url          : 'http://pc593.embl.fr:8080/ispyb-ws/rest',
+                       exiUrl       : 'http://pc593.embl.fr:8080/extispyb-ws/rest'
                    }
 
 //		         	{

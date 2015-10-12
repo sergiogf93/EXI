@@ -73,17 +73,17 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 	];
 };
 
-SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
+SAXSMainMenu.prototype.getShipmentMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
-		if (item.text == "Create a new Shipment") {
-			location.hash = "/prepare/shipment";
-		}
-		if (item.text == "Shipments") {
-			location.hash = "/shipping/nav";
+//		if (item.text == "Create a new Shipment") {
+//			location.hash = "/prepare/shipment";
+//		}
+		if (item.text == "Shipment List") {
+			location.hash = "/proposal/shipping/nav";
 		}
 		if (item.text == "Manage shipping addresses") {
-			location.hash = "/addresses/nav";
+			location.hash = "/proposal/addresses/nav";
 		}
 		
 	}
@@ -96,16 +96,68 @@ SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
 				handler : onItemCheck 
 			}, 
 			{
-				text : 'Create a new Shipment',
-				icon : '../images/icon/macromolecule.png',
-				handler : onItemCheck 
-			}, 
-			
-			{
-				text : 'Shipments',
-				icon : '../images/icon/buffer.jpg',
+				text : 'Shipment List',
+				icon : '../images/icon/shipping.png',
 				handler : onItemCheck 
 			} 
+
+		] });
+};
+
+SAXSMainMenu.prototype.getBiosaxsMenu = function() {
+	var _this = this;
+	function onItemCheck(item, checked) {
+		if (item.text == "Stock Solutions") {
+			location.hash = "/stocksolution/nav";
+		}
+		
+	}
+
+	return Ext.create('Ext.menu.Menu', {
+		items : [ 
+					{
+						text : 'Stock Solutions',
+						icon : '../images/icon/testtube.png',
+						handler : onItemCheck 
+					} 
+		] });
+};
+
+SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
+	var _this = this;
+	function onItemCheck(item, checked) {
+		if (item.text == "Shipments") {
+			location.hash = "/proposal/shipping/nav";
+		}
+		if (item.text == "Manage shipping addresses") {
+			location.hash = "/proposal/addresses/nav";
+		}
+		
+	}
+
+	return Ext.create('Ext.menu.Menu', {
+		items : [ 
+//			{
+//				text : 'Manage shipping addresses',
+//				icon : '../images/icon/contacts.png',
+//				handler : onItemCheck 
+//			}, 
+			{
+				text : 'BioSAXS',
+				icon : '../images/icon/macromolecule.png',
+				menu:this.getBiosaxsMenu()
+			}, 
+			{
+				text : 'Shipments',
+				icon : '../images/icon/shipping.png',
+				menu:this.getShipmentMenu()
+			}
+//			, 
+//			{
+//				text : 'Shipments',
+//				icon : '../images/icon/shipping.png',
+//				handler : onItemCheck 
+//			} 
 
 		] });
 };
@@ -114,25 +166,19 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
 		if (item.text == "Macromolecules") {
-//			location.hash = "/prepare/macromolecule/main";
 			location.hash = "/macromolecule/nav";
 		}
 		if (item.text == "Buffers") {
-//			location.hash = "/prepare/buffer/main";
 			location.hash = "/buffer/nav";
 		}
 
-		if (item.text == "Stock Solutions") {
-			location.hash = "/stocksolution/nav";
-		}
+//		if (item.text == "Stock Solutions") {
+//			location.hash = "/stocksolution/nav";
+//		}
 
 		if (item.text == "Sample Tracking") {
 			location.hash = "/shipping/nav";
 		}
-
-//		if (item.text == "Experiment Designer") {
-//			location.hash = "/prepare/designer";
-//		}
 
 		if (item.text == "My Experiments") {
 			location.hash = "/template/nav";
@@ -152,23 +198,17 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 				handler : onItemCheck 
 			}, 
 			"-", 
-			{
-				text : 'Stock Solutions',
-				icon : '../images/icon/testtube.png',
-				handler : onItemCheck 
-			}, 
+//			{
+//				text : 'Stock Solutions',
+//				icon : '../images/icon/testtube.png',
+//				handler : onItemCheck 
+//			}, 
 			{
 				text : 'Sample Tracking',
 				icon : '../images/icon/shipping.png',
-//				handler : onItemCheck 
 				menu:this.getSampleTrackingMenu()
 			}, 
 			"-", 
-//			{
-//				text : 'Experiment Designer',
-//				icon : '../images/icon/tool.png',
-//				handler : onItemCheck 
-//			}, 
 			{
 				text : 'My Experiments',
 				icon : '../images/icon/edit.png',
@@ -181,7 +221,7 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 SAXSMainMenu.prototype.getDataExplorerMenu = function() {
 	function onItemCheck(item, checked) {
 		if (item.text == "Sessions") {
-			location.hash = "/session/nav";
+			location.hash = "/proposal/session/nav";
 		}
 		if (item.text == "Experiments") {
 			location.hash = "/experiment/nav";
@@ -194,12 +234,6 @@ SAXSMainMenu.prototype.getDataExplorerMenu = function() {
 				icon : '../images/icon/sessions.png',
 				handler : onItemCheck 
 			}
-//			{
-//				text : 'Experiments',
-//				checked : false,
-//				group : 'theme',
-//				handler : onItemCheck 
-//			} 
 		] 
 	});
 };
@@ -249,12 +283,6 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 
 	return Ext.create('Ext.menu.Menu', {
 		items : [
-		//		          {
-		//			text : 'Abinitio Modeling' }, {
-		//			text : 'Rambo and Tainer mass estimation' }, 
-		//			 "-", {
-		//			text : '<span class="menuCategoryItem">Apriori</span>' }, 
-		//			 "-", 
 		{
 			text : 'Structure Validation',
 			checked : false,
@@ -266,9 +294,6 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 				checked : false,
 				group : 'theme',
 				handler : onItemCheck }
-		//			, {
-		//			text : 'PepsiSAXS' }, {
-		//			text : 'SASRef' } 
 		] });
 };
 
