@@ -39,7 +39,8 @@ CaseForm.prototype.getDewar = function() {
 	this.dewar.code = Ext.getCmp("dewar_code").getValue();
 	this.dewar.comments = Ext.getCmp("dewar_comments").getValue();
 	this.dewar.transportValue = Ext.getCmp("dewar_transportValue").getValue();
-	this.dewar.storageLocation = Ext.getCmp("dewar_storageLocation").getValue();
+//	this.dewar.storageLocation = Ext.getCmp("dewar_storageLocation").getValue();
+	this.dewar.storageLocation = this.storageLocationComboBox.getValue();
 	this.dewar.firstExperimentId = this.sessionsCombo.getValue();
 	return this.dewar;
 };
@@ -58,26 +59,33 @@ CaseForm.prototype.setDewar = function(dewar) {
 	Ext.getCmp("dewar_code").setValue(this.dewar.code);
 	Ext.getCmp("dewar_comments").setValue(this.dewar.comments);
 	Ext.getCmp("dewar_transportValue").setValue(this.dewar.transportValue);
-	Ext.getCmp("dewar_storageLocation").setValue(this.dewar.storageLocation);
+//	Ext.getCmp("dewar_storageLocation").setValue(this.dewar.storageLocation);
+	this.storageLocationComboBox.setValue(this.dewar.storageLocation);
 	if (this.dewar.sessionVO != null) {
 		this.sessionsCombo.setValue(this.dewar.sessionVO.sessionId);
 	}
 };
 
+
 CaseForm.prototype.getSessionCombo = function() {
-	this.sessionsCombo = BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {
+	this.sessionsCombo = BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getFutureSessions(), {
 		labelWidth : 200,
 		margin : '5 0 00 0',
-		width : 450
+		width : 500
 	});
 	return this.sessionsCombo;
+};
+
+CaseForm.prototype.getStorageLocationCombo = function() {
+	this.storageLocationComboBox =  BIOSAXS_COMBOMANAGER.getComboStorageTemperature();
+	return this.storageLocationComboBox;
 };
 
 CaseForm.prototype.getPanel = function(dewar) {
 		this.panel = Ext.create('Ext.form.Panel', {
 			width : this.width - 10,
-			cls : 'border-grid',
-			margin : 10,
+//			cls : 'border-grid',
+//			margin : 10,
 			padding : 10,
 			height : 300,
 			items : [ {
@@ -91,26 +99,27 @@ CaseForm.prototype.getPanel = function(dewar) {
 					layout : 'vbox',
 					items : [ {
 						xtype : 'requiredtextfield',
-						fieldLabel : 'Label',
+						fieldLabel : 'Name',
 						allowBlank : false,
 						name : 'code',
 						id : 'dewar_code',
 						labelWidth : 200,
-						width : 350
+						width : 500
 					}
 					]
 				}, 
-				{
-					xtype : 'requiredtextfield',
-					margin : '10 0 0 0',
-					width : 350,
-					labelWidth : 200,
-					fieldLabel : 'Storage Location',
-					id : 'dewar_storageLocation'
-				},
+				this.getStorageLocationCombo(),
+//				{
+//					xtype : 'requiredtextfield',
+//					margin : '10 0 0 0',
+//					width : 350,
+//					labelWidth : 200,
+//					fieldLabel : 'Storage Location',
+//					id : 'dewar_storageLocation'
+//				},
 				{
 					xtype : 'numberfield',
-					width : 350,
+					width : 500,
 					labelWidth : 200,
 					margin : '10 0 0 0',
 					fieldLabel : 'Transport Value',

@@ -42,6 +42,9 @@ AddressForm.prototype.getAddress = function() {
 	if (this.address.personVO == null) {
 		this.address.personVO = {};
 	}
+	else{
+		
+	}
 
 	this.address.personVO["emailAddress"] = Ext.getCmp(this.id + "emailAddress").getValue();
 	this.address.personVO["familyName"] = Ext.getCmp(this.id + "familyName").getValue();

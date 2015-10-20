@@ -217,6 +217,19 @@ ProposalManager.prototype.getSessions = function() {
 	return JSON.parse(localStorage.getItem("sessions"));
 };
 
+ProposalManager.prototype.getFutureSessions = function() {
+	var sessions = this.getSessions();
+	var today = new moment();
+	var futureSessions = [];
+	for (var i = 0; i < sessions.length; i++) {
+		if (today.diff(sessions[i].startDate) < 0){
+			futureSessions.push(sessions[i]);
+		}
+	}
+	return futureSessions;
+};
+
+
 ProposalManager.prototype.getBufferColors = function() {
 	return [ "#ffffcc", "#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8", "#253494" ];
 };

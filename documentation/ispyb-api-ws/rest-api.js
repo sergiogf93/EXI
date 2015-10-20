@@ -149,7 +149,8 @@ function getShipping(){
 																								{
 																									name:'{containerId}',
 																									children : [
-																													{name:'get', method : 'GET'}
+																													{name:'get', method : 'GET'},
+																													{name:'remove', method : 'GET'}
 																									] 
 																								}
 																				] 

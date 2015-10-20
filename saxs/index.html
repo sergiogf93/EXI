@@ -2,35 +2,32 @@
 <html>
 
 <head>
-<title>ExiSAXS</title>
+<title>Extended ISPyB</title>
+
+
 <link rel="stylesheet" type="text/css" href="../js/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
 <link rel="stylesheet" type="text/css" href="../css/jquery-qtip-css-min.css">
 <link rel="stylesheet" type="text/css" href="../css/dygraph-custom.css">
-
-
 <script type="text/javascript" src="../js/ext/build/ext-all.js"></script>
 <script type="text/javascript" src="../js/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
-
 <script type="text/javascript" src="../js/dependency/jquery-2.1.3.min.js"></script>
 <script type="text/javascript" src="../js/dependency/jquery.cookie.js"></script>
 <script type="text/javascript" src="../js/dependency/moment.min.js"></script>
 <script type="text/javascript" src="../js/dependency/jquery.qtip.min.js"></script>
 <script type="text/javascript" src="../js/dependency/three49custom.js"></script>
 <script type="text/javascript" src="../js/dependency/glmol.js"></script>
-
-
 <script type="text/javascript" src="../js/event.js"></script>
 <script type="text/javascript" src="../js/security/credential.js"></script>
 <script type="text/javascript" src="../js/security/credentialmanager.js"></script>
 
 <script type="text/javascript" src="../js/data/dataadapter.js"></script>
-
-<script type="text/javascript" src="../js/data/saxs/saxsdataadapterfactory.js"></script>
-
-
 <script type="text/javascript" src="../js/data/exi/exidataadapter.js"></script>
 <script type="text/javascript" src="../js/data/exi/exidataadaptergroup.js"></script>
-
+<script type="text/javascript" src="../js/data/saxs/saxsdataadapterfactory.js"></script>
+<script type="text/javascript" src="../js/data/mx/mxdataadapterfactory.js"></script>
+<script type="text/javascript" src="../js/data/mx/mxdataadaptergroup.js"></script>
+<script type="text/javascript" src="../js/data/mx/datacollectiondataadapter.js"></script>
+<script type="text/javascript" src="../js/data/mx/autoprocintegrationdataadapter.js"></script>
 
 <script type="text/javascript" src="../js/data/saxs/buffersaxsdataadapter.js"></script>
 <script type="text/javascript" src="../js/data/saxs/datacollectionsaxsdataadapter.js"></script>
@@ -62,16 +59,21 @@
 <script type="text/javascript" src="../js/data/saxs/experiment.js"></script>
 <script type="text/javascript" src="../js/data/saxs/experimentlist.js"></script>
 
+
 <script type="text/javascript" src="../js/app/exi.js"></script>
 <script type="text/javascript" src="../js/app/exisaxs.js"></script>
+<script type="text/javascript" src="../js/app/eximx.js"></script>
+
 <script type="text/javascript" src="../js/app/mainstatusbar.js"></script>
+
+
 <script type="text/javascript" src="../js/menu/mainmenu.js"></script>
 <script type="text/javascript" src="../js/menu/saxsmainmenu.js"></script>
+<script type="text/javascript" src="../js/menu/mxmainmenu.js"></script>
 <script type="text/javascript" src="../js/menu/selectionmenu.js"></script>
 
 
 <script type="text/javascript" src="../js/widget/form/authenticationform.js"></script>
-
 <script type="text/javascript" src="../js/widget/upload/uploaderwidget.js"></script>
 
 <script type="text/javascript" src="../js/app/authenticationcontroller.js"></script>
@@ -103,8 +105,8 @@
 <script type="text/javascript" src="../js/main/saxs/landing/experimentwelcomemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/landing/shipmentpreparationmainview.js"></script>
 
-<script type="text/javascript" src="../js/main/saxs/landing/userwelcomemainview.js"></script>
-<script type="text/javascript" src="../js/main/saxs/landing/managerwelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/userwelcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/managerwelcomemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/prepare/buffermainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/prepare/designermainview.js"></script>
 <script type="text/javascript" src="../js/main/shippingmainview.js"></script>
@@ -121,15 +123,20 @@
 <script type="text/javascript" src="../js/main/saxs/mergemainview.js"></script>
 <script type="text/javascript" src="../js/main/saxs/hplc/hplcmainview.js"></script>
 
+<script type="text/javascript" src="../js/main/mx/landing/welcomemainview.js"></script>
+<script type="text/javascript" src="../js/main/mx/autoprocintegrationmainview.js"></script>
+<script type="text/javascript" src="../js/main/mx/datacollectionmxmainview.js"></script>
 
 
 <script type="text/javascript" src="../js/main/tool/saxs/crysolmainview.js"></script>
-<script type="text/javascript" src="../js/main/tool/saxs/subtractionmainview.js"></script>
 <script type="text/javascript" src="../js/main/run/runmainview.js"></script>
 
 <script type="text/javascript" src="../js/util/progressbar.js"></script>
 
 
+
+
+ 
 
 <script type="text/javascript" src="../js/widget/plot/network/svg.js"></script>
 <script type="text/javascript" src="../js/widget/plot/network/dom.js"></script>
@@ -147,6 +154,8 @@
 
 <script type="text/javascript" src="../js/widget/plot/curveplotter.js"></script>
 <script type="text/javascript" src="../js/widget/hplc/hplcgraph.js"></script>
+<script type="text/javascript" src="../js/widget/plot/autoprocintegrationcurveplotter.js"></script>
+
 
 <script type="text/javascript" src="../js/widget/sampleplate/sampleplatewidget.js"></script>
 <script type="text/javascript" src="../js/widget/sampleplate/sampleplategroupwidget.js"></script>
@@ -202,12 +211,20 @@
 <script type="text/javascript" src="../js/widget/tabs/templatetabs.js"></script>
 
 
+<script type="text/javascript" src="../js/widget/mx/grid/datacollectionsummarygrid.js"></script>
+<script type="text/javascript" src="../js/widget/mx/grid/autoprocintegrationgrid.js"></script>
+<script type="text/javascript" src="../js/widget/mx/grid/datacollectionmxgrid.js"></script>
+<script type="text/javascript" src="../js/widget/mx/grid/autoprocintegrationattachmentsgrid.js"></script>
+<script type="text/javascript" src="../js/widget/mx/grid/phasinggrid.js"></script>
+
+
+
 <!-- <script type="text/javascript" src="../js/widget/window/genericwindow.js"></script> -->
 <!-- <script type="text/javascript" src="../js/widget/window/bufferwindow.js"></script> -->
 
 <script type="text/javascript" src="../js/data/proposalmanager.js"></script>
 <script type="text/javascript" src="../js/bui.js"></script>
-<script type="text/javascript" src="../js/config.js"></script>
+<script type="text/javascript" src="config.js"></script>
 
 
 <script type="text/javascript" src="../js/workspace/workspacelistview.js"></script>
@@ -219,8 +236,10 @@
 <script type="text/javascript" src="../js/controller/offlineexicontroller.js"></script>
 <script type="text/javascript" src="../js/controller/proposalexicontroller.js"></script>
 <script type="text/javascript" src="../js/controller/saxsexicontroller.js"></script>
+<script type="text/javascript" src="../js/controller/mxexicontroller.js"></script>
 
 <link rel="stylesheet" type="text/css" href="../css/exi.css">
+<link rel="stylesheet" type="text/css" href="../css/calendar.css">
 <link rel="stylesheet" type="text/css" href="../css/menu/mainmenu.css">
 <link rel="stylesheet" type="text/css" href="../css/override.css">
 
@@ -231,6 +250,12 @@
 
 <link rel="stylesheet" type="text/css" href="../js/dependency/timeline/timeline.css">
 <script type="text/javascript" src="../js/dependency/timeline/timeline.js"></script>
+
+
+ <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery.lazy/0.6.1/jquery.lazy.js"></script>
+
+
+
 
 </head>
 
@@ -250,7 +275,37 @@ function isNumber(value) {
 	
     
 	Ext.onReady(function(){
+// // 		debugger
+
+// 		  for(var i =0; i<10; i++){
+// 		  	var img = document.createElement("img");
+// 		  	img.setAttribute("class", "lazy");
+// 		  	img.setAttribute("data-src", "http://ispyvalid.esrf.fr:8080/ispyb-ws/rest/3ce048b747a2a5abd27be2137a3b86e5da9497df/proposal/MX1635/mx/image/4730821" + i +"/get");
+// 		  	document.getElementById("c" + i).appendChild(img);
+// 		  }
+
+// 		  loadedElements = 0;
+// 		  $('.lazy').lazy({
+// 			  beforeLoad: function(element){
+// 				  console.log('image "' + (element.data('src')) + '" is about to be loaded');
+// 			  },
+// 			  afterLoad: function(element) {
+// 				  loadedElements++;
+// 				  console.log('image was loaded successfully');
+// 			  },
+// 			  onError: function(element) {
+// 				  loadedElements++;
+// 				  console.log('image  could not be loaded');
+// 			  },
+// 			  onFinishedAll: function() {
+// 				  console.log('finished loading ' + loadedElements + ' elements');
+// 				  console.log('lazy instance is about to be destroyed')
+// 			  }
+			  
+// 		  });
+
 		
+		  
 		Ext.Loader.setConfig({
 		    enabled: true
 		});
@@ -264,19 +319,32 @@ function isNumber(value) {
 		  'Ext.Extended.RequiredNumberField'
 		]);
 
-			
+		if (location.href.indexOf("saxs") != -1){
+			EXI = new ExiSAXS();
+		}
+		else{
+			EXI = new ExiMX();
+		}
 		
-		EXI = new ExiSAXS();
 		EXI.show();
 
 
 		EXI.onAfterRender.attach(function(){
-			Path.listen();	
+			Path.listen();
+		        
+			  	
 		});
 	});
-</script>
+</script>	
 
 <body>
-<div id="mytimeline"></div>
+
+<script type="text/javascript">
+  function test(){
+	alert("Test")
+  }
+  </script>
+
+
 </body>
 </html>

@@ -60,6 +60,10 @@ CaseGrid.prototype._getUnpackStockSolutionButton = function(stockSolutionId, val
 	return '<input id="' + stockSolutionId +' "type="button" name="stockSolution" style="font-size:9px;width:90px; height:15px" class="btn-component-remove" value="' + value +'" >';
 };
 
+CaseGrid.prototype._getRemoveContainerButton = function(stockSolutionId, value) {
+	return '<input id="' + stockSolutionId +' "type="button" name="puck" style="font-size:9px;width:90px; height:15px" class="btn-component-remove" value="' + value +'" >';
+};
+
 CaseGrid.prototype._getContainerHTML = function(record) {
 	var deserialized = JSON.parse(record.data.serialized);
 	var dewar = this.getDewarById(deserialized[0].Dewar_dewarId);
@@ -67,7 +71,7 @@ CaseGrid.prototype._getContainerHTML = function(record) {
 	var items = [];
 	if (dewar.sessionVO != null){
 		items = [
-		             {key : 'Label', value : deserialized[0].Dewar_code},
+		             {key : 'Name', value : deserialized[0].Dewar_code},
 		             {key : 'Ship To', value : dewar.sessionVO.beamlineName},
 		             {key : 'For session on ', value : dewar.sessionVO.startDate},
 		             {key : 'Storage Location ', value :  deserialized[0].Dewar_storageLocation}
@@ -114,7 +118,7 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 	
 	if (type == "Puck"){
 		html = html + "<td>";
-		html = html +  this._getUnpackStockSolutionButton(Number(id), "Remove");
+		html = html +  this._getRemoveContainerButton(Number(id), "Remove");
 		html = html + "</td>";
 	}
 	
@@ -166,15 +170,15 @@ CaseGrid.prototype._getColumns = function() {
 			renderer : function(grid, opts, record){
 				var deserialized = JSON.parse(record.data.serialized);
 				if (deserialized[0].Dewar_type == "Dewar"){
-					return "<img src='../images/Dewar_32x32_01.png'>";
+					return "<img src='../images/Dewar_32x32_01.png' style='height:40px;'>";
 				}
 				if (deserialized[0].Dewar_type == "Toolbox"){
-					return "<img src='../images/toolbox.png'>";
+					return "<img src='../images/toolbox.png'>";stockSolution
 				}
 			}
 		},
 		{
-			header : 'Container',
+			header : 'Parcel',
 			dataIndex : 'type',
 			name : 'type',
 			type : 'string',
@@ -184,7 +188,7 @@ CaseGrid.prototype._getColumns = function() {
 			}
 		},
 		{
-			header : 'Components',
+			header : 'Components on this parcel',
 			dataIndex : 'type',
 			name : 'type',
 			type : 'string',
@@ -347,7 +351,7 @@ CaseGrid.prototype.edit = function(dewar) {
 	var caseForm = new CaseForm();
 	
 	var window = Ext.create('Ext.window.Window', {
-	    title: 'Container',
+	    title: 'Parcel',
 	    height: 500,
 	    width: 900,
 	    modal : true,
@@ -408,7 +412,7 @@ CaseGrid.prototype.saveStockSolution = function(stockSolution) {
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
 	}
-
+debugger
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
 };
 
@@ -422,6 +426,17 @@ CaseGrid.prototype.addPuckToDewar = function(dewarId) {
 		_this.panel.setLoading(false);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.addPuck(this.shipment.shippingId, Number(dewarId));
+	
+};
+
+CaseGrid.prototype.removePuck = function(puckId) {
+	var _this = this;
+	this.panel.setLoading();
+	var onSuccess = function(sender, data){
+		_this.load(_this.shipment);
+		_this.panel.setLoading(false);
+	};
+	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(_this.shipment.shippingId,puckId,puckId );
 	
 };
 
@@ -530,6 +545,26 @@ CaseGrid.prototype.getPanel = function() {
 									var stockSolution = EXI.proposalManager.getStockSolutionById(e.target.id);
 									stockSolution.boxId = null;
 									_this.saveStockSolution(stockSolution);
+								}
+							}
+							
+							if (e.target.defaultValue == 'Remove') {
+								var puckId = Number(e.target.id);
+								if (e.target.name == "puck"){
+									function showResult(result){
+											if (result == "yes"){
+												_this.removePuck(puckId);
+											}
+									}
+									  Ext.MessageBox.show({
+								           title:'Save Changes?',
+								           msg: 'You are removing a puck. This can not be UNDONE. <br />Would you like to CONTINUE?',
+								           buttons: Ext.MessageBox.YESNOCANCEL,
+								           fn: showResult,
+								           animateTarget: 'mb4',
+								           icon: Ext.MessageBox.QUESTION
+								       });
+									  
 								}
 							}
 

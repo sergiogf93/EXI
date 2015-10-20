@@ -836,10 +836,15 @@ var BUI = {
 var BIOSAXS_COMBOMANAGER = {
 	getComboProposal : function(args) {
 		var labelWidth = null;
+		var width = 400;
+		
 		var id ='proposalIdCombo';
 		if (args != null){
 			if (args.labelWidth != null){
 				labelWidth = args.labelWidth;
+			}
+			if (args.width != null){
+				width = args.width;
 			}
 			if (args.id != null){
 				id = args.id;
@@ -852,6 +857,7 @@ var BIOSAXS_COMBOMANAGER = {
 		return Ext.create('Ext.form.ComboBox', {
 			fieldLabel : 'Proposal',
 			id : id,
+			width : width,
 			store : proposalStore,
 			labelWidth : labelWidth,
 			queryMode : 'local',
@@ -980,5 +986,77 @@ var BIOSAXS_COMBOMANAGER = {
 			displayTpl : Ext.create('Ext.XTemplate', '<tpl for=".">', '{startDateFormatted}', '</tpl>')
 
 		});
+	},
+	getComboStorageTemperature : function(args) {
+		var labelWidth = 200;
+		var width = 500;
+
+		if (args != null) {
+			if (args.labelWidth != null) {
+				labelWidth = args.labelWidth;
+			}
+			if (args.width != null) {
+				width = args.width;
+			}
+		}
+		
+		var storageLocations = Ext.create('Ext.data.Store', {
+		    fields: ['value', 'name'],
+		    data : [
+		        {"value":"Not set", "name":"Not set"},
+		        {"value":"-80", "name":"-80"},
+		        {"value":"-20", "name":"-20"},
+		        {"value":"+4", "name":"+4"},
+		        {"value":"Room Temperature", "name":"Room Temperature"}
+		    ]
+		});
+		this.storageLocationComboBox = Ext.create('Ext.form.ComboBox', {
+		    fieldLabel: 'Storage Location',
+		    store: storageLocations,
+		    queryMode: 'local',
+		    labelWidth : labelWidth,
+		    width : width,
+		    displayField: 'name',
+		    valueField: 'value',
+		    value : 'Not set'
+		});
+		return this.storageLocationComboBox;
+	},
+	getComboPuckType : function(args) {
+		var labelWidth = 200;
+		var width = 500;
+		var margin = null;
+		
+		if (args != null) {
+			if (args.labelWidth != null) {
+				labelWidth = args.labelWidth;
+			}
+			if (args.width != null) {
+				width = args.width;
+			}
+			if (args.margin != null) {
+				margin = args.margin;
+			}
+		}
+		
+		var storageLocations = Ext.create('Ext.data.Store', {
+		    fields: ['value', 'name'],
+		    data : [
+		        {"value":10, "name":"SPINE"},
+		        {"value":16, "name":"UNIPUCK"}
+		    ]
+		});
+		this.storageLocationComboBox = Ext.create('Ext.form.ComboBox', {
+		    fieldLabel: 'Type',
+		    store: storageLocations,
+		    queryMode: 'local',
+		    labelWidth : labelWidth,
+		    width : width,
+		    margin : margin,
+		    displayField: 'name',
+		    valueField: 'value',
+		    value : 'Not set'
+		});
+		return this.storageLocationComboBox;
 	}
 };

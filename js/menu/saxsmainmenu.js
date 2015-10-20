@@ -5,37 +5,19 @@ SAXSMainMenu.prototype._convertToHTMLWhiteSpan = MainMenu.prototype._convertToHT
 SAXSMainMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredentialMenu;
 SAXSMainMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
 SAXSMainMenu.prototype.setText = MainMenu.prototype.setText;
+SAXSMainMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
+SAXSMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
+SAXSMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
 function SAXSMainMenu() {
 	this.id = BUI.id();
 	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
 }
 SAXSMainMenu.prototype.getMenuItems = function() {
-	return [{
-				text : this._convertToHTMLWhiteSpan("Home"),
-				cls : 'ExiSAXSMenuToolBar',
-				icon : '../images/icon/rsz_ic_home_black_24dp.png',
-				handler : function(){
-						if (EXI.credentialManager.getCredentials() != null){
-							if (EXI.credentialManager.getCredentials().length > 0){
-								var username = EXI.credentialManager.getCredentials()[0].username;
-								var credential = EXI.credentialManager.getCredentialByUserName(EXI.credentialManager.getCredentials()[0].username);
-								if (credential.isManager()){
-									location.hash = "/welcome/manager/" + username + "/main";
-								}
-								else{
-									location.hash = "/welcome/user/" + username + "/main";
-								}
-							}
-							else{
-								BUI.showError("You should sign up");
-							}
-						}
-						else{
-							BUI.showError("You should sign up");
-						}
-				}
-		},{
+	return [	
+    	this.getHomeItem(),
+    	this.getShipmentItem(),
+    	{
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
@@ -53,8 +35,9 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 			menu : this.getOnlineDataAnalisysMenu() 
 		}, 
 		{
-			text : '<span style="color:white">About</span>',
-			cls : 'ExiSAXSMenuToolBar' 
+			text : this._convertToHTMLWhiteSpan("Help"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getHelpMenu() 
 		}, 
 		'->', 
 		{
@@ -73,94 +56,8 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 	];
 };
 
-SAXSMainMenu.prototype.getShipmentMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-//		if (item.text == "Create a new Shipment") {
-//			location.hash = "/prepare/shipment";
-//		}
-		if (item.text == "Shipment List") {
-			location.hash = "/proposal/shipping/nav";
-		}
-		if (item.text == "Manage shipping addresses") {
-			location.hash = "/proposal/addresses/nav";
-		}
-		
-	}
 
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-			{
-				text : 'Manage shipping addresses',
-				icon : '../images/icon/contacts.png',
-				handler : onItemCheck 
-			}, 
-			{
-				text : 'Shipment List',
-				icon : '../images/icon/shipping.png',
-				handler : onItemCheck 
-			} 
 
-		] });
-};
-
-SAXSMainMenu.prototype.getBiosaxsMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Stock Solutions") {
-			location.hash = "/stocksolution/nav";
-		}
-		
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-					{
-						text : 'Stock Solutions',
-						icon : '../images/icon/testtube.png',
-						handler : onItemCheck 
-					} 
-		] });
-};
-
-SAXSMainMenu.prototype.getSampleTrackingMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Shipments") {
-			location.hash = "/proposal/shipping/nav";
-		}
-		if (item.text == "Manage shipping addresses") {
-			location.hash = "/proposal/addresses/nav";
-		}
-		
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-//			{
-//				text : 'Manage shipping addresses',
-//				icon : '../images/icon/contacts.png',
-//				handler : onItemCheck 
-//			}, 
-			{
-				text : 'BioSAXS',
-				icon : '../images/icon/macromolecule.png',
-				menu:this.getBiosaxsMenu()
-			}, 
-			{
-				text : 'Shipments',
-				icon : '../images/icon/shipping.png',
-				menu:this.getShipmentMenu()
-			}
-//			, 
-//			{
-//				text : 'Shipments',
-//				icon : '../images/icon/shipping.png',
-//				handler : onItemCheck 
-//			} 
-
-		] });
-};
 
 SAXSMainMenu.prototype.getPreparationMenu = function() {
 	var _this = this;
@@ -171,10 +68,6 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 		if (item.text == "Buffers") {
 			location.hash = "/buffer/nav";
 		}
-
-//		if (item.text == "Stock Solutions") {
-//			location.hash = "/stocksolution/nav";
-//		}
 
 		if (item.text == "Sample Tracking") {
 			location.hash = "/shipping/nav";
@@ -197,17 +90,17 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 				icon : '../images/icon/buffer.jpg',
 				handler : onItemCheck 
 			}, 
-			"-", 
+//			"-", 
 //			{
 //				text : 'Stock Solutions',
 //				icon : '../images/icon/testtube.png',
 //				handler : onItemCheck 
 //			}, 
-			{
-				text : 'Sample Tracking',
-				icon : '../images/icon/shipping.png',
-				menu:this.getSampleTrackingMenu()
-			}, 
+//			{
+//				text : 'Sample Tracking',
+//				icon : '../images/icon/shipping.png',
+//				menu:this.getSampleTrackingMenu()
+//			}, 
 			"-", 
 			{
 				text : 'My Experiments',

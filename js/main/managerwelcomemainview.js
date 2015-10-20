@@ -18,7 +18,6 @@ function ManagerWelcomeMainView() {
 		_this.panel.setLoading(true);
 		_this.activeProposal(proposal);
 		_this.panel.setLoading(false);
-		location.hash = "/session/nav";
 		
 	});
 	
@@ -26,9 +25,14 @@ function ManagerWelcomeMainView() {
 	this.timeLineWidget = new SessionTimeLineWidget();
 	
 	this.timeLineWidget.onSelected.attach(function(sender, record){
-		var onSuccess = function(sender, proposal){
-			_this.activeProposal(proposal);
-			location.hash = "/session/nav/" + record.sessionId +"/session";
+		var onSuccess = function(sender, proposals){
+			if (proposals.length > 0){
+				_this.activeProposal(proposals[0]);
+				location.hash = "/session/nav/" + record.sessionId +"/session";
+			}
+			else{
+				BUI.showError("No proposal Found");
+			}
 			
 		} ;
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getProposalBySessionId(record.sessionId);
@@ -36,7 +40,7 @@ function ManagerWelcomeMainView() {
 }
 
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
-	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
+	EXI.credentialManager.setActiveProposal(this.username, proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber);
 	EXI.proposalManager.get(true);
 };
 

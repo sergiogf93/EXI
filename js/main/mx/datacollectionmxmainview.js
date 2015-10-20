@@ -11,7 +11,9 @@ function DataCollectionMxMainView() {
 }
 
 DataCollectionMxMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('tabpanel',
+	
+	
+	this.panel =  Ext.createWidget('tabpanel',
 			{
 				plain : true,
 				margin : '10 30 10 10',
@@ -29,13 +31,21 @@ DataCollectionMxMainView.prototype.getContainer = function() {
 								borderWidth : '1px',
 								'background-color' : 'white' 
 							},
-							items : [ 
+							items : 
+								[
 							         	this.sessionViewGrid.getPanel()
 							]
 						}
 						]
 				  }]
 		});
+	
+	
+
+
+
+	return this.panel;
+	
 };
 	
 DataCollectionMxMainView.prototype.load = function(sessionsId) {
@@ -44,6 +54,8 @@ DataCollectionMxMainView.prototype.load = function(sessionsId) {
 	var onSuccess = function(sender, data){
 		_this.sessionViewGrid.load(data);
 		_this.sessionViewGrid.grid.setTitle((data.length) + " Data Collections ");
+		
+		
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getBySessionsId(sessionsId);
 };

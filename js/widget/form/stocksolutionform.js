@@ -60,7 +60,10 @@ StockSolutionForm.prototype._getButtons = function() {
 StockSolutionForm.prototype.getStockSolution = function() {
 	if (this.stockSolution != null) {
 		this.stockSolution.concentration = Ext.getCmp(this.id + "stockSolution_concentration").getValue();
-		this.stockSolution.storageTemperature = Ext.getCmp(this.id + "stockSolution_storageTemperature").getValue();
+//		this.stockSolution.storageTemperature = Ext.getCmp(this.id + "stockSolution_storageTemperature").getValue();
+		this.stockSolution.storageTemperature =  this.storageLocationComboBox.getValue();
+		
+		
 		this.stockSolution.volume = Ext.getCmp(this.id + "stockSolution_volume").getValue();
 		this.stockSolution.comments = Ext.getCmp(this.id + "stockSolution_comments").getValue();
 		this.stockSolution.name = Ext.getCmp(this.id + "stockSolution_name").getValue();
@@ -77,7 +80,8 @@ StockSolutionForm.prototype.getStockSolution = function() {
 	} else {
 		return {
 			concentration : Ext.getCmp(this.id + "stockSolution_concentration").getValue(),
-			storageTemperature : Ext.getCmp(this.id + "stockSolution_storageTemperature").getValue(),
+//			storageTemperature : Ext.getCmp(this.id + "stockSolution_storageTemperature").getValue(),
+			storageTemperature : this.storageLocationComboBox.getValue(),
 			volume : Ext.getCmp(this.id + "stockSolution_volume").getValue(),
 			comments : Ext.getCmp(this.id + "stockSolution_comments").getValue(),
 			name : Ext.getCmp(this.id + "stockSolution_name").getValue(),
@@ -97,7 +101,8 @@ StockSolutionForm.prototype.load = function(stockSolution) {
 		}
 		this.bufferCombo.setValue(stockSolution.bufferId);
 		Ext.getCmp(this.id + "stockSolution_concentration").setValue(this.stockSolution.concentration);
-		Ext.getCmp(this.id + "stockSolution_storageTemperature").setValue(this.stockSolution.storageTemperature);
+//		Ext.getCmp(this.id + "stockSolution_storageTemperature").setValue(this.stockSolution.storageTemperature);
+		this.storageLocationComboBox.setValue(this.stockSolution.storageTemperature);
 		Ext.getCmp(this.id + "stockSolution_volume").setValue(this.stockSolution.volume);
 		Ext.getCmp(this.id + "stockSolution_name").setValue(this.stockSolution.name);
 		Ext.getCmp(this.id + "stockSolution_comments").setValue(this.stockSolution.comments);
@@ -114,9 +119,9 @@ StockSolutionForm.prototype.load = function(stockSolution) {
 
 StockSolutionForm.prototype.getBufferCombo = function() {
 	this.bufferCombo = BIOSAXS_COMBOMANAGER.getComboBuffers(EXI.proposalManager.getBuffers(), {
-		labelWidth : 80,
-		margin : '0 0 10 20',
-		width : 250
+		labelWidth : 150,
+		margin : '0 0 10 0',
+		width : 400
 
 	});
 	return this.bufferCombo;
@@ -126,7 +131,7 @@ StockSolutionForm.prototype.getMacromoleculeCombo = function() {
 	this.macromoleculeCombo = BIOSAXS_COMBOMANAGER.getComboMacromoleculeByMacromolecules(EXI.proposalManager.getMacromolecules(), {
 		labelWidth : 150,
 		margin : '0 0 10 0',
-		width : 350
+		width : 400
 
 	});
 	return this.macromoleculeCombo;
@@ -136,6 +141,8 @@ StockSolutionForm.prototype.refresh = function() {
 };
 
 StockSolutionForm.prototype._getTopPanel = function() {
+	
+	this.storageLocationComboBox =  BIOSAXS_COMBOMANAGER.getComboStorageTemperature({labelWidth : 150, width : 400});
 	return {
 		xtype : 'container',
 		layout : 'hbox',
@@ -151,41 +158,37 @@ StockSolutionForm.prototype._getTopPanel = function() {
 				layout : 'anchor',
 				defaultType : 'textfield',
 				items : [
-
-				this.getMacromoleculeCombo(), {
+				BIOSAXS_COMBOMANAGER.getComboProposal({labelWidth : 150, width : 400}),
+				this.getMacromoleculeCombo(), 
+				this.getBufferCombo(),
+				{
 					xtype: 'requiredtextfield',
 					id : this.id + 'stockSolution_name',
 					fieldLabel : 'Acronym',
 					labelWidth : 150,
-					width : 250
+					width : 400
 				}, {
 					xtype: 'requiredtextfield',
 					id : this.id + 'stockSolution_concentration',
 					fieldLabel : 'Conc. (mg/ml)',
 					labelWidth : 150,
-					width : 250
+					width : 400
 				},
-
+				this.storageLocationComboBox,
+//				{
+//					id : this.id + 'stockSolution_storageTemperature',
+//					fieldLabel : 'Storage Temp.(C)',
+//					labelWidth : 150,
+//					width : 250
+//				}, 
 				{
-					id : this.id + 'stockSolution_storageTemperature',
-					fieldLabel : 'Storage Temp.(C)',
-					labelWidth : 150,
-					width : 250
-				}, {
 					xtype: 'requiredtextfield',
 					id : this.id + 'stockSolution_volume',
 					fieldLabel : 'Volume (&#181l)',
 					labelWidth : 150,
-					width : 250
+					width : 400
 				} ]
 			} ]
-		}, {
-			xtype : 'container',
-			flex : 1,
-			layout : 'anchor',
-			defaultType : 'textfield',
-			margin : '0 0 0 10',
-			items : [ this.getBufferCombo() ]
 		} ]
 	};
 
@@ -201,7 +204,7 @@ StockSolutionForm.prototype.getPanel = function() {
 		         {
 		        	 	 xtype : 'container',
 		        	 	 padding : 20,
-				         items : [BIOSAXS_COMBOMANAGER.getComboProposal({labelWidth : 150}),
+				         items : [
 							         this._getTopPanel(), 
 							         {
 							        	 id : this.id + 'stockSolution_comments',

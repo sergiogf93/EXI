@@ -119,8 +119,12 @@ DataCollectionSummaryGrid.prototype.getHTMLTable = function(jsonArray) {
 	return "<table>" + table.innerHTML + "</table>";
 };
 
+DataCollectionSummaryGrid.prototype._getHTMLImage = function(url) {
+	return '<img class="lazy" data-src=' + url + ' ssrc=' + url + '    height="80" width="80" >';
+};
 
 DataCollectionSummaryGrid.prototype._getColumns = function() {
+	
 	var _this = this;
 	var columns = [
 	{
@@ -209,8 +213,8 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			var url = EXI.getDataAdapter().mx.dataCollection.getImageById(sample.data.firstImageId);
-			return '<img src=' + url + '   height="80" width="80" >';
+			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getImageById(sample.data.firstImageId));
+//			return '<img data-echo=' + url + ' src=' + url + '    height="80" width="80" >';
 		} 
 	},
 	{
@@ -218,8 +222,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			var url = EXI.getDataAdapter().mx.dataCollection.getImageById(sample.data.lastImageId);
-			return '<img src=' + url + '   height="80" width="80" >';
+			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getImageById(sample.data.lastImageId));
 		}
 	},
 	{
@@ -227,8 +230,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			var url = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 1);
-			return '<img src=' + url + '   height="80" width="80" >';
+			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 1));
 		}
 	},
 	{
@@ -236,8 +238,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			var url = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 2);
-			return '<img src=' + url + '   height="80" width="80" >';
+			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 2));
 		}
 	},
 	{
@@ -245,8 +246,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			var url = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 3);
-			return '<img src=' + url + '   height="80" width="80" >';
+			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 3));
 		}
 	}
 	
@@ -255,77 +255,23 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 	return columns;
 };
 
-//DataCollectionSummaryGrid.prototype._getTopButtons = function() {
-//	var _this = this;
-//	/** Actions buttons **/
-//	var actions = [];
-//
-//	/** ADD BUTTON **/
-//	if (this.btnAddVisible) {
-//		actions.push(Ext.create('Ext.Action', {
-//			icon: '../images/icon/add.png',
-//			text : 'Add',
-//			tooltip : 'Will create a new stock solution',
-//			disabled : false,
-//			alwaysEnabled : true,
-//			handler : function(widget, event) {
-//				_this.edit();
-//			}
-//		}));
-//	}
-//
-//	if (this.btnAddExisting) {
-//		actions.push(Ext.create('Ext.Action', {
-//			icon: 'images/icon/add.png',
-//			text : 'Add Existing',
-//			tooltip : 'Allows to select upacked stock solutions',
-//			disabled : false,
-//			alwaysEnabled : true,
-//			handler : function(widget, event) {
-//				var DataCollectionSummaryGrid = new DataCollectionSummaryGrid({
-//					btnAddVisible : false,
-//					btnEditVisible : false,
-//					btnRemoveVisible : false,
-//					btnAddExisting : false,
-//					isPackedVisible : false,
-//					multiselect : true
-//				});
-//
-//				var window = Ext.create('Ext.window.Window', {
-//					title : 'Select',
-//					height : 800,
-//					width : 900,
-//					layout : 'fit',
-//					items : [ DataCollectionSummaryGrid.getPanel() ],
-//					buttons : [ {
-//						text : 'Pack',
-//						handler : function() {
-//							if (DataCollectionSummaryGrid.selectedStockSolutions.length > 0){
-//								_this.onPack.notify(DataCollectionSummaryGrid.selectedStockSolutions[0]);
-//							}
-//							window.close();
-//						}
-//					}, {
-//						text : 'Cancel',
-//						handler : function() {
-//							window.close();
-//						}
-//					} ]
-//
-//				}).show();
-//
-//				DataCollectionSummaryGrid.load(EXI.proposalManager.getUnpackedStockSolutions());
-//			}
-//		}));
-//	}
-//
-//	return actions;
-//};
 
 DataCollectionSummaryGrid.prototype.load = function(data) {
 	this.store.loadData(data, false);
 	this.store.sort('DataCollection_dataCollectionId', 'DESC');
+//	for (var i = 0; i < data.length; i++) {
+//		var sample = data[i];
+//		var img = document.createElement("img");
+//		img.setAttribute("class", "lazy");
+//		img.setAttribute("data-src", EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.DataCollection_dataCollectionId, 1));
+//		document.getElementById("test").appendChild(img);
+//	}
+	
+	
+	
+	
 };
+
 
 DataCollectionSummaryGrid.prototype.getPanel = function() {
 	return this._renderGrid();
@@ -351,11 +297,6 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 	/** Store **/
 	this.store = Ext.create('Ext.data.Store', {
 		fields :  ['DataCollectionGroup_experimentType', 'DataCollection_dataCollectionId', 'Protein_acronym', 'DataCollection_imagePrefix'],
-//		sorter : [{property : 'DataCollection_dataCollectionId', direction : 'DESC'}]
-//		sorters: [ {
-//			property:'DataCollection_dataCollectionId',
-//			direction:'ASC'
-//			}]
 	});
 
 	
@@ -378,11 +319,13 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 			mode : 'SINGLE'
 		};
 	}
-
+console.log(this.id)
 
 	this.grid = Ext.create('Ext.grid.Panel', {
 		title : "Data Collection Summary",
+		id  : this.id,
 		selModel : selModel,
+//		height :800,
 		store : this.store,
 		columns : this._getColumns(),
 		viewConfig : {
@@ -395,6 +338,36 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 		}
 
 	});
+
+this.grid.on('afterrender', function(){
+	loadedElements = 0;
+	console.log(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.id)
+	var myVar = setTimeout(function() {   //calls click event after a certain time
+			$('.lazy').lazy({ 
+			  bind:'event',
+			  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
+			  appendScroll:document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
+			  beforeLoad: function(element){
+				  console.log('image "' + (element.data('src')) + '" is about to be loaded');
+			  },
+			  afterLoad: function(element) {
+				  loadedElements++;
+				  console.log('image was loaded successfully');
+			  },
+			  onError: function(element) {
+				  loadedElements++;
+				  console.log('image  could not be loaded');
+			  },
+			  onFinishedAll: function() {
+				  console.log('finished loading ' + loadedElements + ' elements');
+				  console.log('lazy instance is about to be destroyed')
+			  }
+		  });
+			clearTimeout(myVar);
+		}, 1000);
+	
+	  
+})
 
 	return this.grid;
 };

@@ -5,6 +5,10 @@ MXMainMenu.prototype._convertToHTMLWhiteSpan = MainMenu.prototype._convertToHTML
 MXMainMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredentialMenu;
 MXMainMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
 MXMainMenu.prototype.setText = MainMenu.prototype.setText;
+MXMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
+MXMainMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
+MXMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+
 
 function MXMainMenu() {
 	this.id = BUI.id();
@@ -12,31 +16,8 @@ function MXMainMenu() {
 }
 MXMainMenu.prototype.getMenuItems = function() {
 	return [
-		{
-			text : this._convertToHTMLWhiteSpan("Home"),
-			cls : 'ExiSAXSMenuToolBar',
-			icon : '../images/icon/rsz_ic_home_black_24dp.png',
-			handler : function(){
-					if (EXI.credentialManager.getCredentials() != null){
-						if (EXI.credentialManager.getCredentials().length > 0){
-							var username = EXI.credentialManager.getCredentials()[0].username;
-							var credential = EXI.credentialManager.getCredentialByUserName(EXI.credentialManager.getCredentials()[0].username);
-							if (credential.isManager()){
-								location.hash = "/welcome/manager/" + username + "/main";
-							}
-							else{
-								location.hash = "/welcome/user/" + username + "/main";
-							}
-						}
-						else{
-							BUI.showError("You should sign up");
-						}
-					}
-					else{
-						BUI.showError("You should sign up");
-					}
-			}
-		},
+		this.getHomeItem(),
+		this.getShipmentItem(),
         {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
@@ -69,53 +50,6 @@ MXMainMenu.prototype.getMenuItems = function() {
 	];
 };
 
-MXMainMenu.prototype.getHelpMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "ISPyB Web services API Map") {
-			window.open('/exi/documentation/ispyb-api-ws/print.html');
-		}
-		if (item.text == "Job list") {
-			location.hash = "/tool/list";
-		}
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [
-
-		{
-			text : 'Developer',
-			checked : false,
-			group : 'theme',
-			menu : {       
-                    items: [
-                        {
-                            text: 'ISPyB Web services API Map',
-                            handler: onItemCheck
-                        }, {
-                            text: 'How to retrieve data from ISPyB?',
-                            handler: onItemCheck
-                        }, {
-                            text: 'EXI Router',
-                            handler: onItemCheck
-                        }, {
-                            text: 'EXI List Views Objects',
-                            handler: onItemCheck
-                        }, {
-                            text: 'EXI Main View Objects',
-                            handler: onItemCheck
-                        }
-                    ]
-                }
-		},
-		"-",
-		{
-				text : 'About',
-				checked : false,
-				group : 'theme',
-				handler : onItemCheck }
-		] });
-};
 
 
 MXMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
@@ -190,13 +124,14 @@ MXMainMenu.prototype.getDataExplorerMenu = function() {
 				text : 'Sessions',
 				icon : '../images/icon/sessions.png',
 				handler : onItemCheck 
-			},
-			{
-				text : 'Experiments',
-				checked : false,
-				group : 'theme',
-				handler : onItemCheck 
-			} 
+			}
+//			,
+//			{
+//				text : 'Experiments',
+//				checked : false,
+//				group : 'theme',
+//				handler : onItemCheck 
+//			} 
 		] 
 	});
 };

@@ -35,7 +35,7 @@ ProposalGrid.prototype.load = function(proposals) {
 };
 
 ProposalGrid.prototype.getFilter = function(value){
-	return [{property : "number", value : value, anyMacth : true}];
+	return [{property : "Proposal_proposalNumber", value : value, anyMacth : true}];
 };
 
 ProposalGrid.prototype.filter = function(value) {
@@ -78,10 +78,10 @@ ProposalGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'proposalId', 'title', 'code', 'number', 'type' ]
+		fields : [ 'Proposal_proposalId', 'Proposal_title', 'Proposal_proposalCode', 'Proposal_proposalNumber', 'Proposal_proposalType' ]
 	});
 
-	this.store.sort('title');
+	this.store.sort(['Proposal_proposalCode', 'Proposal_proposalNumber']);
 
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : 'Proposals',
@@ -93,15 +93,15 @@ ProposalGrid.prototype.getPanel = function() {
 		columns : [ 
 		{
 			text : 'Proposal',
-			dataIndex : 'code',
+			dataIndex : 'Proposal_code',
 			width : 125,
 			renderer : function(grid, a, record){
-				return record.data.code + record.data.number 
+				return record.data.Proposal_proposalCode + record.data.Proposal_proposalNumber 
 			}
 		}, 
 		{
 			text : 'Code',
-			dataIndex : 'code',
+			dataIndex : 'Proposal_number',
 			width : 75,
 			hidden : true
 		}, 
@@ -113,7 +113,7 @@ ProposalGrid.prototype.getPanel = function() {
 		}, 
 		{
 			text : 'Title',
-			dataIndex : 'title',
+			dataIndex : 'Proposal_title',
 			flex : 1
 		}
 		],

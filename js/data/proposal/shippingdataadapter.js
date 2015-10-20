@@ -51,6 +51,11 @@ ShippingDataAdapter.prototype.addPuck = function(shippingId, dewarId){
 ShippingDataAdapter.prototype.getContainerById = function(shippingId, dewarId, containerId){
 	this.get('/{token}/proposal/{proposal}/shipping/{0}/dewar/{1}/puck/{2}/get'.format([shippingId, dewarId, containerId]));
 };
+
+ShippingDataAdapter.prototype.removeContainerById = function(shippingId, dewarId, containerId){
+	this.get('/{token}/proposal/{proposal}/shipping/{0}/dewar/{1}/puck/{2}/remove'.format([shippingId, dewarId, containerId]));
+};
+
 ShippingDataAdapter.prototype.saveContainer = function(shippingId, dewarId, containerId, puck){
     var url = ('/{token}/proposal/{proposal}/shipping/{0}/dewar/{1}/puck/{2}/save'.format([shippingId, dewarId, containerId]));
 	this.post(url, {

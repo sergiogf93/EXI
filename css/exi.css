@@ -1,4 +1,10 @@
-.th-component{
+img.lazy {
+        display: block;
+        height : 80px;
+        width : 80px;
+}
+    
+    .th-component{
 	width : 150px;
 	
 	font-size: 10px;
