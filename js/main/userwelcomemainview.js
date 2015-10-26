@@ -47,7 +47,17 @@ function UserWelcomeMainView() {
 				hiddenGoColumn : false
 			}
 	);
+
 	
+	EXI.credentialManager.onActiveProposalChanged.attach(function(sender, proposal){
+//		debugger
+//		_this.mainMenu.populateCredentialsMenu();
+	});
+//	EXI.proposalManager.onActiveProposalChanged = function(sender, proposal){
+//		debugger
+//		
+//	};
+//	
 }
 
 UserWelcomeMainView.prototype.activeProposal = function(proposal) {
@@ -242,11 +252,13 @@ UserWelcomeMainView.prototype.loadUserView = function() {
 	var _this = this;
 	this.panel.setLoading("Loading Proposal");
 	var onSuccess = function(sender, proposals){
+		proposals.sort(function(a, b){return a["Proposal_proposalId"] - b["Proposal_proposalId"]});
 		_this.proposalGrid.load(proposals);
-		if (proposals.length == 1){
-			_this.activeProposal( proposals[0]);
+		console.log(proposals);
+		if (proposals.length> 0){
+			_this.activeProposal(proposals[0]);
 			function onSessions(sender, data){
-				
+				console.log(data)
 				var olderSessions = [];
 				var futureSessions = [];
 				var todaySessions = [];
@@ -276,7 +288,9 @@ UserWelcomeMainView.prototype.loadUserView = function() {
 					return a.diff - b.diff;
 				});
 				
+				debugger
 				if (olderSessions.length > 0){
+					console.log(olderSessions)
 					_this.previousSessionsGrid.load(olderSessions);
 				}
 				
@@ -301,6 +315,7 @@ UserWelcomeMainView.prototype.loadUserView = function() {
 UserWelcomeMainView.prototype.load = function(username) {
 	var _this = this;
 	this.username = username;
+	
 	/** Loading proposals depending on your role **/
 	var credential = EXI.credentialManager.getCredentialByUserName(username);
 	if (credential != null){

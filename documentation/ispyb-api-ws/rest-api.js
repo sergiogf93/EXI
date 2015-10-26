@@ -338,7 +338,7 @@ function getData(proposalChildrenFn) {
 									{
 										name : 'rest',
 										children:[
-										          	{ name : 'authenticate', method : 'GET'},
+										          	{ name : 'authenticate', method : 'POST'},
 													{
 														name : '{token}',
 														children : [

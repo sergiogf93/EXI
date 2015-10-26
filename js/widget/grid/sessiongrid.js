@@ -40,6 +40,7 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
+	debugger
 	this.store.loadData(sessions, false);
 };
 
@@ -79,6 +80,7 @@ SessionGrid.prototype.getPanel = function() {
 			dataIndex : 'beamlineName',
 			flex : 0.5,
 			renderer : function(grid, a, record){
+				debugger
 				return EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName);
 			}
 		}, 

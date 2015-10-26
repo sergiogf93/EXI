@@ -17,20 +17,33 @@ SessionListView.prototype.formatData = function(data){
 	return data;
 };
 
+SessionListView.prototype.getValue = function(value){
+	if (value != null){
+		return "<tr><td style='max-width: 175px;\n" + 
+				"    overflow: hidden;\n" + 
+				"    text-overflow: ellipsis;\n" + 
+				"    white-space: nowrap;'>" + value +"</td></tr>";
+	}
+	return "";
+};
+
 SessionListView.prototype.getRow = function(record){
-	var html = "<table class='listView'>";
-	
+    var html = "<div style='color:#207a7a;font-size:12px;font-weight:bold;'>" +  record.data.beamlineName + "</div>";
+	html = html + "<table class='listView'>";
+//	
 		if (record.data.startDate != null){
 			try{
-				html = html + "<tr><td>Date:</td><td>" + moment(record.data.startDate).format("MMM Do YY") + "</td></tr>";
+				html = html + "<tr><td>" + moment(record.data.startDate).format("MMM Do YY") + "</td></tr>";
 			}
 			catch(e){
 				html = html + "<tr><td>Date:</td><td>Format Error</td></tr>";
 			}
 		}
-		html = html + "<tr><td>Shifts:</td><td>" + record.data.nbShifts+ "</td></tr>";
-		html = html + "<tr><td>Beamline:</td><td style='color:#207a7a;font-weight:bold;'>" + record.data.beamlineName+ "</td></tr>";
-	return html + "</table>";
+
+		html = html + this.getValue(record.data.beamlineOperator);
+		html = html + this.getValue(record.data.comments);
+	html = html + "</table>";
+	return html;
 };
 
 SessionListView.prototype.getColumns = function(){
