@@ -20,7 +20,7 @@ WelcomeMainView.prototype.getContainer = function() {
 		    },
 		items : [
 		         	{
-		         		html : "<iframe style='width:900px;height:900px;' frameBorder='0' src='../html/mx/welcome.html'></iframe>",
+		         		html : "<iframe style='width:900px;height:900px;' frameBorder='0' src='../html/welcome.html'></iframe>",
 		         		margin : '50 0 0 50'
 		         	}
 		]

@@ -195,16 +195,15 @@ SAXSExiController.prototype.routeExperiment = function() {
 SAXSExiController.prototype.routeDataCollection = function() {
 	Path.map("#/datacollection/macromoleculeAcronym/:value/main").to(function() {
 		/** Loading navidation menu **/
-		EXI.clearNavigationPanel();
-		EXI.setLoadingNavigationPanel(true);
-		EXI.setLoadingMainPanel();
+//		EXI.clearNavigationPanel();
+//		EXI.setLoadingNavigationPanel();
+		EXI.setLoadingMainPanel("Searching " + this.params['value']+  "...");
 		var onSuccess = (function(sender, dataCollections) {
 			if (dataCollections != null){
 				if (dataCollections.length > 0){
 					var mainView = new DataCollectionMainView();
 					EXI.addMainPanel(mainView);
 					mainView.load(dataCollections);
-					EXI.setLoadingMainPanel(false);
 					/** Selecting data collections from experiment * */
 					mainView.onSelect.attach(function(sender, element) {
 						EXI.localExtorage.selectedSubtractionsManager.append(element);
@@ -228,6 +227,8 @@ SAXSExiController.prototype.routeDataCollection = function() {
 			else{
 				BUI.showWarning("No data to display");
 			}
+//			EXI.setLoadingNavigationPanel(false);
+			EXI.setLoadingMainPanel(false);
 		});
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 
