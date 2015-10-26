@@ -31,23 +31,23 @@ DataCollectionListView.prototype.getFields = function(){
 	return  ['macromoleculeAcronym', 'bufferAcronym', 'macromoleculeId', 'dataCollections'];
 };
 
-DataCollectionListView.prototype.groupBy = function(array , f ){
-  var groups = {};
-  array.forEach( function( o )
-  {
-    var group = JSON.stringify( f(o) );
-    groups[group] = groups[group] || [];
-    groups[group].push( o );  
-  });
-  return Object.keys(groups).map( function( group ){
-	  return groups[group]; 
-  });
-};
+//DataCollectionListView.prototype.groupBy = function(array , f ){
+//  var groups = {};
+//  array.forEach( function( o )
+//  {
+//    var group = JSON.stringify( f(o) );
+//    groups[group] = groups[group] || [];
+//    groups[group].push( o );  
+//  });
+//  return Object.keys(groups).map( function( group ){
+//	  return groups[group]; 
+//  });
+//};
 
 
 /** This groups all the data by bufferId **/
 DataCollectionListView.prototype.formatData = function(data){
-	data =  this.groupBy(data, function(item){
+	data =  BUI.groupBy(data, function(item){
 		  return [item.bufferAcronym];
 	});
 	/** Data is now an array of arrays **/

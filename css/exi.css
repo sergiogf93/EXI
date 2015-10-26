@@ -1,3 +1,19 @@
+.saxs-grid-row-light{
+	background-color: #E0F8E0;
+}
+
+.saxs-grid-row-dark{
+	background-color: #A9F5BC;
+}
+
+.mx-grid-row-light{
+	background-color: #EFF8FB;
+}
+
+.mx-grid-row-dark{
+	background-color: #E0F2F7;
+}
+
 img.lazy {
         display: block;
         height : 80px;

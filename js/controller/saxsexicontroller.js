@@ -17,7 +17,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 	 * #/session/nav #/experiment/nav #/macromolecule/nav
 	 * 
 	 */
-	Path.map("#/:navigation/nav").to(function() {
+	Path.map("#/saxs/:navigation/nav").to(function() {
 		
 		if (this.params['navigation'] == "buffer") {
 			EXI.clearNavigationPanel();
@@ -34,7 +34,6 @@ SAXSExiController.prototype.routeNavigation = function() {
 			EXI.addMainPanel(new BufferWelcomeMainView());
 			
 		}
-		
 		
 		if (this.params['navigation'] == "stocksolution") {
 			EXI.clearNavigationPanel();
@@ -89,6 +88,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 
 	/** Loading a single session on the navigation panel * */
 	Path.map("#/session/nav/:sessionId/session").to(function() {
+		
 		var listView = new ExperimentListView();
 		
 		/** When selected move to hash * */
@@ -233,7 +233,8 @@ SAXSExiController.prototype.routeDataCollection = function() {
 
 	}).enter(this.setPageBackground);
 	
-	Path.map("#/datacollection/:key/:value/main").to(function() {
+	
+	Path.map("#/saxs/datacollection/:key/:value/main").to(function() {
 		EXI.setLoadingMainPanel();
 		var onSuccess = (function(sender, data) {
 			var mainView = new DataCollectionMainView();
@@ -251,7 +252,7 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 
-	Path.map("#/datacollection/:key/:value/primaryviewer").to(function() {
+	Path.map("#/saxs/datacollection/:key/:value/primaryviewer").to(function() {
 		var onSuccess = (function(sender, data) {
 			var primaryMainView = new PrimaryDataMainView();
 			EXI.addMainPanel(primaryMainView);
@@ -261,7 +262,7 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 	
-	Path.map("#/datacollection/:key/:value/merge").to(function() {
+	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
 		var onSuccess = (function(sender, data) {
 			var primaryMainView = new MergeMainView();
 			EXI.addMainPanel(primaryMainView);

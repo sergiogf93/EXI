@@ -33,7 +33,7 @@ MXExiController.prototype.routeNavigation = function() {
 	 * #/session/nav #/experiment/nav #/macromolecule/nav
 	 * 
 	 */
-	Path.map("#/:navigation/nav").to(function() {
+	Path.map("#/mx/:navigation/nav").to(function() {
 		/** Session navigation * */
 		if (this.params['navigation'] == "session") {
 			EXI.clearNavigationPanel();
@@ -51,12 +51,9 @@ MXExiController.prototype.routeNavigation = function() {
 	}).enter(this.setPageBackground);
 
 	/** Loading a single session on the navigation panel * */
-	Path.map("#/session/nav/:sessionId/session").to(function() {
-		
-		location.hash = "/datacollection/session/" + this.params['sessionId'] +"/main";
-		
-
-	}).enter(this.setPageBackground);
+//	Path.map("#/session/nav/:sessionId/session").to(function() {
+//		location.hash = "/datacollection/session/" + this.params['sessionId'] +"/main";
+//	}).enter(this.setPageBackground);
 	
 	
 	
@@ -76,7 +73,8 @@ MXExiController.prototype.routeNavigation = function() {
 	}).enter(this.setPageBackground);
 	
 	
-	Path.map("#/datacollection/session/:sessionId/main").to(function() {
+	
+	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['sessionId']);

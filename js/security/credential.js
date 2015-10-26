@@ -1,11 +1,12 @@
 
-function Credential(username, roles, token, url, exiUrl,activeProposals) {
+function Credential(username, roles, token, url, exiUrl,activeProposals, properties) {
 	this.username = username.toLowerCase();
 	this.roles = roles;
 	this.url = url;
 	this.exiUrl = exiUrl;
 	this.token = token;
 	this.activeProposals = activeProposals;
+	this.properties = properties;
 }
 
 Credential.prototype.isManager = function() {

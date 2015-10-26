@@ -41,29 +41,7 @@ function Exi(args) {
 	/** Proposal manager **/
 	this.proposalManager = new ProposalManager();
 	
-//	/** WorkSpace Panel **/
-//	this.workspacePanel = new WorkSpaceListView();
-//	
-//	/** Storage Object **/
-//	this.localExtorage = new ExtLocalExtorage();
-//	this.localExtorage.onAdded.attach(function(sender){
-//		_this.loadSelected(sender.selectedSubtractionsManager.getSelected());
-//	});
-//	this.localExtorage.onRemoved.attach(function(sender){
-//		_this.loadSelected(sender.selectedSubtractionsManager.getSelected());
-//	});
-//	
-//	UserManager.onUserAdded.attach(function(sender, credential){
-//		_this.mainMenu.setCredentials();
-//	});
-//	
-//	UserManager.onProposalActive.attach(function(sender, credential){
-//		_this.mainMenu.setCredentials();
-//	});
-	
 	this.credentialManager = new CredentialManager();
-	
-	
 	this.credentialManager.onLogout.attach(function(sender){
 		_this.mainMenu.populateCredentialsMenu();
 		_this.clearMainPanel();
@@ -89,7 +67,7 @@ function Exi(args) {
 		var authenticationManager = new AuthenticationManager();
 		authenticationManager.onSuccess.attach(function(sender, data){
 			/** This user has been authenticated **/
-			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl);
+			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl, args.properties);
 			_this.authenticationForm.window.close();
 			
 			var credential = EXI.credentialManager.getCredentialByUserName(data.user);

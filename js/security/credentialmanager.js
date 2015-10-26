@@ -4,8 +4,8 @@ function CredentialManager(){
 	this.onActiveProposalChanged = new Event(this);
 }
 
-CredentialManager.prototype.addCredential = function(username, roles, token, url, exiUrl){
-	var credential = new Credential(username, roles, token, url, exiUrl, []);
+CredentialManager.prototype.addCredential = function(username, roles, token, url, exiUrl, properties){
+	var credential = new Credential(username, roles, token, url, exiUrl, [], properties);
 	/** Writing to ExtLocalStorage * */
 	if (localStorage.getItem("credentials") == null) {
 		localStorage.setItem("credentials", "[]");
@@ -16,7 +16,7 @@ CredentialManager.prototype.addCredential = function(username, roles, token, url
 	this.onLogin.notify(credential);
 };
 
-CredentialManager.prototype.getCredentials = function(username, roles, token, url){
+CredentialManager.prototype.getCredentials = function(){
 	var credentials = [];
 	if (JSON.parse(localStorage.getItem("credentials")) != null){
 		credentials = JSON.parse(localStorage.getItem("credentials"));
@@ -24,7 +24,42 @@ CredentialManager.prototype.getCredentials = function(username, roles, token, ur
 	return credentials;
 };
 
-CredentialManager.prototype.getConnections = function(username, roles, token, url){
+//CredentialManager.prototype.getCredentialByProposal = function(proposal){
+//	var credentials = this.getCredentials();
+//	for (var i = 0; i < credentials.length; i++) {
+//		if (credentials[i].activeProposals.length > 0){
+//			for (var j = 0; j < credentials[i].activeProposals.length; j++) {
+//				var proposalName = credentials[i].activeProposals[j];
+//				if (new String(proposalName).toUpperCase() == proposal.toUpperCase()){
+//					return new Credential(
+//							credentials[i].username, 
+//							credentials[i].roles, 
+//							credentials[i].token, 
+//							credentials[i].url,
+//							credentials[i].activeProposals);
+//				}
+//			}
+//		}
+//	}
+//	return null;
+//};
+
+/** Given a beamline name it return MX or SAXS **/
+CredentialManager.prototype.getTechniqueByBeamline = function(beamlineName){
+	var connections = this.getConnections();
+	for (var i = 0; i < connections.length; i++) {
+		if (JSON.stringify(connections[i].beamlines.MX).toUpperCase().indexOf(beamlineName.toUpperCase()) != -1){
+			return "MX";
+		}
+		if (JSON.stringify(connections[i].beamlines.SAXS).toUpperCase().indexOf(beamlineName.toUpperCase()) != -1){
+			return "SAXS";
+		}
+	}
+	return "UNKNOW";
+	
+};
+
+CredentialManager.prototype.getConnections = function(){
 	var credentials = this.getCredentials();
 	var connectors = [];
 	for (var i = 0; i < credentials.length; i++) {
@@ -35,6 +70,7 @@ CredentialManager.prototype.getConnections = function(username, roles, token, ur
 					url : credentials[i].url,
 					exiUrl : credentials[i].exiUrl,
 					token : credentials[i].token,
+					beamlines : credentials[i].properties.beamlines,
 					proposal : credentials[i].activeProposals[j] });
 			}
 		}
@@ -44,6 +80,7 @@ CredentialManager.prototype.getConnections = function(username, roles, token, ur
 					url : credentials[i].url,
 					exiUrl : credentials[i].exiUrl,
 					token : credentials[i].token,
+					beamlines : credentials[i].properties.beamlines,
 					proposal : null 
 				});
 		}

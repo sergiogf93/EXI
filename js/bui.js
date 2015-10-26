@@ -34,6 +34,27 @@ var BUI = {
 				+ ("00" + (~~(b * 255)).toString(16)).slice(-2);
 		return (c);
 	},
+	groupBy : function(array , f ){
+		/**
+		 * Groups an array based on a function
+		 * Example:
+		 * 		data =  this.groupBy(data, function(item){
+		 * 			return [item.bufferAcronym];
+		 *		});
+		 * 
+		 */
+		  var groups = {};
+		  array.forEach( function( o )
+		  {
+		    var group = JSON.stringify( f(o) );
+		    groups[group] = groups[group] || [];
+		    groups[group].push( o );  
+		  });
+		  return Object.keys(groups).map( function( group ){
+			  return groups[group]; 
+		  });
+	},
+		
 	getFileNameByPath : function(filePath) {
 		if (filePath != null){
 			var split = filePath.split("/");

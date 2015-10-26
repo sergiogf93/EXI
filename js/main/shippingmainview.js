@@ -11,15 +11,15 @@ function ShippingMainView() {
 		height : 300
 	});
 	
-	this.caseGrid.onAdd.attach(function(sender){
+//	this.caseGrid.onAdd.attach(function(sender){
 //		_this.panel.setLoading();
 //		var onSuccess = (function(sender){
 //			_this.load(_this.shippingId);
 //			_this.panel.setLoading(false);
 //		});
 //		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.addDewar(_this.shippingId );
-		_this.caseGrid.edit();
-	});
+//		_this.caseGrid.edit();
+//	});
 	
 	this.caseGrid.onRemove.attach(function(sender, dewar){
 		var onSuccess = (function(sender){

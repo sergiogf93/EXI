@@ -65,7 +65,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		var _this = this;
 		function onItemCheck(item, checked) {
 			if (item.text == "Stock Solutions") {
-				location.hash = "/stocksolution/nav";
+				location.hash = "/saxs/stocksolution/nav";
 			}
 			
 		}

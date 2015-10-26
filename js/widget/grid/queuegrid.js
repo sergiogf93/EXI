@@ -615,7 +615,7 @@ QueueGrid.prototype.getPanel = function() {
 			listeners : {
 				cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 						if (e.target.defaultValue == 'Data Reduction') {
-							location.hash = "/datacollection/dataCollectionId/" + record.data.dataCollectionId + "/primaryviewer";
+							location.hash = "/saxs/datacollection/dataCollectionId/" + record.data.dataCollectionId + "/primaryviewer";
 						}
 
 						if (e.target.defaultValue == 'Abinitio') {

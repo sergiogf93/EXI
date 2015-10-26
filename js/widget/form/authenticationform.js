@@ -62,9 +62,10 @@ AuthenticationForm.prototype.getPanel = function(){
 	        	var form = this.up('form').getForm();
 	        	
 	        	var exiUrl;
+	        	var properties = null;
 	        	for (var i =0; i< ExtISPyB.sites.length; i++){
 	        		if (ExtISPyB.sites[i].url == form.getFieldValues().site){
-	        			exiUrl = ExtISPyB.sites[i].exiUrl;
+	        			properties = ExtISPyB.sites[i];
 	        		}
 	        		
 	        	}
@@ -72,8 +73,8 @@ AuthenticationForm.prototype.getPanel = function(){
 	        		user : form.getFieldValues().user, 
 	        		password : form.getFieldValues().password, 
 	        		site : form.getFieldValues().site,
-	        		exiUrl : exiUrl 
-	        		
+	        		exiUrl : properties.exiUrl,
+	        		properties : properties
 	        	});
 
 	        }

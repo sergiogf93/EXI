@@ -14,6 +14,9 @@ function SAXSMainMenu() {
 	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
 }
 SAXSMainMenu.prototype.getMenuItems = function() {
+	
+	
+	
 	return [	
     	this.getHomeItem(),
     	this.getShipmentItem(),
@@ -28,12 +31,12 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				hidden : this.isHidden,
 				menu : this.getDataExplorerMenu() 
 		},
-		{
-			text : '<span style="color:white">Offline Data Analysis</span>',
-			cls : 'ExiSAXSMenuToolBar',
-			hidden : this.isHidden,
-			menu : this.getOnlineDataAnalisysMenu() 
-		}, 
+//		{
+//			text : '<span style="color:white">Offline Data Analysis</span>',
+//			cls : 'ExiSAXSMenuToolBar',
+//			hidden : this.isHidden,
+//			menu : this.getOnlineDataAnalisysMenu() 
+//		}, 
 		{
 			text : this._convertToHTMLWhiteSpan("Help"),
 			cls : 'ExiSAXSMenuToolBar',
@@ -63,18 +66,18 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
 		if (item.text == "Macromolecules") {
-			location.hash = "/macromolecule/nav";
+			location.hash = "/saxs/macromolecule/nav";
 		}
 		if (item.text == "Buffers") {
-			location.hash = "/buffer/nav";
+			location.hash = "/saxs/buffer/nav";
 		}
 
 		if (item.text == "Sample Tracking") {
-			location.hash = "/shipping/nav";
+			location.hash = "/saxs/shipping/nav";
 		}
 
 		if (item.text == "My Experiments") {
-			location.hash = "/template/nav";
+			location.hash = "/saxs/template/nav";
 		}
 	}
 

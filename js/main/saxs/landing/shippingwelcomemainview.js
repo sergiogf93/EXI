@@ -37,19 +37,19 @@ ShippingWelcomeMainView.prototype.getContainer = function() {
 							        	 html : '<div class="landing-text"> A Shipment consists of a set of Dewars which is sent from your home lab to the synchrotron via a courier company. Each dry shipping Dewar within the shipment is identified by a label (barcode or sticker). The dewars(s) contains a set of Containers (Pucks or canes). Containers (typically Pucks), contain Samples. A Sample (Sample Holder) contains the Crystal</div><br/>',
 							        	 margin : '0 0 0 20'
 							         },
-							         {
-							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
-							        	 margin : '0 0 0 20'
-							         },
-							         {
-							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
-							        	 margin : '0 0 0 20'
-							         },
-							         
-							         {
-							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
-							        	 margin : '0 0 0 20'
-							         },
+//							         {
+//							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
+//							        	 margin : '0 0 0 20'
+//							         },
+//							         {
+//							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
+//							        	 margin : '0 0 0 20'
+//							         },
+//							         
+//							         {
+//							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
+//							        	 margin : '0 0 0 20'
+//							         },
 //							         {
 //							        	 html : this.getOptions(),
 //							        	 margin : '0 0 0 40'
@@ -76,7 +76,13 @@ ShippingWelcomeMainView.prototype.getContainer = function() {
 										        	 icon : '../images/icon/add.png',
 										        	 iconAlign : 'top',
 										        	 handler : function(){
-										        		 location.hash = '/shipping/main';
+
+										        		 if (EXI.proposalManager.getFutureSessions().length > 0){
+										     				location.hash = '/shipping/main';
+										     			 }
+										        		 else{
+											        		 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
+										        		 }
 										        	 }
 										         }]
 							         }

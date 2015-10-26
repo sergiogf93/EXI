@@ -80,7 +80,6 @@ CaseGrid.prototype._getContainerHTML = function(record) {
 	else{
 		items = [
 	             {key : 'Label', value : deserialized[0].Dewar_code}
-//	             {key : 'Storage Location ', value :  deserialized[0].Dewar_storageLocation}
     ];
 		
 	}
@@ -300,7 +299,14 @@ CaseGrid.prototype._getTopButtons = function() {
 		text : 'Add',
 		disabled : false,
 		handler : function(widget, event) {
-			_this.onAdd.notify();
+//			_this.onAdd.notify();
+			if (EXI.proposalManager.getFutureSessions().length > 0){
+				_this.caseGrid.edit();
+			}
+			else{
+				BUI.showError("Sorry, there are not sessions scheduled for this proposal");
+				
+			}
 		}
 	}));
 	
