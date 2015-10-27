@@ -33,7 +33,7 @@ var ExtISPyB = {
 					    exiUrl       : 'http://pc593.embl.fr:8080/extispyb-ws/rest',
 					    beamlines 	: {
 											SAXS : ['P12'],
-											MX 	 : ['P13', 'P14P']
+											MX 	 : ['P13', 'P14']
 					    } 
 					},
 					{

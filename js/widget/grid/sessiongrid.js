@@ -41,7 +41,7 @@ function SessionGrid(args) {
 
 SessionGrid.prototype.load = function(sessions) {
 	debugger
-	this.store.loadData(sessions, false);
+	this.store.loadData(sessions, true);
 };
 
 
@@ -60,6 +60,7 @@ SessionGrid.prototype.getPanel = function() {
 
 	this.store = Ext.create('Ext.data.Store', {
 		fields : [ 'startDate', 'beamlineName', 'beamlineOperator', 'diff' ],
+//		fields : [ 'beamlineName' ],
 		emptyText : "No sessions",
 		data : []
 	});
@@ -75,12 +76,19 @@ SessionGrid.prototype.getPanel = function() {
 		emptyText : "No sessions",
 		
 		columns : [ 
+       	{
+			text : 'Proposal',
+			dataIndex : 'beamlineName',
+			flex : 0.75,
+			renderer : function(grid, a, record){
+				return record.data.proposalVO.code + record.data.proposalVO.number; 
+			}
+		}, 
 		{
 			text : 'Type',
 			dataIndex : 'beamlineName',
 			flex : 0.5,
 			renderer : function(grid, a, record){
-				debugger
 				return EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName);
 			}
 		}, 

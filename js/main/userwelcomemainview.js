@@ -248,6 +248,74 @@ UserWelcomeMainView.prototype.getContainer = function() {
 		return this.panel;
 };
 
+
+UserWelcomeMainView.prototype.parseSessionsByDate = function(sessions) {
+	var olderSessions = [];
+	var futureSessions = [];
+	var todaySessions = [];
+	
+	
+	for (var i = 0; i < sessions.length; i++) {
+		/** Older **/
+		sessions[i].diff = moment(sessions[i].startDate).diff(moment(), 'days');
+		if (sessions[i].diff == 0){
+			todaySessions.push(sessions[i]);
+		}
+		else{
+			if (sessions[i].diff < 0){
+				olderSessions.push(sessions[i]);
+			}
+			else{
+				futureSessions.push(sessions[i]);
+			}
+		}
+	}
+	
+
+	futureSessions.sort(function(a, b){
+		return a.diff - b.diff;
+	});
+	
+	
+	return {
+		olderSessions : olderSessions,
+		futureSessions : futureSessions,
+		todaySessions : todaySessions
+	}
+};
+
+
+UserWelcomeMainView.prototype.loadProposal = function(proposals) {
+	var _this = this;
+	for (var i = 0; i < proposals.length; i++) {
+		_this.activeProposal(proposals[i]);
+		function onSessions(sender, sessions){
+			
+			
+			_this.panel.setLoading(false);
+			
+			var mySessions = _this.parseSessionsByDate(sessions);
+			debugger
+			if (mySessions.olderSessions.length > 0){
+				console.log(mySessions.olderSessions)
+				_this.previousSessionsGrid.load(mySessions.olderSessions);
+			}
+			
+			if (mySessions.futureSessions.length > 0){
+				_this.futureSessionsGrid.load(mySessions.futureSessions);
+			}
+			
+			if (mySessions.todaySessions.length > 0){
+				Ext.getCmp(_this.id + "sessions").insert(0, _this.todaySessionsGrid.getPanel());
+				_this.todaySessionsGrid.load(mySessions.todaySessions);
+			}
+			
+		}
+		_this.panel.setLoading("Loading Sessions");
+		EXI.getDataAdapter({onSuccess:onSessions}).proposal.session.getSessions();
+	}
+};
+
 UserWelcomeMainView.prototype.loadUserView = function() {
 	var _this = this;
 	this.panel.setLoading("Loading Proposal");
@@ -256,56 +324,7 @@ UserWelcomeMainView.prototype.loadUserView = function() {
 		_this.proposalGrid.load(proposals);
 		console.log(proposals);
 		if (proposals.length> 0){
-			_this.activeProposal(proposals[0]);
-			function onSessions(sender, data){
-				console.log(data)
-				var olderSessions = [];
-				var futureSessions = [];
-				var todaySessions = [];
-				
-				
-				for (var i = 0; i < data.length; i++) {
-					/** Older **/
-					data[i].diff = moment(data[i].startDate).diff(moment(), 'days');
-					
-					if (data[i].diff == 0){
-						todaySessions.push(data[i]);
-					}
-					else{
-						if (data[i].diff < 0){
-							olderSessions.push(data[i]);
-						}
-						else{
-							futureSessions.push(data[i]);
-						}
-					}
-				}
-				
-				
-				_this.panel.setLoading(false);
-				
-				futureSessions.sort(function(a, b){
-					return a.diff - b.diff;
-				});
-				
-				debugger
-				if (olderSessions.length > 0){
-					console.log(olderSessions)
-					_this.previousSessionsGrid.load(olderSessions);
-				}
-				
-				if (futureSessions.length > 0){
-					_this.futureSessionsGrid.load(futureSessions);
-				}
-				
-				if (todaySessions.length > 0){
-					Ext.getCmp(_this.id + "sessions").insert(0, _this.todaySessionsGrid.getPanel());
-					_this.todaySessionsGrid.load(todaySessions);
-				}
-				
-			}
-			_this.panel.setLoading("Loading Sessions");
-			EXI.getDataAdapter({onSuccess:onSessions}).proposal.session.getSessions();
+			_this.loadProposal(proposals);
 		}
 	};
 	EXI.proposalManager.get();
