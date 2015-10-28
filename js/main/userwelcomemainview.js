@@ -295,7 +295,6 @@ UserWelcomeMainView.prototype.loadProposal = function(proposals) {
 			_this.panel.setLoading(false);
 			
 			var mySessions = _this.parseSessionsByDate(sessions);
-			debugger
 			if (mySessions.olderSessions.length > 0){
 				console.log(mySessions.olderSessions)
 				_this.previousSessionsGrid.load(mySessions.olderSessions);

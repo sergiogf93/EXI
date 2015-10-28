@@ -38,7 +38,6 @@ function AbinitioForm(args) {
 	/** Dygraph Widget that plots fir files**/
 	this.curvePlotter = new CurvePlotter({
 	});
-
 	/** PDB viewer **/
 	this.viewer = new PDBViewer({
 		width : 500,
@@ -59,7 +58,6 @@ AbinitioForm.prototype._renderPDB = function(modelsIdList) {
 				opacity : 0.8
 			});
 		}
-		debugger
 		this.viewer.refresh(viz);
 	} catch (e) {
 		console.log(e);

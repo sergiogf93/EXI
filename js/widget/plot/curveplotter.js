@@ -103,7 +103,6 @@ CurvePlotter.prototype.loadHPLCFrame = function(experimentId, frameNumber) {
 };
 
 CurvePlotter.prototype.loadUrl = function(url) {
-//	url = "http://pc593.embl.fr:8082/test/auto.json";
 	this.render(url);
 };
 

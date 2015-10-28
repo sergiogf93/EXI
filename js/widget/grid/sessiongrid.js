@@ -40,7 +40,6 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
-	debugger
 	this.store.loadData(sessions, true);
 };
 
@@ -89,7 +88,9 @@ SessionGrid.prototype.getPanel = function() {
 			dataIndex : 'beamlineName',
 			flex : 0.5,
 			renderer : function(grid, a, record){
-				return EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName);
+				if (record.data.beamlineName != null){
+					return EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName);
+				}
 			}
 		}, 
 		{
@@ -125,12 +126,16 @@ SessionGrid.prototype.getPanel = function() {
 		viewConfig : {
 			stripeRows : true,
 			getRowClass : function(record, rowIndex, rowParams, store){
-	        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "SAXS"){
-	        		 return ((rowIndex % 2) == 0) ? "saxs-grid-row-light" : "saxs-grid-row-dark";
-	        	} 
-	        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "MX"){
-	        		 return ((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
-	        	}
+				
+				if (record.data.beamlineName != null){
+		        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "SAXS"){
+		        		 return ((rowIndex % 2) == 0) ? "saxs-grid-row-light" : "saxs-grid-row-dark";
+		        	} 
+		        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "MX"){
+		        		 return ((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
+		        	}
+				}
+				return "warning-grid-row";
 	    	},
 			listeners : {
 				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
@@ -138,7 +143,6 @@ SessionGrid.prototype.getPanel = function() {
 				},
 				
 				'itemdblclick' : function( grid, record, item, index, e, eOpts ){
-					console.log(record.data)
 					 _this.goToSession(record.data);
 				}
 	
