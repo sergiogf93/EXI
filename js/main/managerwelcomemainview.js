@@ -23,10 +23,18 @@ function ManagerWelcomeMainView() {
 	this.timeLineWidget = new SessionTimeLineWidget();
 	
 	this.timeLineWidget.onSelected.attach(function(sender, record){
+	      console.log(record);
 		var onSuccess = function(sender, proposals){
+		  
 			if (proposals.length > 0){
 				_this.activeProposal(proposals[0]);
-				location.hash = "/session/nav/" + record.sessionId +"/session";
+				
+				if (proposals[0]["Proposal_proposalType"] == "BX"){
+				  location.hash = "/session/nav/" + record.sessionId +"/session";
+				}
+				else{
+				  location.hash = "/mx/datacollection/session/" + record.sessionId + "/main";
+				}
 			}
 			else{
 				BUI.showError("No proposal Found");
