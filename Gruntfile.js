@@ -8,8 +8,9 @@ module.exports = function(grunt) {
 		  prod:{
 			  files : {
 				  'min/core.min.js' 		: ["js/core/**/*js"],
-				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", "js/widget/addressform.js", "js/widget/*/*js", "js/widget/plot/*/*js", "js/widget/form/*/*js", "js/widget/mx/*/*js"],
-				  'min/data.min.js' 		: ["js/core/data/*js", "js/core/data/*/*js"],
+				  //'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", "js/widget/addressform.js", "js/widget/*/*js", "js/widget/plot/*/*js", "js/widget/form/*/*js", "js/widget/mx/*/*js"],
+				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", "js/widget/addressform.js", "js/widget/**/*.js"],
+				  //'min/data.min.js' 		: ["js/core/data/*js", "js/core/data/*/*js"],
 				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js","js/navigation/*/*js"],
 				  'min/main.min.js' 		: ["js/main/mainview.js", "js/main/puckmainview.js", "js/main/addressmainview.js", "js/main/userwelcomemainview.js", 
 								   "js/main/managerwelcomemainview.js", "js/main/shippingmainview.js", "js/main/sessionmainview.js", "js/main/saxs/landing/*.js", 
@@ -38,7 +39,7 @@ module.exports = function(grunt) {
 			      },
 			  },
 			  files : {
-				  'min/exi.min.js' 		: ['min/bower_components.min.js', 'min/core.min.js', 'min/widget.min.js', 'min/data.min.js', 'min/navigation.min.js', 'min/main.min.js']
+				  'min/exi.min.js' 		: ['min/bower_components.min.js', 'min/core.min.js', 'min/widget.min.js', 'min/navigation.min.js', 'min/main.min.js']
 			  }
 		  }
 	  },
