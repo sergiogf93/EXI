@@ -78,7 +78,7 @@ MainMenu.prototype.getShipmentItem = function() {
 							handler : onItemCheck 
 						} 
 			] });
-	};
+	}
 	
 	return {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
@@ -175,7 +175,7 @@ MainMenu.prototype.populateCredentialsMenu = function() {
 	var credentialDisplay = "";
 	if (EXI.credentialManager.getCredentials() != null) {
 		for (var i = 0; i < EXI.credentialManager.getCredentials().length; i++) {
-			var credentialDisplay = EXI.credentialManager.getCredentials()[i].username;
+			credentialDisplay = EXI.credentialManager.getCredentials()[i].username;
 			if (EXI.credentialManager.getCredentials()[i].activeProposals.length > 0) {
 				for (var j = 0; j < EXI.credentialManager.getCredentials()[i].activeProposals.length; j++) {
 					credentialDisplay = EXI.credentialManager.getCredentials()[i].activeProposals[j] + "@" + EXI.credentialManager.getCredentials()[i].username;

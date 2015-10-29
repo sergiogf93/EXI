@@ -1,10 +1,10 @@
-StockSolutionListView.prototype.getPanel = ListView.prototype.getPanel;
-StockSolutionListView.prototype.load = ListView.prototype.load;
-
 function StockSolutionListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
 	ListView.call(this);
 }
+
+StockSolutionListView.prototype.getPanel = ListView.prototype.getPanel;
+StockSolutionListView.prototype.load = ListView.prototype.load;
 
 StockSolutionListView.prototype.getRow = function(record){
 	console.log(record);

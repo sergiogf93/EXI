@@ -1,20 +1,15 @@
+function TemplateSaxsDataAdapter(args){
+	DataAdapter.call(this, args);
+}
 
 TemplateSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
 TemplateSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
 TemplateSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 
-function TemplateSaxsDataAdapter(args){
-	DataAdapter.call(this, args);
-}
-
-
-
-
 TemplateSaxsDataAdapter.prototype.getTemplateSourceFile = function(experimentId, type){
 	var connections = EXI.credentialManager.getConnections();
 	return this.getUrl(connections[0], ('/{token}/proposal/{proposal}/saxs/experiment/{0}/samplechanger/type/{1}/template'.format([  experimentId, type])));
-//	return token.url + );
 };
 
 

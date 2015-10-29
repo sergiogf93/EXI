@@ -1,6 +1,3 @@
-MergeMainView.prototype.getPanel = MainView.prototype.getPanel;
-MergeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function MergeMainView() {
 	this.title = "Primary Data View";
 	this.icon = 'images/icon/ic_blur_on_black_18dp.png';
@@ -26,7 +23,9 @@ function MergeMainView() {
 		plotter = sender;
 	});
 }
-var plotter = [];
+
+MergeMainView.prototype.getPanel = MainView.prototype.getPanel;
+MergeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 MergeMainView.prototype.populateForm = function(pointCount, colors) {
 	for (var i = 0; i < this.frames.length; i++) {

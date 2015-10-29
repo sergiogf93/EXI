@@ -59,6 +59,11 @@ WorkSpaceListView.prototype.getSelectionPanel = function(){
 		return averaged + "/" + count;
 	}
 	
+	function processResult(answer){
+							if (answer == "yes"){
+								exiSAXS.localExtorage.selectedSubtractionsManager.remove(record.data);
+							}
+	}
 	
 	this.selectionGrid = Ext.create('Ext.grid.Panel', {
 	    store: this.selection ,
@@ -100,12 +105,7 @@ WorkSpaceListView.prototype.getSelectionPanel = function(){
 	    listeners: {
 	    	cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 					if (cellIndex == 2) {
-						function processResult(answer){
-							if (answer == "yes"){
-								exiSAXS.localExtorage.selectedSubtractionsManager.remove(record.data);
-							}
-						}
-						
+				
 						Ext.Msg.show({
 						   title:'Discard subtraction?',
 						   msg: 'Your are discarding a selected subtraction. You may re-add it afterwards. Would you like to discard it?',
@@ -134,8 +134,8 @@ WorkSpaceListView.prototype.getProjectPanel = function(){
 	        { text: 'Name',  dataIndex: 'name', flex: 1, 
 	        	
 	        	renderer : function(grid, opts, record){
-	        		var html =  "<span class='projectName'>" + record.data.name + "</span><br/>" 
-	        				+ "<span class='projectDescription'>"  + record.data.description + "</span>";
+	        		var html =  "<span class='projectName'>" + record.data.name + "</span><br/>" +
+	        			    "<span class='projectDescription'>"  + record.data.description + "</span>";
 	        		
 	        		if (record.data.subtractions != null){
 	        			html = html + "<br />" + record.data.subtractions.length + " datasets selected";
@@ -218,12 +218,12 @@ WorkSpaceListView.prototype.getPanel = function(){
 	    defaults: {
 	        bodyStyle: 'padding:15px'
 	    },
-	    layout: {
+	    /*layout: {
 	        type: 'accordion',
 	        titleCollapse: false,
 	        animate: true,
 	        activeOnTop: true
-	    },
+	    },*/
 	    items: [
 	            _this.getSelectionPanel(),
 	            _this.getProjectPanel(),

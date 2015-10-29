@@ -1,13 +1,10 @@
-
-SpecimenSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
-SpecimenSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
-SpecimenSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function SpecimenSaxsDataAdapter(args){
 	DataAdapter.call(this, args);
 }
 
+SpecimenSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
+SpecimenSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
+SpecimenSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 SpecimenSaxsDataAdapter.prototype.saveSpecimen= function(specimen){
     var url = ('/{token}/proposal/{proposal}/saxs/specimen/save');

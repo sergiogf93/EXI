@@ -1,5 +1,4 @@
-ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ManagerWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+
 
 function ManagerWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
@@ -37,6 +36,9 @@ function ManagerWelcomeMainView() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getProposalBySessionId(record.sessionId);
 	});
 }
+
+ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+ManagerWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber);

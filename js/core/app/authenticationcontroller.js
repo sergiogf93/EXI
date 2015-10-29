@@ -20,10 +20,10 @@ AuthenticationManager.prototype.login = function(user, password, url){
 	});
 	};
 		
-	var err = (function(sender, data) {
+	var err = function(sender, data) {
 		EXI.setError("Permission denied");
 		BUI.showError("Your credentials are invalid");
-	});
+	};
 	
 	EXI.getDataAdapter({
 		onSuccess :fn,

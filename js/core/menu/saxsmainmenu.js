@@ -1,3 +1,8 @@
+function SAXSMainMenu() {
+	this.id = BUI.id();
+	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
+}
+
 SAXSMainMenu.prototype.populateCredentialsMenu = MainMenu.prototype.populateCredentialsMenu;
 SAXSMainMenu.prototype.init = MainMenu.prototype.init;
 SAXSMainMenu.prototype.getPanel = MainMenu.prototype.getPanel;
@@ -9,10 +14,7 @@ SAXSMainMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
 SAXSMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 SAXSMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
-function SAXSMainMenu() {
-	this.id = BUI.id();
-	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
-}
+
 SAXSMainMenu.prototype.getMenuItems = function() {
 	
 	

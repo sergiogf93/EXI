@@ -1,5 +1,4 @@
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
+
 
 function ShippingMainView() {
 	
@@ -22,15 +21,16 @@ function ShippingMainView() {
 //	});
 	
 	this.caseGrid.onRemove.attach(function(sender, dewar){
-		var onSuccess = (function(sender){
+		var onSuccess = function(sender){
 			_this.load(_this.shippingId);
 			_this.panel.setLoading(false);
-		});
+		};
 		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.removeDewar(_this.shippingId, dewar.dewarId );
 	});
 }
 
-
+ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
+ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 ShippingMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('tabpanel',
@@ -74,11 +74,11 @@ ShippingMainView.prototype.load = function(shippingId) {
 	var _this = this;
 	if (shippingId != null){
 		this.panel.setLoading();
-		var onSuccess = (function(sender, shipment){
+		var onSuccess = function(sender, shipment){
 			_this.shipmentForm.load(shipment);
 			_this.caseGrid.load(shipment);
 			_this.panel.setLoading(false);
-		});
+		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
 };

@@ -1,5 +1,3 @@
-AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function AutoProcIntegrationMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
@@ -83,13 +81,13 @@ function AutoProcIntegrationMainView() {
 	
 	this.wilsonPlotter.onPointClickCallback.attach(function(sender, id){
 		_this.onPlotClicked(id);
-	})
+	});
 	
 	this.annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
 		height : 150,
 		title : "Anom Corr vs Resolution",
 		legend : 'never'
-	});;
+	});
 
 	this.annoCorrPlotter.onPointClickCallback.attach(function(sender, id){
 		_this.onPlotClicked(id);
@@ -113,8 +111,9 @@ function AutoProcIntegrationMainView() {
 				if (data.length > 0){
 					if (data[0].phasinganalysis != null){
 						for (var i = 0; i < data[0].phasinganalysis.length; i++) {
+							var j = 0;
 							if (data[0].phasinganalysis[i].modelbuilding.length > 0){
-								for (var j = 0; j < data[0].phasinganalysis[i].modelbuilding.length; j++) {
+								for (j = 0; j < data[0].phasinganalysis[i].modelbuilding.length; j++) {
 									parsed.push(data[0].phasinganalysis[i].modelbuilding[j]);
 									parsed[parsed.length -1]["name"] = "modelbuilding";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].modelbuilding[j].spaceGroupVO);
@@ -123,7 +122,7 @@ function AutoProcIntegrationMainView() {
 							}
 							
 							if (data[0].phasinganalysis[i].preparephasingdata.length > 0){
-								for (var j = 0; j < data[0].phasinganalysis[i].preparephasingdata.length; j++) {
+								for ( j = 0; j < data[0].phasinganalysis[i].preparephasingdata.length; j++) {
 									parsed.push(data[0].phasinganalysis[i].preparephasingdata[j]);
 									parsed[parsed.length -1]["name"] = "preparephasingdata";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].preparephasingdata[j].spaceGroupVO);
@@ -132,7 +131,7 @@ function AutoProcIntegrationMainView() {
 							}
 							
 							if (data[0].phasinganalysis[i].phasing.length > 0){
-								for (var j = 0; j < data[0].phasinganalysis[i].phasing.length; j++) {
+								for (j = 0; j < data[0].phasinganalysis[i].phasing.length; j++) {
 									parsed.push(data[0].phasinganalysis[i].phasing[j]);
 									parsed[parsed.length -1]["name"] = "phasing";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].phasing[j].spaceGroup3VO);
@@ -141,7 +140,7 @@ function AutoProcIntegrationMainView() {
 							}
 		
 							if (data[0].phasinganalysis[i].substructureDetermination3VO.length > 0){
-								for (var j = 0; j < data[0].phasinganalysis[i].substructureDetermination3VO.length; j++) {
+								for (j = 0; j < data[0].phasinganalysis[i].substructureDetermination3VO.length; j++) {
 									parsed.push(data[0].phasinganalysis[i].substructureDetermination3VO[j]);
 									parsed[parsed.length -1]["name"] = "substructureDetermination";
 									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].substructureDetermination3VO[j].spaceGroupVO);
@@ -165,6 +164,8 @@ function AutoProcIntegrationMainView() {
 	
 	this.phasingGrid = new PhasingGrid({margin : '0 0 0 10'});
 }
+
+AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
 AutoProcIntegrationMainView.prototype.getByAutoProcProgramAttachmentId = function(autoProcProgramAttachmentId) {

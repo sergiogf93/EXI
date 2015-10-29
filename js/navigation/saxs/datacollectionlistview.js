@@ -1,9 +1,9 @@
-DataCollectionListView.prototype.getPanel = ListView.prototype.getPanel;
-DataCollectionListView.prototype.load = ListView.prototype.load;
-
 function DataCollectionListView(){
 	ListView.call(this);
 }
+
+DataCollectionListView.prototype.getPanel = ListView.prototype.getPanel;
+DataCollectionListView.prototype.load = ListView.prototype.load;
 
 DataCollectionListView.prototype.getRow = function(record){
 	var html = "<table class='listView'>";

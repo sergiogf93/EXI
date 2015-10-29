@@ -1,10 +1,10 @@
-SessionListView.prototype.getPanel = ListView.prototype.getPanel;
-SessionListView.prototype.load = ListView.prototype.load;
-
 function SessionListView(){
 	this.sorters = [{property : 'sessionId', direction: 'DESC'}];
 	ListView.call(this);
 }
+
+SessionListView.prototype.getPanel = ListView.prototype.getPanel;
+SessionListView.prototype.load = ListView.prototype.load;
 
 SessionListView.prototype.getFilter = function(value){
 	return [{property : "beamlineName", value : value, anyMatch : true}];

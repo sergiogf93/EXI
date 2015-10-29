@@ -1,15 +1,13 @@
-ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function ShippingWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Welcome";
 	this.closable = false;
-	
-	
 }
+
+ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+ShippingWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 ShippingWelcomeMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('panel',

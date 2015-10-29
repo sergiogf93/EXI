@@ -1,10 +1,10 @@
-ExperimentListView.prototype.getPanel = ListView.prototype.getPanel;
-ExperimentListView.prototype.load = ListView.prototype.load;
-
 function ExperimentListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
 	ListView.call(this);
 }
+
+ExperimentListView.prototype.getPanel = ListView.prototype.getPanel;
+ExperimentListView.prototype.load = ListView.prototype.load;
 
 ExperimentListView.prototype.getRow = function(record){
 	var color = "black";

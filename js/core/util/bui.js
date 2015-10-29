@@ -1,6 +1,6 @@
 var BUI = {
 	//interval : 60000,
-		interval : 40000,
+	interval : 40000,
 	rainbow : function(numOfSteps, step) {
 		// This function generates vibrant, "evenly spaced" colours (i.e. no clustering). This is ideal for creating easily distinguishable vibrant markers in Google Maps and other apps.
 		// Adam Cole, 2011-Sept-14
@@ -12,26 +12,25 @@ var BUI = {
 		var q = 1 - f;
 		switch (i % 6) {
 			case 0:
-				r = 1, g = f, b = 0;
+				r = 1; g = f; b = 0;
 				break;
 			case 1:
-				r = q, g = 1, b = 0;
+				r = q; g = 1; b = 0;
 				break;
 			case 2:
-				r = 0, g = 1, b = f;
+				r = 0; g = 1; b = f;
 				break;
 			case 3:
-				r = 0, g = q, b = 1;
+				r = 0; g = q; b = 1;
 				break;
 			case 4:
-				r = f, g = 0, b = 1;
+				r = f; g = 0; b = 1;
 				break;
 			case 5:
-				r = 1, g = 0, b = q;
+				r = 1; g = 0; b = q;
 				break;
 		}
-		var c = "#" + ("00" + (~~(r * 255)).toString(16)).slice(-2) + ("00" + (~~(g * 255)).toString(16)).slice(-2)
-				+ ("00" + (~~(b * 255)).toString(16)).slice(-2);
+		var c = "#" + ("00" + (~~(r * 255)).toString(16)).slice(-2) + ("00" + (~~(g * 255)).toString(16)).slice(-2) + ("00" + (~~(b * 255)).toString(16)).slice(-2);
 		return (c);
 	},
 	groupBy : function(array , f ){
@@ -85,8 +84,8 @@ var BUI = {
 	},
 
 	getMacromoleculeResultsURLByMultipleSearch : function(array) {
-		return '/ispyb/user/viewProjectList.do?reqCode=display&menu=macromolecule&search='
-				+ JSON.stringify(array).replace(new RegExp("\"", 'g'), "'");
+		return '/ispyb/user/viewProjectList.do?reqCode=display&menu=macromolecule&search=' +
+		        JSON.stringify(array).replace(new RegExp("\"", 'g'), "'");
 	},
 	getMacromoleculeResultsURL : function(macromoleculeId) {
 		return '/ispyb/user/viewProjectList.do?reqCode=display&menu=macromolecule&macromoleculeId=' + macromoleculeId;
@@ -143,16 +142,16 @@ var BUI = {
 	getZipHTMLByMacromoleculeId : function(macromoleculeId) {
 		if (macromoleculeId != null) {
 			var fileName = BIOSAXS.proposal.getMacromoleculeById(macromoleculeId).acronym;
-			return "<div><a style='color:blue;' href='/ispyb/user/dataadapter.do?reqCode=getZipFileByMacromoleculeId&fileName=" + fileName
-					+ "&macromoleculeId=" + macromoleculeId + "'><img src='../images/download.png' /> Download</a></div>";
+			return "<div><a style='color:blue;' href='/ispyb/user/dataadapter.do?reqCode=getZipFileByMacromoleculeId&fileName=" + fileName +
+				"&macromoleculeId=" + macromoleculeId + "'><img src='../images/download.png' /> Download</a></div>";
 		}
 	},
 	getZipHTMLByExperimentId : function(experimentId, filename) {
 		if (filename == null){
 			filename = "experiment";
 		}
-		return "<div><a style='color:blue;' href='/ispyb/user/dataadapter.do?reqCode=getZipFileByExperimentId&fileName=" + filename
-				+ "&experimentId=" + experimentId + "'><img src='../images/download.png' /> Download</a></div>";
+		return "<div><a style='color:blue;' href='/ispyb/user/dataadapter.do?reqCode=getZipFileByExperimentId&fileName=" + filename +
+		       "&experimentId=" + experimentId + "'><img src='../images/download.png' /> Download</a></div>";
 	},
 	
 	getZipURLByAverageId : function(averageId, filename) {
@@ -172,7 +171,7 @@ var BUI = {
 	getZipHTMLByFrameRangeId : function(experimentId, start, end) {
 		var fileName = "experiment";
 		return "<div><a style='color:blue;' href='/ispyb/user/dataadapter.do?reqCode=getZipFileH5ByFramesRange&f&experimentId=" + experimentId + 
-				"&start=" + Number(start) +"&end="+ Number(end)+"'><img src='../images/download.png' /> Download</a></div>";
+		       "&start=" + Number(start) +"&end="+ Number(end)+"'><img src='../images/download.png' /> Download</a></div>";
 	},
 	getZipFrameHPLCUrl : function(experimentId, start, end) {
 		return "/ispyb/user/dataadapter.do?reqCode=getZipFileH5ByFramesRange&f&experimentId=" + experimentId + "&start=" + Number(start) +"&end="+ Number(end);
@@ -190,7 +189,7 @@ var BUI = {
 		var count = 0;
 		var avg = null;
 
-		var curatedValues = new Array();
+		var curatedValues = [];
 		for ( var i = 0; i < values.length; i++) {
 			var value = values[i];
 			if (value != null) {
@@ -208,9 +207,8 @@ var BUI = {
 			avg = sum;
 		}
 		var aux = 0;
-		for ( var i = 0; i < curatedValues.length; i++) {
-			var value = curatedValues[i];
-			aux = aux + Math.pow(value - avg, 2);
+		for ( i = 0; i < curatedValues.length; i++) {
+			aux = aux + Math.pow(curatedValues[i] - avg, 2);
 		}
 		/** std **/
 		var std = Math.sqrt(aux / count);
@@ -241,12 +239,12 @@ var BUI = {
 		}
 
 		function getRow(color, acroynm, framesMerged, totalframes) {
-			return 	"<tr style='background-color:" 
-					+ getColorFrame(framesMerged, totalframes)
-					+ ";height:12px;padding:1px;'><td style=' width:10px; height:10px;'> " 
-					+ BUI.getRectangleColorDIV(color, 10, 10)
-					+ "</td> <td style='padding:5px;'> " + acroynm + "</td>" 
-					+ getFrameSpan(framesMerged, totalframes) + "</tr>";
+			return 	"<tr style='background-color:" +
+					getColorFrame(framesMerged, totalframes) +
+					";height:12px;padding:1px;'><td style=' width:10px; height:10px;'> "  +
+					BUI.getRectangleColorDIV(color, 10, 10) +
+					"</td> <td style='padding:5px;'> " + acroynm + "</td>" +
+					getFrameSpan(framesMerged, totalframes) + "</tr>";
 		}
 
 		var html = "<table style='margin: 1,1,1,1;width:100%;font:normal 10px tahoma,arial,verdana,sans-serif;'>";
@@ -349,8 +347,8 @@ var BUI = {
 
 	},
 	getPDBVisualizerURL : function(modelId, subtractionId, experimentId) {
-		return '/ispyb/user/viewProjectList.do?reqCode=display&menu=PDBVisualizer&modelId=' + modelId + '&experimentId=' + experimentId
-				+ '&subtractionId=' + subtractionId;
+		return '/ispyb/user/viewProjectList.do?reqCode=display&menu=PDBVisualizer&modelId=' + modelId + '&experimentId=' + experimentId +
+			'&subtractionId=' + subtractionId;
 	},
 
 	getURL : function() {
@@ -447,13 +445,13 @@ var BUI = {
 		if (error == null) {
 			return "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "</span>";
 		}
-		var html = "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "<span style='font-size:" + errorFontSize
-				+ "px;color:gray'>  " + unit + "</span></span>";
+		var html = "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "<span style='font-size:" + errorFontSize +
+			   "px;color:gray'>  " + unit + "</span></span>";
 		if (lineBreak) {
 			html = html + "<br/>";
 		}
-		return html + "<span style='font-size:" + errorFontSize + "px'> &#177; " + Number(Number(error).toFixed(3)).toExponential()
-				+ "</span></span>";
+		return html + "<span style='font-size:" + errorFontSize + "px'> &#177; " + Number(Number(error).toFixed(3)).toExponential() +
+			      "</span></span>";
 	},
 
 	formatValuesErrorUnits : function(val, error, unit, args) {
@@ -484,13 +482,13 @@ var BUI = {
 		if (error == null) {
 			return "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "</span>";
 		}
-		var html = "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "<span style='font-size:" + errorFontSize
-				+ "px;color:gray'>  " + unit + "</span></span>";
+		var html = "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "<span style='font-size:" + errorFontSize +
+			   "px;color:gray'>  " + unit + "</span></span>";
 		if (lineBreak) {
 			html = html + "<br/>";
 		}
-		return html + "<span style='font-size:" + errorFontSize + "px'> &#177; " + Number(Number(error).toFixed(8)).toExponential()
-				+ "</span></span>";
+		return html + "<span style='font-size:" + errorFontSize + "px'> &#177; " + Number(Number(error).toFixed(8)).toExponential() +
+			      "</span></span>";
 	},
 
 	formatValuesUnits : function(val, unit, args) {
@@ -517,8 +515,8 @@ var BUI = {
 		if (unit == null) {
 			return "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + "</span>";
 		}
-		return "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + " </span><span style='font-size:" + unitsFontSize
-				+ "px;color:gray'>  " + unit + "</span></span>";
+		return "<span style='font-size:" + fontSize + "px'>" + Number(val).toFixed(decimals) + " </span><span style='font-size:" + unitsFontSize +
+		       "px;color:gray'>  " + unit + "</span></span>";
 	},
 
 	getGreenButton : function(text, args) {
@@ -622,7 +620,7 @@ var BUI = {
 	},
 
 	getSafetyLevels : function() {
-		var safetyLevels = new Array();
+		var safetyLevels = [];
 		safetyLevels.push({
 			safetyLevelId : "",
 			name : "UNKNOWN"
@@ -668,8 +666,8 @@ var BUI = {
 				//				   var html = "<span style='font-weight:italic'>Plate: </span>" + "<span style='font-weight:bold'>" + plate + "</span>";
 				//				   html = html +  "<span style='font-weight:italic'>, Row: </span>" + "<span style='font-weight:bold'>" +  rows[row - 1] + "</span>";
 				//				   html = html +  "<span style='font-weight:italic'>, Column: </span>" + "<span style='font-weight:bold'>" + column + "</span>";
-				var html = "<span style='font-weight:italic'>Plate: </span><span style='font-weight:bold'>" + plate
-						+ "</span>-<span style='font-weight:bold'>" + rows[row - 1] + "</span><span style='font-weight:bold'>" + column + "</span>";
+				var html = "<span style='font-weight:italic'>Plate: </span><span style='font-weight:bold'>" + plate +
+					   "</span>-<span style='font-weight:bold'>" + rows[row - 1] + "</span><span style='font-weight:bold'>" + column + "</span>";
 				return html;
 			}
 		}
@@ -690,8 +688,9 @@ var BUI = {
 		var text = "";
 		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-		for ( var i = 0; i < 5; i++)
+		for ( var i = 0; i < 5; i++){
 			text += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
 
 		return "ExiSAXS" + text;
 	},
@@ -714,18 +713,18 @@ var BUI = {
 	getTipHTML : function(message) {
 		//return "<div  class='panelMacro' ><table class='tipMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'><img align='middle' src='https://cwiki.apache.org/confluence/images/emoticons/check.gif' width='16' height='16' alt='' border='0'></td><td colspan='1' rowspan='1'><b>Tip</b><br clear='none'>"
 		//		+ message + "</td></tr></tbody></table></div>";
-		return "<div  class='panelMacro' ><table class='tipMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'></td><td colspan='1' rowspan='1'><b>Tip</b><br clear='none'>"
-		+ message + "</td></tr></tbody></table></div>";
+		return "<div  class='panelMacro' ><table class='tipMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'></td><td colspan='1' rowspan='1'><b>Tip</b><br clear='none'>" +
+			message + "</td></tr></tbody></table></div>";
 	},
 
 	getWarningHTML : function(message) {
-		return "<div class='panelMacro' ><table class='warningMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'></td><td colspan='1' rowspan='1'><b>Warning</b><br clear='none'>"
-				+ message + "</td></tr></tbody></table></div>";
+		return "<div class='panelMacro' ><table class='warningMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'></td><td colspan='1' rowspan='1'><b>Warning</b><br clear='none'>" +
+			message + "</td></tr></tbody></table></div>";
 	},
 
 	getErrorHTML : function(message) {
-		return "<div class='panelMacro' ><table class='errorMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'><img align='middle' src='https://cwiki.apache.org/confluence/images/emoticons/forbidden.gif' width='16' height='16' alt='' border='0'></td><td colspan='1' rowspan='1'><b>Error</b><br clear='none'>"
-				+ message + "</td></tr></tbody></table></div>";
+		return "<div class='panelMacro' ><table class='errorMacro'><colgroup span='1'><col span='1' width='24'><col span='1'></colgroup><tbody><tr><td colspan='1' rowspan='1' valign='top'><img align='middle' src='https://cwiki.apache.org/confluence/images/emoticons/forbidden.gif' width='16' height='16' alt='' border='0'></td><td colspan='1' rowspan='1'><b>Error</b><br clear='none'>" +
+			message + "</td></tr></tbody></table></div>";
 	},
 
 	getProgessBar : function(percentage, text) {
@@ -747,12 +746,12 @@ var BUI = {
 			defaultText = text;
 		}
 
-		return "<div class='meter-wrap'><div class='meter-value' style='background-color: " + color + " ; width: " + percentage
-				+ "%;'><div class='meter-text'>" + defaultText + "</div></div></div>";
+		return "<div class='meter-wrap'><div class='meter-value' style='background-color: " + color + " ; width: " + percentage +
+		       "%;'><div class='meter-text'>" + defaultText + "</div></div></div>";
 	},
 	getFileName : function(filePath){
 		if (filePath != null){
-			return filePath.split("/")[filePath.split("/").length - 1]
+			return filePath.split("/")[filePath.split("/").length - 1];
 		}
 		return "";
 	}

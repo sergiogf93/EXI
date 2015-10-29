@@ -1,13 +1,10 @@
-
-MacromoleculeSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
-MacromoleculeSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
-MacromoleculeSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function MacromoleculeSaxsDataAdapter(args){
 	DataAdapter.call(this, args);
 }
 
+MacromoleculeSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
+MacromoleculeSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
+MacromoleculeSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 MacromoleculeSaxsDataAdapter.prototype.saveMacromolecule = function(macromolecule){
     var url = ('/{token}/proposal/{proposal}/saxs/macromolecule/save');

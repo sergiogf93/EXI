@@ -1,10 +1,10 @@
-TemplateListView.prototype.getPanel = ListView.prototype.getPanel;
-TemplateListView.prototype.load = ListView.prototype.load;
-
 function TemplateListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
 	ListView.call(this);
 }
+
+TemplateListView.prototype.getPanel = ListView.prototype.getPanel;
+TemplateListView.prototype.load = ListView.prototype.load;
 
 TemplateListView.prototype.getRow = function(record){
 	var color = "black";

@@ -1,7 +1,4 @@
-SessionMainView.prototype.getPanel = MainView.prototype.getPanel;
-SessionMainView.prototype.getContainer = MainView.prototype.getContainer;
-
-function SessionMainView() {
+/*function SessionMainView() {
 	this.title = "Session";
 }
 
@@ -10,6 +7,9 @@ SessionMainView.prototype.getHeader = function(beamlineName, startDate) {
 		html : "<span class='item'>" + beamlineName +"</span><span class='item_description'>" + startDate +"</span>"
 	};
 };
+
+SessionMainView.prototype.getPanel = MainView.prototype.getPanel;
+SessionMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 SessionMainView.prototype.load = function(selected) {
 	
@@ -25,7 +25,6 @@ SessionMainView.prototype.load = function(selected) {
 			listView.store.loadData(data);
 		});
 		adapter.getExperimentsBySessionId(selected[i].sessionId);
-		
 	}
 };
 
@@ -39,3 +38,4 @@ SessionMainView.prototype.getContainer = function() {
 	});
 	return this.panel;
 };
+*/

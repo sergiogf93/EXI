@@ -1,3 +1,17 @@
+/**
+ * Super class for all the data adapters
+ * Based on $ and Event it will make a GET/POST call to an given URL
+ * if success then onSuccess will be notified otherwise on Error will be notified
+ * 
+ * Example:
+ * 
+ * function successed (sender, data){
+ * 	alert("It worked");
+ * }
+ * var adapter = new DataAdapter({async : true, onSuccess: successed }).get("http://example.com/get")
+ * 
+ * 
+**/
 function DataAdapter(args) {
 	this.async = true;
 	this.onSuccess = new Event(this);
@@ -14,8 +28,13 @@ function DataAdapter(args) {
 			this.onError.attach(args.onError);
 		}
 	}
+	
 }
 
+/**
+ * Input: url = "http://server.com/{token}/proposal/{proposal}/shipment/list"
+ * Output will be the url with the strings {token} and {proposal} replaced by the values connection.token and connection.proposal
+ */
 DataAdapter.prototype.getUrl = function(connection, url){
 	return connection.url + url.replace("{token}", connection.token).replace("{proposal}", connection.proposal).replace("{username}", connection.username);
 };
@@ -36,22 +55,22 @@ DataAdapter.prototype.get = function(url){
 			  async : this.async,
 			  statusCode: {
 		            400 : function(){
-		                alert('400 : bad request');
+		                BUI.showError('400 : bad request');
 		            },
 		            401 : function(){
 		                EXI.setError('401 : Unauthorized. Your session is not valid or may have expired');
 		            },
 		            403 : function(){
-		                alert('403 : forbidden');
+		                BUI.showError('403 : forbidden');
 		            },
 		            404 : function(){
-		                alert('404 : not found');
+		                BUI.showError('404 : not found');
 		            },
 		            415 : function(){
-		                alert('415 : type not allowed');
+		                BUI.showError('415 : type not allowed');
 		            },
 		            500 : function(){
-		                alert('500 : internal server error');
+		                BUI.showError('500 : internal server error');
 		            }
 		        },
 			  success: function(data){ 
@@ -67,7 +86,7 @@ DataAdapter.prototype.get = function(url){
 			});
 	}
 	else{
-		alert("Number of connections > 1");
+		BUI.showError("Number of connections > 1");
 	}
 	
 
@@ -130,22 +149,3 @@ DataAdapter.prototype.post = function(url, data){
 };
 
 
-/** Function for String **/
-String.prototype.format = function (args) {
-	var str = this;
-	return str.replace(String.prototype.format.regex, function(item) {
-		var intVal = parseInt(item.substring(1, item.length - 1));
-		var replace;
-		if (intVal >= 0) {
-			replace = args[intVal];
-		} else if (intVal === -1) {
-			replace = "{";
-		} else if (intVal === -2) {
-			replace = "}";
-		} else {
-			replace = "";
-		}
-		return replace;
-	});
-};
-String.prototype.format.regex = new RegExp("{-?[0-9]+}", "g");

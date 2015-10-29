@@ -1,5 +1,3 @@
-ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function ExperimentMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
@@ -121,6 +119,7 @@ function ExperimentMainView() {
 	
 }
 
+ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 ExperimentMainView.prototype.getSelected = function() {
 	var selected = [];
@@ -236,7 +235,7 @@ ExperimentMainView.prototype.load = function(experimentId) {
 	var _this = this;
 	_this.panel.setLoading();
 	_this.queueGrid.panel.setLoading();
-	var onSuccess = (function(sender, experiments){
+	var onSuccess = function(sender, experiments){
 		_this.experiment = new Experiment(experiments[0]);
 		_this.experimentHeaderForm.load(_this.experiment);
 		_this.measurementGrid.loadExperiment(_this.experiment);
@@ -248,7 +247,7 @@ ExperimentMainView.prototype.load = function(experimentId) {
 			_this.queueGrid.panel.setLoading(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
-	});
+	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experimentId);
 };
 

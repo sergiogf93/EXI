@@ -1,6 +1,6 @@
 function MXExiController() {
 	this.init();
-};
+}
 
 MXExiController.prototype.routeNavigation = function() {
 	function loadNavigationPanel(listView) {
@@ -8,19 +8,18 @@ MXExiController.prototype.routeNavigation = function() {
 		EXI.clearNavigationPanel();
 		EXI.setLoadingNavigationPanel(true);
 
-		
-		var onSuccess = (function(sender, data) {
+		var onSuccess = function(sender, data) {
 			/** Load panel * */
 			EXI.addNavigationPanel(listView);
 			/** Load data * */
 			listView.load(data);
 			EXI.setLoadingNavigationPanel(false);
-		});
+		};
 		
 		/** Handle error * */
-		var onError = (function(sender, data) {
+		var onError = function(sender, data) {
 			EXI.setLoadingNavigationPanel(false);
-		});
+		};
 		
 		/** Load data data * */
 		return EXI.getDataAdapter({ onSuccess : onSuccess, onError : onError });

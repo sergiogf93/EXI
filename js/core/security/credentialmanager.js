@@ -24,26 +24,6 @@ CredentialManager.prototype.getCredentials = function(){
 	return credentials;
 };
 
-//CredentialManager.prototype.getCredentialByProposal = function(proposal){
-//	var credentials = this.getCredentials();
-//	for (var i = 0; i < credentials.length; i++) {
-//		if (credentials[i].activeProposals.length > 0){
-//			for (var j = 0; j < credentials[i].activeProposals.length; j++) {
-//				var proposalName = credentials[i].activeProposals[j];
-//				if (new String(proposalName).toUpperCase() == proposal.toUpperCase()){
-//					return new Credential(
-//							credentials[i].username, 
-//							credentials[i].roles, 
-//							credentials[i].token, 
-//							credentials[i].url,
-//							credentials[i].activeProposals);
-//				}
-//			}
-//		}
-//	}
-//	return null;
-//};
-
 /** Given a beamline name it return MX or SAXS **/
 CredentialManager.prototype.getTechniqueByBeamline = function(beamlineName){
 	var connections = this.getConnections();

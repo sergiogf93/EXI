@@ -207,7 +207,6 @@ Exi.prototype.show = function() {
 													padding : 10,
 													height : 75,
 													html : _this.getHeader(),
-													xtype : 'component',
 													cls : _this.headerCssClass
 
 												}, {

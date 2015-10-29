@@ -1,24 +1,9 @@
-RunMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function RunMainView() {
-
 	this.id = BUI.id();
 	MainView.call(this);
-
 }
 
-//
-//RunMainView.prototype.getToolDescription = function(name, description) {
-//	return {
-//		html : "<span class='toolName'>" + name +"</span><span class='toolDescription'>" + description +"</span><br />",
-//		margin : 10
-//	};
-//};
-//
-//RunMainView.prototype.getJob = function(job, index) {
-//	return  "<span  class='generalContainerRunList'>" + job.name + " " +  job.version + " Status: " + job.status +"</span>";
-//	
-//};
+RunMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 RunMainView.prototype.getOutputPanel = function() {
 	this.outputStore = Ext.create('Ext.data.Store', {

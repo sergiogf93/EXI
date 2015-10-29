@@ -1,5 +1,3 @@
-BufferMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function BufferMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -22,6 +20,7 @@ function BufferMainView() {
 	this.onDeselect = new Event(this);
 }
 
+BufferMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 BufferMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {

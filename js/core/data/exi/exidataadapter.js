@@ -61,7 +61,6 @@ ExiDataAdapter.prototype.postcall = function(url, data){
 			  }
 		  },
 		  error: function(error){
-			  debugger
 			  _this.onError.notify(error);
 			  if (exiSAXS != null){
 				  exiSAXS.setError(error);
@@ -75,15 +74,11 @@ ExiDataAdapter.prototype.getToolUrl = function(){
 	return this.getUrl('/{token}/tool');
 };
 
-
-
-
 ExiDataAdapter.prototype.authenticate = function(){
 	this.call('/{token}/user/{username}/authenticate');
 };
 
 ExiDataAdapter.prototype.getProject = function(){
-	debugger
 	this.call('/{token}/project/list');
 };
 

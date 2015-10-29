@@ -1,13 +1,10 @@
-
-AutoProcIntegrationDataAdapter.prototype.get = DataAdapter.prototype.get;
-AutoProcIntegrationDataAdapter.prototype.post = DataAdapter.prototype.post;
-AutoProcIntegrationDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function AutoProcIntegrationDataAdapter(args){
 	DataAdapter.call(this, args);
 }
 
+AutoProcIntegrationDataAdapter.prototype.get = DataAdapter.prototype.get;
+AutoProcIntegrationDataAdapter.prototype.post = DataAdapter.prototype.post;
+AutoProcIntegrationDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 AutoProcIntegrationDataAdapter.prototype.getByDataCollectionId= function(dataCollectionId){
 	this.get('/{token}/proposal/{proposal}/mx/autoprocintegration/datacollection/{0}/list'.format( [dataCollectionId]));

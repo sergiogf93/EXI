@@ -1,10 +1,10 @@
-ProposalDataAdapter.prototype.get = DataAdapter.prototype.get;
-ProposalDataAdapter.prototype.post = DataAdapter.prototype.post;
-ProposalDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
 function ProposalDataAdapter(args){
 	DataAdapter.call(this, args);
 }
+
+ProposalDataAdapter.prototype.get = DataAdapter.prototype.get;
+ProposalDataAdapter.prototype.post = DataAdapter.prototype.post;
+ProposalDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 ProposalDataAdapter.prototype.getProposals= function(){
 	this.get('/{token}/proposal/list');

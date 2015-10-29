@@ -1,11 +1,10 @@
-AuthenticationDataAdapter.prototype.get = DataAdapter.prototype.get;
-AuthenticationDataAdapter.prototype.post = DataAdapter.prototype.post;
-AuthenticationDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function AuthenticationDataAdapter(args){
 	DataAdapter.call(this, args);
 }
+
+AuthenticationDataAdapter.prototype.get = DataAdapter.prototype.get;
+AuthenticationDataAdapter.prototype.post = DataAdapter.prototype.post;
+AuthenticationDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 
 AuthenticationDataAdapter.prototype.authenticate = function(user, password, url){

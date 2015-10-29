@@ -1,5 +1,3 @@
-ExperimentDesignerMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function ExperimentDesignerMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -21,6 +19,7 @@ function ExperimentDesignerMainView() {
 	this.onDeselect = new Event(this);
 }
 
+ExperimentDesignerMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 ExperimentDesignerMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
@@ -55,7 +54,7 @@ ExperimentDesignerMainView.prototype.load = function() {
 			_this.templateGrid.grid.setLoading(false);
 		});
 		
-		adapter.getByExperimentByKey("experimentType", "TEMPLATE")
+		adapter.getByExperimentByKey("experimentType", "TEMPLATE");
 	});
 	manager.get();
 	

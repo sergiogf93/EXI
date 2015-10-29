@@ -1,5 +1,3 @@
-SubtractionMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function SubtractionMainView() {
 	this.title = "Experiment";
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -28,6 +26,8 @@ function SubtractionMainView() {
 		collapsible : false
 	});
 }
+
+SubtractionMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 SubtractionMainView.prototype.getToolDescription = function(name, description, reference) {
 	return {

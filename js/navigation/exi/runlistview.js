@@ -1,10 +1,10 @@
-RunListView.prototype.getPanel = ListView.prototype.getPanel;
-RunListView.prototype.load = ListView.prototype.load;
-
 function RunListView(){
 	this.sorters = [];
 	ListView.call(this);
 }
+
+RunListView.prototype.getPanel = ListView.prototype.getPanel;
+RunListView.prototype.load = ListView.prototype.load;
 
 RunListView.prototype.getFilter = function(value){
 	return [{property : "name", value : value, anyMatch : true}];
@@ -19,10 +19,9 @@ RunListView.prototype.formatStatus = function(status){
 };
 
 RunListView.prototype.formatJobs = function(jobs){
-	console.log(jobs)
 	var html = "<table>";
 	for (var i = 0; i < jobs.length; i++) {
-		html = html + "<tr><td>" + jobs[i].name +"</td></tr>"
+		html = html + "<tr><td>" + jobs[i].name +"</td></tr>";
 	}
 	return html + "</table>"; 
 };

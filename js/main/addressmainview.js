@@ -1,7 +1,4 @@
-AddressMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function AddressMainView() {
-	
 	this.icon = '../images/icon/contacts.png';
 	this.queueGridList = [];
 
@@ -18,6 +15,7 @@ function AddressMainView() {
 	this.onDeselect = new Event(this);
 }
 
+AddressMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 AddressMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {

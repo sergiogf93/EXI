@@ -50,7 +50,7 @@ Experiment.prototype.setMacromoleculesColors = function (){
 };
 
 Experiment.prototype.getHPLCMacromolecule = function() {
-	var dcs = this.getDataCollections()
+	var dcs = this.getDataCollections();
 	if (dcs.length >  0){
 		for ( var i = 0; i < 1; i++) {
 			var meToDc = dcs[i].measurementtodatacollection3VOs;

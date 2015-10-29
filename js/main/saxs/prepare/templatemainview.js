@@ -1,5 +1,3 @@
-TemplateMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function TemplateMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -111,6 +109,8 @@ function TemplateMainView() {
 
 	this.volumePlanificator = new VolumeGrid();
 }
+
+TemplateMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 TemplateMainView.prototype.getHeader = function(beamlineName, startDate) {
 	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";
@@ -227,15 +227,14 @@ TemplateMainView.prototype.getContainer = function() {
 TemplateMainView.prototype.load = function(experiments) {
 	var _this = this;
 	_this.panel.setLoading();
-	var onSuccess = (function(sender, experiments){
+	var onSuccess = function(sender, experiments){
 		_this.experiment = new Experiment(experiments[0]);
 		_this.experimentHeaderForm.load(_this.experiment);
 		_this.measurementGrid.loadExperiment(_this.experiment);
 		_this.specimenWidget.refresh(_this.experiment);
 		_this.volumePlanificator.load(_this.experiment);
 		_this.panel.setLoading(false);
-	});
+	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experiments[0].experimentId);
-	
 	this.panel.setTitle("Template");
 };

@@ -1,7 +1,3 @@
-
-
-DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function DataCollectionMxMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
@@ -10,9 +6,9 @@ function DataCollectionMxMainView() {
 	this.sessionViewGrid = new DataCollectionSummaryGrid();
 }
 
+DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
+
 DataCollectionMxMainView.prototype.getContainer = function() {
-	
-	
 	this.panel =  Ext.createWidget('tabpanel',
 			{
 				plain : true,

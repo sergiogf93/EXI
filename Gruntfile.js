@@ -1,4 +1,5 @@
-'use strict';
+/*jshint strict:false */
+"use strict";
 
 module.exports = function(grunt) {
   grunt.initConfig({
@@ -6,7 +7,7 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				  'min/core.min.js' 		: ["js/core/*/*js", "js/core/*/*/*js"],
+				  'min/core.min.js' 		: ["js/core/**/*js"],
 				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", "js/widget/addressform.js", "js/widget/*/*js", "js/widget/plot/*/*js", "js/widget/form/*/*js", "js/widget/mx/*/*js"],
 				  'min/data.min.js' 		: ["js/core/data/*js", "js/core/data/*/*js"],
 				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js","js/navigation/*/*js"],
@@ -51,7 +52,28 @@ module.exports = function(grunt) {
 			          'min/exi.min.css': [ 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
 			    }
 		}
-	}
+	},
+	jshint: {
+		 options: {
+// 		      reporter: require('jshint-stylish'),
+		      jshintrc : '.jshintrc'
+		 },
+// //  		 ignore_warning: {
+// 		      options: {
+// // 			    "-W041": true
+// 		      },
+// 		      src: [,'js/core/data/dataadapter.js']
+// 		  }, 
+		 prod: [ 'js/core/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
+	},
+	plato: {
+		options: {
+		  // Task-specific options go here. 
+		},
+		prod: {
+		  files : {'report' : ['js/core/**/*.js', 'js/main/*/*.js', 'js/navigation/**/*.js']}
+		}
+      }
 
   });
   
@@ -59,6 +81,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.task.registerTask('default', ['concat:prod', 'uglify:prod', 'cssmin:prod']);
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-plato');
+  grunt.task.registerTask('default', ['jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod']);
   
 };

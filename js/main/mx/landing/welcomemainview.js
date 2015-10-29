@@ -1,17 +1,13 @@
-WelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-WelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function WelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Welcome";
 	this.closable = true;
-	
-	
 }
 
-
+WelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+WelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 WelcomeMainView.prototype.getContainer = function() {
 	return {
@@ -26,7 +22,6 @@ WelcomeMainView.prototype.getContainer = function() {
 		]
 	};
 };
-
 
 WelcomeMainView.prototype.load = function() {
 	

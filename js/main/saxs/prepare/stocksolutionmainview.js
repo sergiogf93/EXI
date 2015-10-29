@@ -1,5 +1,3 @@
-StockSolutionMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function StockSolutionMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -36,6 +34,7 @@ function StockSolutionMainView() {
 	this.onDeselect = new Event(this);
 }
 
+StockSolutionMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 StockSolutionMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {

@@ -1,24 +1,24 @@
 function ExiController(){
 	this.init();
-};
+}
 
 ExiController.prototype.loadNavigationPanel = function(listView) {
 	/** Cleaning up navigation panel * */
 	EXI.clearNavigationPanel();
 	EXI.setLoadingNavigationPanel(true);
 	
-	var onSuccess = (function(sender, data) {
+	var onSuccess = function(sender, data) {
 		/** Load panel * */
 		EXI.addNavigationPanel(listView);
 		/** Load data * */
 		listView.load(data);
 		EXI.setLoadingNavigationPanel(false);
-	});
+	};
 	
 	/** Handle error * */
-	var onError = (function(sender, data) {
+	var onError = function(sender, data) {
 		EXI.setLoadingNavigationPanel(false);
-	});
+	};
 	
 	/** Load data data * */
 	return EXI.getDataAdapter({ onSuccess : onSuccess, onError : onError });

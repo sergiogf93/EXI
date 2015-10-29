@@ -1,23 +1,19 @@
-StockSolutionWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-StockSolutionWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function StockSolutionWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Macromolecules";
 	this.closable = false;
-	
-	
 }
+
+StockSolutionWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+StockSolutionWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 StockSolutionWelcomeMainView.prototype.getOptions = function() {
 	var html =  "<ul><li>Define beforehand an experiment</li>";
 	html = html + "<li>Send your samples by courier</li>";
 	return html + "</ul>";
 };
-
-
 
 StockSolutionWelcomeMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('panel',

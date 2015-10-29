@@ -1,12 +1,10 @@
+function SubtractionSaxsDataAdapter(args){
+	DataAdapter.call(this, args);
+}
 
 SubtractionSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
 SubtractionSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
 SubtractionSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
-function SubtractionSaxsDataAdapter(args){
-	DataAdapter.call(this, args);
-}
 
 SubtractionSaxsDataAdapter.prototype.getSubtractionsBySubtractionIdList= function(subtractionIdList){
 	this.get('/{token}/proposal/{proposal}/saxs/subtraction/{0}/list'.format( [subtractionIdList.toString()]));

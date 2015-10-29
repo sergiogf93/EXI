@@ -1,9 +1,3 @@
-DimpleRunMainView.prototype.getPanel = RunMainView.prototype.getPanel;
-DimpleRunMainView.prototype.getOutputPanel = RunMainView.prototype.getOutputPanel;
-DimpleRunMainView.prototype.getTabs = RunMainView.prototype.getTabs;
-DimpleRunMainView.prototype.getContainer = RunMainView.prototype.getContainer;
-DimpleRunMainView.prototype.load = RunMainView.prototype.load;
-
 function DimpleRunMainView() {
 	this.title = "Experiment";
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -11,11 +5,13 @@ function DimpleRunMainView() {
 
 	this.id = BUI.id();
 	RunMainView.call(this);
-
 }
 
-
-
+DimpleRunMainView.prototype.getPanel = RunMainView.prototype.getPanel;
+DimpleRunMainView.prototype.getOutputPanel = RunMainView.prototype.getOutputPanel;
+DimpleRunMainView.prototype.getTabs = RunMainView.prototype.getTabs;
+DimpleRunMainView.prototype.getContainer = RunMainView.prototype.getContainer;
+DimpleRunMainView.prototype.load = RunMainView.prototype.load;
 
 DimpleRunMainView.prototype.getFilesGrid = function() {
 	var _this = this;
@@ -31,7 +27,7 @@ DimpleRunMainView.prototype.getFilesGrid = function() {
 				console.log(selections[0].data);
 				var onSuccess = function(sender, content){
 					document.getElementById(_this.id + "display").innerHTML = "<textarea rows='100' cols='100'> " + content + "</textarea>" ;
-				}
+				};
 				if (selections[0].data.name.indexOf(".mtz") == -1){
 					EXI.getDataAdapter({onSuccess:onSuccess}).exi.offline.getFileContent(selections[0].data.targetId);
 				}
@@ -145,7 +141,8 @@ DimpleRunMainView.prototype.getMainPanel = function() {
 
 DimpleRunMainView.prototype.loadBlobs = function(job) {
 	var blobs = [];
-	for (var i = 0; i < job.output.length; i++) {
+	var i = 0;
+	for (i = 0; i < job.output.length; i++) {
 		if (job.output[i].type == "blob"){
 			blobs.push(job.output[i]);
 		}
@@ -156,7 +153,7 @@ DimpleRunMainView.prototype.loadBlobs = function(job) {
 	var container = document.createElement("div");
 	var table = document.createElement("table");
 	var tr = document.createElement("tr");
-	for (var i = 0; i < blobs.length; i++) {
+	for (i = 0; i < blobs.length; i++) {
 		var td = document.createElement("td");
 		var img = document.createElement("img");
 		img.setAttribute("src", EXI.getDataAdapter().exi.offline.getFileImage(blobs[i].targetId));
@@ -193,8 +190,8 @@ DimpleRunMainView.prototype.loadMain = function(run) {
 		if (run.jobs != null){
 			if (run.jobs.length > 0){
 				for (var i = 0; i < run.jobs.length; i++) {
-					this.loadBlobs(run.jobs[i])
-					this.loadFiles(run.jobs[i])
+					this.loadBlobs(run.jobs[i]);
+					this.loadFiles(run.jobs[i]);
 				}
 			}
 		}

@@ -1,11 +1,3 @@
-
-
-
-
-
-
-DimpleMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function DimpleMainView() {
 	this.title = "Experiment";
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -22,8 +14,8 @@ function DimpleMainView() {
 
 DimpleMainView.prototype.getToolDescription = function(name, description, reference) {
 	return {
-		html : "<span class='toolName'>" + name + "</span><span class='toolDescription'>" + description
-				+ "</span><br /><span class='toolReference'> " + reference + "</span>",
+		html : "<span class='toolName'>" + name + "</span><span class='toolDescription'>" + description +
+			"</span><br /><span class='toolReference'> " + reference + "</span>", 
 		bodyStyle : {
 			"background-color" : "#E6E6E6" },
 		margin : 10 };
@@ -143,6 +135,9 @@ DimpleMainView.prototype.getContainer = function() {
 							} }
 						] });
 };
+
+DimpleMainView.prototype.getPanel = MainView.prototype.getPanel;
+
 
 DimpleMainView.prototype.load = function() {
 	this.panel.setTitle("Dimple");

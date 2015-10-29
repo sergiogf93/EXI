@@ -1,15 +1,13 @@
-ExperimentWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ExperimentWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function ExperimentWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Welcome";
 	this.closable = false;
-	
-	
 }
+
+ExperimentWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+ExperimentWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 ExperimentWelcomeMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('panel',

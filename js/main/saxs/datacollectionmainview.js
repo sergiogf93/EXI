@@ -1,6 +1,3 @@
-DataCollectionMainView.prototype.getPanel = MainView.prototype.getPanel;
-DataCollectionMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function DataCollectionMainView() {
 	this.title = "Experiment";
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -18,6 +15,9 @@ function DataCollectionMainView() {
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
 }
+
+DataCollectionMainView.prototype.getPanel = MainView.prototype.getPanel;
+DataCollectionMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 DataCollectionMainView.prototype.filter = function(macromoleculeAcronym, bufferAcronym) {
 	this.grid.key = {};

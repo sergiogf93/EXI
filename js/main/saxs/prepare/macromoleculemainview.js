@@ -1,5 +1,3 @@
-MacromoleculeMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 function MacromoleculeMainView() {
 	
 	this.icon = '../images/icon/macromolecule.png';
@@ -28,6 +26,8 @@ function MacromoleculeMainView() {
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
 }
+
+MacromoleculeMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 MacromoleculeMainView.prototype.getHeader = function(beamlineName, startDate) {
 	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";

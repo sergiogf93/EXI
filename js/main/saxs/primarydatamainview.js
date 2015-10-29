@@ -1,6 +1,3 @@
-PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
-//PrimaryDataMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function PrimaryDataMainView() {
 	this.title = "Primary Data View";
 	this.icon = 'images/icon/ic_blur_on_black_18dp.png';
@@ -32,8 +29,7 @@ function PrimaryDataMainView() {
 	
 }
 
-
-
+PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
@@ -154,7 +150,7 @@ PrimaryDataMainView.prototype.load = function(selected) {
 	var _this = this;
 	this.panel.setTitle(" Data Collection");
 	this.grid.panel.setLoading();
-	var onSuccess = (function(sender, data) {
+	var onSuccess = function(sender, data) {
 		_this.grid.load(data);
 		_this.grid.panel.setLoading(false);
 		/** Measurements Grid * */
@@ -162,14 +158,14 @@ PrimaryDataMainView.prototype.load = function(selected) {
 		
 		/** Getting abinitio **/
 		if (data[0].subtractionId){
-			var onSuccessSubtraction = (function(sender, subtractions) {
+			var onSuccessSubtraction = function(sender, subtractions) {
 				_this.abinitioForm.load(subtractions);
-			});
+			};
 			
 			EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
 			
 		}
-	});
+	};
 
 	var dataCollectionIds = [];
 	for (var i = 0; i < selected.length; i++) {

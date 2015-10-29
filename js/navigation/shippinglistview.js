@@ -1,10 +1,10 @@
-ShippingListView.prototype.getPanel = ListView.prototype.getPanel;
-ShippingListView.prototype.load = ListView.prototype.load;
-
 function ShippingListView(){
 	this.sorters = [{property : 'sessionId', direction: 'DESC'}];
 	ListView.call(this);
 }
+
+ShippingListView.prototype.getPanel = ListView.prototype.getPanel;
+ShippingListView.prototype.load = ListView.prototype.load;
 
 ShippingListView.prototype.getRow = function(record){
 		var html = "<table class='listView'>";

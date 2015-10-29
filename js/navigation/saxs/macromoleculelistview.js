@@ -1,10 +1,10 @@
-MacromoleculeListView.prototype.getPanel = ListView.prototype.getPanel;
-MacromoleculeListView.prototype.load = ListView.prototype.load;
-
 function MacromoleculeListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
 	ListView.call(this);
 }
+
+MacromoleculeListView.prototype.getPanel = ListView.prototype.getPanel;
+MacromoleculeListView.prototype.load = ListView.prototype.load;
 
 MacromoleculeListView.prototype.getRow = function(record){
 	var html = "<table class='listView'>";

@@ -1,9 +1,10 @@
-BufferListView.prototype.getPanel = ListView.prototype.getPanel;
-BufferListView.prototype.load = ListView.prototype.load;
-
 function BufferListView(){
 	ListView.call(this);
 }
+
+BufferListView.prototype.getPanel = ListView.prototype.getPanel;
+BufferListView.prototype.load = ListView.prototype.load;
+
 
 BufferListView.prototype.getRow = function(record){
 	var html = "<table class='listView'>";

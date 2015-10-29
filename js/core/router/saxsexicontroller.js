@@ -1,9 +1,8 @@
-SAXSExiController.prototype.loadNavigationPanel = ExiController.prototype.loadNavigationPanel;
-
 function SAXSExiController() {
 	this.init();
-};
+}
 
+SAXSExiController.prototype.loadNavigationPanel = ExiController.prototype.loadNavigationPanel;
 
 SAXSExiController.prototype.routeNavigation = function() {
 	var _this = this;
@@ -18,11 +17,12 @@ SAXSExiController.prototype.routeNavigation = function() {
 	 * 
 	 */
 	Path.map("#/saxs/:navigation/nav").to(function() {
+		var listView = null;
 		
 		if (this.params['navigation'] == "buffer") {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
-			var listView = new BufferListView();
+			listView = new BufferListView();
 			listView.onSelect.attach(function(sender, selected) {
 				location.hash = "/buffer/" + selected[0].bufferId + "/main";
 			});
@@ -38,7 +38,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 		if (this.params['navigation'] == "stocksolution") {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
-			var listView = new StockSolutionListView();
+			listView = new StockSolutionListView();
 			listView.onSelect.attach(function(sender, selected) {
 				location.hash = "/stocksolution/" + selected[0].stockSolutionId + "/main";
 			});
@@ -54,7 +54,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 		if (this.params['navigation'] == "macromolecule") {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
-			var listView = new MacromoleculeListView();
+			listView = new MacromoleculeListView();
 			listView.onSelect.attach(function(sender, selected) {
 				location.hash = "/macromolecule/" + selected[0].macromoleculeId + "/main";
 			});
@@ -71,7 +71,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 			EXI.clearNavigationPanel();
 			EXI.setLoadingNavigationPanel(true);
 			
-			var listView = new TemplateListView();
+			listView = new TemplateListView();
 			/** When selected move to hash * */
 			listView.onSelect.attach(function(sender, selected) {
 				location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
@@ -149,7 +149,7 @@ SAXSExiController.prototype.routeExperiment = function() {
 	/** Loading Experiments * */
 	Path.map("#/experiment/:key/:value/main").to(function() {
 		EXI.setLoadingMainPanel();
-		var onSuccess = (function(sender, data) {
+		var onSuccess = function(sender, data) {
 			EXI.setLoadingMainPanel(false);
 			if (data != null) {
 				if (data.length > 0) {
@@ -178,7 +178,7 @@ SAXSExiController.prototype.routeExperiment = function() {
 
 				}
 			}
-		});
+		};
 		if ((this.params['key'] == "experimentId") || (this.params['key'] == "templateId")) {
 			EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getByExperimentId([ this.params['value'] ]);
 		} else {
@@ -195,10 +195,8 @@ SAXSExiController.prototype.routeExperiment = function() {
 SAXSExiController.prototype.routeDataCollection = function() {
 	Path.map("#/datacollection/macromoleculeAcronym/:value/main").to(function() {
 		/** Loading navidation menu **/
-//		EXI.clearNavigationPanel();
-//		EXI.setLoadingNavigationPanel();
 		EXI.setLoadingMainPanel("Searching " + this.params['value']+  "...");
-		var onSuccess = (function(sender, dataCollections) {
+		var onSuccess = function(sender, dataCollections) {
 			if (dataCollections != null){
 				if (dataCollections.length > 0){
 					var mainView = new DataCollectionMainView();
@@ -229,7 +227,7 @@ SAXSExiController.prototype.routeDataCollection = function() {
 			}
 //			EXI.setLoadingNavigationPanel(false);
 			EXI.setLoadingMainPanel(false);
-		});
+		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 
 	}).enter(this.setPageBackground);
@@ -237,7 +235,7 @@ SAXSExiController.prototype.routeDataCollection = function() {
 	
 	Path.map("#/saxs/datacollection/:key/:value/main").to(function() {
 		EXI.setLoadingMainPanel();
-		var onSuccess = (function(sender, data) {
+		var onSuccess = function(sender, data) {
 			var mainView = new DataCollectionMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load(data);
@@ -249,27 +247,27 @@ SAXSExiController.prototype.routeDataCollection = function() {
 			mainView.onDeselect.attach(function(sender, element) {
 				EXI.localExtorage.selectedSubtractionsManager.remove(element);
 			});
-		});
+		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 
 	Path.map("#/saxs/datacollection/:key/:value/primaryviewer").to(function() {
-		var onSuccess = (function(sender, data) {
+		var onSuccess = function(sender, data) {
 			var primaryMainView = new PrimaryDataMainView();
 			EXI.addMainPanel(primaryMainView);
 			primaryMainView.load(data);
 
-		});
+		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 	
 	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
-		var onSuccess = (function(sender, data) {
+		var onSuccess = function(sender, data) {
 			var primaryMainView = new MergeMainView();
 			EXI.addMainPanel(primaryMainView);
 			primaryMainView.load(data);
 
-		});
+		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 };
@@ -406,7 +404,7 @@ SAXSExiController.prototype.init = function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];
 
-		var onSuccess = (function(sender, runs) {
+		var onSuccess = function(sender, runs) {
 			for (var i = 0; i < runs.length; i++) {
 				if (runs[i].internalId == runId) {
 					var main = new RunMainView();
@@ -414,11 +412,11 @@ SAXSExiController.prototype.init = function() {
 					main.load(runs[i]);
 				}
 			}
-		});
+		};
 		
-		var onError = (function(sender, runs) {
+		var onError = function(sender, runs) {
 			
-		});
+		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getRuns(projectId);
 //		exidataAdapter.getRuns(projectId);

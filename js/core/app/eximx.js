@@ -1,3 +1,13 @@
+function ExiMX() {
+	 Exi.call(this, {
+		 					menu: new MXMainMenu(),
+		 					anonymousMenu: new MainMenu(),
+		 					controllers : [new MXExiController(), new OfflineExiController(), new ProposalExiController()],
+		 					headerCssClass : 'mxTitlePanel'
+	 
+	 });	 
+}
+
 ExiMX.prototype.loadSelected = Exi.prototype.loadSelected;
 ExiMX.prototype.addMainPanel = Exi.prototype.addMainPanel;
 ExiMX.prototype.getSelectedDataCollections = Exi.prototype.getSelectedDataCollections;
@@ -13,19 +23,6 @@ ExiMX.prototype.show = Exi.prototype.show;
 ExiMX.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiMX.prototype.setUserMenu = Exi.prototype.setUserMenu;
 
-
-
-function ExiMX() {
-	 Exi.call(this, {
-		 					menu: new MXMainMenu(),
-		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new MXExiController(), new OfflineExiController(), new ProposalExiController()],
-		 					headerCssClass : 'mxTitlePanel'
-	 
-	 });
-	 
-	 
-}
 
 
 ExiMX.prototype.getHeader = function(){

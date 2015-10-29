@@ -1,15 +1,13 @@
-MacromoleculeWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-MacromoleculeWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function MacromoleculeWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Macromolecules";
 	this.closable = false;
-	
-	
 }
+
+MacromoleculeWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+MacromoleculeWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 MacromoleculeWelcomeMainView.prototype.getOptions = function() {
 	var html =  "<ul><li>Define beforehand an experiment</li>";
@@ -17,8 +15,6 @@ MacromoleculeWelcomeMainView.prototype.getOptions = function() {
 	html = html + "<li>Online data analysis to run apriori data analysis (PDB information will be required on the advanced tab in the macromolecule view)</li>";
 	return html + "</ul>";
 };
-
-
 
 MacromoleculeWelcomeMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('panel',

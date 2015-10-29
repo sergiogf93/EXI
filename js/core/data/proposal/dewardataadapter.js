@@ -1,12 +1,10 @@
-DewarDataAdapter.prototype.get = DataAdapter.prototype.get;
-DewarDataAdapter.prototype.post = DataAdapter.prototype.post;
-DewarDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function DewarDataAdapter(args){
 	DataAdapter.call(this, args);
 }
 
+DewarDataAdapter.prototype.get = DataAdapter.prototype.get;
+DewarDataAdapter.prototype.post = DataAdapter.prototype.post;
+DewarDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 DewarDataAdapter.prototype.saveDewar= function(shippingId, dewar){
     var url = ('/{token}/proposal/{proposal}/shipping/{0}/dewar/save'.format( [shippingId]));

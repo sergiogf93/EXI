@@ -1,5 +1,4 @@
-AddressWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-AddressWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+
 
 function AddressWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
@@ -7,9 +6,11 @@ function AddressWelcomeMainView() {
 	MainView.call(this);
 	this.title = "Macromolecules";
 	this.closable = false;
-	
-	
+
 }
+
+AddressWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+AddressWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 AddressWelcomeMainView.prototype.getOptions = function() {
 	var html =  "<ul><li>Define beforehand an experiment</li>";

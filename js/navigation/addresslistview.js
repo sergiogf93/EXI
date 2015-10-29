@@ -1,10 +1,10 @@
-AddressListView.prototype.getPanel = ListView.prototype.getPanel;
-AddressListView.prototype.load = ListView.prototype.load;
-
 function AddressListView(){
 	this.sorters = [{property : 'cardName', direction: 'ASC'}];
 	ListView.call(this);
 }
+
+AddressListView.prototype.getPanel = ListView.prototype.getPanel;
+AddressListView.prototype.load = ListView.prototype.load;
 
 AddressListView.prototype.getFilter = function(value){
 	return [{property : "cardName", value : value, anyMatch : true}];

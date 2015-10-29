@@ -1,15 +1,13 @@
-BufferWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-BufferWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function BufferWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
 	MainView.call(this);
 	this.title = "Macromolecules";
 	this.closable = false;
-	
-	
 }
+
+BufferWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+BufferWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 BufferWelcomeMainView.prototype.getOptions = function() {
 	var html =  "<ul><li>Define beforehand an experiment</li>";

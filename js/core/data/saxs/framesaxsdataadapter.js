@@ -1,29 +1,14 @@
+function FrameSaxsDataAdapter(args){
+	DataAdapter.call(this, args);
+}
 
 FrameSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
 FrameSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
 FrameSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
-
-function FrameSaxsDataAdapter(args){
-	DataAdapter.call(this, args);
-}
-
-
-
-//FrameSaxsDataAdapter.prototype.downloadFrameURL = function(frameId){
-//	return this.server + ('/{0}/saxs/{1}/frame/{2}/download'.format([ '%TOKEN%', '%PROPOSAL%',frameId]));
-//};
-
-//FrameSaxsDataAdapter.prototype.downloadFrameURL = function(frameId){
-//	return this.server + ('/{0}/saxs/{1}/frame/{2}/download'.format([ '%TOKEN%', '%PROPOSAL%',frameId]));
-//};
-
-
-
 FrameSaxsDataAdapter.prototype.getFramesByAverageId= function(averageId){
 	this.get('/{0}/saxs/{1}/frame/average/{0}/list'.format( [averageId.toString()]));
 };
-
 
 FrameSaxsDataAdapter.prototype.getFramesURL = function(frames, averages, subtractions,sampleaverages, bufferaverages, models){
 	if (frames == null){

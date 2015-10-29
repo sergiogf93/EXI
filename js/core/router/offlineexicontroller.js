@@ -1,7 +1,6 @@
 function OfflineExiController() {
 	this.init();
-};
-
+}
 
 OfflineExiController.prototype.setPageBackground = function() {
 
@@ -61,19 +60,19 @@ OfflineExiController.prototype.init = function() {
 			EXI.setLoadingNavigationPanel(true);
 
 			
-			var onSuccess = (function(sender, data) {
+			var onSuccess = function(sender, data) {
 				project = data[0];
 				/** Load panel * */
 				EXI.addNavigationPanel(listView);
 				/** Load data * */
 				listView.load(data[0].runs.reverse());
 				EXI.setLoadingNavigationPanel(false);
-			});
+			};
 			
 			/** Handle error * */
-			var onError = (function(sender, data) {
+			var onError = function(sender, data) {
 				EXI.setLoadingNavigationPanel(false);
-			});
+			};
 			
 			EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getProject();
 		}).enter(this.setPageBackground);
@@ -83,7 +82,7 @@ OfflineExiController.prototype.init = function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];
 
-		var onSuccess = (function(sender, runs) {
+		var onSuccess = function(sender, runs) {
 			for (var i = 0; i < runs.length; i++) {
 				if (runs[i].internalId == runId) {
 					var main = new RunMainView();
@@ -91,10 +90,10 @@ OfflineExiController.prototype.init = function() {
 					main.load(runs[i]);
 				}
 			}
-		});
-		var onError = (function(sender, runs) {
-			
-		});
+		};
+		var onError = function(sender) {
+			BUI.showError("There was an error");
+		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getRuns(projectId);
 	}).enter(this.setPageBackground);
@@ -104,7 +103,7 @@ OfflineExiController.prototype.init = function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];
 
-		var onSuccess = (function(sender, runs) {
+		var onSuccess = function(sender, runs) {
 			for (var i = 0; i < runs.length; i++) {
 				if (runs[i].internalId == runId) {
 					var main = new DimpleRunMainView();
@@ -112,10 +111,10 @@ OfflineExiController.prototype.init = function() {
 					main.load(runs[i]);
 				}
 			}
-		});
-		var onError = (function(sender, runs) {
-			
-		});
+		};
+		var onError = function(sender) {
+			BUI.showError("There was an error");
+		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getRuns(projectId);
 	}).enter(this.setPageBackground);

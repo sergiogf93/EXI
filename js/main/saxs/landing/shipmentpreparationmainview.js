@@ -1,6 +1,3 @@
-ShipmentPreparationMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShipmentPreparationMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function ShipmentPreparationMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
@@ -8,10 +5,10 @@ function ShipmentPreparationMainView() {
 	this.title = "How to prepare a Shipment?";
 	this.closable = false;
 	
-	var _this = this;
-	
 }
 
+ShipmentPreparationMainView.prototype.getPanel = MainView.prototype.getPanel;
+ShipmentPreparationMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 ShipmentPreparationMainView.prototype.getContainer = function() {
 	var text= "The aim of a BioSAXS experiment is to determine the low resolution shape of a macromolecule in solution \n" + 

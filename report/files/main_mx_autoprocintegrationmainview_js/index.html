@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - main/mx/autoprocintegrationmainview.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="http://github.com/es-analysis/plato">Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>main/mx/autoprocintegrationmainview.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">60.83</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">474</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">62.48</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">5.12</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">function AutoProcIntegrationMainView() {
+	this.icon = &#039;images/icon/ic_satellite_black_18dp.png&#039;;
+	MainView.call(this);
+	var _this = this;
+	
+	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid({ maxHeight: 400});
+	
+	this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
+		var ids = [];
+		for (var i = 0; i &lt; records.length; i++) {
+			ids.push(records[i].autoProcIntegrationId);
+		}
+		_this.loadPlots(ids);
+		if (records.length == 1){
+			var record = _this.getByAutoProcId(records[0].autoProcId);
+			if (record != null){
+				_this.autoProcIntegrationAttachmentGrid.load(record);
+			}
+		}
+	});
+	
+	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({margin : &#039;0 20 0 10&#039;, maxHeight: 400});
+	
+	
+	/** Curve completenessPlotter * */
+	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;Completeness vs Resolution&quot;,
+		legend : &#039;never&#039;
+	});
+	
+	this.completenessPlotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	this.rFactorPlotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;Rfactor vs Resolution&quot;,
+		legend : &#039;never&#039;
+	});
+	
+	this.rFactorPlotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	this.isigmaPlotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;I/SigmaI vs Resolution&quot;,
+		legend : &#039;never&#039;
+	});
+
+	this.isigmaPlotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	this.cc2Plotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;CC/2 vs Resolution&quot;,
+		legend : &#039;never&#039;
+	});
+	
+	this.cc2Plotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	this.sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;SigAno vs Resolution&quot;,
+		legend : &#039;never&#039;
+	});
+	
+	this.sigmaAnnoPlotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	this.wilsonPlotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;Wilson Plot&quot;,
+		legend : &#039;never&#039;
+	});
+	
+	this.wilsonPlotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	this.annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
+		height : 150,
+		title : &quot;Anom Corr vs Resolution&quot;,
+		legend : &#039;never&#039;
+	});
+
+	this.annoCorrPlotter.onPointClickCallback.attach(function(sender, id){
+		_this.onPlotClicked(id);
+	});
+	
+	
+	/** Phasing **/
+	this.autoProcIntegrationPhasingGrid = new AutoProcIntegrationGrid({ maxHeight: 500});
+
+	this.autoProcIntegrationPhasingGrid.onSelected.attach(function(sender, records){
+		var ids = [];
+		for (var i = 0; i &lt; records.length; i++) {
+			ids.push(records[i].autoProcId);
+		}
+		
+		_this.phasingGrid.panel.setLoading(); 
+		
+		var onSuccessPhasing = function(sender, data){
+			var parsed = [];
+			if (data != null){
+				if (data.length &gt; 0){
+					if (data[0].phasinganalysis != null){
+						for (var i = 0; i &lt; data[0].phasinganalysis.length; i++) {
+							var j = 0;
+							if (data[0].phasinganalysis[i].modelbuilding.length &gt; 0){
+								for (j = 0; j &lt; data[0].phasinganalysis[i].modelbuilding.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].modelbuilding[j]);
+									parsed[parsed.length -1][&quot;name&quot;] = &quot;modelbuilding&quot;;
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].modelbuilding[j].spaceGroupVO);
+									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].modelbuilding[j].phasingAnalysisVO.phasingAnalysisId;
+								}
+							}
+							
+							if (data[0].phasinganalysis[i].preparephasingdata.length &gt; 0){
+								for ( j = 0; j &lt; data[0].phasinganalysis[i].preparephasingdata.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].preparephasingdata[j]);
+									parsed[parsed.length -1][&quot;name&quot;] = &quot;preparephasingdata&quot;;
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].preparephasingdata[j].spaceGroupVO);
+									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].preparephasingdata[j].phasingAnalysisVO.phasingAnalysisId;
+								}
+							}
+							
+							if (data[0].phasinganalysis[i].phasing.length &gt; 0){
+								for (j = 0; j &lt; data[0].phasinganalysis[i].phasing.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].phasing[j]);
+									parsed[parsed.length -1][&quot;name&quot;] = &quot;phasing&quot;;
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].phasing[j].spaceGroup3VO);
+									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].phasing[j].phasingAnalysisVO.phasingAnalysisId;
+								}
+							}
+		
+							if (data[0].phasinganalysis[i].substructureDetermination3VO.length &gt; 0){
+								for (j = 0; j &lt; data[0].phasinganalysis[i].substructureDetermination3VO.length; j++) {
+									parsed.push(data[0].phasinganalysis[i].substructureDetermination3VO[j]);
+									parsed[parsed.length -1][&quot;name&quot;] = &quot;substructureDetermination&quot;;
+									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].substructureDetermination3VO[j].spaceGroupVO);
+									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].substructureDetermination3VO[j].phasingAnalysisVO.phasingAnalysisId;
+								}
+							}
+							
+							
+						}
+					}
+				}
+			}
+			
+			_this.phasingGrid.load(parsed);
+			_this.phasingGrid.panel.setLoading(false);
+			
+		};
+		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(ids);
+		
+	});
+	
+	this.phasingGrid = new PhasingGrid({margin : &#039;0 0 0 10&#039;});
+}
+
+AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+
+AutoProcIntegrationMainView.prototype.getByAutoProcProgramAttachmentId = function(autoProcProgramAttachmentId) {
+	for (var i = 0; i &lt; this.data.length; i++) {
+		for (var j = 0; j &lt; this.data[i].autoprocprogram.attachmentVOs.length; j++) {
+				var attachment = this.data[i].autoprocprogram.attachmentVOs[j];
+				if (attachment.autoProcProgramAttachmentId == autoProcProgramAttachmentId){
+					return this.data[i];
+					
+				} 
+		}
+	}
+};
+
+
+
+AutoProcIntegrationMainView.prototype.getByAutoProcId = function(autoProcId) {
+	for (var i = 0; i &lt; this.data.length; i++) {
+				if (this.data[i].autoproc.autoProcId == autoProcId){
+					return this.data[i];
+				} 
+	}
+};
+
+
+AutoProcIntegrationMainView.prototype.onPlotClicked = function(autoProcProgramAttachmentId) {
+	var record = this.getByAutoProcProgramAttachmentId(autoProcProgramAttachmentId);
+	if (record != null){
+		this.autoProcIntegrationGrid.selectRowByAutoProcIntegrationId(record.autointegration.autoProcIntegrationId);
+	}
+};
+
+AutoProcIntegrationMainView.prototype.getPlotContainer = function(panel) {
+	return {
+  	  xtype : &#039;container&#039;,
+	  margin : 10,
+	  layout: {
+	        	type: &#039;fit&#039;
+	       },
+	       flex : 0.5,
+	       items : [ 
+	                	panel
+	       ]
+	  
+  };
+};
+
+
+AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
+	return Ext.create(&#039;Ext.container.Container&#039;, {
+		layout: {
+	        type: &#039;fit&#039;
+	    },
+		margin : 5,
+		items : [ 
+		          Ext.create(&#039;Ext.container.Container&#039;, {
+		        	 layout: &#039;hbox&#039;,
+		        	 margin : &#039;10 0 0 20&#039;,
+		        	 items : [
+		        	          	this.autoProcIntegrationGrid.getPanel(),
+		        	          	this.autoProcIntegrationAttachmentGrid.getPanel()
+		        	          ]
+		         }),
+		         Ext.create(&#039;Ext.container.Container&#039;, {
+		        	 layout: &#039;hbox&#039;, 
+		        	 margin : &#039;0 50 0 0&#039;,
+		        	 items : [
+		        	          this.getPlotContainer( this.rFactorPlotter.getPanel()),
+		        	          this.getPlotContainer( this.isigmaPlotter.getPanel()),
+		        	          this.getPlotContainer( this.completenessPlotter.getPanel())
+		        	 ]
+		         }),
+		         Ext.create(&#039;Ext.container.Container&#039;, {
+		        	 layout: &#039;hbox&#039;, 
+		        	 margin : &#039;0 50 0 0&#039;,
+		        	 items : [
+		        	          this.getPlotContainer( this.cc2Plotter.getPanel()),
+		        	          this.getPlotContainer( this.sigmaAnnoPlotter.getPanel()),
+//		        	          this.getPlotContainer(this.wilsonPlotter.getPanel()),
+		        	          this.getPlotContainer(this.annoCorrPlotter.getPanel())
+		        	          
+		        	 ]
+		         })
+		    ]
+	});
+};
+
+AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
+	return Ext.create(&#039;Ext.container.Container&#039;, {
+		layout: {
+	        type: &#039;fit&#039;
+	    },
+		margin : 5,
+		height : 600,
+		items : [ 
+		         Ext.create(&#039;Ext.container.Container&#039;, {
+		        	 layout: &#039;hbox&#039;,
+		        	 margin : &#039;10 0 0 20&#039;,
+		        	 items : [
+			        	          Ext.create(&#039;Ext.container.Container&#039;, {
+			     		        	 layout: &#039;hbox&#039;,
+//			     		        	 margin : &#039;10 0 0 20&#039;,
+			     		        	 flex : 0.4,
+			     		        	 items : [
+			     		        	          	this.autoProcIntegrationPhasingGrid.getPanel()
+			     		        	          ]
+			     		         }),
+		        	          
+		        	          		this.phasingGrid.getPanel()
+		        	          ]
+		         }),
+		         		
+		    ]
+	});
+};
+
+//AutoProcIntegrationMainView.prototype.getDataCollectionPanel = function() {
+//	console.log(this.id)
+//	return Ext.create(&#039;Ext.container.Container&#039;, {
+//		layout: {
+//	        type: &#039;fit&#039;
+//	    },
+//		margin : 5,
+//		
+//		height : 600,
+//		items : [ 
+//						Ext.create(&#039;Ext.Panel&#039;, {
+//						    id : this.id + &quot;general&quot;,
+//						    layout: &#039;form&#039;,
+//						    autoScroll : true,
+//						    bodyPadding: 5,
+//						    items: []
+//						})
+//		         		
+//		    ]
+//	});
+//};
+
+
+
+AutoProcIntegrationMainView.prototype.getContainer = function() {
+	return  Ext.createWidget(&#039;tabpanel&#039;,
+			{
+				plain : true,
+				margin : &#039;10 30 10 10&#039;,
+				items : [
+//					{
+//						tabConfig : {
+//							title : &#039;General&#039;
+//						},
+//						items : [ {
+//							xtype : &#039;container&#039;,
+//							layout : &#039;fit&#039;,
+//							style : {
+//								borderColor : &#039;gray&#039;,
+//								borderStyle : &#039;solid&#039;,
+//								borderWidth : &#039;1px&#039;,
+//								&#039;background-color&#039; : &#039;white&#039; 
+//							},
+//							items : [ 
+//							         this.getDataCollectionPanel()
+//							]
+//						}
+//						]
+//					},
+					{
+						tabConfig : {
+							title : &#039;Auto Processing&#039;
+						},
+						items : [ {
+							xtype : &#039;container&#039;,
+							layout : &#039;fit&#039;,
+							style : {
+								borderColor : &#039;gray&#039;,
+								borderStyle : &#039;solid&#039;,
+								borderWidth : &#039;1px&#039;,
+								&#039;background-color&#039; : &#039;white&#039; 
+							},
+							items : [ 
+							         this.getAutoProcPanel()
+							]
+						}
+						]
+				  },
+				  {
+						tabConfig : {
+							title : &#039;Phasing&#039;
+						},
+						items : [ {
+							xtype : &#039;container&#039;,
+							layout : &#039;fit&#039;,
+							style : {
+								borderColor : &#039;gray&#039;,
+								borderStyle : &#039;solid&#039;,
+								borderWidth : &#039;1px&#039;,
+								&#039;background-color&#039; : &#039;white&#039; 
+							},
+							items : [ 
+							         this.getPhasingPanel()
+							]
+						}
+						]
+				  }]
+		});
+};
+
+
+AutoProcIntegrationMainView.prototype.groupBy = function(array , f ){
+	  var groups = {};
+	  array.forEach( function( o )
+	  {
+	    var group = JSON.stringify( f(o) );
+	    groups[group] = groups[group] || [];
+	    groups[group].push( o );  
+	  });
+	  return Object.keys(groups).map( function( group ){
+		  return groups[group]; 
+	  });
+	};
+
+
+AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsIds) {
+	this.completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCompleteness(autoProcIntegrationsIds.toString()));
+	this.rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleRfactor(autoProcIntegrationsIds.toString()));
+	this.isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleISigma(autoProcIntegrationsIds.toString()));
+	this.cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCC2(autoProcIntegrationsIds.toString()));
+	this.sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleSigmaAno(autoProcIntegrationsIds.toString()));
+	this.annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleAnnoCorrection(autoProcIntegrationsIds.toString()));
+};
+
+
+AutoProcIntegrationMainView.prototype.loadGeneral = function(dataCollection) {
+	for (var key in dataCollection){
+		Ext.getCmp(this.id + &quot;general&quot;).insert({
+			xtype : &#039;container&#039;,
+			
+			layout : &#039;hbox&#039;,
+			items : [ 
+			          {
+					        xtype: &#039;label&#039;,
+					        forId: &#039;myFieldId&#039;,
+					        text: key + &#039;:&#039;,
+					        margin: &#039;0 0 0 10&#039;
+					  },
+					  {
+					        xtype: &#039;label&#039;,
+					        forId: &#039;myFieldId&#039;,
+					        text: dataCollection[key],
+					        margin: &#039;0 0 0 10&#039;
+					    }
+			]
+		});
+	}
+};
+	
+
+
+	
+AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
+	var _this = this;
+	this.panel.setTitle(&quot;Data Collection&quot;);
+	var onSuccess = function(sender, data){
+		_this.data = data;
+		var autoProcIntegrationsIds = []; 
+		var autoProcs = [];
+		var autoProcIds = [];
+		for (var i = 0; i &lt; data.length; i++) {
+			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
+			autoProcs.push(data[i].autoproc);
+			autoProcIds.push(data[i].autoproc.autoProcId);
+		}
+		
+		
+		
+		var onSuccessPhasing = function(sender, phasing){
+			var autoprocIdWithPhasing = [];
+			var autoProcWithPhasing = [];
+			for (var i = 0; i &lt; phasing.length; i++) {
+				if (phasing[i].phasinganalysis != null){
+					autoprocIdWithPhasing.push(autoProcIds[i]);
+				}
+			}
+			
+			
+			for (var j = 0; j &lt; data.length; j++) {
+				for (var k = 0; k &lt; autoprocIdWithPhasing.length; k++) {
+					if (data[j].autoproc.autoProcId == autoprocIdWithPhasing[k]){
+						autoProcWithPhasing.push(data[j]);
+					}
+				}
+				
+			}
+			_this.autoProcIntegrationPhasingGrid.load(autoProcWithPhasing);
+			
+			_this.autoProcIntegrationGrid.load(data);
+			_this.loadPlots(autoProcIntegrationsIds);
+			
+//			_this.loadGeneral(data[0].datacollection);
+		};
+	
+		
+		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(autoProcIds);
+		
+	};
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoProcIntegrationDataAdapter.getByDataCollectionId(dataCollectionId);
+};</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>

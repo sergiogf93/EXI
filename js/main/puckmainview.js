@@ -1,6 +1,3 @@
-PuckMainView.prototype.getPanel = MainView.prototype.getPanel;
-PuckMainView.prototype.getContainer = MainView.prototype.getContainer;
-
 function PuckMainView() {
 	
 	this.icon = '../images/BasketView_24x24_01.png';
@@ -10,7 +7,8 @@ function PuckMainView() {
 	this.puckForm = new PuckForm();
 }
 
-
+PuckMainView.prototype.getPanel = MainView.prototype.getPanel;
+PuckMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 PuckMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
@@ -35,9 +33,9 @@ PuckMainView.prototype.load = function(containerId) {
 	var _this = this;
 	this.panel.setTitle("Puck");
 	if (containerId != null){
-		var onSuccess = (function(sender, puck){
+		var onSuccess = function(sender, puck){
 			_this.puckForm.load(puck);
-		});
+		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(containerId,containerId,containerId);
 	}
 };

@@ -1,13 +1,10 @@
-
-MeasurementSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
-MeasurementSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
-MeasurementSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function MeasurementSaxsDataAdapter(args){
 	DataAdapter.call(this, args);
 }
 
+MeasurementSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
+MeasurementSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
+MeasurementSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 MeasurementSaxsDataAdapter.prototype.saveMeasurement= function(measurement){
     var url = ('/{token}/proposal/{proposal}/saxs/measurement/save');

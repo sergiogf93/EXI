@@ -1,3 +1,11 @@
+function ExiSAXS() {
+	 Exi.call(this, {
+		 					menu: new SAXSMainMenu(),
+		 					anonymousMenu: new MainMenu(),
+		 					controllers : [new SAXSExiController(), new MXExiController(), new OfflineExiController(), new ProposalExiController()]
+	 });
+}
+
 ExiSAXS.prototype.loadSelected = Exi.prototype.loadSelected;
 ExiSAXS.prototype.addMainPanel = Exi.prototype.addMainPanel;
 ExiSAXS.prototype.getSelectedDataCollections = Exi.prototype.getSelectedDataCollections;
@@ -12,17 +20,6 @@ ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiSAXS.prototype.show = Exi.prototype.show;
 ExiSAXS.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiSAXS.prototype.setUserMenu = Exi.prototype.setUserMenu;
-
-
-function ExiSAXS() {
-	 Exi.call(this, {
-		 					menu: new SAXSMainMenu(),
-		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new SAXSExiController(), new MXExiController(), new OfflineExiController(), new ProposalExiController()]
-	 
-	 });
-}
-
 
 ExiSAXS.prototype.getHeader = function(){
 	return '<img class="titleImage" src="../images/logo_EMBL.png"><span class="title">ExiSAXS</span><span class="subtitle">Extended ISPyB for SAXS<sub style="font-size:10px;color:orange">BETA</sub></span>';

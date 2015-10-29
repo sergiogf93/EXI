@@ -1,12 +1,10 @@
+function DataCollectionSaxsDataAdapter(args){
+	DataAdapter.call(this, args);
+}
 
 DataCollectionSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
 DataCollectionSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
 DataCollectionSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
-function DataCollectionSaxsDataAdapter(args){
-	DataAdapter.call(this, args);
-}
 
 DataCollectionSaxsDataAdapter.prototype.getDataCollectionsByMacromoleculeAcronym= function(macromoleculeAcronym){
 	this.get('/{token}/proposal/{proposal}/saxs/datacollection/macromoleculeAcronym/{0}/list'.format( [ macromoleculeAcronym]));

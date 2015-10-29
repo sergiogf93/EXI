@@ -1,13 +1,10 @@
-
-BufferSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
-BufferSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
-BufferSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
-
-
 function BufferSaxsDataAdapter(args){
 	DataAdapter.call(this, args);
 }
 
+BufferSaxsDataAdapter.prototype.get = DataAdapter.prototype.get;
+BufferSaxsDataAdapter.prototype.post = DataAdapter.prototype.post;
+BufferSaxsDataAdapter.prototype.getUrl = DataAdapter.prototype.getUrl;
 
 BufferSaxsDataAdapter.prototype.getBuffers= function(){
 	this.get('/{token}/proposal/{proposal}/saxs/buffer/list');

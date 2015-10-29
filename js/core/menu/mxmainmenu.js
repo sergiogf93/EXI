@@ -1,3 +1,8 @@
+function MXMainMenu() {
+	this.id = BUI.id();
+	 MainMenu.call(this, {cssClass : 'mxMainMenu'});
+}
+
 MXMainMenu.prototype.populateCredentialsMenu = MainMenu.prototype.populateCredentialsMenu;
 MXMainMenu.prototype.init = MainMenu.prototype.init;
 MXMainMenu.prototype.getPanel = MainMenu.prototype.getPanel;
@@ -9,11 +14,6 @@ MXMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 MXMainMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
 MXMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
-
-function MXMainMenu() {
-	this.id = BUI.id();
-	 MainMenu.call(this, {cssClass : 'mxMainMenu'});
-}
 MXMainMenu.prototype.getMenuItems = function() {
 	return [
 		this.getHomeItem(),
