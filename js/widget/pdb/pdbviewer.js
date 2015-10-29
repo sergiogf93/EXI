@@ -94,7 +94,6 @@ PDBViewer.prototype.refresh = function(models) {
 //			_this.panel.setLoading("Not available");
 //		});
 //		adapter.getDataPDB(models, []);
-		debugger
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.model.getPDB(models, []);
 		
 		
@@ -374,11 +373,11 @@ AlignedSuperpositionPDBViewer.prototype.refresh = function(superpositions) {
 
 		var adapter = new BiosaxsDataAdapter();
 		adapter.onError.attach(function(sender, pdbContent){
-			console.log(sender)
+			console.log(sender);
 		});
 		adapter.onSuccess.attach(function(sender, data){
 			var superposition = data.superpositions[0][superpositions[0]];
-			document.getElementById(_this.id).innerHTML = ""
+			document.getElementById(_this.id).innerHTML = "";
 			_this.glMol = new GLmol(_this.id, false, false, superposition.apriori.data);
 			_this.glMol.addSuperpositionXYZ(superposition.aligned.XYZ, "0xFFFFFF", 0.3, 1);
 			

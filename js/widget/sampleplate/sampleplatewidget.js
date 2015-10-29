@@ -218,21 +218,21 @@ SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
 	var id = id + "_marked";
 	if (this.markedSpecimenId[id] == null) {
 		SVG.drawRectangle(x - 10, y - 10, 22, 22, svg, [ [ "id", id ], [ "fill", "gray" ],["stroke-opacity", "0.5"], [ "fill-opacity", "0.2" ], [ 'stroke', 'black' ] ]);
-		$('#' + id).qtip({
-			content : {
-				text : _this._getToolTipContent(specimen)
-			},
-			position : {
-				adjust : {
-					x : 0,
-					y : 20
-				}
-			},
-			style : {
-				width : true,
-				classes : 'ui-tooltip-shadow'
-			}
-		});
+//		$('#' + id).qtip({
+//			content : {
+//				text : _this._getToolTipContent(specimen)
+//			},
+//			position : {
+//				adjust : {
+//					x : 0,
+//					y : 20
+//				}
+//			},
+//			style : {
+//				width : true,
+//				classes : 'ui-tooltip-shadow'
+//			}
+//		});
 		this.markedSpecimenId[id] = true;
 	}
 };
@@ -393,32 +393,32 @@ SamplePlateWidget.prototype.fillWell = function(row, column, specimen) {
 
 		if (this.showTooltip) {
 			var id = this.network.getGraphCanvas().getSVGNodeId(vertex.id);
-			if (_this.windowContainerId != null) {
-				$('#' + id).qtip({
-					content : {
-						text : _this._getToolTipContent(specimen)
-					},
-					position : {
-						adjust : {
-							x : 0,
-							y : 20
-						}
-					}
-				});
-			} else {
-				$('#' + id).qtip({
-					content : {
-						text : _this._getToolTipContent(specimen)
-					},
-					position : {
-						adjust : {
-							x : 0,
-							y : 20
-						}
-					}
-				});
-
-			}
+//			if (_this.windowContainerId != null) {
+//				$('#' + id).qtip({
+//					content : {
+//						text : _this._getToolTipContent(specimen)
+//					},
+//					position : {
+//						adjust : {
+//							x : 0,
+//							y : 20
+//						}
+//					}
+//				});
+//			} else {
+//				$('#' + id).qtip({
+//					content : {
+//						text : _this._getToolTipContent(specimen)
+//					},
+//					position : {
+//						adjust : {
+//							x : 0,
+//							y : 20
+//						}
+//					}
+//				});
+//
+//			}
 		}
 	}
 };

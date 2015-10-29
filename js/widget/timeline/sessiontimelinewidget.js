@@ -5,8 +5,6 @@ SessionTimeLineWidget.prototype.getStartDate = TimeLineWidget.prototype.getStart
 SessionTimeLineWidget.prototype.getEndDate = TimeLineWidget.prototype.getEndDate;
 
 
-
-
 function SessionTimeLineWidget() {
 	TimeLineWidget.call(this);
 	this.week = moment().week();
@@ -31,6 +29,7 @@ SessionTimeLineWidget.prototype.getTopBar = function() {
 		            	
 		            }
 		        },
+		        "Week",
 		        {
 		        	id 			: this.id + 'week',
 		            xtype    	: 'textfield',

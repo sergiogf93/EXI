@@ -21,7 +21,6 @@ function ManagerWelcomeMainView() {
 		
 	});
 	
-	
 	this.timeLineWidget = new SessionTimeLineWidget();
 	
 	this.timeLineWidget.onSelected.attach(function(sender, record){

@@ -14,6 +14,10 @@
 	background-color: #E0F2F7;
 }
 
+.warning-grid-row{
+	background-color: #F7BE81;
+}
+
 img.lazy {
         display: block;
         height : 80px;

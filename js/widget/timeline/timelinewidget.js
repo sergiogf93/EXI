@@ -73,8 +73,9 @@ TimeLineWidget.prototype.getTopBar = function() {
 	return null;
 };
 
-TimeLineWidget.prototype.getPanel = function(data) {
+TimeLineWidget.prototype.getPanel = function() {
 	var _this =this;
+	
 	this.panel = Ext.create('Ext.panel.Panel', {
 		id :  this.id,
 		layout : {
