@@ -15,6 +15,10 @@ AuthenticationDataAdapter.prototype.authenticate = function(user, password, url)
 	if (url.indexOf("embl-hamburg") != -1){
 		site = "EMBL";
 	}
+	if (url.indexOf("192.109.31.39") != -1){
+		site = "EMBL";
+	}
+	
 	
 	$.ajax({
 		  url: url + '/authenticate?site=' + site,
