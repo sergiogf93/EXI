@@ -388,7 +388,7 @@ AutoProcIntegrationMainView.prototype.groupBy = function(array , f ){
 
 
 AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsIds) {
-	this.completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCompleteness(autoProcIntegrationsIds.toString()));
+ 	this.completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCompleteness(autoProcIntegrationsIds.toString()));
 	this.rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleRfactor(autoProcIntegrationsIds.toString()));
 	this.isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleISigma(autoProcIntegrationsIds.toString()));
 	this.cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCC2(autoProcIntegrationsIds.toString()));
