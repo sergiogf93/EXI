@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">1082</p>
+      <p class="stat">1081</p>
     </div>
   </div>
   <div class="row historical">
@@ -1086,7 +1086,6 @@ var BIOSAXS_COMBOMANAGER = {
 			margin : margin,
 			store : store,
 			queryMode : &#039;local&#039;,
-			//		    	    displayField			: &#039;startDate&#039;,
 			valueField : &#039;sessionId&#039;,
 			// Template for the dropdown menu.
 			// Note the use of &quot;x-boundlist-item&quot; class,
@@ -1094,7 +1093,7 @@ var BIOSAXS_COMBOMANAGER = {
 			tpl : Ext.create(&#039;Ext.XTemplate&#039;, &#039;&lt;tpl for=&quot;.&quot;&gt;&#039;,
 					&#039;&lt;div class=&quot;x-boundlist-item&quot;&gt;{startDateFormatted}&lt;span style=&quot;font-weight:bold&quot;&gt; {beamlineName}&lt;/span&gt;&lt;/div&gt;&#039;, &#039;&lt;/tpl&gt;&#039;),
 			// template for the content inside text field
-			displayTpl : Ext.create(&#039;Ext.XTemplate&#039;, &#039;&lt;tpl for=&quot;.&quot;&gt;&#039;, &#039;{startDateFormatted}&#039;, &#039;&lt;/tpl&gt;&#039;)
+			displayTpl : Ext.create(&#039;Ext.XTemplate&#039;, &#039;&lt;tpl for=&quot;.&quot;&gt;&#039;, &#039;{startDateFormatted} {beamlineName}&#039;, &#039;&lt;/tpl&gt;&#039;)
 
 		});
 	},

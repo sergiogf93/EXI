@@ -995,7 +995,6 @@ var BIOSAXS_COMBOMANAGER = {
 			margin : margin,
 			store : store,
 			queryMode : 'local',
-			//		    	    displayField			: 'startDate',
 			valueField : 'sessionId',
 			// Template for the dropdown menu.
 			// Note the use of "x-boundlist-item" class,
@@ -1003,7 +1002,7 @@ var BIOSAXS_COMBOMANAGER = {
 			tpl : Ext.create('Ext.XTemplate', '<tpl for=".">',
 					'<div class="x-boundlist-item">{startDateFormatted}<span style="font-weight:bold"> {beamlineName}</span></div>', '</tpl>'),
 			// template for the content inside text field
-			displayTpl : Ext.create('Ext.XTemplate', '<tpl for=".">', '{startDateFormatted}', '</tpl>')
+			displayTpl : Ext.create('Ext.XTemplate', '<tpl for=".">', '{startDateFormatted} {beamlineName}', '</tpl>')
 
 		});
 	},

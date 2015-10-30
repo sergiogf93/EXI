@@ -36,9 +36,9 @@ ShippingMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('tabpanel',
 			{
 				margin : 10,
-				 defaults : {
+				defaults : {
 						anchor : '100%'
-				 },
+				},
 				items : [
 				     	{
 							tabConfig : {

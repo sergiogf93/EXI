@@ -1,4 +1,4 @@
-Ext.application({
+/*Ext.application({
 	name : 'Biosaxs Logger',
 	launch : function() {
 		Ext.create('Ext.container.Viewport', {
@@ -55,4 +55,4 @@ Ext.application({
 			}
 
 			] });
-	} });
+	} });*/

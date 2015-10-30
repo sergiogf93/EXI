@@ -56,28 +56,34 @@ module.exports = function(grunt) {
 	},
 	jshint: {
 		 options: {
-// 		      reporter: require('jshint-stylish'),
+ 		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-// //  		 ignore_warning: {
-// 		      options: {
-// // 			    "-W041": true
-// 		      },
-// 		      src: [,'js/core/data/dataadapter.js']
-// 		  }, 
 		 prod: [ 'js/core/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
 	},
 	plato: {
 		options: {
-		  // Task-specific options go here. 
 		},
 		prod: {
 		  files : {'report' : ['js/core/**/*.js', 'js/main/*/*.js', 'js/navigation/**/*.js']}
 		}
-      }
+        },
+	includeSource: {
+	    	options: {
+		      basePath: 'js',
+		      baseUrl: '../js/'
+		},
+		dev: {
+		      files: {
+			'dev/index.html': 'dev/index.tpl.html'
+		      }
+		}
+	}
+
 
   });
-  
+
+  grunt.loadNpmTasks('grunt-include-source');  
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -85,5 +91,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-plato');
   grunt.task.registerTask('default', ['jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod']);
+  grunt.task.registerTask('dev', ['includeSource:dev']);
   
 };

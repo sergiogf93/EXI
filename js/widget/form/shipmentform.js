@@ -7,15 +7,10 @@
 function ShipmentForm(args) {
 	this.id = BUI.id();
 
-//	this.creationMode = false;
-//	this.showTitle = true;
 	if (args != null) {
 		if (args.creationMode != null) {
 			this.creationMode = args.creationMode;
 		}
-//		if (args.showTitle != null) {
-//			this.showTitle = args.showTitle;
-//		}
 	}
 	
 	this.sendingAddressForm = new AddressForm({isSaveButtonHidden : true});
@@ -65,6 +60,13 @@ ShipmentForm.prototype.load = function(shipment) {
 		}
 	}
 	
+	if (shipment.sessions != null){
+		if (shipment.sessions.length > 0){
+			var session = shipment.sessions[0];
+			this.sessionComboBox.setValue(session.sessionId);
+		}
+	}
+
 };
 
 ShipmentForm.prototype._saveShipment = function() {
@@ -225,6 +227,8 @@ ShipmentForm.prototype.getPanel = function() {
 		}
 	});
 
+       this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 100});
+
 	if (this.panel == null) {
 		this.panel = Ext.create('Ext.form.Panel', {
 			bodyPadding : 5,
@@ -240,13 +244,17 @@ ShipmentForm.prototype.getPanel = function() {
 						      					fieldLabel : 'Name',
 						      					allowBlank : false,
 						      					labelWidth : 75,
-						      					width : 300,
+						      					width : 500,
 						      					margin : "10 20 0 10",
 						      					name : 'shippingName',
 						      					id : _this.id + 'shippingName',
 						      					value : '',
-					        	           },
-						      				{
+					        	           	 },
+									 this.sessionComboBox
+						      				
+				        	           ]
+				            },
+					    {
 				
 						    					xtype : 'textareafield',
 						    					name : 'comments',
@@ -254,11 +262,9 @@ ShipmentForm.prototype.getPanel = function() {
 						    					fieldLabel : 'Comments',
 						    					value : '',
 						    					labelWidth : 75,
-						    					margin : "10 20 0 40",
-						    					width : 700,
-						    				}
-				        	           ]
-				            },
+						    					margin : "10 20 0 10",
+						    					width : 500,
+						},
 		    				{
 		    					html : "<span class='exi-toolBar' style='font-size:18px; '>Address for shipping to Beamline</span>",
 		    					margin : "30 0 0 10",

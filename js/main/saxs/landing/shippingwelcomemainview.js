@@ -75,12 +75,12 @@ ShippingWelcomeMainView.prototype.getContainer = function() {
 										        	 iconAlign : 'top',
 										        	 handler : function(){
 
-										        		 if (EXI.proposalManager.getFutureSessions().length > 0){
+										        		 //if (EXI.proposalManager.getFutureSessions().length > 0){
 										     				location.hash = '/shipping/main';
-										     			 }
-										        		 else{
-											        		 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
-										        		 }
+										     			 //}
+										        		 //else{
+											        	//	 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
+										        		 //}
 										        	 }
 										         }]
 							         }
