@@ -2,7 +2,7 @@ var ExtISPyB ={
    sites:[
       {
          name:'ESRF',
-         url:'https://ispyb.esrf.fr:8080/ispyb/ispyb-ws/rest',
+         url:'https://ispyb.esrf.fr/ispyb/ispyb-ws/rest',
          exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
          beamlines:{
             SAXS:[
