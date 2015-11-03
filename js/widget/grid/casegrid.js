@@ -184,7 +184,8 @@ CaseGrid.prototype._getParcelHTML = function(dewar) {
 
 	html = html + "<tr class='tr-component'><td>" + dewarCode + "</td><td>" + status + "</td><td>" + storageLocation + "</td><td>" + comments + "</td></tr></table>"
 	/** Adding buttons **/
-	html =  this._getEditParcelButton(dewar.Container_dewarId, "Edit") +  this._getPrintParcelButton(dewar.Container_dewarId, "Print Labels") + this._getRemoveParcelButton(dewar.Container_dewarId, "Remove") + html;
+	debugger
+	html =  this._getEditParcelButton(dewar["Dewar_dewarId"], "Edit") +  this._getPrintParcelButton(dewar["Dewar_dewarId"], "Print Labels") + this._getRemoveParcelButton(dewar["Dewar_dewarId"], "Remove") + html;
 	return '<div  class="header-component-table" >Parcel</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
 };
 
