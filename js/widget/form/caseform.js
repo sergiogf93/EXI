@@ -6,7 +6,7 @@
  * #onRemovePlates
  **/
 function CaseForm(args) {
-	this.width = 900;
+	this.width = 600;
 	this.showTitle = true;
 	if (args != null) {
 		if (args.showTitle != null) {
@@ -41,7 +41,7 @@ CaseForm.prototype.getDewar = function() {
 	this.dewar.transportValue = Ext.getCmp("dewar_transportValue").getValue();
 //	this.dewar.storageLocation = Ext.getCmp("dewar_storageLocation").getValue();
 	this.dewar.storageLocation = this.storageLocationComboBox.getValue();
-	this.dewar.firstExperimentId = this.sessionsCombo.getValue();
+	//this.dewar.firstExperimentId = this.sessionsCombo.getValue();
 	return this.dewar;
 };
 
@@ -61,12 +61,12 @@ CaseForm.prototype.setDewar = function(dewar) {
 	Ext.getCmp("dewar_transportValue").setValue(this.dewar.transportValue);
 //	Ext.getCmp("dewar_storageLocation").setValue(this.dewar.storageLocation);
 	this.storageLocationComboBox.setValue(this.dewar.storageLocation);
-	if (this.dewar.sessionVO != null) {
+	/*if (this.dewar.sessionVO != null) {
 		this.sessionsCombo.setValue(this.dewar.sessionVO.sessionId);
-	}
+	}*/
 };
 
-
+/*
 CaseForm.prototype.getSessionCombo = function() {
 	this.sessionsCombo = BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getFutureSessions(), {
 		labelWidth : 200,
@@ -74,7 +74,7 @@ CaseForm.prototype.getSessionCombo = function() {
 		width : 500
 	});
 	return this.sessionsCombo;
-};
+};*/
 
 CaseForm.prototype.getStorageLocationCombo = function() {
 	this.storageLocationComboBox =  BIOSAXS_COMBOMANAGER.getComboStorageTemperature();
@@ -125,7 +125,7 @@ CaseForm.prototype.getPanel = function(dewar) {
 					fieldLabel : 'Transport Value',
 					id : 'dewar_transportValue'
 				},
-				this.getSessionCombo(),
+				//this.getSessionCombo(),
 				{
 					xtype : 'textareafield',
 					name : 'comments',

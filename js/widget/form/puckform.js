@@ -15,32 +15,22 @@ function PuckForm(args) {
 			this.width = args.width;
 		}
 	}
+
+	this.onSaved = new Event(this);
 }
 
-PuckForm.prototype.getBuffer = function() {
-//	if (this.buffer == null){
-//		this.buffer = {};
-//	}
-//	this.buffer["name"] = Ext.getCmp(this.id + "buffer_name").getValue();
-//	this.buffer["acronym"] = Ext.getCmp(this.id + "buffer_acronym").getValue();
-//	this.buffer["comments"] = Ext.getCmp(this.id + "buffer_comments").getValue();
-//	this.buffer["ph"] = Ext.getCmp(this.id + "buffer_ph").getValue();
-//	this.buffer["composition"] = Ext.getCmp(this.id + "buffer_composition").getValue();
-//	this.buffer["proposalId"] = Ext.getCmp(this.id + "proposalIdCombo").getValue();
-//	return this.buffer;
-};
 
 
 PuckForm.prototype.getHeader = function() {
 	return  ['Sample Position', 
 	         'Protein Acronym', 
 	         'Sample Name', 
-	         'Pin BarCode', 
 	         'Space Group', 
+	         'Experiment Type',
+	         'Pin BarCode', 
 	         'Pre-observed resolution', 
 	         'Needed resolution',
 	         'Pref. Diameter',
-	         'Experiment Type',
 	         'Number Of positions',
 	         'Radiation Sensitivity',
 	         'Required multiplicity',
@@ -85,7 +75,7 @@ PuckForm.prototype.getSamplesData = function(puck) {
 					diffraction = {};
 				}
 				data.push(
-					[(i+1), protein.acronym, sample.name, sample.code, crystal.spaceGroup, getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, diffraction.experimentKind,
+					[(i+1), protein.acronym, sample.name, crystal.spaceGroup, diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
 					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
 					 crystal.cellA, crystal.cellB, crystal.cellC, crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, sample.smiles, sample.comments
 					 ]
@@ -139,12 +129,18 @@ PuckForm.prototype.getColumns = function() {
 					  
 				});
 		        break;
-		    case 4:
+		    case 3:
 		    	columns.push({
 					   type: 'dropdown',
 					   source: spaceGroups
 				});
 		        break;
+		    case 4:
+		    	columns.push({
+					   type: 'dropdown',
+					   source: [ "Default", "OSC", "SAD", "MAD", "Fixed", "Ligand binding", "Refinement", "MAD - Inverse Beam", "SAD - Inverse Beam" ]
+				});
+		        break; 
 			case 5:
 		    	columns.push({
 					  width : 60
@@ -160,12 +156,7 @@ PuckForm.prototype.getColumns = function() {
 					  width : 45
 				});
 		        break;
-		    case 8:
-		    	columns.push({
-					   type: 'dropdown',
-					   source: [ "Default", "OSC", "SAD", "MAD", "Fixed", "Ligand binding", "Refinement", "MAD - Inverse Beam", "SAD - Inverse Beam" ]
-				});
-		        break; 
+		   
 		    case 13:
 		    	columns.push({
 					  width : 40
@@ -216,8 +207,8 @@ PuckForm.prototype.load = function(puck, shippingId) {
 	
 	if (puck != null){
 		Ext.getCmp(this.id + "puck_name").setValue(this.puck.code);
-//		Ext.getCmp(this.id + "puck_capacity").setValue(this.puck.capacity);
 		this.capacityCombo.setValue(this.puck.capacity);
+
 	}
 	
 	  var container = document.getElementById(this.id + '_samples');
@@ -239,7 +230,7 @@ PuckForm.prototype.load = function(puck, shippingId) {
 	    	return;
 	    }
 	    
-	    if ((col == 2)||(col == 4)||(col == 8)||(col == 13)||(col == 14)||(col == 15)||(col == 16)||(col == 17)||(col == 18)){
+	    if ((col == 2)||(col == 3)||(col == 4)){
 		    	if (!value || value == '') {
 		    		td.className = 'custom-row-text-required';
 		  	    }
@@ -283,29 +274,36 @@ PuckForm.prototype.load = function(puck, shippingId) {
 PuckForm.prototype.getToolBar = function() {
 	var _this = this;
 	return [
-	        {
+	       /* {
 	            text: 'Back',
 	            width : 100,
 	            icon : '../images/icon/ic_arrow_back_black_24dp.png',
 	            handler : function(){
 	            	location.hash = Path.routes.previous;
 	            }
-	        },
+	        },*/
 	        "->",
 	        {
 	            text: 'Save',
 	            width : 100,
 	            handler : function(){
-	            	_this.panel.setLoading();
-	            	var puck = (_this.parseData(_this.spreadSheet.getData()));
-	            	var onSuccess = function(sender, puck){
-	            		_this.panel.setLoading(false);
-	            		_this.load(puck);
-	            	};
-	            	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveContainer(_this.puck.containerId, _this.puck.containerId, _this.puck.containerId, puck);
+	            	_this.save();
 	            }
 	        }
 	];
+};
+
+
+PuckForm.prototype.save = function(sample) {
+	var _this = this;
+	this.panel.setLoading("Saving Puck");
+    	var puck = (this.parseData(this.spreadSheet.getData()));
+    	var onSuccess = function(sender, puck){
+    		_this.panel.setLoading(false);
+    		_this.load(puck);
+		_this.onSaved.notify();
+    	};
+    	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveContainer(this.puck.containerId, this.puck.containerId, this.puck.containerId, puck);
 };
 
 
@@ -407,18 +405,32 @@ PuckForm.prototype.parseData = function(data) {
 
 PuckForm.prototype.getPanel = function() {
 	var _this =this;
-	this.capacityCombo = BIOSAXS_COMBOMANAGER.getComboPuckType({margin : '10 0 10 20', labelWidth : 100, width : 300});
-	
-	
+	var capacityCombo = BIOSAXS_COMBOMANAGER.getComboPuckType({margin : '10 0 10 20', labelWidth : 100, width : 300});
+	capacityCombo.on('select', function(capacityCombo, record){
+		var capacity = record[0].data.value;
+		var data = _this.spreadSheet.getData();
+		if (data.length < capacity){
+			for (var i = data.length; i<= capacity; i++){
+				data.push([i]);
+			}
+		
+		}
+		else{
+			data = data.slice(0, capacity + 1);
+		}
+		 _this.spreadSheet.loadData(data);
+
+	});
+	this.capacityCombo = capacityCombo;
 	this.panel = Ext.create('Ext.panel.Panel', {
 		layout : 'vbox',
 		buttons : this.getToolBar(),
-		cls : 'border-grid',
+		//cls : 'border-grid',
 		layout : 'vbox',
 		items : [ 
 		         {
 						xtype : 'container',
-						margin : '10 0 10 20',
+						margin : '2 0 2 2',
 						layout : 'vbox',
 						items : [ 
 			         				   {
@@ -432,7 +444,7 @@ PuckForm.prototype.getPanel = function() {
 										},
 										this.capacityCombo,
 										{
-											html : '<div  style="border:1px solid gray;background-color:white;height:500px;width:1200px"; id="' + this.id + '_samples"; ></div>',
+											html : '<div  style="overflow: auto;overflow-y: hidden; border:1px solid gray;background-color:white;height:500px;width:' + (_this.width - 20) +'px"; id="' + this.id + '_samples"; ></div>',
 											margin : '20 0 20 10',
 											height : 520,
 											border : 1

@@ -53,49 +53,48 @@ CaseGrid.prototype._getHTMLTable = function(items) {
 };
 
 CaseGrid.prototype._getHTMLButton = function(dewarId, value) {
-	return '<input id="' + dewarId+' "type="button" name="btn" style="font-size:9px;width:90px; height:15px" class="btn-component" value="' + value +'" >';
+	return '<input id="' + dewarId+' "type="button" name="btn" style="font-size:9px;width:90px; height:40px" class="btn-component" value="' + value +'" >';
 };
 
 CaseGrid.prototype._getUnpackStockSolutionButton = function(stockSolutionId, value) {
-	return '<input id="' + stockSolutionId +' "type="button" name="stockSolution" style="font-size:9px;width:90px; height:15px" class="btn-component-remove" value="' + value +'" >';
+	return '<input id="' + stockSolutionId +'"type="button" name="stockSolution" style="font-size:9px;width:90px; height:40px" class="btn-component-remove" value="' + value +'" >';
 };
 
 CaseGrid.prototype._getRemoveContainerButton = function(stockSolutionId, value) {
-	return '<input id="' + stockSolutionId +' "type="button" name="puck" style="font-size:9px;width:90px; height:15px" class="btn-component-remove" value="' + value +'" >';
+	return '<input id="' + stockSolutionId +'"type="button" name="puck" style="font-size:9px;width:90px; height:40px" class="btn-component-remove" value="' + value +'" >';
 };
 
-CaseGrid.prototype._getContainerHTML = function(record) {
-	var deserialized = JSON.parse(record.data.serialized);
-	var dewar = this.getDewarById(deserialized[0].Dewar_dewarId);
-	
-	var items = [];
-	if (dewar.sessionVO != null){
-		items = [
-		             {key : 'Name', value : deserialized[0].Dewar_code},
-		             {key : 'Ship To', value : dewar.sessionVO.beamlineName},
-		             {key : 'For session on ', value : dewar.sessionVO.startDate},
-		             {key : 'Storage Location ', value :  deserialized[0].Dewar_storageLocation}
-	    ];
-	}
-	else{
-		items = [
-	             {key : 'Label', value : deserialized[0].Dewar_code}
-    ];
-		
-	}
-	var html = this._getHTMLTable(items);
-	html = html + "<br /><span style='font-size:12px;font-style:italic;'>" + deserialized[0].Dewar_comments + "</span>";
-	return html;
+CaseGrid.prototype._getEditPuckButton = function(type, id, value) {
+	return '<input id="' + type + "_" + id +'"type="button" name="edit" style="font-size:9px;width:90px; height:40px" class="btn-component-puck-edit" value="' + value +'" >';
 };
+
+CaseGrid.prototype._getPrintParcelButton = function(dewarId, value) {
+	return '<input id="' + dewarId+' "type="button" name="printLabels" style="font-size:9px;width:90px; height:40px" class="btn-component-print-parcel" value="' + value +'" >';
+};
+
+CaseGrid.prototype._getEditParcelButton = function(dewarId, value) {
+	return '<input id="' + dewarId+' "type="button" name="editParcel" style="font-size:9px;width:90px; height:40px" class="btn-component-edit-parcel" value="' + value +'" >';
+};
+
+CaseGrid.prototype._getRemoveParcelButton = function(dewarId, value) {
+	return '<input id="' + dewarId+' "type="button" name="removeParcel" style="font-size:9px;width:90px; height:40px" class="btn-component-remove" value="' + value +'" >';
+};
+
 
 CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, id) {
 	var html = "";
 	html = html + "<tr  class='tr-component'>";
 	
+
+	html = html + "<td>";
+	html = html +  this._getEditPuckButton(type, Number(id), "Edit");
+	html = html + "</td>";
+
+	/*
 	html = html + "<td>";
 	html = html + "<img style='cursor:pointer;' name='edit' id='" + type +"_" + id +"' src=\'" + icon + "' />";
 	html = html + "</td>";
-	
+	*/
 	html = html + "<td>";
 	html = html +  type;
 	html = html + "</td>";
@@ -109,6 +108,9 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 	html = html +  capacity;
 	html = html + "</td>";
 
+	
+
+
 	if (type == "Stock Solution"){
 		html = html + "<td>";
 		html = html +  this._getUnpackStockSolutionButton(Number(id), "Unpack");
@@ -120,16 +122,17 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 		html = html +  this._getRemoveContainerButton(Number(id), "Remove");
 		html = html + "</td>";
 	}
+
+	
 	
 	html = html + "</tr>";
 	return html;
 };
 
 CaseGrid.prototype._getComponentHTML = function(dewarId, items) {
-	
-	var output = "";
-	var html = "<table  class='table-component'><tr><th class='th-component'></th><th class='th-component'>Type</th><th class='th-component'>Code</th><th class='th-component'>Capacity</th><th></th></tr>";
+	var html = "";
 	if (items.length > 0){
+		html = "<table  class='table-component'><tr><th class='th-component'></th><th class='th-component'>Type</th><th class='th-component'>Code</th><th class='th-component'>Capacity</th><th></th></tr>";
 		for (var i = 0; i < items.length; i++) {
 			var icon = '../images/BasketView_24x24_01.png';
 			
@@ -143,24 +146,56 @@ CaseGrid.prototype._getComponentHTML = function(dewarId, items) {
 			}
 			
 		}
-		output = html + "</table>";
+		html = html + "</table>";
 	}
-//	else{
-//		output = "<br /><br /><span style='font-size:14px; font-weight:bold; color:orange'>EMPTY</span>";
-//	}
+	else{
+		html = html + "<br /><br /><span class='parcel-empty-msg'>This parcel is empty</span>";
+	}
 	
 	
 	/** Adding buttons **/
-	output = this._getHTMLButton(dewarId, "Add Puck") + this._getHTMLButton(dewarId, "Add Stock Solution") + output;
-	return '<div class="border-grid" style="margin:10px 0px 10px 10px !important;width:610px;">' + output + '</div>';
+	html =  this._getHTMLButton(dewarId, "Add Solution") + this._getHTMLButton(dewarId, "Add Puck") + html;
+	return '<div  class="header-component-table" >Components</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
 };
+
+CaseGrid.prototype._getParcelHTML = function(dewar) {
+	var html = "<table  class='table-component'><tr><th class='th-component'>Code</th><th class='th-component'>Status</th><th class='th-component'>Store Location</th><th class='th-component'>Comments</th></tr>";
+
+	var storageLocation = dewar["Dewar_storageLocation"];
+	var dewarCode = dewar["Dewar_code"];
+	var status = dewar["Dewar_status"];
+	var comments = dewar["Dewar_comments"];
+
+	if (dewarCode == null){
+		dewarCode = "<span style='color:orange'>Not set</span>";
+	}
+
+	if (status == null){
+		status = "<span style='color:orange'>Unknown</span>";
+	}
+
+	if (storageLocation == null){
+		storageLocation = "<span style='color:orange'>Not set</span>";
+	}
+
+	if (comments == null){
+		comments = "";
+	}
+
+	html = html + "<tr class='tr-component'><td>" + dewarCode + "</td><td>" + status + "</td><td>" + storageLocation + "</td><td>" + comments + "</td></tr></table>"
+	/** Adding buttons **/
+	html =  this._getEditParcelButton(dewar.Container_dewarId, "Edit") +  this._getPrintParcelButton(dewar.Container_dewarId, "Print Labels") + this._getRemoveParcelButton(dewar.Container_dewarId, "Remove") + html;
+	return '<div  class="header-component-table" >Parcel</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
+};
+
+
 
 CaseGrid.prototype._getColumns = function() {
 	var _this = this;
 
 
 	var columns = [
-		{
+		/*{
 			header : '',
 			dataIndex : 'type',
 			name : 'type',
@@ -175,23 +210,61 @@ CaseGrid.prototype._getColumns = function() {
 					return "<img src='../images/toolbox.png'>";stockSolution
 				}
 			}
-		},
+		},*/
 		{
-			header : 'Parcel',
+			header : 'General',
 			dataIndex : 'type',
 			name : 'type',
 			type : 'string',
 			flex : 0.5,
+			
 			renderer : function(grid, opts, record){
-				return _this._getContainerHTML(record);
+				var deserialized = JSON.parse(record.data.serialized);
+				return _this._getParcelHTML(deserialized[0]);
 			}
 		},
-		{
-			header : 'Components on this parcel',
+		/*{
+			header : 'Name',
 			dataIndex : 'type',
 			name : 'type',
 			type : 'string',
-			flex : 1,
+			flex : 0.3,
+			
+			renderer : function(grid, opts, record){
+				var deserialized = JSON.parse(record.data.serialized);
+				return deserialized[0].Dewar_code;
+			}
+		},
+		{
+			header : 'Status',
+			dataIndex : 'type',
+			name : 'type',
+			type : 'string',
+			flex : 0.2,
+			
+			renderer : function(grid, opts, record){
+				var deserialized = JSON.parse(record.data.serialized);
+				return deserialized[0].Dewar_status;
+			}
+		},
+
+		{
+			header : 'Storage',
+			dataIndex : 'Dewar_storageLocation',
+			name : 'type',
+			type : 'string',
+			flex : 0.2,
+			renderer : function(grid, opts, record){
+				var deserialized = JSON.parse(record.data.serialized);
+				return deserialized[0].Dewar_storageLocation;
+			}
+		},*/
+		{
+			header : 'Content',
+			dataIndex : 'Dewar_comments',
+			name : 'type',
+			type : 'string',
+			flex : 0.5,
 			renderer : function(grid, opts, record){
 				var deserialized = JSON.parse(record.data.serialized);
 				
@@ -202,12 +275,17 @@ CaseGrid.prototype._getColumns = function() {
 					if (deserialized.length > 0){
 						for (var i = 0; i < deserialized.length; i++) {
 							if (deserialized[i].Container_containerType == "Puck"){
+								var code = "";
+								if (deserialized[i].Container_code != null){
+									code = deserialized[i].Container_code;
+								}
+
 								items.push({
-									type : deserialized[i].Container_containerType,
-								    code : deserialized[i].Container_code,
-								    capacity :	deserialized[i].Container_capacity,
-								    sampleCount :	deserialized[i].sampleCount,
-								    id : deserialized[i].Container_containerId,
+								    type 	: deserialized[i].Container_containerType,
+								    code 	: code,
+								    capacity 	: deserialized[i].Container_capacity,
+								    sampleCount : deserialized[i].sampleCount,
+								    id 		: deserialized[i].Container_containerId,
 								 
 								});
 								
@@ -220,11 +298,11 @@ CaseGrid.prototype._getColumns = function() {
 				var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewarId);
 				for (var i = 0; i < stockSolutions.length; i++) {
 						items.push({
-							type : "Stock Solution",
-						    code : stockSolutions[i].name,
-						    capacity :	stockSolutions[i].volume + "ml",
-						    sampleCount :	"",
-						    id : 	stockSolutions[i].stockSolutionId
+								type 	: "Stock Solution",
+	         					    	code 	: stockSolutions[i].name,
+						    		capacity :	stockSolutions[i].volume + "ml",
+						    		sampleCount :	"",
+						    		id : 	stockSolutions[i].stockSolutionId
 						 
 						});
 						
@@ -233,58 +311,18 @@ CaseGrid.prototype._getColumns = function() {
 				return _this._getComponentHTML(dewarId, items);
 			}
 		}
+		/*{
+			header : 'Comments',
+			dataIndex : 'Dewar_comments',
+			name : 'type',
+			type : 'string',
+			flex : 1,
+			renderer : function(grid, opts, record){
+				var deserialized = JSON.parse(record.data.serialized);
+				return deserialized[0].Dewar_comments;
+			}
+		},*/
 	];
-
-//	if (this.btnEditVisible) {
-//		columns.push({
-//            xtype:'actioncolumn',
-////            width:40,
-//            flex : 0.25,
-//            text : 'Edit',
-//            items: [{
-//                icon: '../images/icon/edit.png',  // Use a URL in the icon config
-//                tooltip: 'Edit',
-//                handler: function(grid, rowIndex, colIndex) {
-//                    var rec = grid.getStore().getAt(rowIndex);
-//                    _this.edit(rec.data);
-//                }
-//            }]
-//        });
-//	}
-
-//	if (this.btnRemoveVisible) {
-//		columns.push(
-//				{
-//				 xtype:'actioncolumn',
-//				 	flex : 0.25,
-//		            text : 'Remove',
-//		            items: [{
-//		                icon: '../images/icon/ic_delete_black_24dp.png',  // Use a URL in the icon config
-//		                tooltip: 'Remove',
-//		                handler: function(grid, rowIndex, colIndex) {
-//		                	function showResult(btn){
-//		                		if (btn == "yes"){
-//		                			_this.onRemove.notify(grid.getStore().getAt(rowIndex).data);
-//		                		}
-//		                	}
-//		                	 Ext.MessageBox.confirm('Confirm', 'Are you sure you want to do that?', showResult);
-//		                }
-//		            }]
-//				});
-//	}
-
-//	columns.push({
-//		dataIndex : 'comments',
-//		 xtype:'actioncolumn',
-//		 icon: '../images/icon/ic_view_headline_black_24dp.png',  
-//		text : 'Labels',
-//		flex : 0.25,
-//		hidden : false,
-//		handler :  function(grid, rowIndex, colIndex) {
-//			window.open(new DataAdapter().getTemplateSourceFile(_this.experiment.experimentId, "bsxcube")); 
-//		}
-//	});
-
 	return columns;
 };
 
@@ -299,14 +337,7 @@ CaseGrid.prototype._getTopButtons = function() {
 		text : 'Add',
 		disabled : false,
 		handler : function(widget, event) {
-//			_this.onAdd.notify();
-			if (EXI.proposalManager.getFutureSessions().length > 0){
-				_this.caseGrid.edit();
-			}
-			else{
-				BUI.showError("Sorry, there are not sessions scheduled for this proposal");
-				
-			}
+			_this.edit();
 		}
 	}));
 	
@@ -358,8 +389,8 @@ CaseGrid.prototype.edit = function(dewar) {
 	
 	var window = Ext.create('Ext.window.Window', {
 	    title: 'Parcel',
-	    height: 500,
-	    width: 900,
+	    height: 360,
+	    width: 600,
 	    modal : true,
 	    layout: 'fit',
 	    items: [
@@ -418,7 +449,6 @@ CaseGrid.prototype.saveStockSolution = function(stockSolution) {
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
 	}
-debugger
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
 };
 
@@ -499,11 +529,11 @@ CaseGrid.prototype.getPanel = function() {
 		},
 		cls : 'border-grid',
 		height : 800,
-//		layout : 'fit',
 		deferEmptyText: false,
-	    emptyText: 'No data',
+	    	emptyText: 'No data',
 		store : this.store,
 		columns : this._getColumns(),
+		disableSelection : true,
 		viewConfig : {
 			stripeRows : true,
 				enableTextSelection : true,
@@ -515,13 +545,20 @@ CaseGrid.prototype.getPanel = function() {
 						_this.edit(_this.getDewarById(JSON.parse(record.data.serialized)[0].Dewar_dewarId));
 					},
 					cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//							_this.edit(record.data);
-							if (e.target.defaultValue == 'Data Reduction') {
-								location.hash = "/datacollection/dataCollectionId/" + record.data.dataCollectionId + "/primaryviewer";
+
+							if (e.target.name == 'printLabels') {
+								BUI.showWarning("Not implemented yet");
+								return;
 							}
-							
+							if (e.target.name == 'removeParcel') {
+								BUI.showWarning("Not implemented yet");
+								return;
+							}
+							if (e.target.name == 'editParcel') {
+								_this.edit(_this.getDewarById(parseInt(e.target.id.trim())));
+								return;
+							}
 							if (e.target.name == 'edit') {
-								console.log(e.target.id);
 								/** Edit stock solution **/
 								if (e.target.id.indexOf("Stock Solution") != -1){
 									var stockSolutionId = e.target.id.split("_")[1];
@@ -530,18 +567,42 @@ CaseGrid.prototype.getPanel = function() {
 								
 								if (e.target.id.indexOf("Puck") != -1){
 									var containerId = e.target.id.split("_")[1];
-									location.hash = "/puck/" + containerId +"/main";
+									//location.hash = "/puck/" + containerId +"/main";
+									var puckForm = new PuckForm({
+										width : Ext.getBody().getWidth() - 150
+									});
+
+									puckForm.onSaved.attach(function(sender, puck){
+										_this.load(_this.shipment);
+										window.close();
+									});
+									var window = Ext.create('Ext.window.Window', {
+										    title: 'Edit Puck',
+										    height: 700,
+										    width: Ext.getBody().getWidth() - 100,
+										    modal : true,
+										    resizable : true,
+										    layout: 'fit',
+										    items: puckForm.getPanel()
+										}).show();
+
+									if (containerId != null){
+										var onSuccess = function(sender, puck){
+											puckForm.load(puck);
+										};
+										EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(containerId,containerId,containerId);
+									}
+
 								}
 								
 							}
 							
 							
-							if (e.target.defaultValue == 'Add Stock Solution') {
+							if (e.target.defaultValue == 'Add Solution') {
 								_this.openStockSolutionWindow(e.target.id);
 							}
 							
 							if (e.target.defaultValue == 'Add Puck') {
-//								_this.openStockSolutionWindow(e.target.id);
 								_this.addPuckToDewar(e.target.id);
 							}
 							
@@ -573,18 +634,6 @@ CaseGrid.prototype.getPanel = function() {
 									  
 								}
 							}
-
-							if (e.target.defaultValue == 'Fit') {
-								_this.onFitButtonClicked(record.raw);
-							}
-
-							if (e.target.defaultValue == 'Superposition') {
-								_this.onSuperpositionButtonClicked(record.raw);
-							}
-
-							if (e.target.defaultValue == 'Rigid Body') {
-								_this.onRigidBodyButtonClicked(record.raw);
-							}
 					}
 				}
 		},
@@ -593,33 +642,13 @@ CaseGrid.prototype.getPanel = function() {
 		}
 	});
 
-	var actions = _this._getTopButtons();
 	this.panel.addDocked({
 		height : 45,
 		xtype : 'toolbar',
-		items : actions,
+		items : _this._getTopButtons(),
 		cls : 'exi-top-bar'
 	});
 
-	this.panel.getSelectionModel().on({
-		selectionchange : function(sm, selections) {
-			if (selections.length) {
-				for ( var i = 0; i < actions.length; i++) {
-					if (actions[i].enable) {
-						actions[i].enable();
-					}
-				}
-			} else {
-				for ( var i = 0; i < actions.length; i++) {
-					if (actions[i].alwaysEnabled == false) {
-						if (actions[i].disable) {
-							actions[i].disable();
-						}
-					}
-				}
-			}
-		}
-	});
 	return this.panel;
 };
 

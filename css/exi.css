@@ -24,64 +24,198 @@ img.lazy {
         width : 80px;
 }
     
-    .th-component{
+.th-component{
 	width : 150px;
-	
 	font-size: 10px;
 	font-family: helvetica, arial, verdana, sans-serif;
 	color: rgb(102, 102, 102);
-	
 	border-top-color:#cecece !important;
 	border-top-style: solid !important;
-    border-top-width: 1px !important;
-    border-bottom-color:#cecece !important;
+        border-top-width: 1px !important;
+        border-bottom-color:#cecece !important;
 	border-bottom-style: solid !important;
-    border-bottom-width: 1px !important;
+        border-bottom-width: 1px !important;
+	
 }
 
+.parcel-empty-msg{
+	color : orange;
+	border : 1px solid orange !important;
+	border-radius: 2px;
+	font-size : 15px;
+	margin : 10px;
+	width : 300px;
+}
 
 .table-component{
 	border-collapse: collapse;
 	width: 600px !important;
 	border : 1px solid #cecece !important;
 	margin : 2px !important;
+	border-radius: 5px;
+
 }
 
 
 .tr-component{
 	border-top-color:#cecece !important;
 	border-top-style: solid !important;
-    border-top-width: 1px !important;
-    border-bottom-color:#cecece !important;
+    	border-top-width: 1px !important;
+	border-bottom-color:#cecece !important;
 	border-bottom-style: solid !important;
-    border-bottom-width: 1px !important;
+    	border-bottom-width: 1px !important;
 }
 
 .btn-component{
 	cursor : pointer;	
 	width : 100px !important;
-	height  : 25px !important;
+	height  : 30px !important;
 	margin : 2px;
+	font-size: 15px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+	color: #666;
+	padding: 0 6px;
+	border-color: #cfcfcf;
+	background-image: none;
+	background-color: #ebebeb;
+	border-radius:2px;
+	padding: 3px 4px 3px 4px;
+	border-width: 1px;
+	border-style: solid;
+	background-image: url(../images/icon/add.png);
+	background-repeat: no-repeat;
+	background-position: left center; 
+}
+
+.shipment-container-value{
+	color :gray;
+	padding: 40px 4px 3px 20px;
+	margin : 40 0 0 0;
+	font-size: 20px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+}
+
+.shipment-container-key{
+	color :gray;
+	padding: 100px 4px 3px 100px;
+	font-size: 20px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+}
+
+.btn-component-edit-parcel{
+	cursor : pointer;	
+	width : 100px !important;
+	height  : 30px !important;
+	margin : 2px;
+	font-size: 15px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+	color: #666;
+	padding: 0 6px 0 20px;
+	border-color: #cfcfcf;
+	background-image: none;
+	background-color: #ebebeb;
+	border-radius:2px;
+	padding: 3px 4px 3px 4px;
+	border-width: 1px;
+	border-style: solid;
+	background-repeat: no-repeat;
+	background-position: left center; 
+	background-image: url(../images/Dewar_32x32_02.png);
+}
+
+.btn-component-print-parcel{
+	cursor : pointer;	
+	width : 100px !important;
+	height  : 30px !important;
+	margin : 2px;
+	font-size: 15px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+	color: #666;
+	padding: 0 6px 0 20px;
+	border-color: #cfcfcf;
+	background-image: none;
+	background-color: #ebebeb;
+	border-radius:2px;
+	padding: 3px 4px 3px 4px;
+	border-width: 1px;
+	border-style: solid;
+	background-repeat: no-repeat;
+	background-position: left center; 
+	background-image: url(../images/print.png);
+}
+
+
+.btn-component-puck-edit{
+	cursor : pointer;	
+	width : 100px !important;
+	height  : 30px !important;
+	margin : 2px;
+	font-size: 15px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+	color: #666;
+	padding: 0 6px 0 20px;
+	border-color: #cfcfcf;
+	background-image: none;
+	background-color: #ebebeb;
+	border-radius:2px;
+	padding: 3px 4px 3px 4px;
+	border-width: 1px;
+	border-style: solid;
+	background-repeat: no-repeat;
+	background-position: left center; 
+	background-image: url(../images/BasketView_24x24_01.png);
+}
+
+.header-component-table{
+	margin:30px 0px 0px 0px !important;
+	height:20px;
+	background-color:#cfcfcf;
+	width:610px;
+	color :black;
+	font-family: helvetica, arial, verdana, sans-serif;
+	font-size: 12px;
+	font-weight: 300;
+	border-color: rgb(192, 175, 175);
+	border-width: 1px;
+	border-style: solid;
+
 }
 
 .btn-component-remove{
 	cursor : pointer;	
 	width : 100px !important;
-	height  : 25px !important;
+	height  : 30px !important;
 	margin : 2px;
-	background-image: url(../images/cancel.png);
+	font-size: 15px;
+	font-weight: 300;
+	font-family: helvetica,arial,verdana,sans-serif;
+	color: #666;
+	padding: 0 6px;
+	border-color: #cfcfcf;
+	background-image: none;
+	background-color: #ebebeb;
+	border-radius:2px;
+	padding: 3px 4px 3px 4px;
+	border-width: 1px;
+	border-style: solid;
 	background-repeat: no-repeat;
-	background-position: left;
-	padding-left: 10px;
+	background-position: left center; 
+	background-image: url(../images/cancel.png);
 }
 
 .exi-toolBar{
 	border-top-color:#E6E6E6 !important;
 	border-top-style: solid !important;
-    border-top-width: 1px !important;
-    border-bottom-color:#E6E6E6 !important;
+    	border-top-width: 1px !important;
+    	border-bottom-color:#E6E6E6 !important;
 	border-bottom-style: solid !important;
-    border-bottom-width: 1px !important;
+	border-bottom-width: 1px !important;
 }
 
 .welcome-title{

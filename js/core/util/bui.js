@@ -989,7 +989,7 @@ var BIOSAXS_COMBOMANAGER = {
 		});
 
 		return Ext.create('Ext.form.ComboBox', {
-			fieldLabel : 'Sessions',
+			fieldLabel : 'Session',
 			labelWidth : labelWidth,
 			width : width,
 			margin : margin,

@@ -92,7 +92,7 @@ ShipmentForm.prototype._saveShipment = function() {
 	if (this.labContactsReturnCombo.getValue() == -1){
 		returnAddressId = -1;
 	}
-	
+
 	var json = {
 		shippingId : shippingId,
 		name : Ext.getCmp(_this.id + "shippingName").getValue(),
@@ -104,7 +104,8 @@ ShipmentForm.prototype._saveShipment = function() {
 		billingReference : sendingAddress.billingReference,
 		dewarAvgCustomsValue : sendingAddress.dewarAvgCustomsValue,
 		dewarAvgTransportValue :sendingAddress.dewarAvgTransportValue,
-		comments : Ext.getCmp(_this.id + "comments").getValue()
+		comments : Ext.getCmp(_this.id + "comments").getValue(),
+		sessionId : this.sessionComboBox.getValue()
 	};
 
 	var onSuccess = (function(sender, shipment) {

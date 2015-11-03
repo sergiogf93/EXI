@@ -75,7 +75,7 @@ module.exports = function(grunt) {
 		},
 		dev: {
 		      files: {
-			'dev/index.html': 'dev/index.tpl.html'
+			'saxs/dev.html': 'saxs/index.tpl.html'
 		      }
 		}
 	}
