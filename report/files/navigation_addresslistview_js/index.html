@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">43</p>
+      <p class="stat">40</p>
     </div>
   </div>
   <div class="row historical">
@@ -104,13 +104,10 @@ AddressListView.prototype.getFilter = function(value){
 
 AddressListView.prototype.getRow = function(record){
 	var html = &quot;&lt;table class=&#039;listView&#039;&gt;&quot;;
-		
 	html = html + &quot;&lt;tr&gt;&lt;td&gt;cardName:&lt;/td&gt;&lt;td style=&#039;color:#207a7a;font-weight:bold;&#039;&gt;&quot; + record.data.cardName+ &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
 	html = html + &quot;&lt;tr&gt;&lt;td&gt;Familiy Name:&lt;/td&gt;&lt;td&gt;&quot; + record.data.personVO.familyName + &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
 	html = html + &quot;&lt;tr&gt;&lt;td&gt;Name:&lt;/td&gt;&lt;td&gt;&quot; + record.data.personVO.givenName + &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
 	html = html + &quot;&lt;tr&gt;&lt;td&gt;Email:&lt;/td&gt;&lt;td&gt;&quot; + record.data.personVO.emailAddress + &quot;&lt;/td&gt;&lt;/tr&gt;&quot;;
-		
-		
 	return html + &quot;&lt;/table&gt;&quot;;
 };
 

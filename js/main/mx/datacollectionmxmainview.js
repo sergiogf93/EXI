@@ -3,7 +3,7 @@ function DataCollectionMxMainView() {
 	MainView.call(this);
 	var _this = this;
 	
-	this.sessionViewGrid = new DataCollectionSummaryGrid();
+	this.dataCollectionSummaryGrid = new DataCollectionSummaryGrid();
 }
 
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -29,7 +29,7 @@ DataCollectionMxMainView.prototype.getContainer = function() {
 							},
 							items : 
 								[
-							         	this.sessionViewGrid.getPanel()
+							         	this.dataCollectionSummaryGrid.getPanel()
 							]
 						}
 						]
@@ -48,8 +48,8 @@ DataCollectionMxMainView.prototype.load = function(sessionsId) {
 	var _this = this;
 	this.panel.setTitle("Data Collection ");
 	var onSuccess = function(sender, data){
-		_this.sessionViewGrid.load(data);
-		_this.sessionViewGrid.grid.setTitle((data.length) + " Data Collections ");
+		_this.dataCollectionSummaryGrid.load(data);
+		_this.dataCollectionSummaryGrid.grid.setTitle((data.length) + " Data Collections ");
 		
 		
 	};

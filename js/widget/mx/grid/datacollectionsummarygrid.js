@@ -120,8 +120,15 @@ DataCollectionSummaryGrid.prototype.getHTMLTable = function(jsonArray) {
 };
 
 DataCollectionSummaryGrid.prototype._getHTMLImage = function(url) {
-	return '<img class="lazy" data-src=' + url + ' ssrc=' + url + '    height="80" width="80" >';
+	return '<img class="lazy" onclick="myFunction()"  data-src=' + url + ' src=' + url + ' height="80" width="80" >';
 };
+
+DataCollectionSummaryGrid.prototype._getHTMLZoomImage = function(url, dataCollectionId, imageId) {
+	var ref = '#/mx/datacollection/' + dataCollectionId + '/image/' + imageId + '/main';
+	return '<a href=' + ref + '><img class="lazy"  data-src=' + url + ' src=' + url + ' height="80" width="80" ></a>';
+};
+
+
 
 DataCollectionSummaryGrid.prototype._getColumns = function() {
 	
@@ -213,7 +220,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getImageById(sample.data.firstImageId));
+			return _this._getHTMLZoomImage(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(sample.data.firstImageId), sample.data.DataCollection_dataCollectionId, sample.data.firstImageId);
 //			return '<img data-echo=' + url + ' src=' + url + '    height="80" width="80" >';
 		} 
 	},
@@ -222,7 +229,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
 		renderer : function(val, y, sample) {
-			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getImageById(sample.data.lastImageId));
+			return _this._getHTMLZoomImage(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(sample.data.lastImageId), sample.data.DataCollection_dataCollectionId, sample.data.lastImageId);
 		}
 	},
 	{
@@ -301,7 +308,7 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 
 	
 	var selModel = null;
-
+/*
 	if (this.multiselect) {
 		selModel = Ext.create('Ext.selection.CheckboxModel', {
 			mode : 'SINGLE',
@@ -318,13 +325,12 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 		selModel = {
 			mode : 'SINGLE'
 		};
-	}
-console.log(this.id)
+	}*/
 
 	this.grid = Ext.create('Ext.grid.Panel', {
 		title : "Data Collection Summary",
 		id  : this.id,
-		selModel : selModel,
+// 		selModel : selModel,
 //		height :800,
 		store : this.store,
 		columns : this._getColumns(),
@@ -339,35 +345,35 @@ console.log(this.id)
 
 	});
 
-this.grid.on('afterrender', function(){
-	loadedElements = 0;
-	console.log(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.id)
-	var myVar = setTimeout(function() {   //calls click event after a certain time
-			$('.lazy').lazy({ 
-			  bind:'event',
-			  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
-			  appendScroll:document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
-			  beforeLoad: function(element){
-				  console.log('image "' + (element.data('src')) + '" is about to be loaded');
-			  },
-			  afterLoad: function(element) {
-				  loadedElements++;
-				  console.log('image was loaded successfully');
-			  },
-			  onError: function(element) {
-				  loadedElements++;
-				  console.log('image  could not be loaded');
-			  },
-			  onFinishedAll: function() {
-				  console.log('finished loading ' + loadedElements + ' elements');
-				  console.log('lazy instance is about to be destroyed')
-			  }
-		  });
-			clearTimeout(myVar);
-		}, 1000);
+	this.grid.on('afterrender', function(){
+		//loadedElements = 0;
+		//console.log(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.id)
+		var myVar = setTimeout(function() {   //calls click event after a certain time
+				$('.lazy').lazy({ 
+				  bind:'event',
+				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
+				  appendScroll:document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
+				  beforeLoad: function(element){
+					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
+				  },
+				  afterLoad: function(element) {
+					  //loadedElements++;
+					  //console.log('image was loaded successfully');
+				  },
+				  onError: function(element) {
+					  //loadedElements++;
+					  //console.log('image  could not be loaded');
+				  },
+				  onFinishedAll: function() {
+					  //console.log('finished loading ' + loadedElements + ' elements');
+					  //console.log('lazy instance is about to be destroyed')
+				  }
+			  });
+				clearTimeout(myVar);
+			}, 1000);
 	
-	  
-})
+		  
+	});
 
 	return this.grid;
 };

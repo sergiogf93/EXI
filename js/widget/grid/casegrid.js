@@ -158,6 +158,35 @@ CaseGrid.prototype._getComponentHTML = function(dewarId, items) {
 	return '<div  class="header-component-table" >Components</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
 };
 
+/*
+CaseGrid.prototype.makeHTMLTable = function(title, buttons, header, data, args) {
+	var width = 610;
+	if (args.with != null){
+		width = args.with;
+	}
+
+
+	var html = "<table>";
+	
+	if (header != null){
+		html = html + "<tr>";
+
+
+		html = html + "</tr>";
+	}
+
+
+	html = html + "</table>";
+
+	if (title != null){
+		html = '<div  class="header-component-table" >Parcel</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
+	}
+
+	return html; 
+};
+*/
+
+
 CaseGrid.prototype._getParcelHTML = function(dewar) {
 	var html = "<table  class='table-component'><tr><th class='th-component'>Code</th><th class='th-component'>Status</th><th class='th-component'>Store Location</th><th class='th-component'>Comments</th></tr>";
 
@@ -184,7 +213,6 @@ CaseGrid.prototype._getParcelHTML = function(dewar) {
 
 	html = html + "<tr class='tr-component'><td>" + dewarCode + "</td><td>" + status + "</td><td>" + storageLocation + "</td><td>" + comments + "</td></tr></table>"
 	/** Adding buttons **/
-	debugger
 	html =  this._getEditParcelButton(dewar["Dewar_dewarId"], "Edit") +  this._getPrintParcelButton(dewar["Dewar_dewarId"], "Print Labels") + this._getRemoveParcelButton(dewar["Dewar_dewarId"], "Remove") + html;
 	return '<div  class="header-component-table" >Parcel</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
 };

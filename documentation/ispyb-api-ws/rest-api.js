@@ -401,6 +401,19 @@ function getMX(){
 	return {
 		name:'mx',
 		children : [
+			    {
+					name:'image',
+					
+					children : [
+							{
+								name:'{imageId}',
+								children : [
+										 {name : 'get', method : 'GET'},
+										 {name : 'thumbnail', method : 'GET'}
+								]
+							}
+					]
+			    },
 		            {
 		            	name:'crystal',
 		            	children : [

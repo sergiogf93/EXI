@@ -86,6 +86,19 @@ MXExiController.prototype.routeNavigation = function() {
 
 	}).enter(this.setPageBackground);
 
+	Path.map("#/mx/datacollection/:dataCollectionId/image/:imageId/main").to(function() {
+		var mainView = new ImageMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['imageId'], this.params['dataCollectionId']);
+	}).enter(this.setPageBackground);
+
+	Path.map("#/mx/image/:imageId/main").to(function() {
+		var mainView = new ImageMainView();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['imageId']);
+
+	}).enter(this.setPageBackground);
+
 	
 };
 
