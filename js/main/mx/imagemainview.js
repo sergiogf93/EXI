@@ -51,27 +51,6 @@ ImageMainView.prototype.getContainer = function() {
 				  	},
 					{
 						tabConfig : {
-							title : 'Image'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-								{
-									html : '<img id="' + this.id + "img" +'">'
-								}
-							]
-						}
-						]
-				  	},
-					{
-						tabConfig : {
 							title : 'Parameters'
 						},
 						items : [ {
