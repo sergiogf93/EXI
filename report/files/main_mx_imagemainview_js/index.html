@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">60.84</p>
+      <p class="stat">57.14</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">200</p>
+      <p class="stat">148</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">31.06</p>
+      <p class="stat">14.86</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.82</p>
+      <p class="stat">1.05</p>
     </div>
   </div>
 </div>
@@ -94,7 +94,21 @@
 	MainView.call(this);
 	var _this = this;
 
-	this.imageViewer = new ImageResolutionVieewr();
+	this.imageViewer = new ImageResolutionViewer();
+
+	this.detectorResolution = {
+				
+				pixelSize: {
+						x : 1475,
+						y : 1679
+				},
+				sensitiveArea : {
+						x : 253.7,
+						y : 288.8
+				},
+				pixelSizeHorizontal : 0.172
+
+	};
 }
 
 ImageMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -190,7 +204,10 @@ ImageMainView.prototype.getParametersGrid = function(imageId, dataCollectionId) 
 		{ text: &#039;Key&#039;,  dataIndex: &#039;key&#039;, flex: 0.2 },
 		{ text: &#039;Value&#039;, dataIndex: &#039;value&#039;, flex: 1 }
 	    ],
-	    height: 800
+	    height: 800,
+	    viewConfig : {
+			enableTextSelection : true
+	    }
 	});
 	return this.parametersPanel;
 
@@ -200,92 +217,23 @@ ImageMainView.prototype.load = function(imageId, dataCollectionId) {
 	var _this = this;
 	this.panel.setTitle(&quot;Image&quot;);
 	var url = EXI.getDataAdapter().mx.dataCollection.getImageById(imageId);
-	/*document.getElementById(this.id + &quot;img&quot;).setAttribute(&quot;src&quot;, url);
-	document.getElementById(this.id + &quot;img&quot;).setAttribute(&quot;height&quot;, 500);
-	document.getElementById(this.id + &quot;img&quot;).setAttribute(&quot;width&quot;, 500);*/
 
+	
 	var onSuccess = function(sender, dataCollection){
 		var dc = (dataCollection[0]);
 		for (var key in dc){
 			//console.log(key + &quot; &quot; + dc[key]);
 			_this.storeParameters.loadData([{key: key, value: dc[key]}], true);
 		}
+		var waveLength = dataCollection[0].DataCollection_wavelength;
+		var detectorDistance = dataCollection[0].DataCollection_detectorDistance;
+		var xBeam = dataCollection[0].DataCollection_xBeam;
+		var yBeam = dataCollection[0].DataCollection_yBeam;
+		_this.imageViewer.load(url, waveLength, detectorDistance, xBeam, yBeam, _this.detectorResolution);
 
 
 	};
 	EXI.getDataAdapter({onSuccess: onSuccess}).mx.dataCollection.getByDataCollectionId(dataCollectionId);
-
-
-
-	this.points = [];
-
-	var img = new Image();
-	img.crossOrigin = &quot;Anonymous&quot;;
-	img.src = url;
-	img.onload = function() {
-		var ctx = document.getElementById(&#039;example&#039;).getContext(&#039;2d&#039;);
-		ctx.drawImage(img, 0, 0, 500, 500);
-
-
-		var example = document.getElementById(&#039;example&#039;);
-		var context = example.getContext(&#039;2d&#039;);
-		context.fillStyle = &quot;rgb(255,0,0)&quot;;
-		context.fillRect(0, 0, 50, 50);
-		context.fillStyle = &quot;rgb(0,0,255)&quot;;
-		context.fillRect(55, 0, 50, 50);
-
-		function findPos(obj) {
-		    var curleft = 0, curtop = 0;
-		    if (obj.offsetParent) {
-			do {
-			    curleft += obj.offsetLeft;
-			    curtop += obj.offsetTop;
-			} while (obj = obj.offsetParent);
-			return { x: curleft, y: curtop };
-		    }
-		    return undefined;
-		}
-
-		function rgbToHex(r, g, b) {
-		    if (r &gt; 255 || g &gt; 255 || b &gt; 255){
-			throw &quot;Invalid color component&quot;;
-			}
-		    return ((r &lt;&lt; 16) | (g &lt;&lt; 8) | b).toString(16);
-		}
-
-
-		$(&#039;#example&#039;).mousemove(function(e) {
-		    var pos = findPos(this);
-		    var x = e.pageX - pos.x;
-		    var y = e.pageY - pos.y;
-		    var coord = &quot;x=&quot; + x + &quot;, y=&quot; + y;
-		    var c = this.getContext(&#039;2d&#039;);
-		    var p = c.getImageData(x, y, 1, 1).data; 
-		    var hex = &quot;#&quot; + (&quot;000000&quot; + rgbToHex(p[0], p[1], p[2])).slice(-6);
-		    document.getElementById(&quot;status&quot;).innerHTML = hex;
-		});
-
-		$(&#039;#example&#039;).click(function(e) {
-		     var pos = findPos(this);
-		     var x = e.pageX - pos.x;
-		     var y = e.pageY - pos.y;
-
-		     if (_this.points.length == 2){
-			_this.points = [];
-			img.src = url;
-		     }
-		     /** Draw cicles **/
-		     context.beginPath();
-		     context.fillStyle = &quot;#ccffcc&quot;;
-                     context.arc(x,y,10,0,2*Math.PI);
-		     context.stroke();
-
-		     _this.points.push([x, y]);
-
-			
-		});
-	};
-	
 	
 
 };</textarea>

@@ -1,10 +1,83 @@
 function ImageResolutionViewer(){
+	this.ratio = 3;
+	this.canvasWidth = 1475/this.ratio;
+	this.canvasHeight = 1679/this.ratio;
 
+	this.zoomFactor = 12;
+	this.canvasZoomWidth = 1475/this.ratio;
+	this.canvasZoomHeight = 1679/this.ratio;
 
-	this.canvasWidth = 1475/4;
-	this.canvasHeight = 1679/4;
 	this.selectedPoints = [];
 
+	/** where the beam center translated to the jpeg image is **/
+	this.localCenter = null;
+
+	var _this = this;
+	this.image = new ImageViewer({
+		width 	: this.canvasWidth,
+		height 	: this.canvasHeight
+	});
+
+	this.image.onMouseOver.attach(function(sender, point){
+
+		/** Filling stats **/
+		var real = _this.getRealCoordinates(point.x, point.y);
+		_this.setSpanTag("coordinates", point.x + "px<br / >" + point.y + "px");
+		_this.setSpanTag("realcoordinates", real.x + "<br />" + real.y);
+		_this.setSpanTag("color", "<div style='height:40px;width:40px;background-color:" + point.color +"'></div>");
+
+		/** Getting distances to center **/
+		_this.setSpanTag("localdistance", Math.floor(_this.getDistance(_this.localCenter, point)) + "px");
+		_this.getResolution(point.x, point.y);
+
+
+		/** luminance **/
+		_this.setSpanTag("luminance", _this.image.getColorLuminance(point.x, point.y));
+
+		
+	});
+
+	this.image.onMouseDown.attach(function(sender, point){
+	});
+
+	this.image.onMouseUp.attach(function(sender, point){
+	});
+
+	this.image.onMouseClick.attach(function(sender, point){
+		_this.selectedPoints.push({
+			x : point.x,
+			y : point.y
+		});
+		if (_this.selectedPoints.length == 2){
+			
+
+			/** Printing scale plot gray **/
+			var points = _this.image.getAllPoints(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y);
+			var luminance = [];
+			for(var i = 0; i< points.length; i++){
+				luminance.push({
+							luminance 	 : _this.image.getColorLuminance(points[i].x, points[i].y),
+							x		 : points[i].x,
+							y		 : points[i].y
+
+						});
+
+			}
+			
+			_this.grayScalePlot.load(luminance);
+			/** Drawing line **/
+			_this.image.drawLine(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y, "blue");
+
+			_this.selectedPoints = [];
+
+
+		}
+		if (_this.selectedPoints.length == 1){
+			_this.image.drawPoint(_this.selectedPoints[0].x, _this.selectedPoints[0].y, "#CC3399");
+		}
+	});
+
+	this.grayScalePlot = new GrayScalePlot({width : this.canvasWidth});
 }
 
 
@@ -18,25 +91,29 @@ ImageResolutionViewer.prototype.getPanel = function(){
 						layout : 'vbox',
 						items : [
 							 {
-					 			html : '<canvas style="border: 1px solid gray;" id="example" width="' + this.canvasWidth +'" height="' + this.canvasHeight +'"></canvas><br />'
+					 			html : this.image.getPanel(),
+								margin : '10 0 0 20'
 					 		},
-
+							{
+								html : this.grayScalePlot.getPanel(),
+								margin : '0 0 0 20'
+							},
 							 {
 					 			html : '<div style="width:800px; height:200px;" id="calc"></div>',
-								margin : '0 0 0 0'
+								margin : '0 0 0 20'
 					 		}
 
 						]
 
 					},
 
-
+					
 	
 					 
-					 {
-					 	html : '<canvas style="border: 1px solid gray;" id="example_zoom" width="500" height="500"></canvas><br />',
-						margin : '0 0 0 20'
-					 }
+					// {
+					// 	html : '<canvas style="border: 1px solid gray;" id="example_zoom" width="'+ this.canvasZoomWidth +'" height="' + this.canvasZoomHeight +'"></canvas><br />',
+					//	margin : '0 0 0 20'
+					// }
 
 
 					
@@ -88,11 +165,33 @@ ImageResolutionViewer.prototype.makeHTMLTable = function(title, buttons, headers
 	return html; 
 };
 
+ImageResolutionViewer.prototype.getSpanTag = function(id){
+	return "<span id=" + this.id + id +"></span>";
+};
 
-ImageResolutionViewer.prototype.displayTable = function(x,y, color,  waveLength, detectorDistance, xBeam, yBeam, realCoordinates, distance, resolution){
-	console.log (resolution);
-	document.getElementById("calc").innerHTML = "";
-	document.getElementById("calc").innerHTML = this.makeHTMLTable("Coordinates", null, ["local coor", "color",  "waveLength", "detectorDistance", "Center", "Real Coor", "Distance", "resolution"], [[x + " " + y,"<div style='background-color:" + color+ ";height:30px;width:30px;'></div>",  waveLength, 	detectorDistance, xBeam + " " + yBeam, realCoordinates.x + " " + realCoordinates.y, distance, resolution]], {width : this.canvasWidth});
+ImageResolutionViewer.prototype.setSpanTag = function(id, value){
+	document.getElementById(this.id + id).innerHTML = value;
+};
+
+ImageResolutionViewer.prototype.displayTable = function(x,y, realCoordinates, color,  waveLength, detectorDistance, xBeam, yBeam, distance, resolution){
+	        document.getElementById("calc").innerHTML = this.makeHTMLTable("Coordinates", null, ["local coor",  "Real Coor", "color", "luminance",  "waveLength", "detectorDistance", "Sensitive Center", "Local Center",  "real Center", "Real Distance","Local Distance", "resolution"], 
+		[
+			[
+				this.getSpanTag("coordinates"),
+				this.getSpanTag("realcoordinates"),
+				this.getSpanTag("color"),
+				this.getSpanTag("luminance"),
+				this.getSpanTag("wavelength"),
+				this.getSpanTag("detectordistance"),
+				this.getSpanTag("centerbeam"),
+				this.getSpanTag("localcenterbeam"),
+				this.getSpanTag("realcenterbeam"),
+				this.getSpanTag("distance"),
+				this.getSpanTag("localdistance"),
+				this.getSpanTag("resolution"),
+			]
+		], 
+		{width : this.canvasWidth});
 };
 
 
@@ -178,7 +277,7 @@ ImageResolutionViewer.prototype.loadZoom = function(url, points){
 
 	var newImageSize = resolution*this.canvasWidth;
 	var context = this.getZoomContext();
-	context.drawImage(img, -points[0].x*resolution, -points[0].y*resolution, newImageSize, newImageSize);
+	context.drawImage(img, -points[0].x*resolution, points[0].y*resolution, newImageSize, newImageSize);
 };
 
 ImageResolutionViewer.prototype.loadOneZoom = function(url, point){
@@ -189,13 +288,12 @@ ImageResolutionViewer.prototype.loadOneZoom = function(url, point){
 	/** Clear context **/
 	this.getZoomContext().clearRect(0, 0, this.getZoomCanvas().width, this.getZoomCanvas().height);
 
-	point.x = point.x - 10;
-	point.y = point.y - 40;
-	var resolution = 10;
-	var newImageSizeWidth = resolution * this.canvasWidth;
-	var newImageSizeHeight = resolution * this.canvasHeight;
-	debugger
-	this.getZoomContext().drawImage(img, -point.x*resolution, -point.y*resolution, newImageSizeWidth, newImageSizeHeight);
+	var newImageSizeWidth = this.zoomFactor * this.canvasWidth;
+	var newImageSizeHeight = this.zoomFactor * this.canvasHeight;
+	console.log(point);
+
+	console.log( -point.x*this.zoomFactor + " " +  -point.y*this.zoomFactor);
+	this.getZoomContext().drawImage(img, -point.x*this.zoomFactor, -point.y*this.zoomFactor, newImageSizeWidth, newImageSizeHeight);
 };
 
 
@@ -217,20 +315,29 @@ ImageResolutionViewer.prototype.loadImage = function(url){
 		/** Drawing points **/
 		for (var i =0; i < _this.selectedPoints.length; i++){
 			context.lineWidth=1;
-			var x = _this.selectedPoints[i].x;
+			var x = _this.selectedPoints[i].x ;
 			var y = _this.selectedPoints[i].y;
-			context.beginPath();
-			context.arc(x,y,5,0,2*Math.PI);
-   	    		context.stroke();
+			/*context.beginPath();
+			context.arc(x,y,2,0,2*Math.PI);
+   	    		context.stroke();*/
+
+			context.lineWidth=2;
+			context.moveTo(x, y);
+			context.lineTo(x + (_this.canvasZoomWidth/_this.zoomFactor), y);
+			context.lineTo(x + (_this.canvasZoomWidth/_this.zoomFactor), y + (_this.canvasZoomHeight/_this.zoomFactor));
+			context.lineTo(x, y + (_this.canvasZoomHeight/_this.zoomFactor));
+			context.lineTo(x, y);
+
+			context.stroke();
 		}
 
 		if (_this.selectedPoints.length == 1){
 			_this.loadOneZoom(url, _this.selectedPoints[0]);
+			_this.selectedPoints = [];
 		}
 		
 		/** If two points selected then we make the line **/
 		if (_this.selectedPoints.length == 2){
-			;
 			var from = _this.selectedPoints[0];
 			var to = _this.selectedPoints[1];
 			/*context.beginPath();
@@ -286,40 +393,69 @@ ImageResolutionViewer.prototype.getRealCenterBeam = function(){
 };
 
 ImageResolutionViewer.prototype.getRealCoordinates = function( x, y){
-	var xReal = (x*this.detectorResolution.pixelSize.x)/this.canvasWidth;
-	var yReal =  Math.abs(((y*this.detectorResolution.pixelSize.y)/this.canvasHeight) - this.detectorResolution.pixelSize.y);
-	console.log({ x: xReal, y: yReal});
-	return  { x: xReal, y: yReal};
+	var xReal = x*this.detectorResolution.pixelSize.x/this.canvasWidth;
+	var yReal =  this.detectorResolution.pixelSize.y - y*this.detectorResolution.pixelSize.y/this.canvasHeight;
+	return  { x: Math.floor(xReal), y: Math.floor(yReal)};
 };
+
+ImageResolutionViewer.prototype.getLocalCoordinates = function( x, y, width, height){
+	var xReal = x*this.canvasWidth/width;
+	var yReal =  y*this.canvasHeight/height;
+	return  { x: Math.floor(xReal), y: Math.floor(yReal)};
+};
+
 
 ImageResolutionViewer.prototype.getDistance = function(from, point){
 	var xs = Math.pow((point.x - from.x), 2);
 	var ys = Math.pow((point.y - from.y), 2);
+	//return  Math.round(Math.sqrt(xs + ys))* this.detectorResolution.pixelSizeHorizontal;
 	return  Math.round(Math.sqrt(xs + ys));
 };
 
-ImageResolutionViewer.prototype.getResolution = function( x, y){
-	var distance = this.getDistance(this.getRealCenterBeam(), this.getRealCoordinates(x, y)) * 0.172;
+ImageResolutionViewer.prototype.getResolution = function(x, y){
+	var distance = this.getDistance(this.realCenter, this.getRealCoordinates(x, y));
+	var mm = this.getDistance(this.realCenter, this.getRealCoordinates(x, y)) * this.detectorResolution.pixelSizeHorizontal;
+	this.setSpanTag("distance", Math.floor(distance) + "px<br />" +   Math.floor(mm) + "mm" );
+
 	var sub = 2 * Math.sin (1/2 * (Math.atan((distance/2)/this.detectorDistance)));
-	return  (this.waveLength/sub);
+	var res =   (this.waveLength/sub);
+	this.setSpanTag("resolution", res );
+	return res;
 };
 
 
 ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistance, xBeam, yBeam, detectorResolution){
-
 	this.detectorResolution = detectorResolution;
 	this.waveLength = waveLength;
 	this.detectorDistance = detectorDistance;
  	this.xBeam = xBeam;
 	this.yBeam = yBeam;
-	this.getCenterBeam( xBeam, yBeam);
 
-	var _this = this;
-	this.selectedPoints = [];
-	debugger
-	console.log(this.getRealCoordinates(10,10))
+	this.localCenter = this.getLocalCoordinates(xBeam, yBeam, detectorResolution.sensitiveArea.x, detectorResolution.sensitiveArea.y);
 
+	this.realCenter = this.getRealCoordinates(this.localCenter.x, this.localCenter.y);
+	/** Loading image **/
+	this.image.center = this.localCenter;
+	this.image.load(url);
+
+
+
+	this.displayTable();
+	this.setSpanTag("wavelength", waveLength);
+	this.setSpanTag("centerbeam", Math.floor(xBeam) + "<br/>" + Math.floor(yBeam));
+
+	this.setSpanTag("realcenterbeam", Math.floor(this.realCenter.x) + "<br/>" + Math.floor(this.realCenter.y));
+
+	this.setSpanTag("localcenterbeam", this.localCenter.x + "<br/>" + this.localCenter.y);
+	this.setSpanTag("detectordistance", detectorDistance);
+	
+	
+	
+
+/*
 	this.loadImage(url);
+
+
  
 	
 	function findPos(obj) {
@@ -351,8 +487,7 @@ ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistanc
 	    var p = c.getImageData(x, y, 1, 1).data; 
 	    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
 
-		console.log(y)
-	    _this.displayTable(x, y, hex, waveLength, detectorDistance, xBeam, yBeam, _this.getRealCoordinates(x, y), _this.getDistance(_this.getRealCenterBeam(), _this.getRealCoordinates(x, y)), _this.getResolution(x,y));
+	    _this.displayTable(x, y, _this.getRealCoordinates(x, y), hex, waveLength, detectorDistance, xBeam, yBeam, _this.getDistance(_this.getRealCenterBeam(),  _this.getRealCoordinates(x, y)), _this.getResolution(x,y));
 
 	});
 
@@ -362,24 +497,20 @@ ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistanc
 	     var y = e.pageY - pos.y;
 
 	    if (_this.selectedPoints.length == 2){
-		    /** Draw cicles **/
 	    		_this.selectedPoints = [];
 
 	    }	   
 	   
-	     /** Draw line **/	
 	     if (_this.selectedPoints.length < 2){
-		    /** Draw cicles **/
 		     _this.selectedPoints.push({x: x, y: y});
 
 	     }
               if (_this.selectedPoints.length == 2){
-		    /** Draw cicles **/
 
 	     }
-		
 	     _this.loadImage(url);
 	    
 		
-	});
+		
+	});*/
 };

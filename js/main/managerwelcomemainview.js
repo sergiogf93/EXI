@@ -28,7 +28,7 @@ function ManagerWelcomeMainView() {
 			if (proposals.length > 0){
 				_this.activeProposal(proposals[0]);
 				EXI.setLoadingMainPanel(false);
-				if ((proposals[0]["Proposal_proposalType"] == "BX") ||(proposals[0]["Proposal_proposalType"] == "MB")){
+				if ((proposals[0]["Proposal_proposalType"] == "BX")){
 				  	location.hash = "/session/nav/" + record.sessionId +"/session";
 				}
 				else{

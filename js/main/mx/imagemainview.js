@@ -14,7 +14,8 @@ function ImageMainView() {
 				sensitiveArea : {
 						x : 253.7,
 						y : 288.8
-				}
+				},
+				pixelSizeHorizontal : 0.172
 
 	};
 }
@@ -112,7 +113,10 @@ ImageMainView.prototype.getParametersGrid = function(imageId, dataCollectionId) 
 		{ text: 'Key',  dataIndex: 'key', flex: 0.2 },
 		{ text: 'Value', dataIndex: 'value', flex: 1 }
 	    ],
-	    height: 800
+	    height: 800,
+	    viewConfig : {
+			enableTextSelection : true
+	    }
 	});
 	return this.parametersPanel;
 
@@ -133,7 +137,7 @@ ImageMainView.prototype.load = function(imageId, dataCollectionId) {
 		var waveLength = dataCollection[0].DataCollection_wavelength;
 		var detectorDistance = dataCollection[0].DataCollection_detectorDistance;
 		var xBeam = dataCollection[0].DataCollection_xBeam;
-		var yBeam = dataCollection[0].DataCollection_yBeam
+		var yBeam = dataCollection[0].DataCollection_yBeam;
 		_this.imageViewer.load(url, waveLength, detectorDistance, xBeam, yBeam, _this.detectorResolution);
 
 

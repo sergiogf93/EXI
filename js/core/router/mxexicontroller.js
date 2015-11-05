@@ -3,6 +3,7 @@ function MXExiController() {
 }
 
 MXExiController.prototype.routeNavigation = function() {
+
 	function loadNavigationPanel(listView) {
 		/** Cleaning up navigation panel * */
 		EXI.clearNavigationPanel();
@@ -31,6 +32,8 @@ MXExiController.prototype.routeNavigation = function() {
 	 * #/session/nav #/experiment/nav #/macromolecule/nav
 	 * 
 	 */
+	
+		
 	Path.map("#/mx/:navigation/nav").to(function() {
 		/** Session navigation * */
 		if (this.params['navigation'] == "session") {
