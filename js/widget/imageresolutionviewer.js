@@ -1,5 +1,5 @@
 function ImageResolutionViewer(){
-	this.ratio = 3;
+	this.ratio = 4;
 	this.canvasWidth = 1475/this.ratio;
 	this.canvasHeight = 1679/this.ratio;
 
