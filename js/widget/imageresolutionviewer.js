@@ -3,7 +3,6 @@ function ImageResolutionViewer(){
 	this.canvasWidth = 1475/this.ratio;
 	this.canvasHeight = 1679/this.ratio;
 
-	this.zoomFactor = 12;
 	this.canvasZoomWidth = 1475/this.ratio;
 	this.canvasZoomHeight = 1679/this.ratio;
 
@@ -13,12 +12,21 @@ function ImageResolutionViewer(){
 	this.localCenter = null;
 
 	var _this = this;
+
+	this.zoom = 1;
+	this.offsetX = 0;
+	this.offsetY = 0;
+	
 	this.image = new ImageViewer({
 		width 	: this.canvasWidth,
-		height 	: this.canvasHeight
+		height 	: this.canvasHeight,
+		zoom 	: this.zoom,
+		offsetX	: this.offsetX,
+		offsetY	: this.offsetY
 	});
 
 	this.image.onMouseOver.attach(function(sender, point){
+		/** Removing offset **/
 
 		/** Filling stats **/
 		var real = _this.getRealCoordinates(point.x, point.y);
@@ -37,7 +45,20 @@ function ImageResolutionViewer(){
 		
 	});
 
+
+	this.image.onDblClick.attach(function(sender, point){
+		console.log(point);
+		var real = _this.getRealCoordinates(point.x, point.y);
+		console.log(real);
+		/*_this.zoom = 2;
+		_this.image.zoom = 2;
+		_this.image.offsetX = -(point.x - _this.image.offsetX) ;
+		_this.image.offsetY = -(point.y + _this.image.offsetY) ;
+		_this.image.reload(function(){});**/
+	});
+
 	this.image.onMouseDown.attach(function(sender, point){
+		console.log("down");
 	});
 
 	this.image.onMouseUp.attach(function(sender, point){
@@ -49,8 +70,6 @@ function ImageResolutionViewer(){
 			y : point.y
 		});
 		if (_this.selectedPoints.length == 2){
-			
-
 			/** Printing scale plot gray **/
 			var points = _this.image.getAllPoints(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y);
 			var luminance = [];
@@ -96,7 +115,7 @@ ImageResolutionViewer.prototype.getPanel = function(){
 					 		},
 							{
 								html : this.grayScalePlot.getPanel(),
-								margin : '0 0 0 20'
+								margin : '0 0 0 0'
 							},
 							 {
 					 			html : '<div style="width:800px; height:200px;" id="calc"></div>',
@@ -105,15 +124,7 @@ ImageResolutionViewer.prototype.getPanel = function(){
 
 						]
 
-					},
-
-					
-	
-					 
-					// {
-					// 	html : '<canvas style="border: 1px solid gray;" id="example_zoom" width="'+ this.canvasZoomWidth +'" height="' + this.canvasZoomHeight +'"></canvas><br />',
-					//	margin : '0 0 0 20'
-					// }
+					}
 
 
 					
@@ -298,86 +309,6 @@ ImageResolutionViewer.prototype.loadOneZoom = function(url, point){
 
 
 
-ImageResolutionViewer.prototype.loadImage = function(url){
-	var _this = this;
-	var img = new Image();
-	img.crossOrigin = "Anonymous";
-	img.src = url;
-	/** Clear context **/
-	_this.getContext().clearRect(0, 0, this.getCanvas().width, this.getCanvas().height);
-
-	img.onload = function() {
-		var context = _this.getContext();
-		context.drawImage(img, 0, 0, _this.canvasWidth, _this.canvasHeight);
-		context.strokeStyle = "#FF0066";
-		context.lineWidth=2;
-
-		/** Drawing points **/
-		for (var i =0; i < _this.selectedPoints.length; i++){
-			context.lineWidth=1;
-			var x = _this.selectedPoints[i].x ;
-			var y = _this.selectedPoints[i].y;
-			/*context.beginPath();
-			context.arc(x,y,2,0,2*Math.PI);
-   	    		context.stroke();*/
-
-			context.lineWidth=2;
-			context.moveTo(x, y);
-			context.lineTo(x + (_this.canvasZoomWidth/_this.zoomFactor), y);
-			context.lineTo(x + (_this.canvasZoomWidth/_this.zoomFactor), y + (_this.canvasZoomHeight/_this.zoomFactor));
-			context.lineTo(x, y + (_this.canvasZoomHeight/_this.zoomFactor));
-			context.lineTo(x, y);
-
-			context.stroke();
-		}
-
-		if (_this.selectedPoints.length == 1){
-			_this.loadOneZoom(url, _this.selectedPoints[0]);
-			_this.selectedPoints = [];
-		}
-		
-		/** If two points selected then we make the line **/
-		if (_this.selectedPoints.length == 2){
-			var from = _this.selectedPoints[0];
-			var to = _this.selectedPoints[1];
-			/*context.beginPath();
-			context.moveTo(from.x, from.y);
-			context.lineTo(to.x, to.y);
-			context.stroke();*/
-		
-			context.lineWidth=2;
-			context.moveTo(from.x, from.y);
-			context.lineTo(from.x, to.y);
-			context.stroke();
-
-			context.moveTo(to.x, from.y);
-			context.lineTo(from.x, from.y);
-			context.stroke();
-
-			context.moveTo(to.x, to.y);
-			context.lineTo(to.x, from.y);
-			context.stroke();
-
-			context.moveTo(from.x, to.y);
-			context.lineTo(to.x, to.y);
-			context.stroke();
-
-			/** Refreshing zoom **/
-			_this.loadZoom(url,  _this.selectedPoints);
-		}
-
-		/** Drawing center beam **/
-		var center = _this.getCenterBeam();
-		context.strokeStyle = "#990099";
-		context.beginPath();
-		context.moveTo(center.x, center.y - 10);
-		context.lineTo(center.x, center.y + 10);
-		context.stroke();
-		context.moveTo(center.x - 10, center.y);
-		context.lineTo(center.x + 10, center.y);
-		context.stroke();
-	};
-};
 
 ImageResolutionViewer.prototype.getCenterBeam = function(){
 	var x = (this.xBeam/this.detectorResolution.sensitiveArea.x)* this.canvasWidth;

@@ -13,9 +13,9 @@ function GrayScalePlot(args){
 	}
 }
 
-
 GrayScalePlot.prototype.getPanel = function(){
-	return "<div id=" + this.id +" style='border:1px solid black;width:" + this.width +"px;height:" + this.height +"px;'></div>";
+
+	return "<div id=" + this.id +" style='text-align:center;width:" + this.width +"px;height:" + this.height +"px;'>Click on two points to calculate the intensity</div>";
 };
 
 GrayScalePlot.prototype.load = function(colors){
@@ -31,8 +31,8 @@ GrayScalePlot.prototype.load = function(colors){
 			try{
 				new Dygraph(div, 
 				  data, {
-				  title: 'Luminance',
-				  ylabel: 'Intensity',
+				  	title : 'Intensity'
+				  	//ylabel: 'Intensity',
 				});
 			}
 			catch(e){}

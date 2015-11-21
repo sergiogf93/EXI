@@ -31,7 +31,7 @@ ImageMainView.prototype.getContainer = function() {
 
 					{
 						tabConfig : {
-							title : 'Test'
+							title : 'Viewer'
 						},
 						items : [ {
 							xtype : 'container',

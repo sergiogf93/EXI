@@ -7,6 +7,14 @@ function ImageViewer(args){
 	/** cordinates to the beam center **/
 	this.center = null;
 	this.url = null;
+	this.zoom = 1;
+
+	this.offsetX = 0;
+	this.offsetY = 0;
+	
+	/** Allows to detect drag **/
+	this._isDragging = false;
+	this._draggingPoint = {x : 0, y : 0};
 
 	if (args != null){
 		if (args.width != null){
@@ -15,6 +23,17 @@ function ImageViewer(args){
 		if (args.height != null){
 			this.height = args.height;
 		}
+		if (args.zoom != null){
+			this.zoom = args.zoom;
+		}
+		if (args.offsetX != null){
+			this.offsetX = args.offsetX;
+		}
+		if (args.offsetY != null){
+			this.offsetY = args.offsetY;
+		}
+
+
 	}
 
 	this.selectedPoints = [];
@@ -24,6 +43,8 @@ function ImageViewer(args){
 	this.onMouseClick = new Event(this);
 	this.onMouseDown = new Event(this);
 	this.onMouseUp = new Event(this);
+	this.onDblClick = new Event(this);
+
 
 }
 
@@ -71,14 +92,14 @@ ImageViewer.prototype.getCoordinatesInfo = function(obj, e) {
     	var p = this.getContext('2d').getImageData(x, y, 1, 1).data; 
    	var hex = "#" + ("000000" + this.rgbToHex(p[0], p[1], p[2])).slice(-6);
 	return {
-						x 	: x,
-						y 	: y,
+						x 	: (x/this.zoom)- this.offsetX,
+						y 	: (y/this.zoom) - this.offsetY,
 						color 	: hex
 	};
 };
 
 ImageViewer.prototype.getColorLuminance = function(x,y){
-	var p = this.getContext('2d').getImageData(x, y, 1, 1).data;
+	var p = this.getContext('2d').getImageData((this.offsetX + x)*this.zoom, y*this.zoom, 1, 1).data;
 	return Math.floor((0.2126*p[0] + 0.7152*p[1] + 0.0722*p[2]));
 };
 
@@ -108,18 +129,6 @@ ImageViewer.prototype.getAllPoints = function(x1, y1, x2, y2){
 
 ImageViewer.prototype.drawLine = function(x1, y1, x2, y2, color){
 	this.drawPoints(this.getAllPoints(x1, y1, x2, y2), "blue");
-	/*
-	var _this = this;
-	this.clear();
-	this.reload(function(){
-				var context = _this.getContext();
-				context.lineWidth = 1;
-				context.strokeStyle = color;
-				context.beginPath();
-				context.moveTo(x1, y1);
-				context.lineTo(x2, y2);
-				context.stroke();
-	});*/
 };
 
 ImageViewer.prototype.drawPoints = function(points, color){
@@ -127,10 +136,9 @@ ImageViewer.prototype.drawPoints = function(points, color){
 	this.clear();
 	this.reload(function(){
 				var context = _this.getContext();
-
 				for(var i  =0 ; i < points.length; i++){
-					var x = points[i].x;
-					var y = points[i].y;
+					var x = ((points[i].x  + _this.offsetX)*_this.zoom);
+					var y = points[i].y*_this.zoom;
 
 					context.beginPath();
 	      				context.arc(x, y, 1, 0, 2 * Math.PI, false);
@@ -148,6 +156,9 @@ ImageViewer.prototype.drawPoints = function(points, color){
 ImageViewer.prototype.drawPoint = function(x, y, color){
 	var _this = this;
 	this.clear();
+
+	x = (_this.offsetX + x)*_this.zoom;
+	y = y*_this.zoom;
 	this.reload(function(){
 				var context = _this.getContext();
 				context.beginPath();
@@ -161,6 +172,19 @@ ImageViewer.prototype.drawPoint = function(x, y, color){
 };
 
 
+ImageViewer.prototype.drawCenterBeam = function(f){
+	var context = this.getContext();
+	context.strokeStyle = "#990099";
+	context.beginPath();
+	var x = this.center.x*this.zoom + this.offsetX ;
+	var y = this.center.y*this.zoom + this.offsetY ;
+	context.moveTo(x, y - 10);
+	context.lineTo(x, y + 10);
+	context.stroke();
+	context.moveTo(x - 10, y);
+	context.lineTo(x + 10, y);
+	context.stroke();
+};
 
 ImageViewer.prototype.reload = function(f){
 	var _this = this;
@@ -173,18 +197,11 @@ ImageViewer.prototype.reload = function(f){
 
 	img.onload = function() {
 		var context = _this.getContext();
-		context.drawImage(img, 0, 0, _this.width, _this.height);
+		context.drawImage(img, _this.offsetX, _this.offsetY, _this.width*_this.zoom, _this.height*_this.zoom);
 		f();
 
 		if (_this.center != null){
-			context.strokeStyle = "#990099";
-			context.beginPath();
-			context.moveTo(_this.center.x, _this.center.y - 10);
-			context.lineTo(_this.center.x, _this.center.y + 10);
-			context.stroke();
-			context.moveTo(_this.center.x - 10, _this.center.y);
-			context.lineTo(_this.center.x + 10, _this.center.y);
-			context.stroke();
+			_this.drawCenterBeam();
 		}
 	}
 };
@@ -197,19 +214,43 @@ ImageViewer.prototype.load = function(url){
 		/** Attaching mouse over event **/
 		$('#' + _this.id).mousemove(function(e) {
 			_this.onMouseOver.notify(_this.getCoordinatesInfo(this, e));
+			if (_this._isDragging){
+				var pos = _this.findPosition(this);
+			    	var x = e.pageX - pos.x;
+			    	var y = e.pageY - pos.y;
+				_this.offsetX = _this.offsetX + (x - _this._draggingPoint.x);
+				_this.reload(function(){});
+			}
 		});
 
 		$('#' + _this.id).click(function(e) {
 	 		_this.onMouseClick.notify(_this.getCoordinatesInfo(this, e));
 		});
 
+		$('#' + _this.id).dblclick(function(e) {
+			_this.onDblClick.notify(_this.getCoordinatesInfo(this, e));
+		});
+
 		$('#' + _this.id).mouseup(function(e) {
+			var wasDragging = _this._isDragging;
+			_this._isDragging = false;
+			if (!wasDragging) {
+				console.log("dragging");
+			}
+
 	 		_this.onMouseUp.notify(_this.getCoordinatesInfo(this, e));
 		});
 
 		$('#' + _this.id).mousedown(function(e) {
+			_this._isDragging = true;
+			var pos = _this.findPosition(this);
+			_this._draggingPoint = {
+						x : e.pageX - pos.x,
+						y : e.pageY - pos.y,
+			};
 	 		_this.onMouseDown.notify(_this.getCoordinatesInfo(this, e));
 		});
+
 	}
 
 	this.url = url;
@@ -224,18 +265,11 @@ ImageViewer.prototype.load = function(url){
 
 	img.onload = function() {
 		var context = _this.getContext();
-		context.drawImage(img, 0, 0, _this.width, _this.height);
+		context.drawImage(img, _this.offsetX, _this.offsetY, _this.width*_this.zoom, _this.height*_this.zoom);
 
 		/** Drawing center beam **/
 		if (_this.center != null){
-			context.strokeStyle = "#990099";
-			context.beginPath();
-			context.moveTo(_this.center.x, _this.center.y - 10);
-			context.lineTo(_this.center.x, _this.center.y + 10);
-			context.stroke();
-			context.moveTo(_this.center.x - 10, _this.center.y);
-			context.lineTo(_this.center.x + 10, _this.center.y);
-			context.stroke();
+			_this.drawCenterBeam();
 		}
 	};
 };
