@@ -1,2 +1,2 @@
-# ExiSAXS
-Help
+[EXI] — new EXtended ISPyB User Interface
+==================================================
