@@ -16,6 +16,13 @@ function ImageViewer(args){
 	this._isDragging = false;
 	this._draggingPoint = {x : 0, y : 0};
 
+	this.selectedPoints = [];
+
+
+	/** When user clicks on two points it calculates the luminic intensity **/
+	this.allowLuminance = true;
+
+
 	if (args != null){
 		if (args.width != null){
 			this.width = args.width;
@@ -32,6 +39,9 @@ function ImageViewer(args){
 		if (args.offsetY != null){
 			this.offsetY = args.offsetY;
 		}
+		if (args.allowLuminance != null){
+			this.allowLuminance = args.allowLuminance;
+		}
 
 
 	}
@@ -44,8 +54,8 @@ function ImageViewer(args){
 	this.onMouseDown = new Event(this);
 	this.onMouseUp = new Event(this);
 	this.onDblClick = new Event(this);
-
-
+	this.onMouseRightDown = new Event(this);
+	this.onLuminanceCalculated = new Event(this);
 }
 
 ImageViewer.prototype.getCanvas = function(url){
@@ -94,6 +104,11 @@ ImageViewer.prototype.getCoordinatesInfo = function(obj, e) {
 	return {
 						x 	: (x/this.zoom)- this.offsetX,
 						y 	: (y/this.zoom) - this.offsetY,
+						localX	: x,
+						localY	: y,
+						offsetX	: this.offsetX,
+						offsetY	: this.offsetY,
+						zoom	: this.zoom,
 						color 	: hex
 	};
 };
@@ -103,6 +118,10 @@ ImageViewer.prototype.getColorLuminance = function(x,y){
 	return Math.floor((0.2126*p[0] + 0.7152*p[1] + 0.0722*p[2]));
 };
 
+/**
+Vertical gradient is undefined for vertical line
+https://www.mathsisfun.com/algebra/line-equation-2points.html
+**/
 ImageViewer.prototype.getAllPoints = function(x1, y1, x2, y2){
 	if (x1 > x2){
 		var aux = x1;
@@ -114,7 +133,6 @@ ImageViewer.prototype.getAllPoints = function(x1, y1, x2, y2){
 		y2 =auxy;
 
 	}
-
 	var points = [];
 	var ratio = (y2 - y1) / (x2 - x1);
 	var width = x2 - x1;
@@ -126,9 +144,11 @@ ImageViewer.prototype.getAllPoints = function(x1, y1, x2, y2){
 	return points;
 };
 
+
 ImageViewer.prototype.drawLine = function(x1, y1, x2, y2, color){
-	this.drawPoints(this.getAllPoints(x1, y1, x2, y2), "blue");
+	this.drawPoints(this.getAllPoints(x1, y1, x2, y2), color);
 };
+
 
 ImageViewer.prototype.drawPoints = function(points, color){
 	var _this = this;
@@ -141,10 +161,10 @@ ImageViewer.prototype.drawPoints = function(points, color){
 
 					context.beginPath();
 	      				context.arc(x, y, 1, 0, 2 * Math.PI, false);
-					context.fillStyle = 'rgba(224,0,0,0.2)';
+					context.fillStyle = color;
 					context.fill();
 					context.lineWidth = 1;
-					context.strokeStyle = 'rgba(224,0,0,0.2)';
+					context.strokeStyle = color;
 					context.stroke();
 				}
 				
@@ -170,19 +190,22 @@ ImageViewer.prototype.drawPoint = function(x, y, color){
 	});
 };
 
-
-ImageViewer.prototype.drawCenterBeam = function(f){
+ImageViewer.prototype.drawCross = function(x, y, height, color){
 	var context = this.getContext();
-	context.strokeStyle = "#990099";
+	context.strokeStyle = color;
 	context.beginPath();
-	var x = this.center.x*this.zoom + this.offsetX ;
-	var y = this.center.y*this.zoom + this.offsetY ;
 	context.moveTo(x, y - 10);
 	context.lineTo(x, y + 10);
 	context.stroke();
 	context.moveTo(x - 10, y);
 	context.lineTo(x + 10, y);
 	context.stroke();
+
+};
+ImageViewer.prototype.drawCenterBeam = function(f){
+	var x = this.center.x*this.zoom + this.offsetX ;
+	var y = this.center.y*this.zoom + this.offsetY ;
+	this.drawCross(x,y,10, "#990099");
 };
 
 ImageViewer.prototype.reload = function(f){
@@ -205,6 +228,65 @@ ImageViewer.prototype.reload = function(f){
 	}
 };
 
+ImageViewer.prototype.luminance = function(point){
+	console.log(point)
+	var _this = this;
+	_this.selectedPoints.push({
+		x : point.x ,
+		y : point.y + this.offsetY
+	});
+	
+	if (_this.selectedPoints.length == 2){
+		/** Printing scale plot gray **/
+		console.log(_this.selectedPoints);
+		var points = _this.getAllPoints(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y);
+		var luminance = [];
+		for(var i = 0; i< points.length; i++){
+			luminance.push({
+						luminance 	 : _this.getColorLuminance(points[i].x, points[i].y),
+						x		 : points[i].x,
+						y		 : points[i].y
+
+					});
+
+		}
+		
+		/** Drawing line **/
+		_this.drawLine(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y, "#ACFA58");
+		_this.selectedPoints = [];
+
+		_this.onLuminanceCalculated.notify(luminance);
+
+	}
+	if (_this.selectedPoints.length == 1){
+		_this.drawPoint(_this.selectedPoints[0].x, _this.selectedPoints[0].y, "#ACFA58");
+	}
+};
+
+
+ImageViewer.prototype.redraw = function(zoom, offsetX, offsetY){
+	this.zoom = zoom;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	this.reload(function(){});
+};
+
+ImageViewer.prototype.applyZoomOnPoint = function(point, zoom){
+
+	this.zoom = 5;
+
+	var newX = (point.localX) * this.zoom;
+	var newY = (point.localY) * this.zoom
+	var offSetX = -(newX - point.x);
+	var offSetY = -(newY - point.y);
+	var offsetX = offSetX - (point.x - point.localX);
+	var offsetY = offSetY - (point.y - point.localY);
+
+		/** redraw **/
+	this.redraw(this.zoom, offsetX, offsetY);
+};
+
+
 ImageViewer.prototype.load = function(url){
 	var _this = this;
 
@@ -224,11 +306,18 @@ ImageViewer.prototype.load = function(url){
 
 		$('#' + _this.id).click(function(e) {
 	 		_this.onMouseClick.notify(_this.getCoordinatesInfo(this, e));
+			if (_this.allowLuminance){
+				_this.luminance(_this.getCoordinatesInfo(this, e));
+
+
+			}
 		});
 
 		$('#' + _this.id).dblclick(function(e) {
 			_this.onDblClick.notify(_this.getCoordinatesInfo(this, e));
 		});
+
+
 
 		$('#' + _this.id).mouseup(function(e) {
 			var wasDragging = _this._isDragging;
@@ -241,13 +330,20 @@ ImageViewer.prototype.load = function(url){
 		});
 
 		$('#' + _this.id).mousedown(function(e) {
-			_this._isDragging = true;
-			var pos = _this.findPosition(this);
-			_this._draggingPoint = {
-						x : e.pageX - pos.x,
-						y : e.pageY - pos.y,
-			};
-	 		_this.onMouseDown.notify(_this.getCoordinatesInfo(this, e));
+
+			if( e.button == 2 ) { 
+				document.oncontextmenu = function() {return false;};
+      				_this.onMouseRightDown.notify(_this.getCoordinatesInfo(this, e));
+    			} 
+			else{
+				_this._isDragging = true;
+				var pos = _this.findPosition(this);
+				_this._draggingPoint = {
+							x : e.pageX - pos.x,
+							y : e.pageY - pos.y,
+				};
+		 		_this.onMouseDown.notify(_this.getCoordinatesInfo(this, e));
+			}
 		});
 
 	}

@@ -1,12 +1,11 @@
 function ImageResolutionViewer(){
-	this.ratio = 4;
+	this.ratio = 3;
 	this.canvasWidth = 1475/this.ratio;
 	this.canvasHeight = 1679/this.ratio;
 
 	this.canvasZoomWidth = 1475/this.ratio;
 	this.canvasZoomHeight = 1679/this.ratio;
 
-	this.selectedPoints = [];
 
 	/** where the beam center translated to the jpeg image is **/
 	this.localCenter = null;
@@ -18,6 +17,15 @@ function ImageResolutionViewer(){
 	this.offsetY = 0;
 	
 	this.image = new ImageViewer({
+		width 	: this.canvasWidth/3,
+		height 	: this.canvasHeight/3,
+		zoom 	: this.zoom,
+		offsetX	: this.offsetX,
+		offsetY	: this.offsetY,
+		allowLuminance : false
+	});
+
+	this.zoomImage = new ImageViewer({
 		width 	: this.canvasWidth,
 		height 	: this.canvasHeight,
 		zoom 	: this.zoom,
@@ -25,12 +33,14 @@ function ImageResolutionViewer(){
 		offsetY	: this.offsetY
 	});
 
+
 	this.image.onMouseOver.attach(function(sender, point){
 		/** Removing offset **/
 
 		/** Filling stats **/
+
 		var real = _this.getRealCoordinates(point.x, point.y);
-		_this.setSpanTag("coordinates", point.x + "px<br / >" + point.y + "px");
+		_this.setSpanTag("coordinates", point.localX + "px<br / >" + point.localY + "px");
 		_this.setSpanTag("realcoordinates", real.x + "<br />" + real.y);
 		_this.setSpanTag("color", "<div style='height:40px;width:40px;background-color:" + point.color +"'></div>");
 
@@ -45,87 +55,55 @@ function ImageResolutionViewer(){
 		
 	});
 
+	this.image.onMouseRightDown.attach(function(sender){
+		_this.zoom = 1;
+		_this.zoomImage.zoom = _this.zoom;
+		_this.zoomImage.offsetX = 0;
+		_this.zoomImage.offsetY = 0;
+		_this.zoomImage.reload(function(){});
+	});
 
 	this.image.onDblClick.attach(function(sender, point){
-		var zoom = 2;
-		_this.zoom = zoom;
-		_this.image.zoom = zoom;
+		point.x = point.x*3;
+		point.y = point.y*3;
+		point.localY = point.localY*3;
+		point.localX = point.localX*3;
 
-		point.x = 25;
-		point.y = 394.5;
+		_this.zoomImage.applyZoomOnPoint(point, _this.zoom);
+		//_this.zoomImage.redraw( _this.zoom, offSetX, offSetY);		
+		//_this.zoomImage.reload(function(){});
+
 
 		
-		_this.image.offsetY = -_this.canvasHeight ;
-
-
-		_this.image.drawPoint(60,600, "red");
-		/*console.log("-- Point -- ");
-		var zoom = 2;
-		point.x = 25;
-		point.y = 394.5;
-		console.log(point);
-		var real = _this.getRealCoordinates(point.x, point.y);
-		console.log("-- Real -- ");
-		console.log(real);
-		console.log("-- Offset -- ");
-
-		_this.zoom = zoom;
-		_this.image.zoom = zoom;
-		console.log(_this.getLocalCoordinates(real.x, real.y, _this.canvasWidth, _this.canvasHeight));
-		return;
-		var offSetX =   point.x/zoom; 
-		var offSetY =   -point.y/zoom;
-		console.log("x: " + offSetX + " y: " + offSetY);		
-		
-		
-		_this.image.offsetX = offSetX ;
-		_this.image.offsetY = offSetY ;
-		_this.image.drawPoint(25*2,394.5*2, "red");*/
 	});
 
 	this.image.onMouseDown.attach(function(sender, point){
 		console.log("down");
-		
 	});
 
 	this.image.onMouseUp.attach(function(sender, point){
-		_this.image.drawPoint(25,394.5, "red");
 	});
 
 	this.image.onMouseClick.attach(function(sender, point){
-		_this.selectedPoints.push({
-			x : point.x,
-			y : point.y
-		});
-		if (_this.selectedPoints.length == 2){
-			/** Printing scale plot gray **/
-			debugger
-			var points = _this.image.getAllPoints(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y);
-			var luminance = [];
-			for(var i = 0; i< points.length; i++){
-				luminance.push({
-							luminance 	 : _this.image.getColorLuminance(points[i].x, points[i].y),
-							x		 : points[i].x,
-							y		 : points[i].y
-
-						});
-
-			}
-			
-			_this.grayScalePlot.load(luminance);
-			/** Drawing line **/
-			_this.image.drawLine(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y, "blue");
-
-			_this.selectedPoints = [];
-
-
-		}
-		if (_this.selectedPoints.length == 1){
-			_this.image.drawPoint(_this.selectedPoints[0].x, _this.selectedPoints[0].y, "#CC3399");
-		}
+		//_this.grayScalePlot.load(luminance);
+		
 	});
 
+	this.image.onLuminanceCalculated.attach(function(sender, luminance){
+		_this.grayScalePlot.load(luminance);
+	});
+
+	this.zoomImage.onLuminanceCalculated.attach(function(sender, luminance){
+		_this.zoomGrayScalePlot.load(luminance);
+	});
+
+
 	this.grayScalePlot = new GrayScalePlot({width : this.canvasWidth});
+	this.zoomGrayScalePlot = new GrayScalePlot({width : this.canvasWidth});
+
+
+	
+
 }
 
 
@@ -138,14 +116,41 @@ ImageResolutionViewer.prototype.getPanel = function(){
 						xtype : 'container',
 						layout : 'vbox',
 						items : [
-							 {
-					 			html : this.image.getPanel(),
-								margin : '10 0 0 20'
-					 		},
 							{
-								html : this.grayScalePlot.getPanel(),
-								margin : '0 0 0 0'
+								xtype : 'container',
+								layout : 'hbox',
+								items : [
+
+										
+									{
+										xtype : 'container',
+										layout : 'vbox',
+										items : [
+											 {
+									 			html : this.image.getPanel(),
+												margin : '10 0 0 20'
+									 		 },
+											 {
+												html : this.grayScalePlot.getPanel(),
+												margin : '0 0 0 0'
+											 }]
+									},
+									{
+										xtype : 'container',
+										layout : 'vbox',
+										items : [
+											 {
+									 			html : this.zoomImage.getPanel(),
+												margin : '10 0 0 20'
+									 		 },
+											 {
+												html : this.zoomGrayScalePlot.getPanel(),
+												margin : '0 0 0 0'
+											 }]
+									}
+									]
 							},
+							
 							 {
 					 			html : '<div style="width:800px; height:200px;" id="calc"></div>',
 								margin : '0 0 0 20'
@@ -235,107 +240,6 @@ ImageResolutionViewer.prototype.displayTable = function(x,y, realCoordinates, co
 };
 
 
-ImageResolutionViewer.prototype.getCanvas = function(url){
-	return document.getElementById('example');
-};
-
-
-ImageResolutionViewer.prototype.getContext = function(url){
-	return this.getCanvas().getContext('2d');
-};
-
-
-ImageResolutionViewer.prototype.getZoomCanvas = function(url){
-	return document.getElementById('example_zoom');
-};
-
-ImageResolutionViewer.prototype.getZoomContext = function(url){
-	return this.getZoomCanvas().getContext('2d');
-};
-
-/** Sort the points first with the larger Y **/
-ImageResolutionViewer.prototype.sortSelectedPoints= function(){
-	/*var points = [];
-	if (this.selectedPoints[0].x > this.selectedPoints[1].x){
-		return [this.selectedPoints[0], this.selectedPoints[1]];
-	}
-	return [this.selectedPoints[1], this.selectedPoints[0]];*/
-	var minX = this.selectedPoints[0].x;
- 	var maxX = this.selectedPoints[0].x;
-
-	var minY = this.selectedPoints[0].y;
-	var maxY = this.selectedPoints[0].y;
-
-	if (this.selectedPoints[1].x < minX){
-		minX = this.selectedPoints[1].x;
-	}
-
-	if (this.selectedPoints[1].y < minY){
-		minY = this.selectedPoints[1].y;
-	}
-
-	if (this.selectedPoints[1].y > maxY){
-		maxY = this.selectedPoints[1].y;
-	}
-
-	if (this.selectedPoints[1].x > maxX){
-		maxX = this.selectedPoints[1].x;
-	}
-	
-	return [{x:minX, y:minY}, {x:maxX, y:maxY}];
-
-};
-
-
-ImageResolutionViewer.prototype.loadZoom = function(url, points){
-	var img = new Image();
-	img.crossOrigin = "Anonymous";
-	img.src = url;
-
-	console.log(points);
-	points = this.sortSelectedPoints();
-	console.log(points);
-	/** Clear context **/
-	this.getZoomContext().clearRect(0, 0, this.getZoomCanvas().width, this.getZoomCanvas().height);
-
-	var to = points[0];
-	var from = points[1];
-
-	var height = Math.abs(to.y - from.y);
-	var width = Math.abs(to.x - from.x);
-
-	/** Making bigger the frame **/	
-
-
-	var resolution = 0;
-	if (height > width){
-		resolution = this.canvasHeight/height;
-	}
-	else{
-		resolution = this.canvasWidth/width;
-	}
-
-	var newImageSize = resolution*this.canvasWidth;
-	var context = this.getZoomContext();
-	context.drawImage(img, -points[0].x*resolution, points[0].y*resolution, newImageSize, newImageSize);
-};
-
-ImageResolutionViewer.prototype.loadOneZoom = function(url, point){
-	var img = new Image();
-	img.crossOrigin = "Anonymous";
-	img.src = url;
-
-	/** Clear context **/
-	this.getZoomContext().clearRect(0, 0, this.getZoomCanvas().width, this.getZoomCanvas().height);
-
-	var newImageSizeWidth = this.zoomFactor * this.canvasWidth;
-	var newImageSizeHeight = this.zoomFactor * this.canvasHeight;
-	console.log(point);
-
-	console.log( -point.x*this.zoomFactor + " " +  -point.y*this.zoomFactor);
-	this.getZoomContext().drawImage(img, -point.x*this.zoomFactor, -point.y*this.zoomFactor, newImageSizeWidth, newImageSizeHeight);
-};
-
 
 
 
@@ -408,69 +312,10 @@ ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistanc
 
 	this.setSpanTag("localcenterbeam", this.localCenter.x + "<br/>" + this.localCenter.y);
 	this.setSpanTag("detectordistance", detectorDistance);
+
+	this.zoomImage.center = this.localCenter;
+	this.zoomImage.load(url);
 	
 	
 	
-
-/*
-	this.loadImage(url);
-
-
- 
-	
-	function findPos(obj) {
-	    var curleft = 0, curtop = 0;
-	    if (obj.offsetParent) {
-		do {
-		    curleft += obj.offsetLeft;
-		    curtop += obj.offsetTop;
-		} while (obj = obj.offsetParent);
-		return { x: curleft, y: curtop };
-	    }
-	    return undefined;
-	}
-
-	function rgbToHex(r, g, b) {
-	    if (r > 255 || g > 255 || b > 255){
-		throw "Invalid color component";
-		}
-	    return ((r << 16) | (g << 8) | b).toString(16);
-	}
-	var context = _this.getContext();
-
-	$('#example').mousemove(function(e) {
-	    var pos = findPos(this);
-	    var x = e.pageX - pos.x;
-	    var y = e.pageY - pos.y;
-	    var coord = "x=" + x + ", y=" + y;
-	    var c = this.getContext('2d');
-	    var p = c.getImageData(x, y, 1, 1).data; 
-	    var hex = "#" + ("000000" + rgbToHex(p[0], p[1], p[2])).slice(-6);
-
-	    _this.displayTable(x, y, _this.getRealCoordinates(x, y), hex, waveLength, detectorDistance, xBeam, yBeam, _this.getDistance(_this.getRealCenterBeam(),  _this.getRealCoordinates(x, y)), _this.getResolution(x,y));
-
-	});
-
-	$('#example').click(function(e) {
-	     var pos = findPos(this);
-	     var x = e.pageX - pos.x;
-	     var y = e.pageY - pos.y;
-
-	    if (_this.selectedPoints.length == 2){
-	    		_this.selectedPoints = [];
-
-	    }	   
-	   
-	     if (_this.selectedPoints.length < 2){
-		     _this.selectedPoints.push({x: x, y: y});
-
-	     }
-              if (_this.selectedPoints.length == 2){
-
-	     }
-	     _this.loadImage(url);
-	    
-		
-		
-	});*/
 };
