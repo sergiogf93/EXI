@@ -115,7 +115,6 @@ ImageViewer.prototype.getAllPoints = function(x1, y1, x2, y2){
 
 	}
 
-
 	var points = [];
 	var ratio = (y2 - y1) / (x2 - x1);
 	var width = x2 - x1;

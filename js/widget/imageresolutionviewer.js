@@ -47,21 +47,49 @@ function ImageResolutionViewer(){
 
 
 	this.image.onDblClick.attach(function(sender, point){
+		var zoom = 2;
+		_this.zoom = zoom;
+		_this.image.zoom = zoom;
+
+		point.x = 25;
+		point.y = 394.5;
+
+		
+		_this.image.offsetY = -_this.canvasHeight ;
+
+
+		_this.image.drawPoint(60,600, "red");
+		/*console.log("-- Point -- ");
+		var zoom = 2;
+		point.x = 25;
+		point.y = 394.5;
 		console.log(point);
 		var real = _this.getRealCoordinates(point.x, point.y);
+		console.log("-- Real -- ");
 		console.log(real);
-		/*_this.zoom = 2;
-		_this.image.zoom = 2;
-		_this.image.offsetX = -(point.x - _this.image.offsetX) ;
-		_this.image.offsetY = -(point.y + _this.image.offsetY) ;
-		_this.image.reload(function(){});**/
+		console.log("-- Offset -- ");
+
+		_this.zoom = zoom;
+		_this.image.zoom = zoom;
+		console.log(_this.getLocalCoordinates(real.x, real.y, _this.canvasWidth, _this.canvasHeight));
+		return;
+		var offSetX =   point.x/zoom; 
+		var offSetY =   -point.y/zoom;
+		console.log("x: " + offSetX + " y: " + offSetY);		
+		
+		
+		_this.image.offsetX = offSetX ;
+		_this.image.offsetY = offSetY ;
+		_this.image.drawPoint(25*2,394.5*2, "red");*/
 	});
 
 	this.image.onMouseDown.attach(function(sender, point){
 		console.log("down");
+		
 	});
 
 	this.image.onMouseUp.attach(function(sender, point){
+		_this.image.drawPoint(25,394.5, "red");
 	});
 
 	this.image.onMouseClick.attach(function(sender, point){
@@ -71,6 +99,7 @@ function ImageResolutionViewer(){
 		});
 		if (_this.selectedPoints.length == 2){
 			/** Printing scale plot gray **/
+			debugger
 			var points = _this.image.getAllPoints(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y);
 			var luminance = [];
 			for(var i = 0; i< points.length; i++){
