@@ -26,7 +26,7 @@ Enter the jquery directory and run the build script:
 npm install
 ```
 
-Download dependencies bu rynning:
+Download dependencies by running:
 
 ```bash
 bower install
