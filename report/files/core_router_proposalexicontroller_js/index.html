@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">75.72</p>
+      <p class="stat">76.59</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">100</p>
+      <p class="stat">108</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">15.45</p>
+      <p class="stat">15.58</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.83</p>
+      <p class="stat">0.87</p>
     </div>
   </div>
 </div>
@@ -117,7 +117,21 @@ ProposalExiController.prototype.init = function() {
 		
 		var listView = null;
 		var adapter = null;
+
+		function loadShipmentNavigationList(){
+			var listView = new ShippingListView();
+			/** When selected move to hash * */
+			listView.onSelect.attach(function(sender, selected) {
+				location.hash = &quot;/shipping/&quot; + selected[0].shippingId + &quot;/main&quot;;
+			});
+			adapter = loadNavigationPanel(listView);
+			adapter.proposal.shipping.getShippings();
+		}
 		
+		Path.map(&quot;#/proposal/shipping/nav?nomain&quot;).to(function() {
+			loadShipmentNavigationList();
+		});
+
 		Path.map(&quot;#/proposal/:navigation/nav&quot;).to(function() {
 			/** Session navigation * */
 			if (this.params[&#039;navigation&#039;] == &quot;session&quot;) {
@@ -148,13 +162,7 @@ ProposalExiController.prototype.init = function() {
 			}
 			
 			if (this.params[&#039;navigation&#039;] == &quot;shipping&quot;) {
-				listView = new ShippingListView();
-				/** When selected move to hash * */
-				listView.onSelect.attach(function(sender, selected) {
-					location.hash = &quot;/shipping/&quot; + selected[0].shippingId + &quot;/main&quot;;
-				});
-				adapter = loadNavigationPanel(listView);
-				adapter.proposal.shipping.getShippings();
+				loadShipmentNavigationList();
 				
 				/** Loading welcome page **/
 				EXI.addMainPanel(new ShippingWelcomeMainView());
