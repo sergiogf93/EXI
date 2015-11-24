@@ -145,7 +145,16 @@ ImageResolutionViewer.prototype.getPanel = function(){
 						width : 600,
 					
 						items : [
+							{
+								html : "<div class='key_subgrid'>Double on the thumbnail to zoom IN</div>",
+								margin : "5 0 0 20"
 
+							},
+							{
+								html : "<div class='key_subgrid'>Right-click to zoom OUT</div>",
+								margin : "5 0 0 20"
+
+							},
 							this.getImagePanel(),		
 							{
 								html : this.zoomGrayScalePlot.getPanel(),
