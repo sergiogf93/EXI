@@ -978,7 +978,7 @@ var BIOSAXS_COMBOMANAGER = {
 		}
 
 		for ( var i = 0; i < sessions.length; i++) {
-			sessions[i]["startDateFormatted"] = moment(sessions[i].startDate).format("MMM Do YY");
+			sessions[i]["startDateFormatted"] = moment(sessions[i].startDate).format("DD/MM/YYYY");
 			sessions[i]["sorter"] = moment(sessions[i].startDate).format("YYYYMMDD");
 		}
 
