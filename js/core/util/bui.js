@@ -1022,7 +1022,7 @@ var BIOSAXS_COMBOMANAGER = {
 		var storageLocations = Ext.create('Ext.data.Store', {
 		    fields: ['value', 'name'],
 		    data : [
-		        {"value":"Not set", "name":"Not set"},
+		        {"value":"N/A", "name":"N/A"},
 		        {"value":"-80", "name":"-80"},
 		        {"value":"-20", "name":"-20"},
 		        {"value":"+4", "name":"+4"},
