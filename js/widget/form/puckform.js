@@ -138,7 +138,8 @@ PuckForm.prototype.getColumns = function() {
 		    case 4:
 		    	columns.push({
 					   type: 'dropdown',
-					   source: [ "Default", "OSC", "SAD", "MAD", "Fixed", "Ligand binding", "Refinement", "MAD - Inverse Beam", "SAD - Inverse Beam" ]
+					   width : 100,
+					   source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
 				});
 		        break; 
 			case 5:
@@ -230,7 +231,7 @@ PuckForm.prototype.load = function(puck, shippingId) {
 	    	return;
 	    }
 	    
-	    if ((col == 2)||(col == 3)||(col == 4)){
+	    if ((col == 2)){
 		    	if (!value || value == '') {
 		    		td.className = 'custom-row-text-required';
 		  	    }
@@ -240,6 +241,9 @@ PuckForm.prototype.load = function(puck, shippingId) {
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(container, {
+	    /*beforeAutofill: function(start, end, data) {
+			debugger
+  	    },*/
 	    data: this.getSamplesData(puck),
 	    colWidths: 70,
 	    columns: this.getColumns(),
@@ -266,6 +270,7 @@ PuckForm.prototype.load = function(puck, shippingId) {
 	      return cellProperties;
 	    }
 	  });
+
 	
 };
 

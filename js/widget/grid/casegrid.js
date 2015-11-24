@@ -588,7 +588,7 @@ CaseGrid.prototype.getPanel = function() {
 									}
 									  Ext.MessageBox.show({
 								           title:'Save Changes?',
-								           msg: 'You are removing a puck. This can not be UNDONE. <br />Would you like to CONTINUE?',
+								           msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
 								           buttons: Ext.MessageBox.YESNOCANCEL,
 								           fn: showResult,
 								           animateTarget: 'mb4',
