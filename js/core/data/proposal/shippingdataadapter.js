@@ -59,3 +59,10 @@ ShippingDataAdapter.prototype.saveContainer = function(shippingId, dewarId, cont
 		puck : JSON.stringify(puck)
 	});
 };
+
+
+ShippingDataAdapter.prototype.getDewarLabelURL = function(shippingId, dewarId){
+	var connection = EXI.credentialManager.getConnections()[0];
+	return this.getUrl(connection, ('/{token}/proposal/{proposal}/shipping/{0}/dewar/{1}/labels'.format([ shippingId, dewarId])));
+};
+

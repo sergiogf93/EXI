@@ -507,7 +507,10 @@ CaseGrid.prototype.getPanel = function() {
 					cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 
 							if (e.target.name == 'printLabels') {
-								BUI.showWarning("Not implemented yet");
+								var dewarId = e.target.id.trim();
+								var url = EXI.getDataAdapter().proposal.shipping.getDewarLabelURL(_this.shipment.shippingId, dewarId);
+								console.log(dewarId);
+								location.href = url;
 								return;
 							}
 							if (e.target.name == 'removeParcel') {
