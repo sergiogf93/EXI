@@ -20,7 +20,6 @@ function ImageMainView() {
 
 	this.surfaceScatteringViewer = new SurfaceScatteringViewer();
 
-	var _this = this;
 	this.imageViewer.onImageRendered.attach(function(sender, data){
 		_this.surfaceScatteringViewer.load(data);
 
