@@ -15,6 +15,7 @@ function ImageViewer(args){
 	/** Allows to detect drag **/
 	this._isDragging = false;
 	this._draggingPoint = {x : 0, y : 0};
+	
 
 	this.selectedPoints = [];
 
@@ -48,7 +49,6 @@ function ImageViewer(args){
 
 	this.selectedPoints = [];
 
-
 	this.onMouseOver = new Event(this);
 	this.onMouseClick = new Event(this);
 	this.onMouseDown = new Event(this);
@@ -56,6 +56,8 @@ function ImageViewer(args){
 	this.onDblClick = new Event(this);
 	this.onMouseRightDown = new Event(this);
 	this.onLuminanceCalculated = new Event(this);
+	this.onLuminanceReset = new Event(this);
+	this.onRendered = new Event(this);
 }
 
 ImageViewer.prototype.getCanvas = function(url){
@@ -92,6 +94,18 @@ ImageViewer.prototype.rgbToHex = function(r, g, b) {
 		throw "Invalid color component";
 		}
 	    return ((r << 16) | (g << 8) | b).toString(16);
+};
+
+ImageViewer.prototype.getMatrix = function() {
+	var data = [];
+	for (var x = 0; x < this.width; x++){
+		data[x] = new Array(Math.floor(this.height));
+		for (var y = 0; y < this.height; y++){
+			data[x][y] = (this.getColorLuminance(x, y));
+		}
+
+	}
+	return data;
 };
 
 
@@ -225,11 +239,12 @@ ImageViewer.prototype.reload = function(f){
 		if (_this.center != null){
 			_this.drawCenterBeam();
 		}
+
+		
 	}
 };
 
 ImageViewer.prototype.luminance = function(point){
-	console.log(point)
 	var _this = this;
 	_this.selectedPoints.push({
 		x : point.x ,
@@ -253,7 +268,7 @@ ImageViewer.prototype.luminance = function(point){
 		
 		/** Drawing line **/
 		_this.drawLine(_this.selectedPoints[0].x, _this.selectedPoints[0].y, _this.selectedPoints[1].x, _this.selectedPoints[1].y, "#ACFA58");
-		_this.selectedPoints = [];
+		
 
 		_this.onLuminanceCalculated.notify(luminance);
 
@@ -307,8 +322,14 @@ ImageViewer.prototype.load = function(url){
 		$('#' + _this.id).click(function(e) {
 	 		_this.onMouseClick.notify(_this.getCoordinatesInfo(this, e));
 			if (_this.allowLuminance){
-				_this.luminance(_this.getCoordinatesInfo(this, e));
-
+				if (_this.selectedPoints.length < 2){
+					_this.luminance(_this.getCoordinatesInfo(this, e));
+				}
+				else{
+					_this.selectedPoints = [];
+					_this.redraw(_this.zoom, _this.offsetX, _this.offsetY);
+					_this.onLuminanceReset.notify();
+				}
 
 			}
 		});
@@ -334,6 +355,7 @@ ImageViewer.prototype.load = function(url){
 			if( e.button == 2 ) { 
 				document.oncontextmenu = function() {return false;};
       				_this.onMouseRightDown.notify(_this.getCoordinatesInfo(this, e));
+				
     			} 
 			else{
 				_this._isDragging = true;
@@ -361,11 +383,16 @@ ImageViewer.prototype.load = function(url){
 	img.onload = function() {
 		var context = _this.getContext();
 		context.drawImage(img, _this.offsetX, _this.offsetY, _this.width*_this.zoom, _this.height*_this.zoom);
-
+		/*if (_this.width < 200){
+			document.write("var data = " + JSON.stringify(_this.getMatrix()) + ";")
+		}*/
 		/** Drawing center beam **/
 		if (_this.center != null){
 			_this.drawCenterBeam();
 		}
+
+		_this.onRendered.notify();
+		
 	};
 };
 

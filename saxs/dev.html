@@ -36,6 +36,13 @@
 	<script type="text/javascript" src="../js/dependency/timeline/timeline.js"></script>
 	<script type="text/javascript" src="../js/dependency/pathjs/path.js"></script>
 
+	<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="../js/dependency/jssurfaceplot/SurfacePlot.js"></script>
+	<script type="text/javascript" src="../js/dependency/jssurfaceplot/ColourGradient.js"></script>
+
+
+
+
        <script type="text/javascript" src="../min/bower_components.min.js"></script>
 
 	    <script src="../js/core/app/appcontroller.js"></script>
@@ -204,6 +211,7 @@
 	    <script src="../js/widget/sampleplate/sampleplategroupwidget.js"></script>
 	    <script src="../js/widget/sampleplate/sampleplatewidget.js"></script>
 	    <script src="../js/widget/specimen/specimenwidget.js"></script>
+	    <script src="../js/widget/surfacescatteringviewer.js"></script>
 	    <script src="../js/widget/tabs/macromoleculetabs.js"></script>
 	    <script src="../js/widget/tabs/shipmenttabs.js"></script>
 	    <script src="../js/widget/tabs/templatetabs.js"></script>
@@ -221,7 +229,7 @@
 	    <script src="../js/widget/wizard/wizardwidget.js"></script>
 	    <script src="config.js"></script>
 
-
+	
   </head>
 
 
@@ -237,7 +245,9 @@
 	} 
 	var exiSAXS;
 
+	google.load("visualization", "1");
 	Ext.onReady(function(){
+
 		Ext.Loader.setConfig({
 		    enabled: true
 		});

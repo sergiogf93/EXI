@@ -13,9 +13,17 @@ function GrayScalePlot(args){
 	}
 }
 
-GrayScalePlot.prototype.getPanel = function(){
+GrayScalePlot.prototype.getText = function(){
+	return "Click on two points to calculate the intensity";
+};
 
-	return "<div id=" + this.id +" style='text-align:center;width:" + this.width +"px;height:" + this.height +"px;'>Click on two points to calculate the intensity</div>";
+
+GrayScalePlot.prototype.getPanel = function(){
+	return "<div id=" + this.id +" style='text-align:center;width:" + this.width +"px;height:" + this.height +"px;'>" + this.getText() +"</div>";
+};
+
+GrayScalePlot.prototype.reset = function(){
+	document.getElementById(this.id).innerHTML = this.getText();
 };
 
 GrayScalePlot.prototype.load = function(colors){

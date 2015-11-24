@@ -392,7 +392,6 @@ HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	for ( var key in this.hplcData) {
 		data[this.hplcData[key].label] = this.hplcData[key].data[frameNumber];
 	}
-	console.log(data);
 	return data;
 };
 

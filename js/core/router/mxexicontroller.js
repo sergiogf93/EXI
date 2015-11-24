@@ -34,7 +34,7 @@ MXExiController.prototype.routeNavigation = function() {
 	 */
 	
 		
-	Path.map("#/mx/:navigation/nav").to(function() {
+	Path.map("#/:navigation/nav").to(function() {
 		/** Session navigation * */
 		if (this.params['navigation'] == "session") {
 			EXI.clearNavigationPanel();

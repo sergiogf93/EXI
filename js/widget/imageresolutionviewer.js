@@ -1,4 +1,6 @@
 function ImageResolutionViewer(){
+	this.id = BUI.id();
+
 	this.ratio = 3;
 	this.canvasWidth = 1475/this.ratio;
 	this.canvasHeight = 1679/this.ratio;
@@ -6,6 +8,9 @@ function ImageResolutionViewer(){
 	this.canvasZoomWidth = 1475/this.ratio;
 	this.canvasZoomHeight = 1679/this.ratio;
 
+
+	/** How big the zoom is **/
+	this.zoomRatio = 5;
 
 	/** where the beam center translated to the jpeg image is **/
 	this.localCenter = null;
@@ -17,8 +22,8 @@ function ImageResolutionViewer(){
 	this.offsetY = 0;
 	
 	this.image = new ImageViewer({
-		width 	: this.canvasWidth/3,
-		height 	: this.canvasHeight/3,
+		width 	: this.canvasWidth/this.zoomRatio,
+		height 	: this.canvasHeight/this.zoomRatio,
 		zoom 	: this.zoom,
 		offsetX	: this.offsetX,
 		offsetY	: this.offsetY,
@@ -39,18 +44,18 @@ function ImageResolutionViewer(){
 
 		/** Filling stats **/
 
-		var real = _this.getRealCoordinates(point.x, point.y);
+		/*var real = _this.getRealCoordinates(point.x, point.y);
 		_this.setSpanTag("coordinates", point.localX + "px<br / >" + point.localY + "px");
 		_this.setSpanTag("realcoordinates", real.x + "<br />" + real.y);
 		_this.setSpanTag("color", "<div style='height:40px;width:40px;background-color:" + point.color +"'></div>");
-
+*/
 		/** Getting distances to center **/
-		_this.setSpanTag("localdistance", Math.floor(_this.getDistance(_this.localCenter, point)) + "px");
+		/*_this.setSpanTag("localdistance", Math.floor(_this.getDistance(_this.localCenter, point)) + "px");
 		_this.getResolution(point.x, point.y);
-
+*/
 
 		/** luminance **/
-		_this.setSpanTag("luminance", _this.image.getColorLuminance(point.x, point.y));
+		//_this.setSpanTag("luminance", _this.image.getColorLuminance(point.x, point.y));
 
 		
 	});
@@ -63,49 +68,70 @@ function ImageResolutionViewer(){
 		_this.zoomImage.reload(function(){});
 	});
 
+	this.zoomImage.onMouseRightDown.attach(function(sender){
+		_this.zoom = 1;
+		_this.zoomImage.zoom = _this.zoom;
+		_this.zoomImage.offsetX = 0;
+		_this.zoomImage.offsetY = 0;
+		_this.zoomImage.reload(function(){});
+	});
+
+	this.image.onRendered.attach(function(sender){
+		_this.onImageRendered.notify(_this.image.getMatrix());
+	});
+
 	this.image.onDblClick.attach(function(sender, point){
-		point.x = point.x*3;
-		point.y = point.y*3;
-		point.localY = point.localY*3;
-		point.localX = point.localX*3;
+		point.x = point.x*_this.zoomRatio;
+		point.y = point.y*_this.zoomRatio;
+		point.localY = point.localY*_this.zoomRatio;
+		point.localX = point.localX*_this.zoomRatio;
 
 		_this.zoomImage.applyZoomOnPoint(point, _this.zoom);
-		//_this.zoomImage.redraw( _this.zoom, offSetX, offSetY);		
-		//_this.zoomImage.reload(function(){});
-
-
 		
 	});
 
 	this.image.onMouseDown.attach(function(sender, point){
-		console.log("down");
 	});
 
 	this.image.onMouseUp.attach(function(sender, point){
 	});
 
 	this.image.onMouseClick.attach(function(sender, point){
-		//_this.grayScalePlot.load(luminance);
-		
 	});
 
 	this.image.onLuminanceCalculated.attach(function(sender, luminance){
-		_this.grayScalePlot.load(luminance);
 	});
 
 	this.zoomImage.onLuminanceCalculated.attach(function(sender, luminance){
 		_this.zoomGrayScalePlot.load(luminance);
 	});
 
+	this.zoomImage.onLuminanceReset.attach(function(sender, luminance){
+		_this.zoomGrayScalePlot.reset();
+	});
 
-	this.grayScalePlot = new GrayScalePlot({width : this.canvasWidth});
+
 	this.zoomGrayScalePlot = new GrayScalePlot({width : this.canvasWidth});
 
-
-	
-
+	this.onImageRendered = new Event(this);
 }
 
+ImageResolutionViewer.prototype.getImagePanel = function(){
+	return {
+										xtype : 'container',
+										layout : 'vbox',
+										items : [
+											 {
+			html : '<div style="height:' + (this.canvasHeight + 45) +'px;background-color: white;position:relative">\
+			<div style="height : ' + this.canvasHeight/this.zoomRatio + 'px; width : ' + this.canvasWidth/this.zoomRatio +'px; background-color :white;position:relative;  z-index: 31; right: -10px; top : 40px">'  +  this.image.getPanel() + '</div> \
+			<div style=" position:relative;  z-index: 2;  right: 0px; top : -' +  this.canvasWidth/this.zoomRatio +'px">'  +  this.zoomImage.getPanel() + '</div> \
+			</div>',
+			margin : '-15 0 0 5'
+
+											 }]
+	};
+
+};
 
 ImageResolutionViewer.prototype.getPanel = function(){
 	return	{
@@ -115,42 +141,14 @@ ImageResolutionViewer.prototype.getPanel = function(){
 					{
 						xtype : 'container',
 						layout : 'vbox',
+						width : 600,
 						items : [
-							{
-								xtype : 'container',
-								layout : 'hbox',
-								items : [
 
-										
-									{
-										xtype : 'container',
-										layout : 'vbox',
-										items : [
-											 {
-									 			html : this.image.getPanel(),
-												margin : '10 0 0 20'
-									 		 },
-											 {
-												html : this.grayScalePlot.getPanel(),
-												margin : '0 0 0 0'
-											 }]
-									},
-									{
-										xtype : 'container',
-										layout : 'vbox',
-										items : [
-											 {
-									 			html : this.zoomImage.getPanel(),
-												margin : '10 0 0 20'
-									 		 },
-											 {
-												html : this.zoomGrayScalePlot.getPanel(),
-												margin : '0 0 0 0'
-											 }]
-									}
-									]
-							},
-							
+							this.getImagePanel(),		
+							{
+								html : this.zoomGrayScalePlot.getPanel(),
+								margin : '5 0 0 5'
+							 },
 							 {
 					 			html : '<div style="width:800px; height:200px;" id="calc"></div>',
 								margin : '0 0 0 20'
@@ -166,50 +164,6 @@ ImageResolutionViewer.prototype.getPanel = function(){
 	 };
 
 };
-
-ImageResolutionViewer.prototype.makeHTMLTable = function(title, buttons, headers, data, args) {
-	var width = 610;
-	if (args != null){
-		if (args.with != null){
-			width = args.with;
-		}
-	}	
-
-
-	var html = "<table>";
-	if (headers != null){
-		html = html + "<tr class='th-component'>";
-		for(var i =0 ; i< headers.length; i++){
-			html = html + "<th style='width:30px;'>";
-			html = html + headers[i];
-			html = html + "</th>";
-
-		}
-
-		html = html + "</tr>";
-	}
-
-
-	if (data != null){
-		for(var i =0 ; i< data.length; i++){
-			html = html + "<tr>";
-			for(var j =0 ; j< data[i].length; j++){
-				html = html + "<td>" + data[i][j] + "</td>";
-			}
-			html = html + "</tr>";
-
-		}
-
-
-	}
-	html = html + "</table>";
-
-	if (title != null){
-		html = '<div  class="header-component-table" >' + title +'</div><div  style="margin:0px 0px 0px 0px !important;width:' + width +'px;">' + html + '</div>';
-	}
-	return html; 
-};
-
 ImageResolutionViewer.prototype.getSpanTag = function(id){
 	return "<span id=" + this.id + id +"></span>";
 };
@@ -241,7 +195,7 @@ ImageResolutionViewer.prototype.displayTable = function(x,y, realCoordinates, co
 
 
 
-
+/*
 
 ImageResolutionViewer.prototype.getCenterBeam = function(){
 	var x = (this.xBeam/this.detectorResolution.sensitiveArea.x)* this.canvasWidth;
@@ -286,7 +240,13 @@ ImageResolutionViewer.prototype.getResolution = function(x, y){
 	this.setSpanTag("resolution", res );
 	return res;
 };
+*/
 
+ImageResolutionViewer.prototype.getLocalCoordinates = function( x, y, width, height){
+	var xReal = x*this.canvasWidth/width;
+	var yReal =  y*this.canvasHeight/height;
+	return  { x: Math.floor(xReal), y: Math.floor(yReal)};
+};
 
 ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistance, xBeam, yBeam, detectorResolution){
 	this.detectorResolution = detectorResolution;
@@ -297,13 +257,13 @@ ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistanc
 
 	this.localCenter = this.getLocalCoordinates(xBeam, yBeam, detectorResolution.sensitiveArea.x, detectorResolution.sensitiveArea.y);
 
-	this.realCenter = this.getRealCoordinates(this.localCenter.x, this.localCenter.y);
+	//this.realCenter = this.getRealCoordinates(this.localCenter.x, this.localCenter.y);
 	/** Loading image **/
-	this.image.center = this.localCenter;
+	//this.image.center = this.localCenter;
 	this.image.load(url);
 
 
-
+/*
 	this.displayTable();
 	this.setSpanTag("wavelength", waveLength);
 	this.setSpanTag("centerbeam", Math.floor(xBeam) + "<br/>" + Math.floor(yBeam));
@@ -312,7 +272,7 @@ ImageResolutionViewer.prototype.load = function(url, waveLength, detectorDistanc
 
 	this.setSpanTag("localcenterbeam", this.localCenter.x + "<br/>" + this.localCenter.y);
 	this.setSpanTag("detectordistance", detectorDistance);
-
+*/
 	this.zoomImage.center = this.localCenter;
 	this.zoomImage.load(url);
 	
