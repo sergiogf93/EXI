@@ -23,10 +23,18 @@ ShipmentForm.prototype.fillStores = function() {
 	this.panel.setLoading("Loading Labcontacts from database");
 	var labContacts = EXI.proposalManager.getLabcontacts();
 
-	
 	this.labContactForSendingStore.loadData(labContacts, false);
+
+	labContacts.sort(function(a, b){
+	    if(a.cardName < b.cardName) return -1;
+	    if(a.cardName > b.cardName) return 1;
+	    return 0;
+	})
+	
 	$.extend(labContacts, [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 	this.labContactForReturnStore.loadData(labContacts, false);
+
+	this.labContactsReturnCombo.setValue(-1);
 
 	this.panel.setLoading(false);
 	if (this.shipment != null) {
@@ -168,11 +176,13 @@ ShipmentForm.prototype.getPanel = function() {
 	}
 
 	this.labContactForSendingStore = Ext.create('Ext.data.Store', {
-		fields : [ 'cardName', 'labContactId' ]
+		fields : [ 'cardName', 'labContactId' ],
+		sorters : 'cardName'
 	});
 
 	this.labContactForReturnStore = Ext.create('Ext.data.Store', {
 		fields : [ 'cardName', 'labContactId' ]
+		
 	});
 
 	this.labContactsSendingCombo = Ext.create('Ext.form.ComboBox', {
@@ -206,7 +216,6 @@ ShipmentForm.prototype.getPanel = function() {
 		queryMode : 'local',
 		labelWidth : 350,
 		width : 800,
-		value : -1,
 		displayField : 'cardName',
 		valueField : 'labContactId',
 		listeners : {
@@ -228,7 +237,7 @@ ShipmentForm.prototype.getPanel = function() {
 		}
 	});
 
-       this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 100});
+       this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getFutureSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 100});
 
 	if (this.panel == null) {
 		this.panel = Ext.create('Ext.form.Panel', {

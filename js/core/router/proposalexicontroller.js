@@ -26,7 +26,21 @@ ProposalExiController.prototype.init = function() {
 		
 		var listView = null;
 		var adapter = null;
+
+		function loadShipmentNavigationList(){
+			var listView = new ShippingListView();
+			/** When selected move to hash * */
+			listView.onSelect.attach(function(sender, selected) {
+				location.hash = "/shipping/" + selected[0].shippingId + "/main";
+			});
+			adapter = loadNavigationPanel(listView);
+			adapter.proposal.shipping.getShippings();
+		}
 		
+		Path.map("#/proposal/shipping/nav?nomain").to(function() {
+			loadShipmentNavigationList();
+		});
+
 		Path.map("#/proposal/:navigation/nav").to(function() {
 			/** Session navigation * */
 			if (this.params['navigation'] == "session") {
@@ -57,13 +71,7 @@ ProposalExiController.prototype.init = function() {
 			}
 			
 			if (this.params['navigation'] == "shipping") {
-				listView = new ShippingListView();
-				/** When selected move to hash * */
-				listView.onSelect.attach(function(sender, selected) {
-					location.hash = "/shipping/" + selected[0].shippingId + "/main";
-				});
-				adapter = loadNavigationPanel(listView);
-				adapter.proposal.shipping.getShippings();
+				loadShipmentNavigationList();
 				
 				/** Loading welcome page **/
 				EXI.addMainPanel(new ShippingWelcomeMainView());

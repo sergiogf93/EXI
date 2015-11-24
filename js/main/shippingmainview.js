@@ -6,6 +6,12 @@ function ShippingMainView() {
 	
 	var _this = this;
 	this.shipmentForm = new ShipmentForm();
+
+	this.shipmentForm.onSaved.attach(function(sender, shipment){
+		location.hash = "#/proposal/shipping/nav?nomain";
+		//_this.tabPanel.setActiveTab(1);
+		
+	});
 	this.caseGrid = new CaseGrid({
 		height : 300
 	});
@@ -23,7 +29,7 @@ ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
 ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 ShippingMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('tabpanel',
+	this.tabPanel =  Ext.createWidget('tabpanel',
 			{
 				margin : 10,
 				defaults : {
@@ -50,6 +56,8 @@ ShippingMainView.prototype.getContainer = function() {
 						}
 					]
 			});
+
+	return this.tabPanel;
 
 };
 
