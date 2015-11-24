@@ -1030,7 +1030,7 @@ var BIOSAXS_COMBOMANAGER = {
 		    ]
 		});
 		this.storageLocationComboBox = Ext.create('Ext.form.ComboBox', {
-		    fieldLabel: 'Storage Location',
+		    fieldLabel: 'Storage Condition',
 		    store: storageLocations,
 		    queryMode: 'local',
 		    labelWidth : labelWidth,
