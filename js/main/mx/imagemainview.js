@@ -42,6 +42,7 @@ ImageMainView.prototype.getContainer = function() {
 						items : [ {
 							xtype : 'container',
 							layout : 'hbox',
+							paddding : 5,
 							style : {
 								borderColor : 'gray',
 								borderStyle : 'solid',

@@ -17,9 +17,9 @@ SurfaceScatteringViewer.prototype.getTopBar = function(){
 	    fieldLabel : "Scale",
 	    listeners : {
 			change : function(component, newvalue) {
-					for (var i=0; i< _this.data.length; i++){
-						for (var j=0; j< _this.data[i].length; j++){
-							_this.data[i][j] = (_this.data[i][j]*newvalue);
+					for (var i=0; i< _this.originalData.length; i++){
+						for (var j=0; j< _this.originalData[i].length; j++){
+							_this.data[i][j] = (_this.originalData[i][j]*newvalue);
 						}
 					}
 					_this.clear();
@@ -46,7 +46,7 @@ SurfaceScatteringViewer.prototype.getPanel = function(){
 	    border: 1,
 	    margin : 5,
 	    cls : "borderGrid",
-	    tbar : this.getTopBar(),
+	    //tbar : this.getTopBar(),
 	    items: [
 	    {
 		html : "<div id='" + this.id +"'></div>"

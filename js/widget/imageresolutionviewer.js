@@ -137,11 +137,13 @@ ImageResolutionViewer.prototype.getPanel = function(){
 	return	{
 			xtype : 'container',
 			layout : 'hbox',
+			margin : 10,
 			items : [
 					{
 						xtype : 'container',
 						layout : 'vbox',
 						width : 600,
+					
 						items : [
 
 							this.getImagePanel(),		
