@@ -154,37 +154,20 @@ CaseGrid.prototype._getComponentHTML = function(dewarId, items) {
 	
 	
 	/** Adding buttons **/
-	html =  this._getHTMLButton(dewarId, "Add Solution") + this._getHTMLButton(dewarId, "Add Puck") + html;
+	if (items.length == 0){
+		html =  this._getHTMLButton(dewarId, "Add Solution") + this._getHTMLButton(dewarId, "Add Puck") + html;
+	}
+
+	if (items.length > 0){
+		if (items[0].type == "Puck"){
+			html =  this._getHTMLButton(dewarId, "Add Puck") + html;
+		}
+		else{
+			html =  this._getHTMLButton(dewarId, "Add Solution")+ html;
+		}
+	}
 	return '<div  class="header-component-table" >Components</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
 };
-
-/*
-CaseGrid.prototype.makeHTMLTable = function(title, buttons, header, data, args) {
-	var width = 610;
-	if (args.with != null){
-		width = args.with;
-	}
-
-
-	var html = "<table>";
-	
-	if (header != null){
-		html = html + "<tr>";
-
-
-		html = html + "</tr>";
-	}
-
-
-	html = html + "</table>";
-
-	if (title != null){
-		html = '<div  class="header-component-table" >Parcel</div><div  style="margin:0px 0px 0px 0px !important;width:610px;">' + html + '</div>';
-	}
-
-	return html; 
-};
-*/
 
 
 CaseGrid.prototype._getParcelHTML = function(dewar) {
@@ -224,22 +207,6 @@ CaseGrid.prototype._getColumns = function() {
 
 
 	var columns = [
-		/*{
-			header : '',
-			dataIndex : 'type',
-			name : 'type',
-			type : 'string',
-			width : 60,
-			renderer : function(grid, opts, record){
-				var deserialized = JSON.parse(record.data.serialized);
-				if (deserialized[0].Dewar_type == "Dewar"){
-					return "<img src='../images/Dewar_32x32_01.png' style='height:40px;'>";
-				}
-				if (deserialized[0].Dewar_type == "Toolbox"){
-					return "<img src='../images/toolbox.png'>";stockSolution
-				}
-			}
-		},*/
 		{
 			header : 'General',
 			dataIndex : 'type',
@@ -252,42 +219,6 @@ CaseGrid.prototype._getColumns = function() {
 				return _this._getParcelHTML(deserialized[0]);
 			}
 		},
-		/*{
-			header : 'Name',
-			dataIndex : 'type',
-			name : 'type',
-			type : 'string',
-			flex : 0.3,
-			
-			renderer : function(grid, opts, record){
-				var deserialized = JSON.parse(record.data.serialized);
-				return deserialized[0].Dewar_code;
-			}
-		},
-		{
-			header : 'Status',
-			dataIndex : 'type',
-			name : 'type',
-			type : 'string',
-			flex : 0.2,
-			
-			renderer : function(grid, opts, record){
-				var deserialized = JSON.parse(record.data.serialized);
-				return deserialized[0].Dewar_status;
-			}
-		},
-
-		{
-			header : 'Storage',
-			dataIndex : 'Dewar_storageLocation',
-			name : 'type',
-			type : 'string',
-			flex : 0.2,
-			renderer : function(grid, opts, record){
-				var deserialized = JSON.parse(record.data.serialized);
-				return deserialized[0].Dewar_storageLocation;
-			}
-		},*/
 		{
 			header : 'Content',
 			dataIndex : 'Dewar_comments',
