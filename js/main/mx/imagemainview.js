@@ -161,7 +161,7 @@ ImageMainView.prototype.loadDetectorPanel = function(detector, dataCollection) {
 	]);
 
 
-	return dataColletionHTML +dataHTML  ;
+	return "<span style='color:orange;font-weight:bold;'>WARNING: If image is not displayed please, refresh the page (F5)</span><br />" + dataColletionHTML +dataHTML  ;
 			
 		
 
