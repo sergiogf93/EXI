@@ -99,7 +99,7 @@ This is the format of the file is JSON
 						"x" : 423.6,
 						"y" : 434.6
 				},
-				"pixelSize"Horizontal : 0.172,
+				"pixelSizeHorizontal" : 0.172,
 				"img" : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_6M.png"
 
 	}
