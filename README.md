@@ -62,61 +62,61 @@ This is the format of the file is JSON
 
 ```json
 {
-   detectors : {
+   "detectors" : {
 
 	"Pilatus3_2M" : {
-				pixelSize: {
+				"pixelSize": {
 						x : 1475,
 						y : 1679
 				},
-				sensitiveArea : {
+				"sensitiveArea" : {
 						x : 253.7,
 						y : 288.8
 				},
-				pixelSizeHorizontal : 0.172,
-				img : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_2M.png"
+				"pixelSize"Horizontal : 0.172,
+				"img" : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_2M.png"
 
 	},
 	"Pilatus_6M_F" : {
-				pixelSize: {
+				"pixelSize": {
 						x : 2463,
 						y : 2527
 				},
-				sensitiveArea : {
+				"sensitiveArea" : {
 						x : 423.6,
 						y : 434.6
 				},
-				pixelSizeHorizontal : 0.172,
-				img : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_6M.png"
+				"pixelSize"Horizontal : 0.172,
+				"img" : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_6M.png"
 
 	},
 	"Pilatus3_6M" : {
-				pixelSize: {
+				"pixelSize": {
 						x : 2463,
 						y : 2527
 				},
-				sensitiveArea : {
+				"sensitiveArea" : {
 						x : 423.6,
 						y : 434.6
 				},
-				pixelSizeHorizontal : 0.172,
-				img : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_6M.png"
+				"pixelSize"Horizontal : 0.172,
+				"img" : "https://www.dectris.com/tl_files/root/products/PILATUS%20S%20Serie/Systems/PILATUS3_S_6M.png"
 
 	}
 
 
 
    },
-   sites:[
+   "sites":[
       {
-         name:'ESRF',
-         url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               'BM29'
+         "name":"ESRF",
+         "url":"https://wwws.esrf.fr/ispyb/ispyb-ws/rest",
+         "exiUrl":'http://pc593.embl.fr:8080/extispyb-ws/rest",
+         "beamlines":{
+            "SAXS":[
+               "BM29"
             ],
-            MX:[
+            "MX":[
                "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
             ]
          }
