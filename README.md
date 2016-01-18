@@ -56,9 +56,9 @@ In order to configure EXI some modifications should be done on config.js that it
 * /saxs/config.js 
 * /mx/config.js
 
-It allows to use different configuration for different techniques.
+It allows to use different configuration for different techniques/beamlines.
 
-This is the format of the file is JSON
+The format of the file is JSON and it looks like this
 
 ```json
 {
@@ -124,3 +124,11 @@ This is the format of the file is JSON
 ]
 }
 ```
+
+Detectors node defines the detectors used as a hash map "name of detector" : <Properties>
+
+Sites node define to which sources EXI will be able to connect. These are the main parameters to be defined:
+* name: this name is an ID for the site and will appear when you sign in
+* url : a valid url pointing to the rest webservices from a ISPyB active instance
+* exiurl : !ONTEST this is pointing to the offline data analysis server set of webservices
+* Beamlines
