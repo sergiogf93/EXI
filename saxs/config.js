@@ -98,9 +98,9 @@ var ExtISPyB ={
          }
       },
       {
-         name:'Local',
-         url:'http://pc593.embl.fr:8080/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest'
-      }
+          name:'Local',
+          url:'http://172.24.9.29:8080/ispyb/ispyb-ws/rest',
+          exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest'
+       }
    ]
 };

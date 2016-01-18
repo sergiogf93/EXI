@@ -4,7 +4,7 @@ function PuckMainView() {
 	MainView.call(this);
 	
 	var _this = this;
-	this.puckForm = new PuckForm();
+	this.puckForm = new PuckForm({width : 1500});
 }
 
 PuckMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -15,6 +15,7 @@ PuckMainView.prototype.getContainer = function() {
 	    layout: {
 	        type: 'anchor'
 	    },
+	    cls : 'border-grid',
 	    defaults : {
 			anchor : '100%',
 			hideEmptyLabel : false },
@@ -28,14 +29,10 @@ PuckMainView.prototype.getContainer = function() {
 };
 
 
-PuckMainView.prototype.load = function(containerId) {
+PuckMainView.prototype.load = function(puck) {
 	
 	var _this = this;
-	this.panel.setTitle("Puck");
-	if (containerId != null){
-		var onSuccess = function(sender, puck){
-			_this.puckForm.load(puck);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(containerId,containerId,containerId);
-	}
+	
+	this.puckForm.load(puck, null);
+	
 };

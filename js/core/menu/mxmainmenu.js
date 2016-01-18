@@ -18,6 +18,11 @@ MXMainMenu.prototype.getMenuItems = function() {
 	return [
 		this.getHomeItem(),
 		this.getShipmentItem(),
+		{
+			text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getPrepareExperimentMenu() 
+	    },
         {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
@@ -37,12 +42,12 @@ MXMainMenu.prototype.getMenuItems = function() {
 		{
 			xtype : 'textfield',
 			name : 'field1',
-			value : '1460800',
-			emptyText : 'search by data collection Id',
+			value : '',
+			emptyText : 'search by protein acronum',
 			listeners : {
 				specialkey : function(field, e) {
 					if (e.getKey() == e.ENTER) {
-						location.hash = "/autoprocintegration/datacollection/" + field.getValue() + "/main";
+						location.hash = "/mx/datacollection/acronyms/" + field.getValue() + "/main";
 					}
 				} 
 			} 
@@ -109,6 +114,40 @@ MXMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 		] });
 };
  
+
+MXMainMenu.prototype.getPrepareExperimentMenu = function() {
+	function onItemCheck(item, checked) {
+		if (item.text == "My Crystals") {
+			location.hash = "/crystal/nav";
+		}
+		if (item.text == "My Proteins") {
+			location.hash = "/protein/nav";
+		}
+		if (item.text == "Puck") {
+			location.hash = "/puck/nav";
+		}
+	}
+	return Ext.create('Ext.menu.Menu', {
+		items : [ 
+			{
+				text : 'My Crystals',
+				icon : '../images/icon/macromolecule.png',
+				handler : onItemCheck 
+			},
+			{
+				text : 'My Proteins',
+				icon : '../images/icon/testtube.png',
+				handler : onItemCheck 
+			},
+			{
+				text : 'Puck',
+				icon : '../images/icon/testtube.png',
+				handler : onItemCheck 
+			}
+		] 
+	});
+};
+
 MXMainMenu.prototype.getDataExplorerMenu = function() {
 	function onItemCheck(item, checked) {
 		if (item.text == "Sessions") {
@@ -125,13 +164,6 @@ MXMainMenu.prototype.getDataExplorerMenu = function() {
 				icon : '../images/icon/sessions.png',
 				handler : onItemCheck 
 			}
-//			,
-//			{
-//				text : 'Experiments',
-//				checked : false,
-//				group : 'theme',
-//				handler : onItemCheck 
-//			} 
 		] 
 	});
 };

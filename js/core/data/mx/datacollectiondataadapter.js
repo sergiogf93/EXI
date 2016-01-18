@@ -14,6 +14,12 @@ DataCollectionDataAdapter.prototype.getByDataCollectionId= function(dataColletio
 	 this.get('/{token}/proposal/{proposal}/mx/datacollection/{0}/get'.format( [dataColletionIds.toString()]));
 };
 
+
+DataCollectionDataAdapter.prototype.getByAcronymList= function(acronymList){
+	 this.get('/{token}/proposal/{proposal}/mx/datacollection/acronyms/{0}/list'.format( [acronymList.toString()]));
+};
+
+
 DataCollectionDataAdapter.prototype.getThumbNailById= function(imageId){
 	var connection = EXI.credentialManager.getConnections()[0];
 	return this.getUrl(connection, ('/{token}/proposal/{proposal}/mx/image/{0}/thumbnail'.format([ imageId])));

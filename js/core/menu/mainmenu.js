@@ -80,6 +80,8 @@ MainMenu.prototype.getShipmentItem = function() {
 			] });
 	}
 	
+	
+	
 	return {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
 		cls : 'ExiSAXSMenuToolBar',

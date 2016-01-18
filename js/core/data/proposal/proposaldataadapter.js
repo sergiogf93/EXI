@@ -10,6 +10,11 @@ ProposalDataAdapter.prototype.getProposals= function(){
 	this.get('/{token}/proposal/list');
 };
 
+ProposalDataAdapter.prototype.getDewarByProposalId= function(){
+	this.get('/{token}/proposal/{proposal}/shipping/dewar/list');
+};
+
+
 
 ProposalDataAdapter.prototype.getProposalsInfo= function(){
 	this.get('/{token}/proposal/{proposal}/technique/saxs/get');

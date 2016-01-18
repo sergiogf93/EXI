@@ -74,10 +74,10 @@ DataAdapter.prototype.get = function(url){
 		            }
 		        },
 			  success: function(data){ 
-				  _this.onSuccess.notify(data);
 				  if (EXI != null){
 					  EXI.setLoading(false);
 				  }
+				  _this.onSuccess.notify(data);
 			  },
 			  error: function(error){
 				  _this.onError.notify(error);
