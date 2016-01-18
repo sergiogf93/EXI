@@ -1,4 +1,4 @@
-[EXI](http://exi.embl.fr/saxs) —  EXtended ISPyB
+﻿[EXI](http://exi.embl.fr/saxs) —  EXtended ISPyB
 ==================================================
 
 
@@ -49,3 +49,11 @@ If you want to build a version where the javascript will be not minified for dev
 ```bash
 grunt dev
 ```
+
+How to configure EXI 
+--------------------------------------
+In order to configure EXI with a given ISPyB instance some modifications should be done on config.js that it may be found on:
+* /saxs/config.js 
+* /mx/config.js
+
+It allows to use different configuration for different techniques
