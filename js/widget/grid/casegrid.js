@@ -11,11 +11,10 @@
  * #onDuplicateButtonClicked
  */
 function CaseGrid(args) {
-
 	this.height = 100;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
-
+	
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -84,17 +83,11 @@ CaseGrid.prototype._getRemoveParcelButton = function(dewarId, value) {
 CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, id) {
 	var html = "";
 	html = html + "<tr  class='tr-component'>";
-	
 
 	html = html + "<td>";
 	html = html +  this._getEditPuckButton(type, Number(id), "Edit");
 	html = html + "</td>";
 
-	/*
-	html = html + "<td>";
-	html = html + "<img style='cursor:pointer;' name='edit' id='" + type +"_" + id +"' src=\'" + icon + "' />";
-	html = html + "</td>";
-	*/
 	html = html + "<td>";
 	html = html +  type;
 	html = html + "</td>";
@@ -102,14 +95,10 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 	html = html + "<td>";
 	html = html +  code;
 	html = html + "</td>";
-
 	
 	html = html + "<td>";
 	html = html +  capacity;
 	html = html + "</td>";
-
-	
-
 
 	if (type == "Stock Solution"){
 		html = html + "<td>";
@@ -122,8 +111,6 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 		html = html +  this._getRemoveContainerButton(Number(id), "Remove");
 		html = html + "</td>";
 	}
-
-	
 	
 	html = html + "</tr>";
 	return html;
@@ -205,7 +192,6 @@ CaseGrid.prototype._getParcelHTML = function(dewar) {
 CaseGrid.prototype._getColumns = function() {
 	var _this = this;
 
-
 	var columns = [
 		{
 			header : 'General',
@@ -241,11 +227,11 @@ CaseGrid.prototype._getColumns = function() {
 								}
 
 								items.push({
-								    type 	: deserialized[i].Container_containerType,
-								    code 	: code,
+								    type 		: deserialized[i].Container_containerType,
+								    code 		: code,
 								    capacity 	: deserialized[i].Container_capacity,
 								    sampleCount : deserialized[i].sampleCount,
-								    id 		: deserialized[i].Container_containerId,
+								    id 			: deserialized[i].Container_containerId,
 								 
 								});
 								
@@ -258,11 +244,11 @@ CaseGrid.prototype._getColumns = function() {
 				var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewarId);
 				for (var i = 0; i < stockSolutions.length; i++) {
 						items.push({
-								type 	: "Stock Solution",
-	         					    	code 	: stockSolutions[i].name,
-						    		capacity :	stockSolutions[i].volume + "ml",
-						    		sampleCount :	"",
-						    		id : 	stockSolutions[i].stockSolutionId
+										type 		: "Stock Solution",
+	         					    	code 		: stockSolutions[i].name,
+	         					    	capacity 	:	stockSolutions[i].volume + "ml",
+	         					    	sampleCount :	"",
+	         					    	id 			: 	stockSolutions[i].stockSolutionId
 						 
 						});
 						
@@ -271,27 +257,14 @@ CaseGrid.prototype._getColumns = function() {
 				return _this._getComponentHTML(dewarId, items);
 			}
 		}
-		/*{
-			header : 'Comments',
-			dataIndex : 'Dewar_comments',
-			name : 'type',
-			type : 'string',
-			flex : 1,
-			renderer : function(grid, opts, record){
-				var deserialized = JSON.parse(record.data.serialized);
-				return deserialized[0].Dewar_comments;
-			}
-		},*/
 	];
 	return columns;
 };
 
 CaseGrid.prototype._getTopButtons = function() {
 	var _this = this;
-	/** Actions buttons **/
 	var actions = [];
 
-	/** ADD BUTTON **/
 	actions.push(Ext.create('Ext.Action', {
 		icon : '../images/icon/add.png',
 		text : 'Add',
@@ -615,3 +588,17 @@ CaseGrid.prototype.getPanel = function() {
 	return this.panel;
 };
 
+/*
+var canvas = SVG.createSVGCanvas(document.getElementById("testXVG"), [["width", 1000], ["height", 1000]])
+
+var steps = 10;
+var centerX = 500;
+var centerY = 500;
+var radius = 400;
+var xValues = []
+var yValues = []
+for (var i = 0; i < steps; i++) {
+    xValues[i] = (centerX + radius * Math.cos(2 * Math.PI * i / steps));
+    yValues[i] = (centerY + radius * Math.sin(2 * Math.PI * i / steps));
+    SVG.drawCircle(xValues[i], yValues[i], 100, canvas, [["fill", "green"]]);
+}*/
