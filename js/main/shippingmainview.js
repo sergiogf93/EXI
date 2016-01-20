@@ -23,6 +23,10 @@ function ShippingMainView() {
 		};
 		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.removeDewar(_this.shippingId, dewar.dewarId );
 	});
+	
+	this.parcelGrid = new ParcelGrid({
+		height : 300
+	});
 }
 
 ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -53,6 +57,16 @@ ShippingMainView.prototype.getContainer = function() {
 							items : [ 
 							         	this.caseGrid.getPanel()
 							]
+						},
+						{
+							tabConfig : {
+								id : this.id + "gridII",
+								title : 'Parcels II',
+								icon : '../images/icon/shipping.png'
+							},
+							items : [ 
+							         	this.parcelGrid.getPanel()
+							]
 						}
 					]
 			});
@@ -75,6 +89,7 @@ ShippingMainView.prototype.load = function(shippingId) {
 		var onSuccess = function(sender, shipment){
 			_this.shipmentForm.load(shipment);
 			_this.caseGrid.load(shipment);
+			_this.parcelGrid.load(shipment);
 			_this.panel.setLoading(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);

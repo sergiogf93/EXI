@@ -31,7 +31,7 @@ ProposalExiController.prototype.init = function() {
 			var listView = new ShippingListView();
 			/** When selected move to hash * */
 			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/shipping/" + selected[0].shippingId + "/main";
+				location.hash = "/shipping/" + selected[0].Shipping_shippingId  + "/main";
 			});
 			adapter = loadNavigationPanel(listView);
 			adapter.proposal.shipping.getShippings();
