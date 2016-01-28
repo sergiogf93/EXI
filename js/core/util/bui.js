@@ -1062,7 +1062,8 @@ var BIOSAXS_COMBOMANAGER = {
 		    fields: ['value', 'name'],
 		    data : [
 		        {"value":10, "name":"SPINE"},
-		        {"value":16, "name":"UNIPUCK"}
+		        {"value":16, "name":"UNIPUCK"},
+		        {"value":96, "name":"PLATE"}
 		    ]
 		});
 		this.storageLocationComboBox = Ext.create('Ext.form.ComboBox', {

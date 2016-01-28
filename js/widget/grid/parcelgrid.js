@@ -60,10 +60,33 @@ ParcelGrid.prototype.load = function(shipment) {
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
 	
+	this.parcelForms = [];
+	
+	this.panel.removeAll();
+	
+	this.dewars.sort(function(a,b){return a.dewarId - b.dewarId;});
+	
+	
 	for ( var i in this.dewars) {
 		var parcelForm = new ParcelForm({height : 300});
 		this.panel.insert(parcelForm.getPanel());
 		parcelForm.load(this.dewars[i]);
+		
+		parcelForm.onSavedClick.attach(function(sender, dewar){
+			var adapter = new DataAdapter();
+			_this.panel.setLoading();
+			var onSuccess = (function(sender, shipment) {
+				//_this.load(shipment);
+				window.close();
+				_this.panel.setLoading(false);
+			});
+			dewar["sessionId"] = dewar.firstExperimentId;
+			dewar["shippingId"] = _this.shipment.shippingId;
+			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar( _this.shipment.shippingId, dewar);
+			
+		});
+		
+		this.parcelForms.push(parcelForm);
 	}
 };
 
@@ -74,13 +97,20 @@ ParcelGrid.prototype.edit = function(dewar) {
 	
 	var window = Ext.create('Ext.window.Window', {
 	    title: 'Parcel',
-	    height: 360,
+	    height: 450,
 	    width: 600,
 	    modal : true,
 	    layout: 'fit',
 	    items: [
 	            	caseForm.getPanel(dewar)
 	    ],
+	    listeners : {
+			afterrender : function(component, eOpts) {
+				if (_this.puck != null){
+						_this.render(_this.puck);
+				}
+			}
+	    },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {
@@ -89,8 +119,8 @@ ParcelGrid.prototype.edit = function(dewar) {
 							var dewar = caseForm.getDewar();
 							var onSuccess = (function(sender, shipment) {
 								_this.load(shipment);
-								window.close();
 								_this.panel.setLoading(false);
+								window.close();
 							});
 							dewar["sessionId"] = dewar.firstExperimentId;
 							dewar["shippingId"] = _this.shipment.shippingId;
@@ -114,7 +144,8 @@ ParcelGrid.prototype.getPanel = function() {
 	
 	this.panel = Ext.create('Ext.panel.Panel', {
 		cls : 'border-grid',
-		height : 800
+		height : 800,
+		autoScroll : true
 		
 	});
 

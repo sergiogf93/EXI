@@ -9,10 +9,9 @@ function ShippingMainView() {
 
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = "#/proposal/shipping/nav?nomain";
-		//_this.tabPanel.setActiveTab(1);
-		
 	});
-	this.caseGrid = new CaseGrid({
+	
+	/*this.caseGrid = new CaseGrid({
 		height : 300
 	});
 	
@@ -22,7 +21,7 @@ function ShippingMainView() {
 			_this.panel.setLoading(false);
 		};
 		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.removeDewar(_this.shippingId, dewar.dewarId );
-	});
+	});*/
 	
 	this.parcelGrid = new ParcelGrid({
 		height : 300
@@ -55,16 +54,6 @@ ShippingMainView.prototype.getContainer = function() {
 								icon : '../images/icon/shipping.png'
 							},
 							items : [ 
-							         	this.caseGrid.getPanel()
-							]
-						},
-						{
-							tabConfig : {
-								id : this.id + "gridII",
-								title : 'Parcels II',
-								icon : '../images/icon/shipping.png'
-							},
-							items : [ 
 							         	this.parcelGrid.getPanel()
 							]
 						}
@@ -88,7 +77,6 @@ ShippingMainView.prototype.load = function(shippingId) {
 		this.panel.setLoading();
 		var onSuccess = function(sender, shipment){
 			_this.shipmentForm.load(shipment);
-			_this.caseGrid.load(shipment);
 			_this.parcelGrid.load(shipment);
 			_this.panel.setLoading(false);
 		};

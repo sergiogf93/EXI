@@ -6,20 +6,19 @@ function ShippingListView(){
 ShippingListView.prototype.getPanel = ListView.prototype.getPanel;
 ShippingListView.prototype.load = ListView.prototype.load;
 
+ShippingListView.prototype.getColorByStatus = function(status){
+
+		return "black";
+};
+
+
 ShippingListView.prototype.getRow = function(record){
-	console.log(record.data)
-		var html = "<table class='listView'>";
-		html = html + "<tr><td>Name:</td><td>" + record.data.Shipping_shippingName+ "</td></tr>";
-		html = html + "<tr><td  style='color:#207a7a;font-weight:bold;'>Status:</td><td>" + record.data.Shipping_shippingStatus+ "</td></tr>";
-		html = html + "<tr><td>Type:</td><td>" + record.data.Shipping_shippingType+ "</td></tr>";
-		if (record.data.creationDate != null){
-			try{
-				html = html + "<tr><td>Date:</td><td>" + moment(record.data.Shipping_creationDate).format("MMM Do YY") + "</td></tr>";
-			}
-			catch(e){
-				html = html + "<tr><td>Date:</td><td>Format Error</td></tr>";
-			}
-		}
+	console.log(record);
+	var html = "<table class='listView'>";
+	html = html + "<tr><td>Name:</td><td>" + record.data.Shipping_shippingName+ "</td></tr>";
+	var status = record.data.Shipping_shippingStatus.toUpperCase();
+	html = html + "<tr><td>Type:</td><td>" + record.data.Shipping_shippingType+ "</td></tr>";
+	html = html + "<tr><td colspan=2; style='font-weight:bold;color:" + this.getColorByStatus(status) + ";'> " + status +"</td></tr>";
 	return html + "</table>";
 };
 

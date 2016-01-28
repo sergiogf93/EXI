@@ -20,7 +20,7 @@ function PuckForm(args) {
 	
 	var _this = this;
 	
-	this.spineLayout = new Unipuck({width : 100});
+	this.puckLayout = new PuckLayout({width : 150});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
 	
 	this.containerSpreadSheet.onModified.attach(function(sender, puck){
@@ -38,6 +38,7 @@ PuckForm.prototype.load = function(puck, shippingId) {
 		Ext.getCmp(this.id + "puck_name").setValue(this.puck.code);
 		this.capacityCombo.setValue(this.puck.capacity);
 	}
+	
 	this.containerSpreadSheet.load(puck);
     this.loadPlateLayout(puck);
 };
@@ -45,18 +46,8 @@ PuckForm.prototype.load = function(puck, shippingId) {
 
 PuckForm.prototype.loadPlateLayout = function(puck) {
 	 try{
-		 var containerId = this.spineLayout.id ;
-		 if ( this.capacityCombo.getValue() == 16){
-				this.spineLayout = new Unipuck({height: 100});
-				
-			}
-			else{
-				
-				this.spineLayout = new Spine({height: 100});
-			}
-		  this.spineLayout.id = containerId;
-		  this.spineLayout.load(puck);
-		  this.spineLayout.render(puck);
+		 this.puckLayout.load(puck);
+		 this.puckLayout.render(puck);
 	  }
 	  catch(e){
 		  console.log(e);
@@ -66,10 +57,34 @@ PuckForm.prototype.loadPlateLayout = function(puck) {
 PuckForm.prototype.getToolBar = function() {
 	var _this = this;
 	return [
+	        
+			{
+			    text: 'Remove',
+			    width : 100,
+			    height : 30,
+			    cls : 'btn-red',
+			    handler : function(){
+			    	function showResult(result){
+						if (result == "yes"){
+							_this.removePuck();
+							alert("Removed")
+						}
+			    	}
+					  Ext.MessageBox.show({
+				           title:'Remove',
+				           msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
+				           buttons: Ext.MessageBox.YESNO,
+				           fn: showResult,
+				           animateTarget: 'mb4',
+				           icon: Ext.MessageBox.QUESTION
+				       });
+			    }
+			},
 	        "->",
 	        {
 	            text: 'Save',
 	            width : 100,
+	            height : 30,
 	            handler : function(){
 	            	_this.save();
 	            }
@@ -77,8 +92,18 @@ PuckForm.prototype.getToolBar = function() {
 	];
 };
 
+PuckForm.prototype.removePuck = function() {
+	var _this = this;
+	this.panel.setLoading();
+	var onSuccess = function(sender, data){
+		
+	};
+	var containerId = this.puck.containerId;
+	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
+	
+};
 
-PuckForm.prototype.save = function(sample) {
+PuckForm.prototype.save = function() {
 	var _this = this;
 	this.panel.setLoading("Saving Puck");
 
@@ -95,34 +120,14 @@ PuckForm.prototype.save = function(sample) {
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveContainer(this.puck.containerId, this.puck.containerId, this.puck.containerId, puck);
 };
 
-/*
-PuckForm.prototype.checkMandatoryFields = function(sample) {
-	var mandatoryFields = ["Sample Name", "Protein Acronym", "Experiment Type", "Unit cell A", "Unit cell B","Unit cell C","Unit cell Alpha","Unit cell Beta","Unit cell Gamma"];
-	for (var j = 0; j < mandatoryFields.length; j++) {
-		if (sample[mandatoryFields[j]] === "" || (sample[mandatoryFields[j]] == null)){
-			return mandatoryFields[j];
-		}
-	}
-	return true;
-};
 
-PuckForm.prototype.checkData = function(samples) {
-	for (var i = 0; i < samples.length; i++) {
-		var sample = samples[i];
-		if (sample["Protein Acronym"] != null){
-			if ((sample["Protein Acronym"] != "")){
-				var checked = this.checkMandatoryFields(sample);
-				if (checked != true){
-					BUI.showError("For sample #" + (i+1) +" there is missing column " + checked);
-				}
-			}
-		}
-	}
-	return true;
-};*/
-
-
+/**
+ * When container type has changed from SPINE|| UNIPUCK || PLATE
+ * 
+ * We make the spreadsheet longer and the platelayout is rendered again
+ */
 PuckForm.prototype.containerTypeChanged = function(capacity) {
+	this.puck.capacity = capacity;
 	var data = this.containerSpreadSheet.spreadSheet.getData();
 	if (data.length < capacity){
 		for (var i = data.length; i<= capacity; i++){
@@ -133,6 +138,7 @@ PuckForm.prototype.containerTypeChanged = function(capacity) {
 		data = data.slice(0, capacity);
 	}
 	this.containerSpreadSheet.spreadSheet.loadData(data);
+	this.loadPlateLayout(this.puck);
 };
 
 PuckForm.prototype.getPanel = function() {
@@ -145,19 +151,18 @@ PuckForm.prototype.getPanel = function() {
 	
 	this.capacityCombo = capacityCombo;
 	this.panel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
 		buttons : this.getToolBar(),
 		items : [ 
-		       
 		         {
 							xtype : 'container',
 							margin : '12 0 2 20',
 							layout : 'hbox',
 							items : [
-							         this.spineLayout.getPanel(),
+										
+										 this.puckLayout.getPanel(),
 								         {
 								        	 xtype : 'container',
-											margin : '12 0 2 2',
+											margin : '12 0 2 50',
 											layout : 'vbox',
 											items : [ 
 							         				   {
@@ -178,9 +183,6 @@ PuckForm.prototype.getPanel = function() {
 	         ] 
 		} 
 	);
-	
-	this.panel.on("afterlayout", function(){
-	});
 	return this.panel;
 };
 
