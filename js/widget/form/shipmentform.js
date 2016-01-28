@@ -13,9 +13,6 @@ function ShipmentForm(args) {
 		}
 	}
 	
-	this.sendingAddressForm = new AddressForm({isSaveButtonHidden : true});
-	this.returnAddressForm = new AddressForm({isSaveButtonHidden : true, isHidden : true});
-
 	this.onSaved = new Event(this);
 }
 
@@ -80,17 +77,20 @@ ShipmentForm.prototype.load = function(shipment) {
 ShipmentForm.prototype._saveShipment = function() {
 	var _this = this;
 	var shippingId = null;
+	
 	if (this.shipment != null) {
 		shippingId = this.shipment.shippingId;
 	}
+	
+	var sendingAddressId = this.labContactsSendingCombo.getValue();
+	var returnAddressId = this.labContactsReturnCombo.getValue();
+	
+	if (sendingAddressId == null) {
+		BUI.showError("User contact information for shipping to beamline is mandatory");
+		return;
+	}
 
-	
-	var sendingAddress = this.sendingAddressForm.getAddress();
-	var returnAddress = this.returnAddressForm.getAddress();
-	
-	
-	var returnAddressId =  returnAddress.labContactId;
-	
+		
 	/** No return requested **/
 	if (this.labContactsReturnCombo.getValue() == 0){
 		returnAddressId = 0;
@@ -101,13 +101,14 @@ ShipmentForm.prototype._saveShipment = function() {
 		returnAddressId = -1;
 	}
 
+	var sendingAddress = (EXI.proposalManager.getLabcontactById(sendingAddressId));
 	var json = {
 		shippingId : shippingId,
 		name : Ext.getCmp(_this.id + "shippingName").getValue(),
 		status : "Not set",
-		sendingLabContactId : this.sendingAddressForm.getAddress().labContactId,
+		sendingLabContactId : sendingAddressId,
 		returnLabContactId : returnAddressId,
-		returnCourier : returnAddress.labContactId,
+		returnCourier : returnAddressId,
 		courierAccount : sendingAddress.courierAccount,
 		billingReference : sendingAddress.billingReference,
 		dewarAvgCustomsValue : sendingAddress.dewarAvgCustomsValue,
@@ -117,10 +118,7 @@ ShipmentForm.prototype._saveShipment = function() {
 	};
 
 	var onSuccess = (function(sender, shipment) {
-		/** It was a new shipment **/
-		if (shippingId == null){
-			location.hash = "#/shipping/" + shipment.shippingId + "/main";
-		}
+		location.hash = "#/shipping/" + shipment.shippingId + "/main";
 		_this.panel.setLoading(false);
 		_this.onSaved.notify(shipment);
 	});
@@ -141,13 +139,6 @@ ShipmentForm.prototype._saveShipment = function() {
 	this.panel.setLoading();
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveShipment(json);
 	
-	/** Saving lab contacts **/
-	this.sendingAddressForm.save();
-	
-	
-	if (this.labContactsReturnCombo.getValue() > 0){
-		this.returnAddressForm.save();
-	}
 	
 };
 
@@ -192,20 +183,10 @@ ShipmentForm.prototype.getPanel = function() {
 		store : this.labContactForSendingStore,
 		queryMode : 'local',
 		labelWidth : 350,
-		width : 800,
+		width : 600,
+		margin : '10 0 0 10',
 		displayField : 'cardName',
-		valueField : 'labContactId',
-		listeners : {
-			change : function(x, newValue) {
-				if (newValue != null){
-					_this.sendingAddressForm.load(EXI.proposalManager.getLabcontactById(newValue));
-					_this.sendingAddressForm.panel.setVisible(true);
-				}
-				else{
-					_this.sendingAddressForm.panel.setVisible(false);
-				}
-			}
-		}
+		valueField : 'labContactId'
 	});
 
 	this.labContactsReturnCombo = Ext.create('Ext.form.ComboBox', {
@@ -214,30 +195,15 @@ ShipmentForm.prototype.getPanel = function() {
 		afterLabelTextTpl : required,
 		store : this.labContactForReturnStore,
 		queryMode : 'local',
+		margin : '10 0 0 10',
 		labelWidth : 350,
-		width : 800,
+		width : 600,
 		displayField : 'cardName',
-		valueField : 'labContactId',
-		listeners : {
-			change : function(x, newValue) {
-				if ((newValue == 0) || (newValue == -1)){
-					_this.returnAddressForm.panel.setVisible(false);
-					return;
-				}
-				
-				if (newValue != null){
-					_this.returnAddressForm.load(EXI.proposalManager.getLabcontactById(newValue));
-					_this.returnAddressForm.panel.setVisible(true);
-				}
-				else{
-					_this.returnAddressForm.panel.setVisible(false);
-					
-				}
-			}
-		}
+		valueField : 'labContactId'
 	});
 
-       this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 100});
+	
+    this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 100});
 
 	if (this.panel == null) {
 		this.panel = Ext.create('Ext.form.Panel', {
@@ -245,71 +211,30 @@ ShipmentForm.prototype.getPanel = function() {
 			cls : 'border-grid',
 			buttons : buttons,
 			items : [ 
-				         {
-				        	 xtype : 'container',
-				        	 layout : 'hbox',
-				        	 items : [
-								         {
-						      					xtype : 'requiredtextfield',
-						      					fieldLabel : 'Name',
-						      					allowBlank : false,
-						      					labelWidth : 75,
-						      					width : 500,
-						      					margin : "10 20 0 10",
-						      					name : 'shippingName',
-						      					id : _this.id + 'shippingName',
-						      					value : '',
-					        	           	 },
-									 this.sessionComboBox
-						      				
-				        	           ]
-				            },
+						{
+		      					xtype : 'requiredtextfield',
+		      					fieldLabel : 'Name',
+		      					allowBlank : false,
+		      					labelWidth : 100,
+		      					width : 400,
+		      					margin : "10 20 0 10",
+		      					name : 'shippingName',
+		      					id : _this.id + 'shippingName',
+		      					value : '',
+				        },
+		        		this.sessionComboBox,
 					    {
-				
-						    					xtype : 'textareafield',
-						    					name : 'comments',
-						    					id : _this.id + 'comments',
-						    					fieldLabel : 'Comments',
-						    					value : '',
-						    					labelWidth : 75,
-						    					margin : "10 20 0 10",
-						    					width : 500,
+		    					xtype : 'textareafield',
+		    					name : 'comments',
+		    					id : _this.id + 'comments',
+		    					fieldLabel : 'Comments',
+		    					value : '',
+		    					labelWidth : 100,
+		    					margin : "10 20 0 10",
+		    					width : 500,
 						},
-		    				{
-		    					html : "<span class='exi-toolBar' style='font-size:18px; '>Address for shipping to Beamline</span>",
-		    					margin : "30 0 0 10",
-		    					flex : 1 
-		    				},
-							 {
-					        	 xtype : 'container',
-					        	 layout : 'vbox',
-					        	 items : [
-												 {
-										        	 xtype : 'container',
-										        	 layout : 'vbox',
-										        	 margin : "10 20 0 10",
-										        	 items : [
-				
-									        	          		this.labContactsSendingCombo,
-										        	          	this.sendingAddressForm.getPanel()
-										        	 ]
-												 },
-												 {
-								    					html : "<span class='exi-toolBar' style='font-size:18px; '>Address for return to home institute</span>",
-								    					margin : "30 0 0 10",
-								    					flex : 1 
-								    			 },
-												 {
-										        	 xtype : 'container',
-										        	 layout : 'vbox',
-										        	 margin : "10 0 10 20",
-										        	 items : [
-										        	          	this.labContactsReturnCombo,
-										        	          	this.returnAddressForm.getPanel()
-										        	 ]
-												 }
-								 ]
-							 }
+    	          		this.labContactsSendingCombo,
+        	          	this.labContactsReturnCombo
 		]
 		});
 	}

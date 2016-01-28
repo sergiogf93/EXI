@@ -525,6 +525,7 @@ CaseGrid.prototype.getPanel = function() {
 									if (containerId != null){
 										var onSuccess = function(sender, puck){
 											puckForm.load(puck);
+										
 										};
 										EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(containerId,containerId,containerId);
 									}

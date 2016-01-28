@@ -32,6 +32,7 @@
     "dygraphs": "~1.1.1",
     "qunit": "~1.19.0",
     "threejs": "*",
-    "magnificent": "~2.1.4"
+    "magnificent": "~2.1.4",
+    "snap": "*"
   }
 }

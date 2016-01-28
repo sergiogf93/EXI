@@ -76,11 +76,11 @@ MXExiController.prototype.routeNavigation = function() {
 			});
 
 			EXI.addNavigationPanel(listView);
-			var onSuccess = function(sender, pucks) {
+			var onSuccessProposal = function(sender, pucks) {
 				listView.load(pucks);
 				EXI.setLoadingNavigationPanel(false);
 			};
-			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getDewarByProposalId();
+			EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.proposal.getDewarByProposalId();
 		}
 		
 		
@@ -158,8 +158,8 @@ MXExiController.prototype.routeNavigation = function() {
 				EXI.setError(e.message);
 			}
 			EXI.setLoadingMainPanel(false);	
-		}
-		EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.getContainerById(this.params['containerId'],this.params['containerId'],this.params['containerId'])
+		};
+		EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.getContainerById(this.params['containerId'],this.params['containerId'],this.params['containerId']);
 		
 	}).enter(this.setPageBackground);
 	
@@ -168,7 +168,6 @@ MXExiController.prototype.routeNavigation = function() {
 	Path.map("#/mx/puck/add").to(function() {
 		var mainView = new PuckMainView();
 		EXI.addMainPanel(mainView);
-		
 		var emptyPuck = {"containerId":"","code":null,"containerType":"Puck","capacity":16,"beamlineLocation":null,"sampleChangerLocation":null,"containerStatus":null,"timeStamp":"Jan 15, 2016 2:29:39 PM","sampleVOs":[]};
 		mainView.load(emptyPuck);
 	}).enter(this.setPageBackground);

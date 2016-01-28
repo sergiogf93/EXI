@@ -414,6 +414,14 @@ function getMX(){
 							}
 					]
 			    },
+			    {
+					name:'protein',
+					children : [
+							{
+								name:'list'
+							}
+					]
+			    },
 		            {
 		            	name:'crystal',
 		            	children : [
