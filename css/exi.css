@@ -1,3 +1,23 @@
+.summary_datacollection_title_comment{
+	color : black;
+	font-size : 10px;
+}
+
+.summary_datacollection_null_parameter{
+	color:#D8D8D8;
+	
+}
+
+.summary_datacollection_parameter_name{
+	color:gray;
+	font-size : 10px;
+}
+
+.summary_datacollection_parameter{
+	font-size : 12px;
+}
+
+
 .saxs-grid-row-light{
 	background-color: #E0F8E0;
 }
@@ -20,8 +40,9 @@
 
 img.lazy {
         display: block;
-        height : 80px;
-        width : 80px;
+        height : 300px;
+        width : 300px;
+        border : 1px solid #3892d3
 }
     
 .th-component{

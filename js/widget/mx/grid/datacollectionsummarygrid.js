@@ -141,6 +141,8 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		flex : 1,
 		renderer : function(grid, e, record){
 			return _this.getHTMLTable([
+			                           {key : "DCG id", value : record.data.DataCollectionGroup_dataCollectionGroupId},
+			                           {key : "id", value : record.data.DataCollection_dataCollectionId},
 			                          {key : "Type", value : record.data.DataCollectionGroup_experimentType},
 			                          {key : "Image Prefix", value :record.data.DataCollection_imagePrefix},
 			                          {key : "Start Time", value :record.data.DataCollection_startTime}
@@ -215,7 +217,7 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 			                          ]);
 		}
 	},
-	{
+	/*{
 		text : 'First',
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
@@ -239,8 +241,8 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		renderer : function(val, y, sample) {
 			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 1));
 		}
-	},
-	{
+	}*/
+	/*{
 		text : 'Crystal',
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 115,
@@ -255,25 +257,45 @@ DataCollectionSummaryGrid.prototype._getColumns = function() {
 		renderer : function(val, y, sample) {
 			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.data.DataCollection_dataCollectionId, 3));
 		}
-	}
+	}*/
 	
 	
 	] ;
 	return columns;
 };
 
-
-DataCollectionSummaryGrid.prototype.load = function(data) {
-	this.store.loadData(data, false);
-	this.store.sort('DataCollection_dataCollectionId', 'DESC');
-//	for (var i = 0; i < data.length; i++) {
-//		var sample = data[i];
-//		var img = document.createElement("img");
-//		img.setAttribute("class", "lazy");
-//		img.setAttribute("data-src", EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(sample.DataCollection_dataCollectionId, 1));
-//		document.getElementById("test").appendChild(img);
-//	}
+DataCollectionSummaryGrid.prototype.parse = function(data) {
+//	console.log(data.length + " data collection rows");
+	data =  BUI.groupBy(data, function(item){
+	 			return [item.DataCollectionGroup_dataCollectionGroupId];
+	 			             
+	});
 	
+	/** Grouped by data collection group **/
+//	console.log(data.length + " data collection group");
+	return data;
+};
+
+
+DataCollectionSummaryGrid.prototype.load = function(data) {	
+	
+	var datasets = (this.parse(data));
+	
+//	console.log("------ DATASETS");
+	for ( var i in datasets) {
+		var dataset = (datasets[i]);
+		
+		var dc = new DataCollectionGroupFactory();
+		
+		this.panel.add(dc.getPanel(dataset));
+		
+		dc.load(dataset);
+//		for (var j in dataset){
+//			var type = dataset[j]["DataCollectionGroup_experimentType"] + " " + dataset[j]["Workflow_workflowType"] + " " + datasets[i].length;
+//			console.log(type);
+//			break;
+//		}
+	}
 	
 	
 	
@@ -281,7 +303,13 @@ DataCollectionSummaryGrid.prototype.load = function(data) {
 
 
 DataCollectionSummaryGrid.prototype.getPanel = function() {
-	return this._renderGrid();
+//	return this._renderGrid();
+	this.panel = Ext.create('Ext.panel.Panel', {
+		title : "Session",
+	    items: []
+	});
+	return this.panel;
+	
 };
 
 DataCollectionSummaryGrid.prototype.edit = function(stockSolutionId) {
@@ -308,24 +336,6 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 
 	
 	var selModel = null;
-/*
-	if (this.multiselect) {
-		selModel = Ext.create('Ext.selection.CheckboxModel', {
-			mode : 'SINGLE',
-			listeners : {
-				selectionchange : function(sm, selections) {
-					_this.selectedStockSolutions = [];
-					for ( var i = 0; i < selections.length; i++) {
-						_this.selectedStockSolutions.push(selections[i].data);
-					}
-				}
-			}
-		});
-	} else {
-		selModel = {
-			mode : 'SINGLE'
-		};
-	}*/
 
 	this.grid = Ext.create('Ext.grid.Panel', {
 		title : "Data Collection Summary",
@@ -346,27 +356,27 @@ DataCollectionSummaryGrid.prototype._renderGrid = function() {
 	});
 
 	this.grid.on('afterrender', function(){
-		//loadedElements = 0;
-		//console.log(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.id)
+		loadedElements = 0;
+		console.log(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.id)
 		var myVar = setTimeout(function() {   //calls click event after a certain time
 				$('.lazy').lazy({ 
 				  bind:'event',
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
 				  appendScroll:document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
 				  beforeLoad: function(element){
-					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
+					  console.log('image "' + (element.data('src')) + '" is about to be loaded');
 				  },
 				  afterLoad: function(element) {
-					  //loadedElements++;
-					  //console.log('image was loaded successfully');
+					  loadedElements++;
+					  console.log('image was loaded successfully');
 				  },
 				  onError: function(element) {
 					  //loadedElements++;
 					  //console.log('image  could not be loaded');
 				  },
 				  onFinishedAll: function() {
-					  //console.log('finished loading ' + loadedElements + ' elements');
-					  //console.log('lazy instance is about to be destroyed')
+					  console.log('finished loading ' + loadedElements + ' elements');
+					  console.log('lazy instance is about to be destroyed')
 				  }
 			  });
 				clearTimeout(myVar);

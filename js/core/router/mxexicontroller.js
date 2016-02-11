@@ -140,9 +140,11 @@ MXExiController.prototype.routeNavigation = function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
 		var onSuccess = function(sender, data){
+			console.log(data);
 			mainView.load(data);
 		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getBySessionsId(this.params['sessionId']);
+		//EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getBySessionsId(this.params['sessionId']);
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getDataCollectionViewBySessionId(this.params['sessionId']);
 
 	}).enter(this.setPageBackground);
 	
