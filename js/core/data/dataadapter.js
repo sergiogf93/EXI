@@ -12,20 +12,36 @@
  * 
  * 
 **/
-function DataAdapter(args) {
+function DataAdapter( args) {
 	this.async = true;
+	
+	this.url = null;
+	this.token = null;
+	this.proposal = null;
+	this.username = null;
+	
 	this.onSuccess = new Event(this);
 	this.onError = new Event(this);
 	
+	
 	if (args != null) {
-		if (args.async != null) {
-			this.async = args.async;
+		if (args.username != null) {
+			this.username = args.username;
 		}
 		if (args.onSuccess != null) {
 			this.onSuccess.attach(args.onSuccess);
 		}
 		if (args.onError != null) {
 			this.onError.attach(args.onError);
+		}
+		if (args.url != null) {
+			this.url = args.url;
+		}
+		if (args.token != null) {
+			this.token = args.token;
+		}
+		if (args.proposal != null) {
+			this.proposal = args.proposal;
 		}
 	}
 	
@@ -36,7 +52,7 @@ function DataAdapter(args) {
  * Output will be the url with the strings {token} and {proposal} replaced by the values connection.token and connection.proposal
  */
 DataAdapter.prototype.getUrl = function(connection, url){
-	return connection.url + url.replace("{token}", connection.token).replace("{proposal}", connection.proposal).replace("{username}", connection.username);
+	return this.url + url.replace("{token}", this.token).replace("{proposal}", this.proposal).replace("{username}", this.username);
 };
 
 

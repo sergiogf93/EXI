@@ -22,6 +22,7 @@ ExiMX.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiMX.prototype.show = Exi.prototype.show;
 ExiMX.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiMX.prototype.setUserMenu = Exi.prototype.setUserMenu;
+ExiMX.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 
 
 
@@ -30,7 +31,7 @@ ExiMX.prototype.getHeader = function(){
 };
 
 ExiMX.prototype.getDataAdapter = function(args){
-	return new MxDataAdapterFactory(args);
+	return new MxDataAdapterFactory(this.appendDataAdapterParameters(args));
 };
 
 
