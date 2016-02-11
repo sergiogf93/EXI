@@ -6,6 +6,7 @@
  * #onRemovePlates
  **/
 function CaseForm(args) {
+	this.id = BUI.id();
 	this.width = 600;
 	this.showTitle = true;
 	if (args != null) {
@@ -36,9 +37,9 @@ CaseForm.prototype.refresh = function(dewar) {
 };
 
 CaseForm.prototype.getDewar = function() {
-	this.dewar.code = Ext.getCmp("dewar_code").getValue();
-	this.dewar.comments = Ext.getCmp("dewar_comments").getValue();
-	this.dewar.transportValue = Ext.getCmp("dewar_transportValue").getValue();
+	this.dewar.code = Ext.getCmp(this.id + "dewar_code").getValue();
+	this.dewar.comments = Ext.getCmp(this.id + "dewar_comments").getValue();
+	this.dewar.transportValue = Ext.getCmp(this.id + "dewar_transportValue").getValue();
 //	this.dewar.storageLocation = Ext.getCmp("dewar_storageLocation").getValue();
 	this.dewar.storageLocation = this.storageLocationComboBox.getValue();
 	//this.dewar.firstExperimentId = this.sessionsCombo.getValue();
@@ -56,9 +57,9 @@ CaseForm.prototype.setDewar = function(dewar) {
 		this.dewar["comments"] = "";
 	}
 	
-	Ext.getCmp("dewar_code").setValue(this.dewar.code);
-	Ext.getCmp("dewar_comments").setValue(this.dewar.comments);
-	Ext.getCmp("dewar_transportValue").setValue(this.dewar.transportValue);
+	Ext.getCmp(this.id + "dewar_code").setValue(this.dewar.code);
+	Ext.getCmp(this.id + "dewar_comments").setValue(this.dewar.comments);
+	Ext.getCmp(this.id + "dewar_transportValue").setValue(this.dewar.transportValue);
 //	Ext.getCmp("dewar_storageLocation").setValue(this.dewar.storageLocation);
 	this.storageLocationComboBox.setValue(this.dewar.storageLocation);
 	/*if (this.dewar.sessionVO != null) {
@@ -102,7 +103,7 @@ CaseForm.prototype.getPanel = function(dewar) {
 						fieldLabel : 'Name',
 						allowBlank : false,
 						name : 'code',
-						id : 'dewar_code',
+						id : this.id + 'dewar_code',
 						labelWidth : 200,
 						width : 500
 					}
@@ -123,7 +124,7 @@ CaseForm.prototype.getPanel = function(dewar) {
 					labelWidth : 200,
 					margin : '10 0 0 0',
 					fieldLabel : 'Transport Value',
-					id : 'dewar_transportValue'
+					id : this.id + 'dewar_transportValue'
 				},
 				//this.getSessionCombo(),
 				{
@@ -134,7 +135,7 @@ CaseForm.prototype.getPanel = function(dewar) {
 					width : 500,
 					margin : '10 0 0 0',
 					height : 100,
-					id : 'dewar_comments'
+					id : this.id + 'dewar_comments'
 				} ]
 			} ]
 		});
