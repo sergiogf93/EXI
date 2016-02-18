@@ -6,8 +6,6 @@ function OSC_MxPressE_DataCollectionPanel(args) {
 }
 
 OSC_MxPressE_DataCollectionPanel.prototype.getHTMLTable = GenericDataCollectionPanel.prototype.getHTMLTable;
-OSC_MxPressE_DataCollectionPanel.prototype.summarize = GenericDataCollectionPanel.prototype.summarize;
-OSC_MxPressE_DataCollectionPanel.prototype.sum = GenericDataCollectionPanel.prototype.sum;
 
 OSC_MxPressE_DataCollectionPanel.prototype._getHTMLZoomImage = GenericDataCollectionPanel.prototype._getHTMLZoomImage;
 OSC_MxPressE_DataCollectionPanel.prototype._getHTMLImage = GenericDataCollectionPanel.prototype._getHTMLImage;
