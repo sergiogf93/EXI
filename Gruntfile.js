@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 						  		   "js/main/saxs/hplc/*.js",   "js/main/landing/*.js", "js/main/saxs/prepare/*.js", "js/main/saxs/*.js", "js/main/mx/*.js", 
 					                           "js/main/mx/*/*.js", "js/main/tool/*.js", "js/main/run/*.js"],
 				 'min/bower_components.min.js' 	: [
+  								   "bower_components/vis/dist/vis.js",
 				                               	   "bower_components/dygraphs/dygraph-combined.js", 
 				                               	   "bower_components/handsontable/dist/handsontable.full.js",
 				                               	   "bower_components/jquery/dist/jquery.min.js",
@@ -53,7 +54,7 @@ module.exports = function(grunt) {
 			      roundingPrecision: -1
 			  },
 			    files: {
-			          'min/exi.min.css': [ 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
+			          'min/exi.min.css': [ 'bower_components/vis/dist/vis.css', 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
 			    }
 		}
 	},
@@ -96,6 +97,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-plato');
   grunt.task.registerTask('default', ['jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod']);
-  grunt.task.registerTask('dev', ['includeSource:dev']);
+
+  grunt.task.registerTask('dev', ['includeSource:dev', 'cssmin:prod']);
   
 };

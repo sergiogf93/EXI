@@ -36,6 +36,8 @@ GenericDataCollectionPanel.prototype._getHTMLImage = function(url) {
 	return '<img class="lazy" onclick="myFunction()"  data-src=' + url + ' src=' + url + '>';
 };
 
+
+
 GenericDataCollectionPanel.prototype.getHTMLTable = function(jsonArray) {
 	var table = document.createElement("table");
 	for (var i = 0; i < jsonArray.length; i++) {
@@ -76,26 +78,81 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 	var _this = this;
 	var columns = [
 	{
-		header : 'Type',
+		header : 'DataCollection',
 		dataIndex : 'dataCollectionGroup',
 		name : 'dataCollectionGroup',
 		flex : 1,
 		renderer : function(grid, e, record){
-			record.data = record.data.dataCollectionGroup;
 			return _this.getHTMLTable([
 			                           {key : "Workflow", value : record.data.Workflow_workflowType},
-			                           {key : "Type", value : record.data.DataCollectionGroup_experimentType},
+			                           {key : "Type ", value : record.data.DataCollectionGroup_experimentType},
+			                           {key : "Sample Name", value :record.data.BLSample_name},
+			                           {key : "Protein", value :record.data.Protein_acronym},
 			                           {key : "Images", value :record.data.DataCollection_numberOfImages},
-			                           {key : "Resolution", value :record.data.DataCollection_resolution},
-			                           {key : "Start", value :record.data.DataCollectionGroup_startTime},
-			                           {key : "Wavelength", value :record.data.DataCollection_wavelength},
-			                           {key : "DataCollection_phiStart", value :record.data.DataCollection_phiStart},
-			                           {key : "Flux", value : Number(record.data.DataCollection_flux).toExponential(), units:'ph/sec'},
-			                           {key : "Flux End", value : Number(record.data.DataCollection_flux_end).toExponential(), units:'ph/sec'},
 			                           {key : "Prefix", value :record.data.DataCollection_imagePrefix},
+			                           {key : "Start", value :record.data.DataCollectionGroup_startTime}
 			                           
-			                           {key : "Comments", value :record.data.DataCollectionGroup_comments}
 			]);
+		}
+	},
+	{
+		header : 'Acquisition',
+		dataIndex : 'dataCollectionGroup',
+		name : 'dataCollectionGroup',
+		flex : 1,
+		renderer : function(grid, e, record){
+			return _this.getHTMLTable([
+			                          
+			                           {key : "Resolution", value :record.data.DataCollection_resolution, units : 'Å'},
+			                           {key : "Wavelength", value :record.data.DataCollection_wavelength},
+			                           {key : "Flux ", value : Number(record.data.DataCollection_flux).toExponential(), units:'ph/sec'},
+			                           {key : "Flux End", value : Number(record.data.DataCollection_flux_end).toExponential(), units:'ph/sec'},
+			                           {key : "Φ", value : record.data.DataCollection_phiStart},
+			                           {key : "Κ", value : record.data.DataCollection_kappaStart},
+			                           {key : "Ω", value : record.data.DataCollection_omegaStart},
+			                           {key : "Total Exp. Time", value :record.data.DataCollection_numberOfImages*record.data.DataCollection_exposureTime, units:'s'}
+			                          // {key : "Comments", value :record.data.DataCollectionGroup_comments}
+			                           
+			                           
+			                           
+			]);
+		}
+	},
+	{
+		header : 'Online Data Analysis',
+		dataIndex : 'dataCollectionGroup',
+		name : 'dataCollectionGroup',
+		flex : 1,
+		renderer : function(grid, e, record){
+			return new ResultSectionDataCollection().getHTML(record.data); 
+		}
+	},
+	{
+		header : 'Workflow',
+		dataIndex : 'dataCollectionGroup',
+		name : 'dataCollectionGroup',
+		flex : 1,
+		renderer : function(grid, e, record){
+			var resultSection = new ResultSectionDataCollection();
+			var parsed = [];
+			if (record.data.WorkflowStep_workflowStepType){
+				var steps = record.data.WorkflowStep_workflowStepType.split(",");
+				var status = record.data.WorkflowStep_status.split(",");
+				
+				for (var i = 0; i < steps.length; i++) {
+					if (status[i] == "Success"){
+						parsed.push({
+							iconClass 	: "summary_datacollection_success",
+							value 		:	 steps[i]
+						});
+					}
+					
+				}
+			}
+			else{
+				return;
+			}
+			return resultSection.getIconTable(parsed);
 		}
 	},
 	{
@@ -113,11 +170,14 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 		renderer : function(val, y, record) {
 			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
 		}
-	}];
+	}
+	
+	];
 	return columns;
 };
 	
 
 GenericDataCollectionPanel.prototype.load = function(dataCollectionGroup){
+	dataCollectionGroup.reverse();
 	this.store.loadData(dataCollectionGroup);
 };

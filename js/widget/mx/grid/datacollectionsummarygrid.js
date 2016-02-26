@@ -54,8 +54,9 @@ DataCollectionSummaryGrid.prototype.parse = function(data) {
 
 
 DataCollectionSummaryGrid.prototype.load = function(data) {	
-	var datasets = (this.parse(data));
-	this.dataCollectionGroupFactory.load(datasets);
+	//var datasets = (this.parse(data));
+	//this.dataCollectionGroupFactory.load(datasets);
+	this.dataCollectionGroupFactory.load(data);
 	
 };
 

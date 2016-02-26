@@ -19,7 +19,7 @@ function AutoProcIntegrationMainView() {
 		}
 	});
 	
-	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({margin : '0 20 0 10', maxHeight: 400});
+	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({margin : '0 20 0 10', maxHeight: 400, width : 300});
 	
 	
 	/** Curve completenessPlotter * */
@@ -252,7 +252,7 @@ AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 		    ]
 	});
 };
-
+/*
 AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
 	return Ext.create('Ext.container.Container', {
 		layout: {
@@ -267,7 +267,6 @@ AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
 		        	 items : [
 			        	          Ext.create('Ext.container.Container', {
 			     		        	 layout: 'hbox',
-//			     		        	 margin : '10 0 0 20',
 			     		        	 flex : 0.4,
 			     		        	 items : [
 			     		        	          	this.autoProcIntegrationPhasingGrid.getPanel()
@@ -280,7 +279,7 @@ AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
 		         		
 		    ]
 	});
-};
+};*/
 
 //AutoProcIntegrationMainView.prototype.getDataCollectionPanel = function() {
 //	console.log(this.id)
@@ -312,25 +311,6 @@ AutoProcIntegrationMainView.prototype.getContainer = function() {
 				plain : true,
 				margin : '10 30 10 10',
 				items : [
-//					{
-//						tabConfig : {
-//							title : 'General'
-//						},
-//						items : [ {
-//							xtype : 'container',
-//							layout : 'fit',
-//							style : {
-//								borderColor : 'gray',
-//								borderStyle : 'solid',
-//								borderWidth : '1px',
-//								'background-color' : 'white' 
-//							},
-//							items : [ 
-//							         this.getDataCollectionPanel()
-//							]
-//						}
-//						]
-//					},
 					{
 						tabConfig : {
 							title : 'Auto Processing'
@@ -349,26 +329,8 @@ AutoProcIntegrationMainView.prototype.getContainer = function() {
 							]
 						}
 						]
-				  },
-				  {
-						tabConfig : {
-							title : 'Phasing'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-							         this.getPhasingPanel()
-							]
-						}
-						]
-				  }]
+				  }
+				  ]
 		});
 };
 
@@ -427,6 +389,7 @@ AutoProcIntegrationMainView.prototype.loadGeneral = function(dataCollection) {
 AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
 	this.panel.setTitle("Data Collection");
+	this.panel.setLoading("Generating plots");
 	var onSuccess = function(sender, data){
 		_this.data = data;
 		var autoProcIntegrationsIds = []; 
@@ -437,10 +400,11 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 			autoProcs.push(data[i].autoproc);
 			autoProcIds.push(data[i].autoproc.autoProcId);
 		}
+		_this.autoProcIntegrationGrid.load(data);
+		_this.panel.setLoading(false);
+		_this.loadPlots(autoProcIntegrationsIds);
 		
-		
-		
-		var onSuccessPhasing = function(sender, phasing){
+		/*var onSuccessPhasing = function(sender, phasing){
 			var autoprocIdWithPhasing = [];
 			var autoProcWithPhasing = [];
 			for (var i = 0; i < phasing.length; i++) {
@@ -463,11 +427,10 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 			_this.autoProcIntegrationGrid.load(data);
 			_this.loadPlots(autoProcIntegrationsIds);
 			
-//			_this.loadGeneral(data[0].datacollection);
-		};
+		};*/
 	
 		
-		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(autoProcIds);
+		//EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(autoProcIds);
 		
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoProcIntegrationDataAdapter.getByDataCollectionId(dataCollectionId);
