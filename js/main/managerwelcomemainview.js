@@ -81,26 +81,15 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 					},
 					{
 						tabConfig : {
-							title : 'Sessions'
+							title : 'Calendar'
 						},
 						items : [
 						         {
 							xtype : 'container',
 							layout : 'fit',
 							padding : 20,
-							cls : 'border-grid',
 							items : [ 
-							        
-							         {
-							        	 html : '<div class="welcome-title"><h2>Please select a Session</h2></div>'
-							         },
-							         {
-							        	 xtype : 'container',
-							        	 layout : 'fit',
-							        	 items : [
 											         this.timeLineWidget.getPanel()
-							        	 ]
-							         }
 							]
 						}
 						]

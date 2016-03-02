@@ -21,7 +21,10 @@ module.exports = function(grunt) {
 				                               	   "bower_components/jquery/dist/jquery.min.js",
 												   "bower_components/jquery-lazy/jquery.lazy.js", 
 												   "bower_components/moment/min/moment.min.js",  
-												   "bower_components/Snap.svg/dist/snap.svg-min.js"
+
+												'bower_components/fullcalendar/dist/fullcalendar.js',
+   
+
 								],
 				 'min/dependency.min.js' 	: ["js/dependency/three49custom.js", "js/dependency/glmol.js","js/dependency/timeline/timeline.js", "js/dependency/pathjs/path.js"]
 			  }
@@ -54,7 +57,7 @@ module.exports = function(grunt) {
 			      roundingPrecision: -1
 			  },
 			    files: {
-			          'min/exi.min.css': [ 'bower_components/vis/dist/vis.css', 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
+			          'min/exi.min.css': [  'bower_components/fullcalendar/dist/fullcalendar.css', 'bower_components/vis/dist/vis.css', 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
 			    }
 		}
 	},

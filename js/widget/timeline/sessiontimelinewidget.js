@@ -17,46 +17,6 @@ SessionTimeLineWidget.prototype.changeWeek = function(increment) {
 	this.loadSessions(moment().week(this.week).startOf('week').format("YYYYMMDD"), moment().week(this.week).endOf('week').format("YYYYMMDD"));
 };
 
-SessionTimeLineWidget.prototype.getTopBar = function() {
-	var _this = this;
-	return Ext.create("Ext.toolbar.Toolbar", {
-		    width   : 500,
-		    items: [
-		        {
-		            text: '<<',
-		            handler : function(){
-		            	_this.changeWeek(-1);
-		            	
-		            }
-		        },
-		        "Week",
-		        {
-		        	id 			: this.id + 'week',
-		            xtype    	: 'textfield',
-		            name     	: 'field1',
-		            fieldLabel  : 'Week',
-		            labelWidth : 40,
-		            width 		: 100,
-		            value		: this.week,
-		            listeners : {
-						specialkey : function(field, e) {
-							if (e.getKey() == e.ENTER) {
-								_this.week = field.getValue();
-								_this.changeWeek(0);
-							}
-						} 
-					} 
-		        },
-		        {
-		            text: '>>',
-		            handler : function(){
-		            	_this.changeWeek(1);
-		            	
-		            }
-		        }
-		    ]
-		});
-};
 
 
 SessionTimeLineWidget.prototype.loadSessions = function(start, end) {
