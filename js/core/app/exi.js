@@ -86,14 +86,30 @@ function Exi(args) {
 		authenticationManager.login(args.user, args.password, args.site);
 	});
 	
-	
-	
-	
 	this.onAfterRender = new Event(this);
 }
 
+/**
+ * This method append to args the values of the active connection: url, token and proposal
+ */
+Exi.prototype.appendDataAdapterParameters = function(args) {
+	if (args == null){ args = {};}
+	
+	/** Getting credentials **/
+	var connections = EXI.credentialManager.getConnections();
+	/** Authentication data adapter does not need any token **/
+	if (connections.length > 0){
+		args.url = connections[0].url;
+		args.token = connections[0].token;
+		args.proposal = connections[0].proposal;
+	}
+	return args;	
+};
+
+
+
 Exi.prototype.getDataAdapter = function(args) {
-	return new DataAdapterFactory(args);
+	return new DataAdapterFactory(this.appendDataAdapterParameters(args));
 };
 
 Exi.prototype.setAnonymousMenu = function() {
@@ -110,25 +126,9 @@ Exi.prototype.setUserMenu = function() {
 
 
 Exi.prototype.loadSelected = function(selected) {
-//	this.workspacePanel.setSelectedItems(selected);
-	/** decollapse workspace panel **/
-//	if (Ext.getCmp("workspace").collapsed != false){
-//		Ext.getCmp("workspace").expand();
-//	}
 };
 
 
-//Exi.prototype.__listenMainViewEvents__ = function(mainView) {
-//	var _this = this;
-//	if (mainView != null) {
-//		mainView.onSelect.attach(function(sender, element) {
-//			_this.localExtorage.selectedSubtractionsManager.append(element);
-//		});
-//		mainView.onDeselect.attach(function(sender, element) {
-//			_this.localExtorage.selectedSubtractionsManager.remove(element);
-//		});
-//	}
-//};
 
 
 /**
@@ -278,3 +278,4 @@ Exi.prototype.show = function() {
 
 			});
 };
+>>>>>>> master
