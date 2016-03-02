@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 						  		   "js/main/saxs/hplc/*.js",   "js/main/landing/*.js", "js/main/saxs/prepare/*.js", "js/main/saxs/*.js", "js/main/mx/*.js", 
 					                           "js/main/mx/*/*.js", "js/main/tool/*.js", "js/main/run/*.js"],
 				 'min/bower_components.min.js' 	: [
+								   "bower_components/exi-ui/min/*js",
   								   "bower_components/vis/dist/vis.js",
 				                               	   "bower_components/dygraphs/dygraph-combined.js", 
 				                               	   "bower_components/handsontable/dist/handsontable.full.js",

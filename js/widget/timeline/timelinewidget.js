@@ -151,7 +151,7 @@ TimeLineWidget.prototype.getTopBar = function() {
 };
 
 TimeLineWidget.prototype.getPanel = function() {
-	var _this =this;
+	var _this = this;
 	
 	this.panel = Ext.create('Ext.panel.Panel', {
 		id :  this.id,
