@@ -83,18 +83,17 @@ SessionTimeLineWidget.prototype.loadSessions = function(start, end) {
 
 			var dataset = new vis.DataSet();
 			for (var i = 0; i < sessions.length; i++) {
-				console.log(sessions[i]);
 				if (_this.discarded[sessions[i].beamlineName ] != true ){
 					dataset.add({
-						start 		: moment(sessions[i].startDate, "MMM DD, YYYY h:mm:ss a ").format("YYYY-MM-DD"),
-						end 		: moment(sessions[i].endDate, "MMM DD, YYYY h:mm:ss a ").format("YYYY-MM-DD"),
+						start 		: moment(sessions[i].startDate, "MMM DD, YYYY h:mm:ss a "),
+						end 		: moment(sessions[i].endDate, "MMM DD, YYYY h:mm:ss a "),
 						content 	: parseContent(sessions[i]),
 						group 		: sessions[i].beamlineName,
 						sessionId 	: sessions[i].sessionId,
 						className	: sessions[i].beamlineName + "_session_box"
 					});
-					console.log(sessions[i].endDate);
-				}
+					
+				}	
 			}
 			
 			_this.load(dataset, null, null, getGroups());
