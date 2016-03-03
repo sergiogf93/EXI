@@ -15,6 +15,7 @@ module.exports = function(grunt) {
 						  		   "js/main/saxs/hplc/*.js",   "js/main/landing/*.js", "js/main/saxs/prepare/*.js", "js/main/saxs/*.js", "js/main/mx/*.js", 
 					                           "js/main/mx/*/*.js", "js/main/tool/*.js", "js/main/run/*.js"],
 				 'min/bower_components.min.js' 	: [
+								   "bower_components/Snap.svg/dist/snap.svg-min.js",	
 								   "bower_components/ispyb-js-api/min/*js",
   								   "bower_components/vis/dist/vis.js",
 				                               	   "bower_components/dygraphs/dygraph-combined.js", 
@@ -22,8 +23,7 @@ module.exports = function(grunt) {
 				                               	   "bower_components/jquery/dist/jquery.min.js",
 								   "bower_components/jquery-lazy/jquery.lazy.js", 
 								   "bower_components/moment/min/moment.min.js",  
-
-												'bower_components/fullcalendar/dist/fullcalendar.js',
+ 								   "bower_components/fullcalendar/dist/fullcalendar.js"
    
 
 								],
