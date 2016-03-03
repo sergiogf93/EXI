@@ -17,7 +17,7 @@ How to build your own EXI
 Clone a copy of the main EXI git repo by running:
 
 ```bash
-git clone git://github.com/antolinos/EXI.git
+git clone git://github.com/ispyb/EXI.git
 ```
 
 Enter the jquery directory and run the build script:
