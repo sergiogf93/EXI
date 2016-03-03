@@ -61,6 +61,21 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 				items : [
 					{
 						tabConfig : {
+							title : 'Calendar'
+						},
+						items : [
+						         {
+							xtype : 'container',
+							layout : 'fit',
+							padding : 20,
+							items : [ 
+											         this.timeLineWidget.getPanel()
+							]
+						}
+						] 
+					},
+					{
+						tabConfig : {
 							title : 'Proposal'
 						},
 						items : [
@@ -78,22 +93,8 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 							]
 						}
 						]
-					},
-					{
-						tabConfig : {
-							title : 'Calendar'
-						},
-						items : [
-						         {
-							xtype : 'container',
-							layout : 'fit',
-							padding : 20,
-							items : [ 
-											         this.timeLineWidget.getPanel()
-							]
-						}
-						]
 					}
+					
 			]});
 			return this.panel;
 	};
@@ -113,7 +114,8 @@ ManagerWelcomeMainView.prototype.loadUserView = function() {
 };
 
 ManagerWelcomeMainView.prototype.loadSessions = function() {
-	this.timeLineWidget.loadSessions(moment().startOf('week').format("YYYYMMDD"),moment().endOf('week').add(1, 'days').format("YYYYMMDD"));
+	this.timeLineWidget.loadSessions(moment().startOf('year').format("YYYYMMDD"),moment().endOf('year').add(1, 'days').format("YYYYMMDD"));
+	//this.timeLineWidget.loadSessions(moment().startOf('month').format("YYYYMMDD"),moment().endOf('month').format("YYYYMMDD"));
 };
 
 ManagerWelcomeMainView.prototype.load = function(username) {

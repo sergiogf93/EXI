@@ -160,6 +160,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 310,
 		renderer : function(val, y, record) {
+			console.log(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(record.data.lastImageId));
 			return _this._getHTMLZoomImage(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(record.data.lastImageId), record.data.DataCollection_dataCollectionId, record.data.lastImageId);
 		} 
 	},

@@ -33,6 +33,7 @@
     "qunit": "~1.19.0",
     "threejs": "*",
     "magnificent": "~2.1.4",
-    "ispyb-js-api": "*"
+    "ispyb-js-api": "*",
+    "vis": "^4.15.0"
   }
 }

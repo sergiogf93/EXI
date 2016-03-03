@@ -3,6 +3,7 @@ function TimeLineWidget() {
 	this.targetId = "timeline" + BUI.id();
 	this.width = 1000;
 	
+	this.data = [];
 	this.color = {
 			
 		'BM29' : '#D0F5A9',
@@ -19,131 +20,43 @@ function TimeLineWidget() {
 	this.onSelected = new Event(this);
 }
 
-TimeLineWidget.prototype.getStartDate = function(data) {
-	if (data != null){
-		var starts = [];
-		for (var i = 0; i < data.length; i++) {
-			starts.push(data[i].start);
-		}
-		return starts.reduce(function (a, b) { return a < b ? a : b; }); 
-	}
-};
 
-TimeLineWidget.prototype.getEndDate = function(data) {
-	if (data != null){
-		var starts = [];
-		for (var i = 0; i < data.length; i++) {
-			starts.push(data[i].start);
-		}
-		return starts.reduce(function (a, b) { return a > b ? a : b; }); 
-	}
-};
-
-
-
-TimeLineWidget.prototype.load = function(data, startDate, endDate) {
+TimeLineWidget.prototype.render = function() {
 	var _this = this;
-	this.data = data;
-
-
 	if (document.getElementById(this.targetId)){
-		/*
-		 $('#' + this.targetId).fullCalendar({
-			 dayClick: function(date, jsEvent, view) {
-
-			 },
-			 weekends: true,
-			 height : 600,
-			 slotEventOverlap : true,
-			 allDaySlot : false,
-			 border : 0,
-			 //defaultDate: '2010-01-01',
-			 //events: 'http://lindemaria:8082/EXI/tmp/test.json',
-			 eventSources: [
-
-			                // your event source
-			                {
-			                    //url: 'http://lindemaria:8082/EXI/tmp/test.json',
-			                    //url : 'https://wwws.esrf.fr/ispyb/ispyb-ws/rest/876c61ea7243ae70fab8c1bc5b2a489a88451640/proposal/session/list?startdate=20160228&enddate=20160306',
-			                	url : EXI.getDataAdapter().proposal.session.getSessionsByDateURL(moment($('#' + this.targetId).fullCalendar('getView').intervalStart).format("YYYYMMDD"), "20160401"),
-			                    type: 'GET',
-			                    data: {
-			                    },
-			                    success : function(data){
-			                    	console.log(EXI.getDataAdapter().proposal.session.getSessionsByDateURL(
-			                    			moment($('#' + this.targetId).fullCalendar('getView').intervalStart).format("YYYYMMDD"), 
-			                    			moment($('#' + this.targetId).fullCalendar('getView').intervalEnd).format("YYYYMMDD"))
-			                    			);
-			                    	
-			                    	for (var i = 0; i < data.length; i++){
-			                    		data[i].id = data[i].sessionId;
-			                    		data[i].title = data[i].beamlineName; //+ data[i].beamlineOperator;
-			                    		data[i].start = $.fullCalendar.moment(moment(data[i].startDate).toISOString())
-			                    		data[i].end = $.fullCalendar.moment(moment(data[i].startDate).add('seconds', 30000).toISOString())
-			                    		data[i].color = _this.color[data[i].beamlineName ];
-			                    		data[i].allDay = false;
-			                    	}
-			                    	
-			                    },
-			                    error: function() {
-			                        alert('there was an error while fetching events!');
-			                    },
-			                    //,
-			                    //color: 'yellow',   // a non-ajax option
-			                    textColor: 'black' // a non-ajax option
-			                }
-
-			                // any other sources...
-
-			            ],
-			 customButtons: {
-			        myCustomButton: {
-			            text: 'custom!',
-			            click: function() {
-			                alert('clicked the custom button!');
-			                $('#' + this.targetId).prevYear();
-			            }
-			        }
-			    },
-			    header: {
-			        left: 'prev,next today myCustomButton',
-			        center: 'title',
-			        right: 'month,agendaWeek,agendaDay'
-			    }
-		 });*/
 		var options = {
-			width : '100%',
-			height : '1100px',
-			cluster: false,
-			axisOnTop: true,
-            groupsChangeable : true,
-            groupsOnRight: false,
-			editable : false,
-			style : 'box',
-			groupMinHeight : 14,
-			end : endDate,
-			max : endDate,
-			start : startDate,
-			min : startDate
+				editable: true,
+				autoResize : true,
+				height : "100%",
+				selectable : true,
+				zoomable : false,
+				moveable : true,
+				stack : true,
+			    onUpdate: function (item, callback) {
+			    	_this.onSelected.notify(item);
+			    }
 		};
 
 		document.getElementById(this.targetId).setAttribute("width", this.panel.getWidth() + "px");
 		
-		var timeline = new links.Timeline(document.getElementById(this.targetId), options);
-
+		this.timeline = new vis.Timeline(document.getElementById(this.targetId), this.data, options);
+		this.timeline.setGroups(this.groups);
 		
-		function onSelect() {
-			var sel = timeline.getSelection();
-			  if (sel.length) {
-			    if (sel[0].row != undefined) {
-			    	_this.onSelected.notify(_this.data[sel[0].row]);
-			    }
-			  }
-		}
 		
-		links.events.addListener(timeline, 'select', onSelect);
-		timeline.draw(data);
 	}
+};
+
+
+TimeLineWidget.prototype.load = function(data, startDate, endDate, groups) {
+	var _this = this;
+	this.data = data;
+	this.start = startDate;
+	this.end = endDate;
+	this.groups = groups;
+	this.timeline.setGroups(this.groups);
+	this.timeline.setItems(data);
+	
+	
 };
 
 TimeLineWidget.prototype.getTopBar = function() {
@@ -152,30 +65,25 @@ TimeLineWidget.prototype.getTopBar = function() {
 
 TimeLineWidget.prototype.getPanel = function() {
 	var _this = this;
-	
 	this.panel = Ext.create('Ext.panel.Panel', {
 		id :  this.id,
-		/*layout : {
-			type : 'fit' 
-		},*/
-		height : 1100,
+		height : 800,
 		cls : 'border-grid',
 		flex : 1,
 		margin : this.margin,
 		items : [ 
 		          {
-		        	  html : '<div style="height: 1100;overflow-y: scroll; " id="' + this.targetId + '"></div>'
+		        	  html : '<div style="height:790px" id="' + this.targetId + '"></div>'
 		          } 
 		] 
 		});
 
 	
 	this.panel.on("afterrender", function(){
-		_this.load(_this.data);
+		_this.render();
 	});
 	
 	this.panel.on("afterlayout", function(){
-		_this.load(_this.data);
 	});
 	
 	return this.panel;

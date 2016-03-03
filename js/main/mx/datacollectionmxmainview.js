@@ -13,27 +13,8 @@ DataCollectionMxMainView.prototype.getContainer = function() {
 			{
 				plain : true,
 				margin : '10 30 10 10',
-				items : [
-					{
-						tabConfig : {
-							title : 'Summary'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : 
-								[
-							         	this.dataCollectionSummaryGrid.getPanel()
-							]
-						}
-						]
-				  }]
+				cls : 'border-grid',
+				items : [this.dataCollectionSummaryGrid.getPanel()]
 		});
 	
 	

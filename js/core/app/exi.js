@@ -278,4 +278,4 @@ Exi.prototype.show = function() {
 
 			});
 };
->>>>>>> master
+

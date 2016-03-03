@@ -20,7 +20,7 @@ ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiSAXS.prototype.show = Exi.prototype.show;
 ExiSAXS.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiSAXS.prototype.setUserMenu = Exi.prototype.setUserMenu;
-ExiSAXS.prototype.appendDataAdapterParameters = ExiSAXS.prototype.appendDataAdapterParameters;
+ExiSAXS.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 
 ExiSAXS.prototype.getHeader = function(){
 	return '<img class="titleImage" src="../images/logo_EMBL.png"><span class="title">ExiSAXS</span><span class="subtitle">Extended ISPyB for SAXS<sub style="font-size:10px;color:orange">BETA</sub></span>';
