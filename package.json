@@ -24,7 +24,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/antolinos/ExiSAXS.git"
+    "url": "https://github.com/ispyb/EXI.git"
   },
   "keywords": [
     "ISPyB",
@@ -33,7 +33,7 @@
   "author": "Alejandro de Maria Antolinos",
   "license": "GPL-3",
   "bugs": {
-    "url": "https://github.com/antolinos/ExiSAXS/issues"
+    "url": "https://github.com/ispyb/EXI/issues"
   },
-  "homepage": "https://github.com/antolinos/ExiSAXS"
+  "homepage": "https://github.com/ispyb/EXI"
 }
