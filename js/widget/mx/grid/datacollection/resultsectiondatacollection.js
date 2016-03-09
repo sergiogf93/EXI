@@ -133,10 +133,6 @@ ResultSectionDataCollection.prototype.getScreeningHTML = function(dataCollection
 	var parsed = [];
 	if (dataCollectionGroup.Screening_screeningId != null){
 		if (dataCollectionGroup.ScreeningOutput_indexingSuccess){
-			/*parsed.push({
-				iconClass : "summary_datacollection_success",
-				value : "Indexing. Mosaicity: " + dataCollectionGroup.ScreeningOutput_mosaicity + 'º'
-			});*/
 			html = html + this.getIconTable([{
 				iconClass : "summary_datacollection_success",
 				value : "Indexing"

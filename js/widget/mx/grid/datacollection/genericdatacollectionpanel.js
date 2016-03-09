@@ -19,6 +19,13 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup){
 		border 		: 1,
 		store 		: this.store,
 	    columns		: this.getColumns(),
+	    features: [{
+            id: 'dataCollectionGroup',
+            ftype: 'groupingsummary',
+            groupHeaderTpl: '{dataCollectionGroup}',
+            hideGroupedHeader: true,
+            enableGroupingMenu: false
+        }],
 	    viewConfig	: {
 	        			enableTextSelection: true
 	     }
@@ -33,7 +40,7 @@ GenericDataCollectionPanel.prototype._getHTMLZoomImage = function(url, dataColle
 
 
 GenericDataCollectionPanel.prototype._getHTMLImage = function(url) {
-	return '<img class="lazy" onclick="myFunction()"  data-src=' + url + ' src=' + url + '>';
+	return '<img class="smalllazy" onclick="myFunction()"  data-src=' + url + ' src=' + url + '>';
 };
 
 
@@ -133,26 +140,8 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 		name : 'dataCollectionGroup',
 		flex : 1,
 		renderer : function(grid, e, record){
-			var resultSection = new ResultSectionDataCollection();
-			var parsed = [];
-			if (record.data.WorkflowStep_workflowStepType){
-				var steps = record.data.WorkflowStep_workflowStepType.split(",");
-				var status = record.data.WorkflowStep_status.split(",");
-				
-				for (var i = 0; i < steps.length; i++) {
-					if (status[i] == "Success"){
-						parsed.push({
-							iconClass 	: "summary_datacollection_success",
-							value 		:	 steps[i]
-						});
-					}
-					
-				}
-			}
-			else{
-				return;
-			}
-			return resultSection.getIconTable(parsed);
+			return new WorkflowSectionDataCollection().getHTML(record.data); 
+			
 		}
 	},
 	{
@@ -165,11 +154,19 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 		} 
 	},
 	{
-		header : 'Crystal',
+		header : 'Crystal Snapshot',
 		dataIndex : 'DataCollection_imagePrefix',
 		width : 310,
 		renderer : function(val, y, record) {
-			return _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
+			var html = "<table>"
+			var img1 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
+			var img2 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2));
+			var img3 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 3));
+			var img4 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4));
+			
+			html = html + "<tr><td>" + img1 + "</td><td>" + img2 + "</td><tr>";
+			html = html + "<tr><td>" + img3 + "</td><td>" + img4 +"</td><tr>";
+			return html + "</table>";
 		}
 	}
 	

@@ -10,7 +10,6 @@ DataCollectionGroupFactory.prototype.load = function( dataCollectionGroup ) {
 };
 
 DataCollectionGroupFactory.prototype.getPanel = function( dataCollectionGroup ) {
-	  
 	 /* if (dataCollectionGroup != null){
 			  var dataCollectionGroupType = dataCollectionGroup[0]["DataCollectionGroup_experimentType"]; 
 			  var workflowType = dataCollectionGroup[0]["Workflow_workflowType"];
@@ -43,18 +42,6 @@ DataCollectionGroupFactory.prototype.getPanel = function( dataCollectionGroup ) 
 			}
 	  }*/
 	  return this.dataCollectionPanel.getPanel();
-	  
-	  /*if( options.partType === 'door' ) {
-	    parentClass = CarDoor;
-	  } else if( options.partType === 'seat' ) {
-	    parentClass = CarSeat;
-	  }
-	  
-	  if( parentClass === null ) {
-	    return false;
-	  }
-	  
-	  return new parentClass( options );*/
 };
 	
 	
