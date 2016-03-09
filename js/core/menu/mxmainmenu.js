@@ -47,7 +47,7 @@ MXMainMenu.prototype.getMenuItems = function() {
 			listeners : {
 				specialkey : function(field, e) {
 					if (e.getKey() == e.ENTER) {
-						location.hash = "/mx/datacollection/acronyms/" + field.getValue() + "/main";
+						location.hash = "/mx/datacollection/protein_acronym/" + field.getValue() + "/main";
 					}
 				} 
 			} 

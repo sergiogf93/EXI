@@ -125,7 +125,7 @@ MXExiController.prototype.routeNavigation = function() {
 	}).enter(this.setPageBackground);
 	
 	
-	Path.map("#/mx/datacollection/acronyms/:acronmys/main").to(function() {
+	Path.map("#/mx/datacollection/protein_acronym/:acronmys/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
 		var onSuccess = function(sender, data){
