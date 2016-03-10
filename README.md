@@ -97,7 +97,18 @@ The expected output is:
 <table><tr><td>5</td><td>test1</td></tr><tr><td>4</td><td>test2</td></tr></table>
 ```
 
-
+Grunt and dustjs
+-----------------------
+There is a new task on Grunt. It takes all the javascript files on templates folder and it precompiles on the min folder
+```
+dustjs: {
+	    compile: {
+	      files: {
+	        'min/precompiled.templates.min.js': ['templates/*js']
+	      }
+	    }
+	  }
+```
 
 
 
