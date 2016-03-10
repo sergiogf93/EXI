@@ -5,8 +5,14 @@ function WorkflowSectionDataCollection(args) {
 }
 
 
+
+/**
+ * json = [...{"step":"Line","count":3,"status":"Success"}...]
+ */
 WorkflowSectionDataCollection.prototype.getIconTable = function(jsonArray) {
-	var table = document.createElement("table");
+	debugger
+	
+	/*var table = document.createElement("table");
 	for (var i = 0; i < jsonArray.length; i++) {
 		var tr = document.createElement("tr");
 		var td1 = document.createElement("td");
@@ -30,46 +36,10 @@ WorkflowSectionDataCollection.prototype.getIconTable = function(jsonArray) {
 		tr.appendChild(td2);
 		table.appendChild(tr);
 	}
-	return "<table>" + table.innerHTML + "</table>";
+	return "<table>" + table.innerHTML + "</table>";*/
 };
 
 
-
-WorkflowSectionDataCollection.prototype.getHTMLTable = function(jsonArray) {
-	var table = document.createElement("table");
-	for (var i = 0; i < jsonArray.length; i++) {
-		var tr = document.createElement("tr");
-		var td1 = document.createElement("td");
-		
-		td1.appendChild(document.createTextNode(jsonArray[i].key));
-		if (jsonArray[i].value == null){
-			td1.setAttribute("class", "summary_datacollection_null_parameter");
-		}
-		
-		
-		if ((jsonArray[i].value) != null){
-			td1.setAttribute("class", "summary_datacollection_parameter_name");
-		}
-
-		var td2 = document.createElement("td");
-		if ((jsonArray[i].value) != null){
-			td2.appendChild(document.createTextNode(jsonArray[i].value));
-			td2.setAttribute("class", "summary_datacollection_parameter");
-		}
-		
-		var td3 = document.createElement("td");
-		if (jsonArray[i].units != null){
-			td3.appendChild(document.createTextNode(jsonArray[i].units));
-			td3.setAttribute("class", "summary_datacollection_parameter");
-		}
-		
-		tr.appendChild(td1);
-		tr.appendChild(td2);
-		tr.appendChild(td3);
-		table.appendChild(tr);
-	}
-	return "<table>" + table.innerHTML + "</table>";
-};
 
 /**
  * 
@@ -107,36 +77,24 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(workflowSteps, 
 };
 
 WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataCollectionGroup){
-	var resultSection = new ResultSectionDataCollection();
 	var parsed = [];
+	var html = "";
 	if (dataCollectionGroup.WorkflowStep_workflowStepType){
-		var items = this.parseWorkflow(dataCollectionGroup.WorkflowStep_workflowStepType, dataCollectionGroup.WorkflowStep_status);
+		parsed = this.parseWorkflow(dataCollectionGroup.WorkflowStep_workflowStepType, dataCollectionGroup.WorkflowStep_status);
 		
-		for (var i = 0; i < items.length; i++) {
-			if (items[i].status == "Success"){
-				parsed.push({
-					iconClass 	: "summary_datacollection_success",
-					value 		:	 items[i].count + "x " + items[i].step
-				});
-			}
-			else{
-				parsed.push({
-					iconClass 	: "summary_datacollection_failed",
-					value 		:	 items[i].count + "x " + items[i].step
-				});
-			}
-			
-		}
+		
 	}
-	else{
-		return;
-	}
-	return resultSection.getIconTable(parsed);
+	dust.render("workflowstepsection_workflowstep", parsed, function(err, out){
+		html = out;
+     });
+	return html;
+	
 };
 
 WorkflowSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 	/** Results for WorkflowStep **/
 	var result = this.getWorkflowStepHTML(dataCollectionGroup);
+	console.log(result);
 	return result;
 	
 };
