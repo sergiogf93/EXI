@@ -19,27 +19,33 @@ Output:
  * 
  */
 WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionGroup){
-	var steps = dataCollectionGroup.WorkflowStep_workflowStepType.split(",");
-	var status = dataCollectionGroup.WorkflowStep_status.split(",");
-	var ids = dataCollectionGroup.WorkflowStep_workflowStepId.split(",");
-	
-	var previous = null;
-	var cleaned = [];
-	for (var i = 0; i < steps.length; i++){
-		var step = {
-				status : status[i],
-				name   : steps[i],
-				workflowStepId  : ids[i],
-				img : EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(ids[i])
-		};
-		if (previous != steps[i]){
-			cleaned.push([step]);
-			
+	var steps = [];
+	var status = [];
+	var ids = [];
+	if ( dataCollectionGroup.WorkflowStep_workflowStepType != null){
+		steps = dataCollectionGroup.WorkflowStep_workflowStepType.split(",");
+		status = dataCollectionGroup.WorkflowStep_status.split(",");
+		ids = dataCollectionGroup.WorkflowStep_workflowStepId.split(",");
+		
+		
+		var previous = null;
+		var cleaned = [];
+		for (var i = 0; i < steps.length; i++){
+			var step = {
+					status : status[i],
+					name   : steps[i],
+					workflowStepId  : ids[i],
+					img : EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(ids[i])
+			};
+			if (previous != steps[i]){
+				cleaned.push([step]);
+				
+			}
+			else{
+				cleaned[cleaned.length - 1].push(step);
+			}
+			previous = steps[i];
 		}
-		else{
-			cleaned[cleaned.length - 1].push(step);
-		}
-		previous = steps[i];
 	}
 	return cleaned;
 	
@@ -60,8 +66,8 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 
 WorkflowSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 	/** Results for WorkflowStep **/
+	debugger
 	var result = this.getWorkflowStepHTML(dataCollectionGroup);
-	console.log(result);
 	return result;
 	
 };
