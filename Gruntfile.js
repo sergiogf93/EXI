@@ -64,7 +64,7 @@ module.exports = function(grunt) {
 			  },
 			    files: {
 			          'min/exi.min.css': [  
-					'css/beamlinesessionbox.css', 'bower_components/fullcalendar/dist/fullcalendar.css', 'bower_components/vis/dist/vis.css', 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
+					'css/templatelist.css', 'css/beamlinesessionbox.css', 'bower_components/fullcalendar/dist/fullcalendar.css', 'bower_components/vis/dist/vis.css', 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
 			    }
 		}
 	},

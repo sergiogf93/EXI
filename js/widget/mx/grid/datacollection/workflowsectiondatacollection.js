@@ -6,39 +6,6 @@ function WorkflowSectionDataCollection(args) {
 
 
 
-/**
- * json = [...{"step":"Line","count":3,"status":"Success"}...]
- */
-WorkflowSectionDataCollection.prototype.getIconTable = function(jsonArray) {
-	debugger
-	
-	/*var table = document.createElement("table");
-	for (var i = 0; i < jsonArray.length; i++) {
-		var tr = document.createElement("tr");
-		var td1 = document.createElement("td");
-		
-		
-		var div = document.createElement("div");
-		td1.setAttribute("class", jsonArray[i].iconClass);
-		td1.appendChild(div);
-		
-
-		var td2 = document.createElement("td");
-		if ((jsonArray[i].value) != null){
-			var span = document.createElement("span");
-			span.innerHTML = jsonArray[i].value;
-			td2.appendChild(span);
-			td2.setAttribute("class", "summary_highlighted_datacollection_parameter");
-		}
-		
-		
-		tr.appendChild(td1);
-		tr.appendChild(td2);
-		table.appendChild(tr);
-	}
-	return "<table>" + table.innerHTML + "</table>";*/
-};
-
 
 
 /**
@@ -57,7 +24,6 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 	var ids = dataCollectionGroup.WorkflowStep_workflowStepId.split(",");
 	
 	var previous = null;
-	
 	var cleaned = [];
 	for (var i = 0; i < steps.length; i++){
 		var step = {
@@ -71,12 +37,10 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 			
 		}
 		else{
-			//cleaned[cleaned.length - 1].count =  cleaned[cleaned.length - 1].count + 1;
 			cleaned[cleaned.length - 1].push(step);
 		}
 		previous = steps[i];
 	}
-	console.log(cleaned);
 	return cleaned;
 	
 };
@@ -86,8 +50,6 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 	var html = "";
 	if (dataCollectionGroup.WorkflowStep_workflowStepType){
 		parsed = this.parseWorkflow(dataCollectionGroup);
-		
-		
 	}
 	dust.render("workflowstepsection", parsed, function(err, out){
 		html = out;

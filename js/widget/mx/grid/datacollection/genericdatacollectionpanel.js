@@ -85,6 +85,15 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 	var _this = this;
 	var columns = [
 	{
+		header : '',
+		dataIndex : 'DataCollection_imagePrefix',
+		width : 310,
+		renderer : function(val, y, record) {
+			console.log(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(record.data.lastImageId));
+			return _this._getHTMLZoomImage(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(record.data.lastImageId), record.data.DataCollection_dataCollectionId, record.data.lastImageId);
+		} 
+	},
+	{
 		header : 'DataCollection',
 		dataIndex : 'dataCollectionGroup',
 		name : 'dataCollectionGroup',
@@ -145,14 +154,16 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 		}
 	},
 	{
-		header : 'Image',
-		dataIndex : 'DataCollection_imagePrefix',
-		width : 310,
-		renderer : function(val, y, record) {
-			console.log(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(record.data.lastImageId));
-			return _this._getHTMLZoomImage(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(record.data.lastImageId), record.data.DataCollection_dataCollectionId, record.data.lastImageId);
-		} 
+		header : '',
+		dataIndex : 'dataCollectionGroup',
+		name : 'dataCollectionGroup',
+		width : 160,
+		renderer : function(grid, e, record){
+			return new CustomSectionDataCollection().getHTML(record.data); 
+			
+		}
 	},
+	
 	{
 		header : 'Crystal Snapshot',
 		dataIndex : 'DataCollection_imagePrefix',
