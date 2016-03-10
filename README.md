@@ -50,6 +50,59 @@ If you want to build a version where the javascript will be not minified for dev
 grunt dev
 ```
 
+Using dust (Template Engine)
+===============================
+EXI makes an intensive use of HTML templates. Dustjs has been chosen as engine because:
+1. High integration with Grunt
+2. Easy to use
+3. Maintened by linkedin
+4. Possibility to precompile the template in order to execute them faster
+
+
+Use case:
+- Template can be uses when we want to render HTML within a Ext component. For instance a column on a Ext.grid.Panel object
+
+How to use dust on EXI?
+-----------------------
+
+1. Create a javascript file on  /templates
+2. The name of the file will correspond with the name of the template that dust will give to the precompiled function
+Example: templates/test.js
+```
+<table>
+{#.}
+<tr>
+<td>
+{.count}
+</td>
+<td>
+{.step}
+</td>
+</tr>
+{/.}
+</table>
+```
+
+3. Run Grunt or Grunt dev. Because we need to precompile the templates we need to build the application before hand
+4. Use the template
+```javascript
+dust.render("workflowstepsection_workflowstep", [{step:'test1', count:5},{step:'test2', count:4},], function(err, out){
+		console.log(out);
+     });
+
+```
+
+The expected output is:
+```
+<table><tr><td>5</td><td>test1</td></tr><tr><td>4</td><td>test2</td></tr></table>
+```
+
+
+
+
+
+
+
 How to configure EXI 
 --------------------------------------
 In order to configure EXI some modifications should be done on config.js that it may be found on:
