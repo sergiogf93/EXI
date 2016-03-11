@@ -35,7 +35,7 @@ WorkflowStepMainView.prototype.getSummaryTab = function() {
 	            
 	            
 	    ]
-	})
+	});
 	return this.summaryTab;
 };
 

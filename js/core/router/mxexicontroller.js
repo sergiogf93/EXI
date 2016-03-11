@@ -55,6 +55,7 @@ MXExiController.prototype.routeNavigation = function() {
 			EXI.setLoadingNavigationPanel(true);
 			listView = new CrystalListView();
 			listView.onSelect.attach(function(sender, selected) {	
+				location.hash = "/mx/crystal/" + selected[0].crystalId + "/main";
 			});
 
 			EXI.addNavigationPanel(listView);
@@ -159,6 +160,20 @@ MXExiController.prototype.routeNavigation = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getDataCollectionViewBySessionId(this.params['sessionId']);
 
 	}).enter(this.setPageBackground);
+	
+	Path.map("#/mx/crystal/:crystalId/main").to(function() {
+		var mainView = new CrystalMainView();
+		EXI.addMainPanel(mainView);
+		EXI.setLoadingMainPanel(true);
+		var onSuccess = function(sender, crystal){
+			mainView.load(crystal);
+			EXI.setLoadingMainPanel(false);
+			
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.crystal.getCrystalById(this.params['crystalId']);
+
+	}).enter(this.setPageBackground);
+	
 	
 	Path.map("#/mx/puck/:containerId/main").to(function() {
 		EXI.setLoadingMainPanel(true);

@@ -1,4 +1,4 @@
-var BUI = {
+BUI = {
 	//interval : 60000,
 	interval : 40000,
 	rainbow : function(numOfSteps, step) {
@@ -1080,3 +1080,43 @@ var BIOSAXS_COMBOMANAGER = {
 		return this.storageLocationComboBox;
 	}
 };
+var MX_COMBOMANAGER = {
+		getComboProteins : function(proteins, args) {
+			var labelWidth = 150;
+			var margin = "10 10 10 40";
+			var width = 300;
+
+			if (args != null) {
+				if (args.labelWidth != null) {
+					labelWidth = args.labelWidth;
+				}
+				if (args.margin != null) {
+					margin = args.margin;
+				}
+				if (args.width != null) {
+					width = args.width;
+				}
+			}
+			
+			var store = Ext.create('Ext.data.Store', {
+				fields : [ 'name', 'acronym' ],
+				data : proteins,
+				sorters : [ 'acronym' ]
+			});
+
+			return Ext.create('Ext.form.ComboBox', {
+				fieldLabel : 'Proteins',
+				labelWidth : labelWidth,
+				width : width,
+				margin : margin,
+				store : store,
+				editable: false,
+				queryMode : 'local',
+				displayField : 'acronym',
+				valueField : 'proteinId'
+			});
+
+		}
+		
+	};
+
