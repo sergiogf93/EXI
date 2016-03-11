@@ -35,6 +35,7 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 					status : status[i],
 					name   : steps[i],
 					workflowStepId  : ids[i],
+					workflowStepIds : ids, 
 					img : EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(ids[i])
 			};
 			if (previous != steps[i]){
@@ -60,6 +61,9 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 	dust.render("workflowstepsection", parsed, function(err, out){
 		html = out;
      });
+	
+	/** Adding button **/
+	html = html + "<br /><a  href='#/mx/workflow/step/" + dataCollectionGroup.WorkflowStep_workflowStepId + "/main'>See all</a>";
 	return html;
 	
 };

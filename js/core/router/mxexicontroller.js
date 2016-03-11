@@ -126,6 +126,17 @@ MXExiController.prototype.routeNavigation = function() {
 	}).enter(this.setPageBackground);
 	
 	
+	Path.map("#/mx/workflow/step/:workflowStepIdList/main").to(function() {
+		var mainView = new WorkflowStepMainView();
+		EXI.addMainPanel(mainView);
+		var onSuccess = function(sender, data){
+			mainView.load(JSON.parse(data));
+		};
+		
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowStepDataAdapter.getWorkflowstepByIdList(this.params['workflowStepIdList']);
+	}).enter(this.setPageBackground);
+	
+	
 	Path.map("#/mx/datacollection/protein_acronym/:acronmys/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
