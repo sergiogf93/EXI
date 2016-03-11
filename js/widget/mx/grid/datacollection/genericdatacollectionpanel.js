@@ -149,6 +149,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 		name : 'dataCollectionGroup',
 		flex : 1,
 		renderer : function(grid, e, record){
+			
 			return new WorkflowSectionDataCollection().getHTML(record.data); 
 			
 		}

@@ -66,7 +66,6 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 
 WorkflowSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 	/** Results for WorkflowStep **/
-	debugger
 	var result = this.getWorkflowStepHTML(dataCollectionGroup);
 	return result;
 	

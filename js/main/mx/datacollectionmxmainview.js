@@ -38,8 +38,13 @@ DataCollectionMxMainView.prototype.load = function(sessionsId) {
 DataCollectionMxMainView.prototype.load = function(data) {
 	var _this = this;
 	this.panel.setTitle("Data Collection ");
-	_this.dataCollectionSummaryGrid.load(data);
-	//_this.dataCollectionSummaryGrid.grid.setTitle((data.length) + " Data Collections ");
+	if (data.length>0){
+		_this.dataCollectionSummaryGrid.load(data);
+	}
+	else{
+		BUI.showError("No data collections");
+	}
+	
 };
 
 

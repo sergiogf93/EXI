@@ -1,9 +1,8 @@
 
 .result-autoprocessing-anchor{
-	
-	color : black;
-	font-weight : bold;
-	
+	text-decoration: none !important;
+	color : #0B0B61;
+	font-size:11px;
 	
 }
 

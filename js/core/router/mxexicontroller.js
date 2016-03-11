@@ -112,6 +112,7 @@ MXExiController.prototype.routeNavigation = function() {
 	
 	Path.map("#/autoprocintegration/datacollection/:datacollectionId/main").to(function() {
 		var mainView = new AutoProcIntegrationMainView();
+		
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['datacollectionId']);
 		/** Selecting data collections from experiment * */
@@ -139,11 +140,11 @@ MXExiController.prototype.routeNavigation = function() {
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
+		EXI.setLoadingMainPanel(true);
 		var onSuccess = function(sender, data){
-			console.log(data);
 			mainView.load(data);
+			EXI.setLoadingMainPanel(false);
 		};
-		//EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getBySessionsId(this.params['sessionId']);
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getDataCollectionViewBySessionId(this.params['sessionId']);
 
 	}).enter(this.setPageBackground);
