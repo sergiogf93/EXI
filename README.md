@@ -50,6 +50,15 @@ If you want to build a version where the javascript will be not minified for dev
 grunt dev
 ```
 
+Update a package
+===================
+
+Using bower one can update a package by typing:
+```
+bower update ispyb-js-api
+```
+
+
 Using dust (Template Engine)
 ===============================
 EXI makes an intensive use of HTML templates. Dustjs has been chosen as engine because:
