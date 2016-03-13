@@ -2,10 +2,10 @@ function ExiMX() {
 	 Exi.call(this, {
 		 					menu: new MXMainMenu(),
 		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new MXExiController(), new OfflineExiController(), new ProposalExiController()],
+		 					controllers : [new MXExiController(),new SAXSExiController(), new OfflineExiController(), new ProposalExiController()],
 		 					headerCssClass : 'mxTitlePanel'
-	 
-	 });	 
+
+	 });
 }
 
 ExiMX.prototype.loadSelected = Exi.prototype.loadSelected;
