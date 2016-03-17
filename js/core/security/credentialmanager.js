@@ -36,7 +36,19 @@ CredentialManager.prototype.getTechniqueByBeamline = function(beamlineName){
 		}
 	}
 	return "UNKNOW";
-	
+
+};
+
+/** Returns an string with the name of all the beamlines **/
+CredentialManager.prototype.getBeamlines = function(){
+	var connections = this.getConnections();
+  var beamlines = [];
+	for (var i = 0; i < connections.length; i++) {
+      $.merge(beamlines, connections[i].beamlines.MX);
+      $.merge(beamlines, connections[i].beamlines.SAXS);
+	}
+	return beamlines;
+
 };
 
 CredentialManager.prototype.getConnections = function(){
@@ -61,7 +73,7 @@ CredentialManager.prototype.getConnections = function(){
 					exiUrl : credentials[i].exiUrl,
 					token : credentials[i].token,
 					beamlines : credentials[i].properties.beamlines,
-					proposal : null 
+					proposal : null
 				});
 		}
 	}
@@ -73,9 +85,9 @@ CredentialManager.prototype.getCredentialByUserName = function(username, roles, 
 	for (var i = 0; i < credentials.length; i++) {
 		if (credentials[i].username == username) {
 			return new Credential(
-					credentials[i].username, 
-					credentials[i].roles, 
-					credentials[i].token, 
+					credentials[i].username,
+					credentials[i].roles,
+					credentials[i].token,
 					credentials[i].url,
 					credentials[i].activeProposals);
 		}
