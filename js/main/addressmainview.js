@@ -4,11 +4,7 @@ function AddressMainView() {
 
 	MainView.call(this);
 
-	this.addressForm = new AddressForm({
-//		height : 800,
-//		collapsed : false,
-//		tbar : true
-	});
+	this.addressForm = new AddressForm();
 	
 	
 	this.onSelect = new Event(this);
@@ -41,7 +37,7 @@ AddressMainView.prototype.load = function(labContactId) {
 		_this.addressForm.load(data);
 	};
 	
-	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getLabContactById(labContactId);
+	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.labcontacts.getLabContactById(labContactId);
 	
 	
 };

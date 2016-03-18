@@ -36,5 +36,8 @@
     "ispyb-js-api": "*",
     "vis": "^4.15.0",
     "Snap.svg": "snap.svg#^0.4.1"
+  },
+  "resolutions": {
+    "qunit": "^1.22.0"
   }
 }

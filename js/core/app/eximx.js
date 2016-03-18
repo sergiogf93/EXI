@@ -2,7 +2,7 @@ function ExiMX() {
 	 Exi.call(this, {
 		 					menu: new MXMainMenu(),
 		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new MXExiController(),new SAXSExiController(), new OfflineExiController(), new ProposalExiController()],
+		 					controllers : [new MXExiController(),new SAXSExiController(), new OfflineExiController(), new ProposalExiController(), new LabContactExiController()],
 		 					headerCssClass : 'mxTitlePanel'
 
 	 });

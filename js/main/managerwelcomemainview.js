@@ -93,8 +93,8 @@ ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
               sessionGrid.panel.setTitle("Sessions scheduled on " + moment(start, "YYYYMMDD").format("DD-MM-YYYY"));
               sessionGrid.panel.setLoading(false);
 
-          };
-		      EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
+          }
+		  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
 };
 
 ManagerWelcomeMainView.prototype.getToolbar = function() {

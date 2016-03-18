@@ -205,10 +205,6 @@ AddressForm.prototype.getPersonPanel = function() {
 AddressForm.prototype.getPackagePanel = function() {
 	this.packagePanel = Ext.create('Ext.panel.Panel', {
 		layout : 'hbox',
-//		margin : '10',
-//		title : 'Delivery Details',
-//		icon : '../images/icon/ic_contacts_black_48dp.png',
-//		cls : "border-grid",
 		items : [ {
 			padding : 10,
 			xtype : 'container',
@@ -239,7 +235,6 @@ AddressForm.prototype.getPanel = function() {
 		icon : '../images/icon/ic_email_black_24dp.png',
 		items : [  
 		           this.getPersonPanel() 
-//		           this.getPackagePanel() 
 		           ] });
 	return this.panel;
 };
@@ -252,8 +247,7 @@ AddressForm.prototype.save = function() {
 		_this.panel.setLoading(false);
 		EXI.getDataAdapter().proposal.proposal.update();
 	});
-	EXI.getDataAdapter({
-		onSuccess : onSuccess }).proposal.shipping.saveLabContact(_this.getAddress());
+	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
 };
 
 AddressForm.prototype.getToolBar = function() {
