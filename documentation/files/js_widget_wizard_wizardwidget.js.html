@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>js/widget/wizard/wizardwidget.js - EXI</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="EXI" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: js/widget/wizard/wizardwidget.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+﻿/**
+ * It contains a set of form that we will communicate each other up to status finish is reached
+ * 
+ */
+function WizardWidget(args) {
+	this.targetId = null;
+	this.width = 910;
+	this.height = 400;
+	this.windowMode = true;
+
+	if (args != null) {
+		if (args.windowMode != null) {
+			this.windowMode = args.windowMode;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+
+	}
+
+	this.step = 0;
+	this.forms = [];
+
+	this.onFinished = new Event(this);
+}
+
+WizardWidget.prototype.draw = function(targetId, form) {
+	this.targetId = targetId;
+	this.forms.push(form);
+	this.renderMasterContainer();
+};
+
+WizardWidget.prototype.getButtons = function(step, onNext, onBack) {
+	var _this = this;
+
+	/** For the last step **/
+	if (_this.forms[_this.step].onWizardFinished != null) {
+		return [ {
+			text : &#x27;Back&#x27;,
+			handler : function() {
+				_this.step = _this.step - 1;
+				_this.renderMasterContainer();
+				onBack();
+				_this.forms[_this.step].reload();
+			}
+		}, &quot;-&gt;&quot;, {
+			text : &#x27;Finish&#x27;,
+			handler : function() {
+				_this.forms[_this.step].onWizardFinished.attach(function(sender, result) {
+					_this.onFinished.notify(result);
+				});
+//				_this.step = _this.step + 1;
+				onNext();
+			}
+		} ];
+	}
+
+	/** First **/
+	if (step == 0) {
+		return [ &quot;-&gt;&quot;, {
+			text : &#x27;Next&#x27;,
+			handler : function() {
+				_this.forms.push(_this.forms[_this.step].getNextForm());
+				_this.step = _this.step + 1;
+				_this.renderMasterContainer();
+				onNext(_this.forms[_this.step - 1].data);
+			}
+		} ];
+	}
+
+	if ((this.step &gt; 0) &amp;&amp; (this.forms[_this.step].onWizardFinished == null)) {
+		return [ {
+			text : &#x27;Back&#x27;,
+			handler : function() {
+				_this.step = _this.step - 1;
+				_this.renderMasterContainer();
+				onBack();
+				_this.forms[_this.step].reload();
+			}
+		}, &quot;-&gt;&quot;, {
+			text : &#x27;Next&#x27;,
+			handler : function() {
+				if (_this.forms[_this.step].onWizardFinished == null) {
+					_this.forms.push(_this.forms[_this.step].getNextForm());
+					_this.step = _this.step + 1;
+					onNext(_this.forms[_this.step - 1].data);
+					_this.renderMasterContainer();
+				} else {
+					_this.forms[_this.step].onWizardFinished.attach(function(sender, result) {
+						_this.window.close();
+						_this.onFinished.notify(result);
+					});
+					_this.step = _this.step + 1;
+					onNext(_this.forms[_this.step - 1].data);
+				}
+			}
+		} ];
+	}
+
+};
+
+
+WizardWidget.prototype.getPanel = function(form) {
+	this.forms.push(form);
+	
+	return Ext.create(&#x27;Ext.form.Panel&#x27;, {
+		width : this.width,
+		height : 800,
+		items : [  this.forms[this.step].getForm() ],
+		buttons : this.getButtons(this.step, this.forms[this.step].onNext, this.forms[this.step].onBack)
+	});
+};
+
+WizardWidget.prototype.renderMasterContainer = function() {
+	var _this = this;
+
+	if (this.current != null) {
+		this.current.destroy();
+	}
+	if (this.window != null) {
+		this.window.destroy();
+	}
+	this.current = this.getPanel();
+
+	if (this.windowMode == false) {
+		this.current.render(this.targetId);
+	} else {
+
+		this.window = Ext.create(&#x27;Ext.Window&#x27;, {
+			id : this.id,
+			resizable : true,
+			constrain : true,
+			modal : true,
+			frame : false,
+			draggable : true,
+			autoscroll : true,
+			layout : {
+				type : &#x27;vbox&#x27;,
+				align : &#x27;stretch&#x27;
+			},
+			items : this.current,
+			width : this.width,
+			title : &quot;BIOSAXS Experiment Designer&quot;,
+			listeners : {
+				scope : this,
+				minimize : function() {
+					this.panel.hide();
+				},
+				destroy : function() {
+					delete this.panel;
+				}
+			}
+		});
+
+		this.window.show();
+	}
+};
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

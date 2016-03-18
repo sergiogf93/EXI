@@ -59,7 +59,6 @@ SessionGrid.prototype.getPanel = function() {
 
 	this.store = Ext.create('Ext.data.Store', {
 		fields : [ 'startDate', 'beamlineName', 'beamlineOperator', 'diff' ],
-//		fields : [ 'beamlineName' ],
 		emptyText : "No sessions",
 		data : []
 	});
@@ -67,12 +66,11 @@ SessionGrid.prototype.getPanel = function() {
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : this.title,
 		store : this.store,
-    layout : 'fit',
+		layout : 'fit',
 		icon : '../images/icon/sessions.png',
 		cls : 'border-grid',
 		height : this.height,
 		margin : this.margin,
-		felx : 1,
 		emptyText : "No sessions",
 
 		columns : [

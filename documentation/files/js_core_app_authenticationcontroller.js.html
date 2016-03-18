@@ -38,6 +38,7 @@
                 
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
                             </ul>
                 
                 
@@ -105,11 +106,13 @@ AuthenticationManager.prototype.login = function(user, password, url){
 		EXI.setError(&quot;Permission denied&quot;);
 		BUI.showError(&quot;Your credentials are invalid&quot;);
 	};
-	
-	
+
 	EXI.getDataAdapter({
-		onSuccess :fn,
-		onError :err
+		onSuccess 	: fn,
+		onError 	: err,
+		url			: url,
+		username 	: user
+		
 	}).proposal.authentication.authenticate(user, password, url);
 	
 	

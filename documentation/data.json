@@ -156,7 +156,9 @@
         "js/main/managerwelcomemainview.js": {
             "name": "js/main/managerwelcomemainview.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "ManagerWelcomeMainView": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -638,7 +640,21 @@
         }
     },
     "modules": {},
-    "classes": {},
+    "classes": {
+        "ManagerWelcomeMainView": {
+            "name": "ManagerWelcomeMainView",
+            "shortname": "ManagerWelcomeMainView",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 2,
+            "description": "Class for the manager landing page. It inherits from MainView",
+            "is_constructor": 1
+        }
+    },
     "elements": {},
     "classitems": [
         {
@@ -659,68 +675,68 @@
                     "description": ""
                 }
             ],
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 6,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 8,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 10,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 13,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 38,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 41,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 64,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 69,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 81,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 92,
             "description": "This method append to args the values of the active connection: url, token and proposal",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 98,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
             "line": 100,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/app/exi.js",
@@ -732,316 +748,316 @@
                     "description": ""
                 }
             ],
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/menu/mainmenu.js",
             "line": 19,
             "description": "If there is a credential then home tab will redirect to the welcome page (either manager or user)",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/exicontroller.js",
             "line": 6,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/exicontroller.js",
             "line": 11,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/exicontroller.js",
             "line": 13,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/exicontroller.js",
             "line": 18,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/exicontroller.js",
             "line": 23,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/exicontroller.js",
             "line": 35,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/labcontactexicontroller.js",
             "line": 45,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 8,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 13,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 15,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 20,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 25,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 29,
             "description": "Loading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 38,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 70,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 107,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/mxexicontroller.js",
             "line": 119,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/offlineexicontroller.js",
             "line": 46,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/offlineexicontroller.js",
             "line": 58,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/offlineexicontroller.js",
             "line": 65,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/offlineexicontroller.js",
             "line": 67,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/offlineexicontroller.js",
             "line": 72,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/proposalexicontroller.js",
             "line": 35,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 13,
             "description": "Loading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 33,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 49,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 65,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 75,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 82,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 89,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 94,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 124,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 138,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 149,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 171,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 197,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 205,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/saxsexicontroller.js",
             "line": 243,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/shippingexicontroller.js",
             "line": 15,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/shippingexicontroller.js",
             "line": 27,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/shippingexicontroller.js",
             "line": 29,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/shippingexicontroller.js",
             "line": 34,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/shippingexicontroller.js",
             "line": 39,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/router/shippingexicontroller.js",
             "line": 62,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/security/credentialmanager.js",
             "line": 9,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/security/credentialmanager.js",
             "line": 27,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/security/credentialmanager.js",
             "line": 42,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 37,
             "description": "Groups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 213,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 252,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 260,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 273,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 324,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 329,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 334,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 424,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 461,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 568,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 686,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/bui.js",
             "line": 731,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/dygraphwidget.js",
@@ -1055,138 +1071,196 @@
             "ylabel": "",
             "xlabel": "",
             "showrangeselector": "Show or hide the range selector widget.",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/dygraphwidget.js",
             "line": 79,
             "description": "data: dygraphs.com/data.html",
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/dygraphwidget.js",
             "line": 90,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/dygraphwidget.js",
             "line": 95,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/core/util/string.js",
             "line": 1,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/autoprocintegrationmainview.js",
             "line": 25,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/autoprocintegrationmainview.js",
             "line": 97,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/workflowstepmainview.js",
             "line": 70,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/workflowstepmainview.js",
             "line": 72,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/workflowstepmainview.js",
             "line": 78,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/workflowstepmainview.js",
             "line": 84,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/run/dimplerunmainview.js",
             "line": 151,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/prepare/templatemainview.js",
             "line": 14,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/prepare/templatemainview.js",
             "line": 36,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/experimentmainview.js",
             "line": 6,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/experimentmainview.js",
             "line": 28,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/mergemainview.js",
             "line": 8,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/mergemainview.js",
             "line": 12,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/mergemainview.js",
             "line": 14,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/mergemainview.js",
             "line": 243,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/mergemainview.js",
             "line": 300,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/primarydatamainview.js",
             "line": 16,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/primarydatamainview.js",
             "line": 25,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/primarydatamainview.js",
             "line": 156,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/saxs/primarydatamainview.js",
             "line": 159,
-            "class": ""
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 83,
-            "class": ""
+            "line": 53,
+            "description": "This sets an active proposal into the credential Manager. It also retrieve all the information about the proposal: shipments, macromolecules, crystals, buffers, etc.. and store \nthem in a local storage",
+            "itemtype": "method",
+            "name": "activeProposal",
+            "params": [
+                {
+                    "name": "proposal",
+                    "description": "Proposal object that should container at least: [code, number]",
+                    "type": "Object"
+                }
+            ],
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 206,
-            "class": ""
+            "line": 79,
+            "description": "It receives a list of proposals and display them in the main container",
+            "params": [
+                {
+                    "name": "proposals",
+                    "description": "Arrays of Proposal objects",
+                    "type": "Object"
+                }
+            ],
+            "itemtype": "method",
+            "name": "displayProposals",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 102,
+            "description": "Retrieves a list of sessions based on a start date and end date and loads them on the session grid",
+            "params": [
+                {
+                    "name": "start",
+                    "description": "Date should be in the format of YYYYMMDD",
+                    "type": "String"
+                },
+                {
+                    "name": "end",
+                    "description": "Date should be in the format of YYYYMMDD",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "loadByDate",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 120,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 191,
+            "description": "Retrieves all proposas on ISPyB and stores them on this.proposal \nIt is useful for fast search later on",
+            "itemtype": "method",
+            "name": "loadProposals",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 213,
+            "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/userwelcomemainview.js",
@@ -1897,21 +1971,21 @@
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
-            "line": 670,
+            "line": 660,
             "description": "Set status bar to ready (ok icon)",
             "msg": "message to be displayed on the bar",
             "class": ""
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
-            "line": 684,
+            "line": 674,
             "description": "Set status bar to busy (refreshing icon)",
             "msg": "message to be displayed on the bar",
             "class": ""
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
-            "line": 698,
+            "line": 688,
             "class": ""
         },
         {
@@ -1954,7 +2028,7 @@
         },
         {
             "file": "js/widget/grid/proposalgrid.js",
-            "line": 131,
+            "line": 130,
             "class": ""
         },
         {
@@ -1964,7 +2038,7 @@
         },
         {
             "file": "js/widget/grid/sessiongrid.js",
-            "line": 156,
+            "line": 154,
             "class": ""
         },
         {
@@ -3525,11 +3599,11 @@
         },
         {
             "message": "unknown tag: msg",
-            "line": " js/widget/grid/measurementgrid.js:670"
+            "line": " js/widget/grid/measurementgrid.js:660"
         },
         {
             "message": "unknown tag: msg",
-            "line": " js/widget/grid/measurementgrid.js:684"
+            "line": " js/widget/grid/measurementgrid.js:674"
         },
         {
             "message": "unknown tag: height",
@@ -4113,11 +4187,11 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/main/managerwelcomemainview.js:83"
+            "line": " js/main/managerwelcomemainview.js:120"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/managerwelcomemainview.js:206"
+            "line": " js/main/managerwelcomemainview.js:213"
         },
         {
             "message": "Missing item type",
@@ -4621,15 +4695,15 @@
         },
         {
             "message": "Missing item type\nSet status bar to ready (ok icon)",
-            "line": " js/widget/grid/measurementgrid.js:670"
+            "line": " js/widget/grid/measurementgrid.js:660"
         },
         {
             "message": "Missing item type\nSet status bar to busy (refreshing icon)",
-            "line": " js/widget/grid/measurementgrid.js:684"
+            "line": " js/widget/grid/measurementgrid.js:674"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/grid/measurementgrid.js:698"
+            "line": " js/widget/grid/measurementgrid.js:688"
         },
         {
             "message": "Missing item type\nA shipment may contains one or more cases where stock solutions and sample\nplates are stored",
@@ -4657,7 +4731,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/grid/proposalgrid.js:131"
+            "line": " js/widget/grid/proposalgrid.js:130"
         },
         {
             "message": "Missing item type",
@@ -4665,7 +4739,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/grid/sessiongrid.js:156"
+            "line": " js/widget/grid/sessiongrid.js:154"
         },
         {
             "message": "Missing item type",

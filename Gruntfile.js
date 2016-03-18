@@ -56,9 +56,11 @@ module.exports = function(grunt) {
 												   "bower_components/moment/min/moment.min.js",  
 												   'bower_components/dustjs-helpers/dist/dust-helpers.min.js',
 				 								   "bower_components/fullcalendar/dist/fullcalendar.js",
-				 								    "bower_components/pathjs-amd/dist/path.js"
+				 								   "bower_components/pathjs-amd/dist/path.js",
+				 								   "bower_components/threejs/build/three.js"
 								],
-				 'min/dependency.min.js' 		: ["dependency/three49custom.js", 
+				 'min/dependency.min.js' 		: [
+//				                         		   "dependency/three49custom.js", 
 				                         		   "dependency/glmol.js"]
 			  }
 		  }

@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>js/widget/sampleplate/sampleplatewidget.js - EXI</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="EXI" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: js/widget/sampleplate/sampleplatewidget.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * 
+ * @nodeSize
+ * @fontSize
+ * @strokeWidth
+ * @showTooltip
+ * @showBorderLabels
+ * @showFullName
+ * @showLabels
+ * @backgroundColor
+ * 
+ **/
+
+function SamplePlateWidget(args) {
+	this.actions = [];
+
+	this.width = &quot;1&quot;;
+	this.height = &quot;1&quot;;
+
+	this.legendFontSize = 7;
+
+	this.backgroundColor = &quot;#E6E6E6&quot;;
+	this.wellColor = &quot;#FFFFFF &quot;;
+
+	this.id = BUI.id();
+	this.notSupportedMessage = &quot;IE doesn&#x27;t support HTML5 features&quot;;
+
+	this.nodeSize = 14;
+	this.fontSize = 10;
+	this.strokeWidth = 2;
+	this.showTooltip = true;
+	this.showBorderLabels = true;
+	this.showFullName = false;
+	this.showLabels = false;
+
+	if (args != null) {
+		if (args.showBorderLabels != null) {
+			this.showBorderLabels = args.showBorderLabels;
+		}
+		if (args.showLabels != null) {
+			this.showLabels = args.showLabels;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.nodeSize != null) {
+			this.nodeSize = args.nodeSize;
+		}
+		if (args.notSupportedMessage != null) {
+			this.notSupportedMessage = args.notSupportedMessage;
+		}
+		if (args.fontSize != null) {
+			this.fontSize = args.fontSize;
+		}
+		if (args.showFullName != null) {
+			this.showFullName = args.showFullName;
+		}
+		if (args.showTooltip != null) {
+			this.showTooltip = args.showTooltip;
+		}
+		if (args.backgroundColor != null) {
+			this.backgroundColor = args.backgroundColor;
+		}
+		if (args.strokeWidth != null) {
+			this.strokeWidth = args.strokeWidth;
+		}
+	}
+
+	/** this is the ids[specimenId] = nodeId **/
+	this.ids = {};
+	this.onVertexUp = new Event(this);
+	this.selectedSVGNodes = [];
+	this.markedSpecimenId = {};
+}
+
+SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) {
+	if (document.getElementById(this.targetId) != null) {
+		document.getElementById(this.targetId).innerHTML = &quot;&quot;;
+	}
+};
+
+SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
+	var _this = this;
+
+	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
+	this.windowContainerId = windowContainerId;
+	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
+		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
+		return;
+	}
+
+	this.onVertexUp = new Event(this);
+	this.samplePlate = samplePlate;
+	this.experiment = experiment;
+
+	this.targetId = targetId;
+
+	var rows = this.samplePlate.platetype3VO.rowCount;
+	var columns = this.samplePlate.platetype3VO.columnCount;
+
+	this.network = new NetworkWidget({
+		targetId : targetId
+	});
+	var dataset = new GraphDataset();
+	var formatter = new NetworkDataSetFormatter({
+		defaultFormat : {
+			type : &quot;LineEdgeNetworkFormatter&quot;,
+			&#x27;fill-opacity&#x27; : 1,
+			fill : this.wellColor,
+			&#x27;stroke-width&#x27; : this.strokeWidth,
+			&#x27;stroke-opacity&#x27; : 1,
+			stroke : &quot;#000000&quot;,
+			size : this.nodeSize,
+			title : {
+				fontSize : this.fontSize,
+				fill : &quot;#000000&quot;
+			}
+		}
+	}, null, {
+		labeled : false,
+		height : this.height,
+		width : this.width,
+		right : this.width,
+		backgroundColor : this.backgroundColor,
+		balanceNodes : false,
+		nodesMaxSize : 12,
+		nodesMinSize : 2
+	});
+
+	formatter.dataBind(dataset);
+	var layout = new LayoutDataset();
+	layout.dataBind(dataset);
+	this.network.draw(dataset, formatter, layout);
+
+	for ( var i = 1; i &lt;= rows; i++) {
+		for ( var j = 1; j &lt;= columns; j++) {
+			this.network.getDataset().addNode(&quot;&quot;, {
+				row : i,
+				column : j
+			});
+
+			if (this.samplePlate.platetype3VO.name == &quot; 4 x ( 8 + 3 ) Block&quot;) {
+				if (j &lt; 9) {
+					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
+				} else {
+					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
+				}
+			}
+
+		}
+	}
+
+	/** EVENT WHEN USER CLICK ON A WELL **/
+	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
+		_this.onVertexUp.notify({
+			samplePlate : _this.samplePlate,
+			row : _this.network.getDataset().getVertexById(nodeId).args.row,
+			column : _this.network.getDataset().getVertexById(nodeId).args.column
+
+		});
+	});
+
+	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
+	});
+
+	this.relayout(this.network, rows, columns);
+	this.fillSimulator(this.experiment.getSamples());
+
+	if (this.showBorderLabels) {
+		this.drawBorders();
+	}
+
+};
+
+SamplePlateWidget.prototype.drawBorders = function() {
+	var xArray = {};
+	var yArray = {};
+
+	var xValues = [];
+	var yValues = [];
+
+	var verticesLayout = this.network.graphCanvas.getLayout().vertices;
+	for ( var vertice in verticesLayout) {
+		var verticeX = verticesLayout[vertice].x;
+		if (xArray[verticeX] == null) {
+			xArray[verticeX] = true;
+			xValues.push(verticeX);
+		}
+
+		var verticeY = verticesLayout[vertice].y;
+		if (yArray[verticeY] == null) {
+			yArray[verticeY] = true;
+			yValues.push(verticeY);
+		}
+	}
+
+	/** LEGENG **/
+	var letters = BUI.getSamplePlateLetters();
+	for ( var i = 1; i &lt;= xValues.length; i++) {
+		SVG.drawText(xValues[i - 1] * this.network.graphCanvas.getWidth() - 5, this.network.graphCanvas.getHeight(), i, this.network.graphCanvas._svg,
+				[ [ &#x27;font-size&#x27;, this.legendFontSize + &#x27;px&#x27; ], [ &#x27;font-weight&#x27;, &#x27;bold&#x27; ], [ &#x27;fill&#x27;, &#x27;black&#x27; ] ]);
+	}
+
+	for ( var i = 1; i &lt;= yValues.length; i++) {
+		SVG.drawText(5, yValues[i - 1] * this.network.graphCanvas.getHeight() + 5, letters[i - 1], this.network.graphCanvas._svg, 
+				[ [ &#x27;font-size&#x27;, this.legendFontSize + &#x27;px&#x27; ], [ &#x27;font-weight&#x27;, &#x27;bold&#x27; ], [ &#x27;fill&#x27;, &#x27;black&#x27; ] ]);
+	}
+
+};
+
+SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
+	var svg = this.network.graphCanvas._svg;
+	var _this = this;
+
+	var id = id + &quot;_marked&quot;;
+	if (this.markedSpecimenId[id] == null) {
+		SVG.drawRectangle(x - 10, y - 10, 22, 22, svg, [ [ &quot;id&quot;, id ], [ &quot;fill&quot;, &quot;gray&quot; ],[&quot;stroke-opacity&quot;, &quot;0.5&quot;], [ &quot;fill-opacity&quot;, &quot;0.2&quot; ], [ &#x27;stroke&#x27;, &#x27;black&#x27; ] ]);
+//		$(&#x27;#&#x27; + id).qtip({
+//			content : {
+//				text : _this._getToolTipContent(specimen)
+//			},
+//			position : {
+//				adjust : {
+//					x : 0,
+//					y : 20
+//				}
+//			},
+//			style : {
+//				width : true,
+//				classes : &#x27;ui-tooltip-shadow&#x27;
+//			}
+//		});
+		this.markedSpecimenId[id] = true;
+	}
+};
+
+SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
+	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
+	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
+	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
+	var svg = this.network.graphCanvas._svg;
+	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [[&quot;fill&quot;, &quot;red&quot;], [&quot;fill-opacity&quot;, &quot;0&quot;], [&#x27;stroke&#x27;, &#x27;blue&#x27; ], [ &#x27;stroke-width&#x27;, &#x27;2&#x27; ] ]));
+};
+
+SamplePlateWidget.prototype.clearSelection = function() {
+	var svg = this.network.graphCanvas._svg;
+	for ( var i = 0; i &lt; this.selectedSVGNodes.length; i++) {
+		svg.removeChild(this.selectedSVGNodes[i]);
+	}
+	this.selectedSVGNodes = [];
+};
+
+SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
+	var vertices = this.network.getDataset().getVertices();
+	for ( var vertexId in vertices) {
+		if ((vertices[vertexId].args.row == row) &amp;&amp; (vertices[vertexId].args.column == column)) {
+			return vertices[vertexId];
+		}
+	}
+	return null;
+};
+
+//SamplePlateWidget.prototype.getOpacity = function(specimen) {
+//	var concentrations = this.experiment.getConcentrationsBysample(specimen);
+//	var normalized = Normalizer.normalizeArray(concentrations);
+//	for ( var i = 0; i &lt; concentrations.length; i++) {
+//		if (concentrations[i] == specimen.concentration) {
+//			if (normalized[i] == 0)
+//				return 0.2;
+//			return 0.2 + normalized[i] * 0.6;
+//		}
+//	}
+//	return 1;
+//
+//};
+
+SamplePlateWidget.prototype.showLabel = function(row, column, specimen) {
+	if (specimen != null) {
+		var vertex = this.getVertexByPosition(row, column);
+		if (this.fontSize != 0) {
+			if (specimen.macromolecule3VO != null) {
+				if (this.showFullName) {
+					vertex.setName(specimen.code);
+				} else {
+					vertex.setName(specimen.macromolecule3VO.acronym);
+				}
+			} else {
+				if (this.showFullName) {
+					vertex.setName(specimen.code);
+				} else {
+					vertex.setName(specimen.macromolecule3VO.acronym);
+				}
+			}
+		}
+	}
+};
+
+SamplePlateWidget.prototype.getNodeIdBySpecimenId = function(specimenId) {
+	var nodeId = this.ids[specimenId];
+};
+
+SamplePlateWidget.prototype.markSpecimenAsOk = function(specimen, x, y, id) {
+	if (specimen.measurements != null) {
+		for ( var j = 0; j &lt; specimen.measurements.length; j++) {
+			if (specimen.measurements[j].merge3VOs != null) {
+				if (specimen.measurements[j].merge3VOs.length &gt; 0) {
+					this.addOkIcon((x * this.network.graphCanvas.getWidth()), y * this.network.graphCanvas.getHeight(), id, specimen);
+				}
+			}
+		}
+	}
+};
+/**
+ * Input: specimenId of the sample containing a macromolecule
+ * Ouput: color of the specimen buffer associated
+ */
+SamplePlateWidget.prototype.getSpecimenBufferColorFromSampleSpecimenId = function(specimenId) {
+	var dcs = this.experiment.getDataCollectionsBySpecimenId(specimenId);
+	if (dcs.length &gt; 0){
+		var dataCollection = dcs[0];
+		for (var i = 0; i &lt; dataCollection.measurementtodatacollection3VOs.length; i++) {
+			var measurementToDc = dataCollection.measurementtodatacollection3VOs[i];
+			if (measurementToDc.dataCollectionOrder == 1){
+				var measurement = this.experiment.getMeasurementById(measurementToDc.measurementId);
+				if (measurement != null){
+					return this.experiment.getSpecimenColorByBufferId(measurement.specimenId);
+				}
+				return &#x27;pink&#x27;;
+			}
+		}
+	}
+	return &#x27;orange&#x27;;
+};
+
+SamplePlateWidget.prototype.fillWell = function(row, column, specimen) {
+	var _this = this;
+	if (specimen != null) {
+		var vertex = this.getVertexByPosition(row, column);
+		if (vertex == null) {
+			console.log(row + &quot;, &quot; + column + &quot; not found&quot;);
+			return;
+		}
+		var id = this.network.getGraphCanvas().getSVGNodeId(vertex.id);
+
+		this.showLabel(row, column, specimen);
+		this.ids[specimen.specimenId] = vertex.id;
+		var x = this.network.getLayout().vertices[vertex.id].x;
+		var y = this.network.getLayout().vertices[vertex.id].y;
+		this.markSpecimenAsOk(specimen, x, y, id);
+
+		if (specimen.macromolecule3VO == null) {
+			/** BUFFER * */
+			var color = this.experiment.getSpecimenColorByBufferId(specimen.specimenId);
+			this.network.getFormatter().getVertexById(vertex.id).getDefault().setFill(color);
+//			this.network.getFormatter().getVertexById(vertex.id).getDefault().setStroke(this.experiment.getSpecimenColorByBufferId(specimen.specimenId));
+			this.network.getFormatter().getVertexById(vertex.id).getDefault().setStroke(&#x27;blue&#x27;);
+			this.network.getFormatter().getVertexById(vertex.id).getDefault().setStrokeWidth(2);
+
+		} else {
+			this.network.getFormatter().getVertexById(vertex.id).getDefault().setFill(this.experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]);
+//			this.network.getFormatter().getVertexById(vertex.id).getDefault().setStroke(this.getSpecimenBufferColorFromSampleSpecimenId(specimen.specimenId));
+			this.network.getFormatter().getVertexById(vertex.id).getDefault().setStroke(&#x27;black&#x27;);
+			this.network.getFormatter().getVertexById(vertex.id).getDefault().setStrokeWidth(1);
+		}
+
+		if (this.showLabels) {
+			x = this.network.getLayout().vertices[vertex.id].x;
+			y = this.network.getLayout().vertices[vertex.id].y;
+			if (specimen.macromolecule3VO != null) {
+				var acronym = specimen.macromolecule3VO.acronym;
+				if (acronym.length &gt; 10) {
+					acronym = acronym.slice(0, 10) + &quot;...&quot;;
+				}
+
+				SVG.drawText((x * this.network.graphCanvas.getWidth()) - this.nodeSize - 10, y * this.network.graphCanvas.getHeight() + (this.nodeSize * 3) + 20, acronym, this.network.graphCanvas._svg, [
+					[ &#x27;font-size&#x27;, &#x27;xx-small&#x27; ], [ &#x27;fill&#x27;, &#x27;black&#x27; ] ]);
+
+				SVG.drawText((x * this.network.graphCanvas.getWidth()) - this.nodeSize - 10, y * this.network.graphCanvas.getHeight() + (this.nodeSize * 3) + 35, Number(specimen.concentration).toFixed(2) + &quot; mg/ml&quot;, this.network.graphCanvas._svg, [
+					[ &#x27;font-size&#x27;, &#x27;xx-small&#x27; ], [ &#x27;fill&#x27;, &#x27;black&#x27; ] ]);
+			}
+
+			var bufferName = this.experiment.getBufferById(specimen.bufferId).acronym;
+			if (bufferName.length &gt; 10) {
+				bufferName = bufferName.slice(0, 10) + &quot;...&quot;;
+			}
+
+			SVG.drawText((x * this.network.graphCanvas.getWidth()) - this.nodeSize - 10, y * this.network.graphCanvas.getHeight() + (this.nodeSize * 3) + 5, this.experiment.getBufferById(specimen.bufferId).acronym, this.network.graphCanvas._svg, [
+				[ &#x27;font-size&#x27;, &#x27;xx-small&#x27; ], [ &#x27;fill&#x27;, &#x27;blue&#x27; ] ]);
+		}
+
+		if (this.showTooltip) {
+			var id = this.network.getGraphCanvas().getSVGNodeId(vertex.id);
+//			if (_this.windowContainerId != null) {
+//				$(&#x27;#&#x27; + id).qtip({
+//					content : {
+//						text : _this._getToolTipContent(specimen)
+//					},
+//					position : {
+//						adjust : {
+//							x : 0,
+//							y : 20
+//						}
+//					}
+//				});
+//			} else {
+//				$(&#x27;#&#x27; + id).qtip({
+//					content : {
+//						text : _this._getToolTipContent(specimen)
+//					},
+//					position : {
+//						adjust : {
+//							x : 0,
+//							y : 20
+//						}
+//					}
+//				});
+//
+//			}
+		}
+	}
+};
+
+SamplePlateWidget.prototype._getToolTipContent = function(specimen) {
+	var content = &quot;&lt;table style=&#x27;font-size:11px;&#x27;&gt;&quot;;
+	content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Specimen &quot; + &quot;&lt;/TD&gt;&lt;TD style=&#x27;color:black; font-weight:bold;&#x27;&gt;&quot; + specimen.code + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+	content = content + &quot;&lt;TR style=&#x27;height:20px&#x27;&gt;&lt;TD&gt;&quot; + &quot;&quot; + &quot;&lt;/TD&gt;&lt;TD style=&#x27;color:black; font-weight:bold;&#x27;&gt;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+	content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Buffer: &quot; + &quot;&lt;/TD&gt;&lt;TD style=&#x27;color:blue; font-weight:bold;&#x27;&gt;&quot; + this.experiment.getBufferById(specimen.bufferId).name + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+	if (specimen.macromolecule3VO != null) {
+		content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Macromolecule: &quot; + &quot;&lt;/TD&gt;&lt;TD  style=&#x27;color:green; font-weight:bold;&#x27;&gt;&quot; + specimen.macromolecule3VO.acronym + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+		content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Concentration: &quot; + &quot;&lt;/TD&gt;&lt;TD &gt;&quot; + specimen.concentration + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+	}
+	//	content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Temperature: &quot;+ &quot;&lt;/TD&gt;&lt;TD&gt;&quot; + specimen.exposureTemperature + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+	content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Volume: &quot; + &quot;&lt;/TD&gt;&lt;TD&gt;&quot; + specimen.volume + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+
+	if (specimen.viscosity != null) {
+		content = content + &quot;&lt;TR&gt;&lt;TD&gt;&quot; + &quot;Viscosity: &quot; + &quot;&lt;/TD&gt;&lt;TD&gt;&quot; + specimen.viscosity + &quot;&lt;/TD&gt;&lt;/TR&gt;&quot;;
+	}
+
+	content = content + &quot;&lt;/table&gt;&quot;;
+	return content;
+};
+
+SamplePlateWidget.prototype.fillSimulator = function(samples) {
+	for ( var i = 0; i &lt; samples.length; i++) {
+		var sample = samples[i];
+		if (sample.sampleplateposition3VO != null) {
+			if (sample.sampleplateposition3VO.samplePlateId == this.samplePlate.samplePlateId) {
+				var position = sample.sampleplateposition3VO;
+				this.fillWell(position.rowNumber, position.columnNumber, sample);
+			}
+		}
+	}
+
+};
+
+SamplePlateWidget.prototype.relayout = function(network, rows, columns) {
+	if (this.samplePlate.platetype3VO.shape == &quot;REC&quot;) {
+		this.squareRelayout(network, rows, columns);
+	}
+	if (this.samplePlate.platetype3VO.shape == &quot;CIR&quot;) {
+		this.circleRelayout(network, rows, columns);
+	}
+};
+
+SamplePlateWidget.prototype.squareRelayout = function(network, rows, columns) {
+	var count = network.getDataset()._getVerticesCount();
+	var yMin = 0.07;
+	var yMax = 0.9;
+	var xMin = 0.075;
+	var xMax = 0.95;
+	var stepY = (yMax - yMin) / (rows - 1);
+	var stepX = (xMax - xMin) / (columns - 1);
+
+	var verticesCoordinates = [];
+	for ( var i = 0; i &lt; rows; i++) {
+		for ( var j = 0; j &lt; columns; j++) {
+			y = i * stepY + yMin;
+			x = j * stepX + xMin;
+
+			verticesCoordinates.push({
+				&#x27;x&#x27; : x,
+				&#x27;y&#x27; : y
+			});
+
+		}
+	}
+	var aux = 0;
+	for ( var vertex in network.getDataset().getVertices()) {
+		if (network.getLayout().vertices[vertex] == null) {
+			this.vertices[vertex] = new NodeLayout(vertex, 0, 0);
+		}
+		network.getLayout().vertices[vertex].setCoordinates(verticesCoordinates[aux].x, verticesCoordinates[aux].y);
+		aux++;
+		network.getLayout().vertices[vertex].changed.attach(function(sender, item) {
+			_this.changed.notify(item);
+		});
+	}
+};
+
+SamplePlateWidget.prototype.circleRelayout = function(network, rows, columns) {
+	network.getLayout().getLayout(&quot;CIRCLE&quot;);
+};
+
+
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
