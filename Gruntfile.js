@@ -42,9 +42,10 @@ module.exports = function(grunt) {
 												   "bower_components/jquery-lazy/jquery.lazy.js", 
 												   "bower_components/moment/min/moment.min.js",  
 												   'bower_components/dustjs-helpers/dist/dust-helpers.min.js',
-				 								   "bower_components/fullcalendar/dist/fullcalendar.js"
+				 								   "bower_components/fullcalendar/dist/fullcalendar.js",
+				 								    "bower_components/pathjs-amd/dist/path.js"
 								],
-				 'min/dependency.min.js' 	: ["js/dependency/three49custom.js", "js/dependency/glmol.js", "js/dependency/pathjs/path.js"]
+				 'min/dependency.min.js' 	: ["dependency/three49custom.js", "dependency/glmol.js"]
 			  }
 		  }
 	  },
