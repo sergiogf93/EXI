@@ -7,6 +7,18 @@ module.exports = function(grunt) {
    };
   grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
+      yuidoc: {
+		    compile: {
+		      name: '<%= pkg.name %>',
+		      description: '<%= pkg.description %>',
+		      version: '<%= pkg.version %>',
+		      url: '<%= pkg.homepage %>',
+		      options: {
+			paths: 'js/core',
+			outdir: 'documentation'
+		      }
+		    }
+	  },
 	  concat : {
 		  prod:{
 			  files : {
@@ -114,10 +126,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-plato');
   grunt.loadNpmTasks('grunt-dustjs');
+  grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  
-  grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod']);
-
+  grunt.task.registerTask('doc', ['yuidoc:compile']);
+  grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod', 'yuidoc:compile']);
   grunt.task.registerTask('dev', ['dustjs','includeSource:dev', 'cssmin:prod']);
   
 };

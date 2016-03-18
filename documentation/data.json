@@ -1,0 +1,904 @@
+{
+    "project": {
+        "name": "EXI",
+        "description": "Extended ISPyB",
+        "version": "1.0.0",
+        "url": "https://github.com/ispyb/EXI"
+    },
+    "files": {
+        "js/core/app/authenticationcontroller.js": {
+            "name": "js/core/app/authenticationcontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/app/exi.js": {
+            "name": "js/core/app/exi.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/menu/mainmenu.js": {
+            "name": "js/core/menu/mainmenu.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/exicontroller.js": {
+            "name": "js/core/router/exicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/labcontactexicontroller.js": {
+            "name": "js/core/router/labcontactexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/mxexicontroller.js": {
+            "name": "js/core/router/mxexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/offlineexicontroller.js": {
+            "name": "js/core/router/offlineexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/proposalexicontroller.js": {
+            "name": "js/core/router/proposalexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/saxsexicontroller.js": {
+            "name": "js/core/router/saxsexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/shippingexicontroller.js": {
+            "name": "js/core/router/shippingexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/security/credentialmanager.js": {
+            "name": "js/core/security/credentialmanager.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/util/bui.js": {
+            "name": "js/core/util/bui.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/util/dygraphwidget.js": {
+            "name": "js/core/util/dygraphwidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/util/string.js": {
+            "name": "js/core/util/string.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {},
+    "elements": {},
+    "classitems": [
+        {
+            "file": "js/core/app/authenticationcontroller.js",
+            "line": 6,
+            "description": "url to an ISPyB instance http://pc593.embl.fr:8080/ispyb-ws/rest",
+            "params": [
+                {
+                    "name": "user",
+                    "description": ""
+                },
+                {
+                    "name": "password",
+                    "description": ""
+                },
+                {
+                    "name": "url",
+                    "description": ""
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 6,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 8,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 10,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 13,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 38,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 41,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 64,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 69,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 81,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 92,
+            "description": "This method append to args the values of the active connection: url, token and proposal",
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 98,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 100,
+            "class": ""
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 134,
+            "description": "Adds a new Main panel to the center panel",
+            "params": [
+                {
+                    "name": "mainView",
+                    "description": ""
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/core/menu/mainmenu.js",
+            "line": 19,
+            "description": "If there is a credential then home tab will redirect to the welcome page (either manager or user)",
+            "class": ""
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 6,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 11,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 13,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 18,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 23,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 35,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/labcontactexicontroller.js",
+            "line": 45,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 8,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 13,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 15,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 20,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 25,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 29,
+            "description": "Loading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 38,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 70,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 107,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 119,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 46,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 58,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 65,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 67,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 72,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/proposalexicontroller.js",
+            "line": 35,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 13,
+            "description": "Loading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 33,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 49,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 65,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 75,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 82,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 89,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 94,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 124,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 138,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 149,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 171,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 197,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 205,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 243,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 15,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 27,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 29,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 34,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 39,
+            "class": ""
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 62,
+            "class": ""
+        },
+        {
+            "file": "js/core/security/credentialmanager.js",
+            "line": 9,
+            "class": ""
+        },
+        {
+            "file": "js/core/security/credentialmanager.js",
+            "line": 27,
+            "class": ""
+        },
+        {
+            "file": "js/core/security/credentialmanager.js",
+            "line": 42,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 37,
+            "description": "Groups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 213,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 252,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 260,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 273,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 324,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 329,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 334,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 424,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 461,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 568,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 686,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 731,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 2,
+            "description": "Using dygraph it plots a chart. Params: targetId, labelsContainerId, args",
+            "width": "",
+            "height": "",
+            "labelswidth": "",
+            "targetid": "",
+            "custombars": "",
+            "ylabel": "",
+            "xlabel": "",
+            "showrangeselector": "Show or hide the range selector widget.",
+            "class": ""
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 79,
+            "description": "data: dygraphs.com/data.html",
+            "class": ""
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 90,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 95,
+            "class": ""
+        },
+        {
+            "file": "js/core/util/string.js",
+            "line": 1,
+            "class": ""
+        }
+    ],
+    "warnings": [
+        {
+            "message": "unknown tag: width",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: labelswidth",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: targetid",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: custombars",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: ylabel",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: xlabel",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: showrangeselector",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "Missing item type\nurl to an ISPyB instance http://pc593.embl.fr:8080/ispyb-ws/rest",
+            "line": " js/core/app/authenticationcontroller.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:8"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:10"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:41"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:64"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:69"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:81"
+        },
+        {
+            "message": "Missing item type\nThis method append to args the values of the active connection: url, token and proposal",
+            "line": " js/core/app/exi.js:92"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:98"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:100"
+        },
+        {
+            "message": "Missing item type\nAdds a new Main panel to the center panel",
+            "line": " js/core/app/exi.js:134"
+        },
+        {
+            "message": "Missing item type\nIf there is a credential then home tab will redirect to the welcome page (either manager or user)",
+            "line": " js/core/menu/mainmenu.js:19"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:11"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:18"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:23"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:35"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/labcontactexicontroller.js:45"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:8"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:20"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:25"
+        },
+        {
+            "message": "Missing item type\nLoading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "line": " js/core/router/mxexicontroller.js:29"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:70"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:107"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:119"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:46"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:58"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:67"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:72"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/proposalexicontroller.js:35"
+        },
+        {
+            "message": "Missing item type\nLoading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "line": " js/core/router/saxsexicontroller.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:33"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:49"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:75"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:82"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:89"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:94"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:124"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:138"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:149"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:171"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:197"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:205"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:243"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:29"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:34"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:39"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:62"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/security/credentialmanager.js:9"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/security/credentialmanager.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/security/credentialmanager.js:42"
+        },
+        {
+            "message": "Missing item type\nGroups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
+            "line": " js/core/util/bui.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:213"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:252"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:260"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:273"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:324"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:329"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:334"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:424"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:461"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:568"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:686"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:731"
+        },
+        {
+            "message": "Missing item type\nUsing dygraph it plots a chart. Params: targetId, labelsContainerId, args",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "Missing item type\ndata: dygraphs.com/data.html",
+            "line": " js/core/util/dygraphwidget.js:79"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/dygraphwidget.js:90"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/dygraphwidget.js:95"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/string.js:1"
+        }
+    ]
+}
