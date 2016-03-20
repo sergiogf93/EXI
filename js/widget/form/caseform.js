@@ -88,7 +88,7 @@ CaseForm.prototype.getPanel = function(dewar) {
 //			cls : 'border-grid',
 //			margin : 10,
 			padding : 10,
-			height : 300,
+			height : 320,
 			items : [ {
 				xtype : 'container',
 				margin : "2 2 2 2",

@@ -115,7 +115,7 @@ PuckLayout.prototype.renderPlateContainer = function(canvas, width, height) {
 	
 };
 
-/** To be moved **/
+
 PuckLayout.prototype.renderContainer = function(canvas, centerX, centerY, radius) {
 	var _this = this;
 	var s = Snap(canvas);
@@ -284,8 +284,7 @@ PuckLayout.prototype.render = function(puck) {
 	if (this.puck != null){
 		/** Unipuck **/
 		if (this.puck.capacity == 16){
-			//this.renderAsUnipuck(this.puck);
-			new UnipuckLayout({width : this.width}).render(this.id, this.puck);
+			this.renderAsUnipuck(this.puck);
 		}
 		
 		/** Spine **/
@@ -317,13 +316,13 @@ PuckLayout.prototype.getPanel = function() {
 	});
 	
 	
-	this.panel.addDocked({
+	/*this.panel.addDocked({
 		height : 45,
 		xtype : 'toolbar',
 		dock: 'bottom',
-		items : _this._getTopButtons()
-		//cls : 'exi-top-bar'
-	});
+		items : _this._getTopButtons(),
+		cls : 'exi-top-bar'
+	});*/
 	
 	
 	
@@ -342,15 +341,25 @@ PuckLayout.prototype._getTopButtons = function() {
 		text : 'Edit',
 		disabled : false,
 		handler : function(widget, e) {
-			alert("Not implemented yet")
-		}
-	}));
-	actions.push(Ext.create('Ext.Action', {
-		icon : '../images/icon/ic_highlight_remove_black_24dp.png',
-		text : 'Remove',
-		disabled : false,
-		handler : function(widget, e) {
-			alert("Not implemented yet")
+			var containerId = _this.puck.containerId;
+			var puckForm = new PuckForm({
+				width : 910
+			});
+
+			puckForm.onSaved.attach(function(sender, puck){
+				_this.load(_this.shipment);
+				window.close();
+			});
+			var window = Ext.create('Ext.window.Window', {
+				    title: 'Edit Puck',
+				    height: 705,
+				    modal : true,
+				    resizable : true,
+				    layout: 'fit',
+				    items: puckForm.getPanel()
+				}).show();
+
+			puckForm.load(_this.puck);
 		}
 	}));
 	

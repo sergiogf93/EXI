@@ -470,6 +470,27 @@
             "fors": {},
             "namespaces": {}
         },
+        "js/widget/platelayouts/containers/spinelayout.js": {
+            "name": "js/widget/platelayouts/containers/spinelayout.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/platelayouts/containers/unipucklayout.js": {
+            "name": "js/widget/platelayouts/containers/unipucklayout.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/platelayouts/pucklayout.js": {
+            "name": "js/widget/platelayouts/pucklayout.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
         "js/widget/platelayouts/spine.js": {
             "name": "js/widget/platelayouts/spine.js",
             "modules": {},
@@ -1196,7 +1217,7 @@
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 53,
+            "line": 21,
             "description": "This sets an active proposal into the credential Manager. It also retrieve all the information about the proposal: shipments, macromolecules, crystals, buffers, etc.. and store \nthem in a local storage",
             "itemtype": "method",
             "name": "activeProposal",
@@ -1211,7 +1232,12 @@
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 79,
+            "line": 30,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 48,
             "description": "It receives a list of proposals and display them in the main container",
             "params": [
                 {
@@ -1226,7 +1252,7 @@
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 102,
+            "line": 77,
             "description": "Retrieves a list of sessions based on a start date and end date and loads them on the session grid",
             "params": [
                 {
@@ -1246,12 +1272,12 @@
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 120,
+            "line": 104,
             "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 191,
+            "line": 165,
             "description": "Retrieves all proposas on ISPyB and stores them on this.proposal \nIt is useful for fast search later on",
             "itemtype": "method",
             "name": "loadProposals",
@@ -1259,7 +1285,7 @@
         },
         {
             "file": "js/main/managerwelcomemainview.js",
-            "line": 213,
+            "line": 186,
             "class": "ManagerWelcomeMainView"
         },
         {
@@ -2300,68 +2326,183 @@
             "class": ""
         },
         {
+            "file": "js/widget/platelayouts/containers/spinelayout.js",
+            "line": 19,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/spinelayout.js",
+            "line": 54,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 61,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 77,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 81,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 89,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 99,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 102,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/containers/unipucklayout.js",
+            "line": 164,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 19,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 187,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 199,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 204,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 224,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 240,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 244,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 252,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 260,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 275,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 285,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 290,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/pucklayout.js",
+            "line": 295,
+            "class": ""
+        },
+        {
             "file": "js/widget/platelayouts/spine.js",
             "line": 19,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 211,
+            "line": 118,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 223,
+            "line": 187,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 228,
+            "line": 199,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 248,
+            "line": 204,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 264,
+            "line": 224,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 268,
+            "line": 240,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 276,
+            "line": 244,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 284,
+            "line": 252,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 299,
+            "line": 260,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 309,
+            "line": 275,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 314,
+            "line": 285,
             "class": ""
         },
         {
             "file": "js/widget/platelayouts/spine.js",
-            "line": 319,
+            "line": 291,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 296,
             "class": ""
         },
         {
@@ -4187,11 +4328,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/main/managerwelcomemainview.js:120"
+            "line": " js/main/managerwelcomemainview.js:30"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/managerwelcomemainview.js:213"
+            "line": " js/main/managerwelcomemainview.js:104"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/managerwelcomemainview.js:186"
         },
         {
             "message": "Missing item type",
@@ -4927,55 +5072,147 @@
         },
         {
             "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/spinelayout.js:19"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/spinelayout.js:54"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:61"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:77"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:81"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:89"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:99"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:102"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/containers/unipucklayout.js:164"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:19"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:187"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:199"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:204"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:224"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:240"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:244"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:252"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:260"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:275"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:285"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:290"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/pucklayout.js:295"
+        },
+        {
+            "message": "Missing item type",
             "line": " js/widget/platelayouts/spine.js:19"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:211"
+            "line": " js/widget/platelayouts/spine.js:118"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:223"
+            "line": " js/widget/platelayouts/spine.js:187"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:228"
+            "line": " js/widget/platelayouts/spine.js:199"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:248"
+            "line": " js/widget/platelayouts/spine.js:204"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:264"
+            "line": " js/widget/platelayouts/spine.js:224"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:268"
+            "line": " js/widget/platelayouts/spine.js:240"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:276"
+            "line": " js/widget/platelayouts/spine.js:244"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:284"
+            "line": " js/widget/platelayouts/spine.js:252"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:299"
+            "line": " js/widget/platelayouts/spine.js:260"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:309"
+            "line": " js/widget/platelayouts/spine.js:275"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:314"
+            "line": " js/widget/platelayouts/spine.js:285"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:319"
+            "line": " js/widget/platelayouts/spine.js:291"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:296"
         },
         {
             "message": "Missing item type",

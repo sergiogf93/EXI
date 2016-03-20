@@ -94,38 +94,6 @@ function ManagerWelcomeMainView() {
 	this.title = &quot;Home&quot;;
 	this.closable = false;
 
-
-//	this.proposalGrid = new ProposalGrid({
-//		height : 500
-//	});
-//
-//	var _this = this;
-//	this.proposalGrid.onSelected.attach(function(sender, proposal){
-//		_this.activeProposal(proposal);
-//	});
-
-//	this.timeLineWidget = new SessionTimeLineWidget();
-//
-//	this.timeLineWidget.onSelected.attach(function(sender, record){
-//		EXI.setLoadingMainPanel();
-//		var onSuccess = function(sender, proposals){
-//			if (proposals.length &gt; 0){
-//				_this.activeProposal(proposals[0]);
-//				EXI.setLoadingMainPanel(false);
-//				if ((record.group == &quot;BM29&quot;) || (record.group == &quot;BM12&quot;)){
-//				  	location.hash = &quot;/session/nav/&quot; + record.sessionId +&quot;/session&quot;;
-//				}
-//				else{
-//				  	location.hash = &quot;/mx/datacollection/session/&quot; + record.sessionId + &quot;/main&quot;;
-//				}
-//			}
-//			else{
-//				BUI.showError(&quot;No proposal Found&quot;);
-//			}
-//
-//		} ;
-//		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getProposalBySessionId(record.sessionId);
-//	});
 }
 
 
@@ -141,7 +109,8 @@ ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 */
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
-	EXI.proposalManager.get(false);
+	/** I don&#x27;t need this to be synchronous **/	
+	EXI.proposalManager.get();
 };
 
 
@@ -174,7 +143,13 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
 
                                             });
           proposalGrid.onSelected.attach(function(sender, proposal){
-             console.log(proposal);
+	             _this.panel.setLoading(true);
+	             var proposalCode = proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber;
+	             function onSuccess(sender, sessions){
+		           	  _this.displaySessions(sessions, sessions.length + &quot; sessions for proposal &quot; + proposalCode);
+		           	  _this.panel.setLoading(false);
+	             }
+	             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
           });
           
           this.container.insert(proposalGrid.getPanel());
@@ -190,37 +165,37 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
 */
 ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
           var _this = this;
-          this.container.removeAll();
-          var sessionGrid = new SessionGrid({
-                                                width: 900,
-                                                height:600,
-                                                margin : &#x27;10 10 10 10&#x27;
-
-                                            });
-          this.container.insert(sessionGrid.getPanel());
-
-          /** Handling onSelected **/
-          sessionGrid.onSelected.attach(function(sender, session){
-              _this.activeProposal(session.proposalVO);
-          });
-
-          sessionGrid.panel.setLoading(true);
+          this.panel.setLoading(true);
           function onSuccess(sender, data){
-              sessionGrid.load(data);
-              sessionGrid.panel.setTitle(&quot;Sessions scheduled on &quot; + moment(start, &quot;YYYYMMDD&quot;).format(&quot;DD-MM-YYYY&quot;));
-              sessionGrid.panel.setLoading(false);
+        	  _this.displaySessions(data, data.length + &quot; sessions scheduled on &quot; + start);
+        	  _this.panel.setLoading(false);
           }
 		  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
 };
 
+ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
+	var _this = this;
+	 this.container.removeAll();
+	 var sessionGrid = new SessionGrid({
+						 width: 900,
+						 height:600,
+						 margin : &#x27;10 10 10 10&#x27;
+    	 });
+	 this.container.insert(sessionGrid.getPanel());
+	 
+	  /** Handling onSelected **/
+     sessionGrid.onSelected.attach(function(sender, session){
+         _this.activeProposal(session.proposalVO);
+     });
+	 sessionGrid.load(sessions);
+	 sessionGrid.panel.setTitle(title);
+};
 ManagerWelcomeMainView.prototype.getToolbar = function() {
   var _this = this;
 
    var dateMenu = Ext.create(&#x27;Ext.menu.DatePicker&#x27;, {
         handler: function(dp, date){
-
           _this.loadByDate(Ext.Date.format(date, &#x27;Ymd&#x27;), Ext.Date.format(date, &#x27;Ymd&#x27;));
-
         }
     });
 
@@ -231,7 +206,7 @@ ManagerWelcomeMainView.prototype.getToolbar = function() {
           {
                text: &#x27;Choose a Date&#x27;,
                icon : &#x27;../images/icon/sessions.png&#x27;,
-               menu: dateMenu // &lt;-- submenu by reference
+               menu: dateMenu 
            },
 
             {
@@ -251,7 +226,6 @@ ManagerWelcomeMainView.prototype.getToolbar = function() {
         ]
     });
 };
-
 
 ManagerWelcomeMainView.prototype.searchProposalByTerm = function(term) {
 	var result = [];
@@ -284,7 +258,6 @@ ManagerWelcomeMainView.prototype.loadProposals = function() {
 	
 	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
 };
-
 
 
 

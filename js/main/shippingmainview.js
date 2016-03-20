@@ -39,7 +39,7 @@ ShippingMainView.prototype.getContainer = function() {
 						anchor : '100%'
 				},
 				items : [
-				     	{
+				     		{
 							tabConfig : {
 								title : 'Delivery Details'
 							},

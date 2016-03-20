@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>js/widget/platelayouts/spine.js - EXI</title>
+    <title>js/widget/platelayouts/pucklayout.js - EXI</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -76,7 +76,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: js/widget/platelayouts/spine.js</h1>
+<h1 class="file-heading">File: js/widget/platelayouts/pucklayout.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
@@ -197,7 +197,7 @@ PuckLayout.prototype.renderPlateContainer = function(canvas, width, height) {
 	
 };
 
-/** To be moved **/
+
 PuckLayout.prototype.renderContainer = function(canvas, centerX, centerY, radius) {
 	var _this = this;
 	var s = Snap(canvas);
@@ -366,8 +366,7 @@ PuckLayout.prototype.render = function(puck) {
 	if (this.puck != null){
 		/** Unipuck **/
 		if (this.puck.capacity == 16){
-			//this.renderAsUnipuck(this.puck);
-			new UnipuckLayout({width : this.width}).render(this.id, this.puck);
+			this.renderAsUnipuck(this.puck);
 		}
 		
 		/** Spine **/
@@ -399,13 +398,13 @@ PuckLayout.prototype.getPanel = function() {
 	});
 	
 	
-	this.panel.addDocked({
+	/*this.panel.addDocked({
 		height : 45,
 		xtype : &#x27;toolbar&#x27;,
 		dock: &#x27;bottom&#x27;,
-		items : _this._getTopButtons()
-		//cls : &#x27;exi-top-bar&#x27;
-	});
+		items : _this._getTopButtons(),
+		cls : &#x27;exi-top-bar&#x27;
+	});*/
 	
 	
 	
@@ -424,15 +423,25 @@ PuckLayout.prototype._getTopButtons = function() {
 		text : &#x27;Edit&#x27;,
 		disabled : false,
 		handler : function(widget, e) {
-			alert(&quot;Not implemented yet&quot;)
-		}
-	}));
-	actions.push(Ext.create(&#x27;Ext.Action&#x27;, {
-		icon : &#x27;../images/icon/ic_highlight_remove_black_24dp.png&#x27;,
-		text : &#x27;Remove&#x27;,
-		disabled : false,
-		handler : function(widget, e) {
-			alert(&quot;Not implemented yet&quot;)
+			var containerId = _this.puck.containerId;
+			var puckForm = new PuckForm({
+				width : 910
+			});
+
+			puckForm.onSaved.attach(function(sender, puck){
+				_this.load(_this.shipment);
+				window.close();
+			});
+			var window = Ext.create(&#x27;Ext.window.Window&#x27;, {
+				    title: &#x27;Edit Puck&#x27;,
+				    height: 705,
+				    modal : true,
+				    resizable : true,
+				    layout: &#x27;fit&#x27;,
+				    items: puckForm.getPanel()
+				}).show();
+
+			puckForm.load(_this.puck);
 		}
 	}));
 	
