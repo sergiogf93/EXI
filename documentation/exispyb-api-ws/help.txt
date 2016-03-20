@@ -1,4 +1,0 @@
-
-EXI offline
-
-http://pc593.embl.fr:8080/extispyb-ws/rest/3b561e7164d33e758e5c2db5dee5948f69ed623a/user/authenticate

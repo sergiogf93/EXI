@@ -654,16 +654,6 @@ MeasurementGrid.prototype.getPanel = function() {
 			}
 		}
 	});
-
-//	/** Adding the tbar **/
-//	if (this.tbar) {
-//		this.grid.addDocked({
-//			xtype : 'toolbar',
-//			height : 60,
-//			flex : 1,
-//			items : this._getMenu()
-//		});
-//	}
 	return this.grid;
 };
 
@@ -734,31 +724,12 @@ MeasurementGrid.prototype._getMenu = function() {
 			});
 		}
 
-		if (_this.addBtnMultipleEdit) {
-//			items.push({
-//				icon: '../images/icon/edit.png',
-//				text : 'Edit',
-//				handler : function() {
-//					var multipleEditMeasurementGridWindow = new MultipleEditMeasurementGridWindow();
-//					multipleEditMeasurementGridWindow.onExperimentChanged.attach(function(sender, data) {
-//						_this.onExperimentChanged.notify(data);
-//					});
-//
-//					multipleEditMeasurementGridWindow.draw(_this.measurements, _this.experiments);
-//
-//				}
-//			});
-		}
-
-//		items.push("->");
 
 		if (_this.sortingBtnEnable) {
 			var split = Ext.create('Ext.button.Split', {
 				text : 'Sort by',
 				icon: '../images/icon/sort.png',
-				// handle a click on the button itself
 				handler : function() {
-					// alert("The button was clicked");
 				},
 				menu : new Ext.menu.Menu({
 					items : [
@@ -810,25 +781,4 @@ MeasurementGrid.prototype._sortBy = function(sort) {
 	});
 	_this.grid.setLoading("Sorting");
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
-};
-
-
-
-MeasurementGrid.prototype.input = function() {
-	return {
-		proposal : DATADOC.getProposal_10()
-	};
-};
-
-MeasurementGrid.prototype.test = function(targetId) {
-	var MeasurementGrid = new MeasurementGrid({
-		width : 800,
-		height : 350,
-		collapsed : false,
-		tbar : true
-	});
-
-	BIOSAXS.proposal = new Proposal(MeasurementGrid.input().proposal);
-	var panel = MeasurementGrid.getPanel(BIOSAXS.proposal.macromolecules);
-	panel.render(targetId);
 };

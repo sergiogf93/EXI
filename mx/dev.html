@@ -21,24 +21,21 @@
 
 
 	<!-- CSS -->
-	<link rel="stylesheet" type="text/css" href="../js/dependency/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
+	<link rel="stylesheet" type="text/css" href="../dependency/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
 	<link rel="stylesheet" type="text/css" href="../min/exi.min.css">
 
 
 	<!-- JS -->
-	<script type="text/javascript" src="../js/dependency/ext/build/ext-all.js"></script>
-	<script type="text/javascript" src="../js/dependency/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
+	<script type="text/javascript" src="../dependency/ext/build/ext-all.js"></script>
+	<script type="text/javascript" src="../dependency/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
 
 
 	<!-- These dependencies should be updated -->
-	<script type="text/javascript" src="../js/dependency/three49custom.js"></script>
-	<script type="text/javascript" src="../js/dependency/glmol.js"></script>
-	<script type="text/javascript" src="../js/dependency/timeline/timeline.js"></script>
-	<script type="text/javascript" src="../js/dependency/pathjs/path.js"></script>
+	
 
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-	<script type="text/javascript" src="../js/dependency/jssurfaceplot/SurfacePlot.js"></script>
-	<script type="text/javascript" src="../js/dependency/jssurfaceplot/ColourGradient.js"></script>
+	<script type="text/javascript" src="../dependency/jssurfaceplot/SurfacePlot.js"></script>
+	<script type="text/javascript" src="../dependency/jssurfaceplot/ColourGradient.js"></script>
 	
 	
 
@@ -58,6 +55,7 @@
 	    <script src="../js/core/menu/saxsmainmenu.js"></script>
 	    <script src="../js/core/menu/selectionmenu.js"></script>
 	    <script src="../js/core/router/exicontroller.js"></script>
+	    <script src="../js/core/router/labcontactexicontroller.js"></script>
 	    <script src="../js/core/router/mxexicontroller.js"></script>
 	    <script src="../js/core/router/offlineexicontroller.js"></script>
 	    <script src="../js/core/router/proposalexicontroller.js"></script>
@@ -218,7 +216,7 @@
 	    <script src="../js/widget/wizard/wizardwidget.js"></script>
 	    <script src="config.js"></script>
 
-
+		<script type="text/javascript" src="../dependency/glmol.js"></script>
 		<!-- Precompiled templates -->
 		<script type="text/javascript" src="../min/precompiled.templates.min.js"></script>
 	
@@ -244,8 +242,8 @@
 		    enabled: true
 		});
 
-		Ext.Loader.setPath('Ext.ux', '../js/dependency/ext/examples/ux/');
-		Ext.Loader.setPath('Ext.Extended', '../js/dependency/extended/');
+		Ext.Loader.setPath('Ext.ux', '../dependency/ext/examples/ux/');
+		Ext.Loader.setPath('Ext.Extended', '../dependency/extended/');
 
 		Ext.require([
 		  'Ext.ux.statusbar.StatusBar',

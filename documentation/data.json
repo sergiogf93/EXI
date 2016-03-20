@@ -1,0 +1,5745 @@
+{
+    "project": {
+        "name": "EXI",
+        "description": "Extended ISPyB",
+        "version": "1.0.0",
+        "url": "https://github.com/ispyb/EXI"
+    },
+    "files": {
+        "js/core/app/authenticationcontroller.js": {
+            "name": "js/core/app/authenticationcontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/app/exi.js": {
+            "name": "js/core/app/exi.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/menu/mainmenu.js": {
+            "name": "js/core/menu/mainmenu.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/exicontroller.js": {
+            "name": "js/core/router/exicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/labcontactexicontroller.js": {
+            "name": "js/core/router/labcontactexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/mxexicontroller.js": {
+            "name": "js/core/router/mxexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/offlineexicontroller.js": {
+            "name": "js/core/router/offlineexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/proposalexicontroller.js": {
+            "name": "js/core/router/proposalexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/saxsexicontroller.js": {
+            "name": "js/core/router/saxsexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/router/shippingexicontroller.js": {
+            "name": "js/core/router/shippingexicontroller.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/security/credentialmanager.js": {
+            "name": "js/core/security/credentialmanager.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/util/bui.js": {
+            "name": "js/core/util/bui.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/util/dygraphwidget.js": {
+            "name": "js/core/util/dygraphwidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/core/util/string.js": {
+            "name": "js/core/util/string.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/mx/autoprocintegrationmainview.js": {
+            "name": "js/main/mx/autoprocintegrationmainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/mx/workflowstepmainview.js": {
+            "name": "js/main/mx/workflowstepmainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/run/dimplerunmainview.js": {
+            "name": "js/main/run/dimplerunmainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/saxs/prepare/templatemainview.js": {
+            "name": "js/main/saxs/prepare/templatemainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/saxs/experimentmainview.js": {
+            "name": "js/main/saxs/experimentmainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/saxs/mergemainview.js": {
+            "name": "js/main/saxs/mergemainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/saxs/primarydatamainview.js": {
+            "name": "js/main/saxs/primarydatamainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/managerwelcomemainview.js": {
+            "name": "js/main/managerwelcomemainview.js",
+            "modules": {},
+            "classes": {
+                "ManagerWelcomeMainView": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/main/userwelcomemainview.js": {
+            "name": "js/main/userwelcomemainview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/navigation/saxs/datacollectionlistview.js": {
+            "name": "js/navigation/saxs/datacollectionlistview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/navigation/saxs/experimentlistview.js": {
+            "name": "js/navigation/saxs/experimentlistview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/navigation/listview.js": {
+            "name": "js/navigation/listview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/navigation/workspacelistview.js": {
+            "name": "js/navigation/workspacelistview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/macromolecule/assemblyform.js": {
+            "name": "js/widget/form/macromolecule/assemblyform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/macromolecule/macromoleculeform.js": {
+            "name": "js/widget/form/macromolecule/macromoleculeform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/macromolecule/molarityform.js": {
+            "name": "js/widget/form/macromolecule/molarityform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/macromolecule/rigidbodymodelingform.js": {
+            "name": "js/widget/form/macromolecule/rigidbodymodelingform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/abinitioform.js": {
+            "name": "js/widget/form/abinitioform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/addressform.js": {
+            "name": "js/widget/form/addressform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/bufferform.js": {
+            "name": "js/widget/form/bufferform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/caseform.js": {
+            "name": "js/widget/form/caseform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/crystalform.js": {
+            "name": "js/widget/form/crystalform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/datareductionform.js": {
+            "name": "js/widget/form/datareductionform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/experimentheaderform.js": {
+            "name": "js/widget/form/experimentheaderform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/parcelform.js": {
+            "name": "js/widget/form/parcelform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/puckform.js": {
+            "name": "js/widget/form/puckform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/shipmentform.js": {
+            "name": "js/widget/form/shipmentform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/form/stocksolutionform.js": {
+            "name": "js/widget/form/stocksolutionform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/abinitiogrid.js": {
+            "name": "js/widget/grid/abinitiogrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/aprioririgidbodygrid.js": {
+            "name": "js/widget/grid/aprioririgidbodygrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/buffergrid.js": {
+            "name": "js/widget/grid/buffergrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/casegrid.js": {
+            "name": "js/widget/grid/casegrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/experimentgrid.js": {
+            "name": "js/widget/grid/experimentgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/frameselectorgrid.js": {
+            "name": "js/widget/grid/frameselectorgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/macromoleculegrid.js": {
+            "name": "js/widget/grid/macromoleculegrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/measurementgrid.js": {
+            "name": "js/widget/grid/measurementgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/molaritygrid.js": {
+            "name": "js/widget/grid/molaritygrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/parcelgrid.js": {
+            "name": "js/widget/grid/parcelgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/proposalgrid.js": {
+            "name": "js/widget/grid/proposalgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/sessiongrid.js": {
+            "name": "js/widget/grid/sessiongrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/specimengrid.js": {
+            "name": "js/widget/grid/specimengrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/stocksolutiongrid.js": {
+            "name": "js/widget/grid/stocksolutiongrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/templategrid.js": {
+            "name": "js/widget/grid/templategrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/grid/volumegrid.js": {
+            "name": "js/widget/grid/volumegrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/hplc/hplcgraph.js": {
+            "name": "js/widget/hplc/hplcgraph.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/mx/grid/datacollection/customsectiondatacollection.js": {
+            "name": "js/widget/mx/grid/datacollection/customsectiondatacollection.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/mx/grid/datacollection/resultsectiondatacollection.js": {
+            "name": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js": {
+            "name": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/mx/grid/autoprocintegrationgrid.js": {
+            "name": "js/widget/mx/grid/autoprocintegrationgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/mx/grid/datacollectionmxgrid.js": {
+            "name": "js/widget/mx/grid/datacollectionmxgrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/mx/grid/datacollectionsummarygrid.js": {
+            "name": "js/widget/mx/grid/datacollectionsummarygrid.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/pdb/pdbviewer.js": {
+            "name": "js/widget/pdb/pdbviewer.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/platelayouts/spine.js": {
+            "name": "js/widget/platelayouts/spine.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/plot/network/dataset.js": {
+            "name": "js/widget/plot/network/dataset.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/plot/network/graphcanvas.js": {
+            "name": "js/widget/plot/network/graphcanvas.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/plot/network/graphdataset.js": {
+            "name": "js/widget/plot/network/graphdataset.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/plot/network/itemgraphformatter.js": {
+            "name": "js/widget/plot/network/itemgraphformatter.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/plot/network/networkdatasetformatter.js": {
+            "name": "js/widget/plot/network/networkdatasetformatter.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/plot/network/networkwidget.js": {
+            "name": "js/widget/plot/network/networkwidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/sampleplate/sampleplategroupwidget.js": {
+            "name": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/sampleplate/sampleplatewidget.js": {
+            "name": "js/widget/sampleplate/sampleplatewidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/specimen/specimenwidget.js": {
+            "name": "js/widget/specimen/specimenwidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/spreadsheet/containerspreadsheet.js": {
+            "name": "js/widget/spreadsheet/containerspreadsheet.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/tabs/macromoleculetabs.js": {
+            "name": "js/widget/tabs/macromoleculetabs.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/tabs/shipmenttabs.js": {
+            "name": "js/widget/tabs/shipmenttabs.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/tabs/templatetabs.js": {
+            "name": "js/widget/tabs/templatetabs.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/timeline/sessiontimelinewidget.js": {
+            "name": "js/widget/timeline/sessiontimelinewidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/window/casewindow.js": {
+            "name": "js/widget/window/casewindow.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/window/genericwindow.js": {
+            "name": "js/widget/window/genericwindow.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/window/macromoleculewindow.js": {
+            "name": "js/widget/window/macromoleculewindow.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/window/stocksolutionwindow.js": {
+            "name": "js/widget/window/stocksolutionwindow.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/wizard/genericstepwizardform.js": {
+            "name": "js/widget/wizard/genericstepwizardform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/wizard/measurementcreatorstepwizardform.js": {
+            "name": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/wizard/wizardwidget.js": {
+            "name": "js/widget/wizard/wizardwidget.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/imageresolutionviewer.js": {
+            "name": "js/widget/imageresolutionviewer.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/widget/imageviewer.js": {
+            "name": "js/widget/imageviewer.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "ManagerWelcomeMainView": {
+            "name": "ManagerWelcomeMainView",
+            "shortname": "ManagerWelcomeMainView",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 2,
+            "description": "Class for the manager landing page. It inherits from MainView",
+            "is_constructor": 1
+        }
+    },
+    "elements": {},
+    "classitems": [
+        {
+            "file": "js/core/app/authenticationcontroller.js",
+            "line": 6,
+            "description": "url to an ISPyB instance http://pc593.embl.fr:8080/ispyb-ws/rest",
+            "params": [
+                {
+                    "name": "user",
+                    "description": ""
+                },
+                {
+                    "name": "password",
+                    "description": ""
+                },
+                {
+                    "name": "url",
+                    "description": ""
+                }
+            ],
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 6,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 8,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 10,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 13,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 38,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 41,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 64,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 69,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 81,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 92,
+            "description": "This method append to args the values of the active connection: url, token and proposal",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 98,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 100,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/app/exi.js",
+            "line": 134,
+            "description": "Adds a new Main panel to the center panel",
+            "params": [
+                {
+                    "name": "mainView",
+                    "description": ""
+                }
+            ],
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/menu/mainmenu.js",
+            "line": 19,
+            "description": "If there is a credential then home tab will redirect to the welcome page (either manager or user)",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 6,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 11,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 13,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 18,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 23,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/exicontroller.js",
+            "line": 35,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/labcontactexicontroller.js",
+            "line": 45,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 8,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 13,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 15,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 20,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 25,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 29,
+            "description": "Loading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 38,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 70,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 107,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/mxexicontroller.js",
+            "line": 119,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 46,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 58,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 65,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 67,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/offlineexicontroller.js",
+            "line": 72,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/proposalexicontroller.js",
+            "line": 35,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 13,
+            "description": "Loading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 33,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 49,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 65,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 75,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 82,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 89,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 94,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 124,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 138,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 149,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 171,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 197,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 205,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/saxsexicontroller.js",
+            "line": 243,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 15,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 27,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 29,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 34,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 39,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/router/shippingexicontroller.js",
+            "line": 62,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/security/credentialmanager.js",
+            "line": 9,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/security/credentialmanager.js",
+            "line": 27,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/security/credentialmanager.js",
+            "line": 42,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 37,
+            "description": "Groups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 213,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 252,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 260,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 273,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 324,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 329,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 334,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 424,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 461,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 568,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 686,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/bui.js",
+            "line": 731,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 2,
+            "description": "Using dygraph it plots a chart. Params: targetId, labelsContainerId, args",
+            "width": "",
+            "height": "",
+            "labelswidth": "",
+            "targetid": "",
+            "custombars": "",
+            "ylabel": "",
+            "xlabel": "",
+            "showrangeselector": "Show or hide the range selector widget.",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 79,
+            "description": "data: dygraphs.com/data.html",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 90,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/dygraphwidget.js",
+            "line": 95,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/core/util/string.js",
+            "line": 1,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/autoprocintegrationmainview.js",
+            "line": 25,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/autoprocintegrationmainview.js",
+            "line": 97,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/workflowstepmainview.js",
+            "line": 70,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/workflowstepmainview.js",
+            "line": 72,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/workflowstepmainview.js",
+            "line": 78,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/workflowstepmainview.js",
+            "line": 84,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/run/dimplerunmainview.js",
+            "line": 151,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/prepare/templatemainview.js",
+            "line": 14,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/prepare/templatemainview.js",
+            "line": 36,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/experimentmainview.js",
+            "line": 6,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/experimentmainview.js",
+            "line": 28,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/mergemainview.js",
+            "line": 8,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/mergemainview.js",
+            "line": 12,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/mergemainview.js",
+            "line": 14,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/mergemainview.js",
+            "line": 243,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/mergemainview.js",
+            "line": 300,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/primarydatamainview.js",
+            "line": 16,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/primarydatamainview.js",
+            "line": 25,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/primarydatamainview.js",
+            "line": 156,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/saxs/primarydatamainview.js",
+            "line": 159,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 53,
+            "description": "This sets an active proposal into the credential Manager. It also retrieve all the information about the proposal: shipments, macromolecules, crystals, buffers, etc.. and store \nthem in a local storage",
+            "itemtype": "method",
+            "name": "activeProposal",
+            "params": [
+                {
+                    "name": "proposal",
+                    "description": "Proposal object that should container at least: [code, number]",
+                    "type": "Object"
+                }
+            ],
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 79,
+            "description": "It receives a list of proposals and display them in the main container",
+            "params": [
+                {
+                    "name": "proposals",
+                    "description": "Arrays of Proposal objects",
+                    "type": "Object"
+                }
+            ],
+            "itemtype": "method",
+            "name": "displayProposals",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 102,
+            "description": "Retrieves a list of sessions based on a start date and end date and loads them on the session grid",
+            "params": [
+                {
+                    "name": "start",
+                    "description": "Date should be in the format of YYYYMMDD",
+                    "type": "String"
+                },
+                {
+                    "name": "end",
+                    "description": "Date should be in the format of YYYYMMDD",
+                    "type": "String"
+                }
+            ],
+            "itemtype": "method",
+            "name": "loadByDate",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 120,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 191,
+            "description": "Retrieves all proposas on ISPyB and stores them on this.proposal \nIt is useful for fast search later on",
+            "itemtype": "method",
+            "name": "loadProposals",
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/managerwelcomemainview.js",
+            "line": 213,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/userwelcomemainview.js",
+            "line": 157,
+            "class": ""
+        },
+        {
+            "file": "js/main/userwelcomemainview.js",
+            "line": 238,
+            "class": ""
+        },
+        {
+            "file": "js/main/userwelcomemainview.js",
+            "line": 243,
+            "class": ""
+        },
+        {
+            "file": "js/navigation/saxs/datacollectionlistview.js",
+            "line": 48,
+            "class": ""
+        },
+        {
+            "file": "js/navigation/saxs/datacollectionlistview.js",
+            "line": 53,
+            "class": ""
+        },
+        {
+            "file": "js/navigation/saxs/experimentlistview.js",
+            "line": 11,
+            "class": ""
+        },
+        {
+            "file": "js/navigation/listview.js",
+            "line": 1,
+            "description": "Main class used for the west panel. Main purpose is the navigation",
+            "class": ""
+        },
+        {
+            "file": "js/navigation/listview.js",
+            "line": 9,
+            "class": ""
+        },
+        {
+            "file": "js/navigation/listview.js",
+            "line": 93,
+            "class": ""
+        },
+        {
+            "file": "js/navigation/workspacelistview.js",
+            "line": 35,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/assemblyform.js",
+            "line": 1,
+            "description": "Example form",
+            "witdh": "",
+            "height": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/assemblyform.js",
+            "line": 52,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 1,
+            "description": "Macromolecule form with the general parameters of a macromolecule",
+            "witdh": "",
+            "height": "#onSave button save has been clicked\n#onClose button close has been clicked",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 24,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 29,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 78,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 86,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 95,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 139,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 153,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 164,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 166,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 170,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 175,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 184,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 287,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 294,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 300,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/macromoleculeform.js",
+            "line": 328,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/molarityform.js",
+            "line": 1,
+            "description": "Example form",
+            "witdh": "",
+            "height": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/molarityform.js",
+            "line": 112,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/molarityform.js",
+            "line": 129,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/molarityform.js",
+            "line": 141,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
+            "line": 1,
+            "description": "Example form",
+            "witdh": "",
+            "height": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
+            "line": 128,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
+            "line": 160,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
+            "line": 177,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
+            "line": 189,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/abinitioform.js",
+            "line": 1,
+            "description": "Example form",
+            "witdh": "",
+            "height": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/abinitioform.js",
+            "line": 22,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/abinitioform.js",
+            "line": 38,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/abinitioform.js",
+            "line": 41,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/abinitioform.js",
+            "line": 51,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/abinitioform.js",
+            "line": 117,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/addressform.js",
+            "line": 1,
+            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/bufferform.js",
+            "line": 1,
+            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/caseform.js",
+            "line": 1,
+            "showtitle": "#onSaved\n#onAddPlates\n#onRemovePlates",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/crystalform.js",
+            "line": 1,
+            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 1,
+            "description": "Example form",
+            "witdh": "",
+            "height": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 23,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 29,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 187,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 191,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 195,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 216,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 231,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 249,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/datareductionform.js",
+            "line": 272,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/experimentheaderform.js",
+            "line": 1,
+            "description": "Shows the header for the experiments changing the color and parameters depending on experiment type",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/parcelform.js",
+            "line": 1,
+            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/parcelform.js",
+            "line": 32,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/parcelform.js",
+            "line": 37,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/parcelform.js",
+            "line": 50,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/parcelform.js",
+            "line": 82,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/puckform.js",
+            "line": 1,
+            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/puckform.js",
+            "line": 33,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/puckform.js",
+            "line": 111,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/puckform.js",
+            "line": 124,
+            "description": "When container type has changed from SPINE|| UNIPUCK || PLATE\n\nWe make the spreadsheet longer and the platelayout is rendered again",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/shipmentform.js",
+            "line": 1,
+            "description": "Same form as MX part",
+            "creationmode": "if true a create button appears instead of save",
+            "showtitle": "true or false",
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/shipmentform.js",
+            "line": 94,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/shipmentform.js",
+            "line": 99,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/shipmentform.js",
+            "line": 127,
+            "class": ""
+        },
+        {
+            "file": "js/widget/form/stocksolutionform.js",
+            "line": 2,
+            "description": "#onSaved",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/abinitiogrid.js",
+            "line": 27,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/abinitiogrid.js",
+            "line": 67,
+            "description": "Store in Memory",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/aprioririgidbodygrid.js",
+            "line": 3,
+            "description": "Rigid body grid to show PDB, symmetry and multiplicity\n\n\n#onUploadFile click on upload file",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/aprioririgidbodygrid.js",
+            "line": 27,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/aprioririgidbodygrid.js",
+            "line": 37,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/aprioririgidbodygrid.js",
+            "line": 40,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/aprioririgidbodygrid.js",
+            "line": 85,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/buffergrid.js",
+            "line": 1,
+            "description": "It shows buffer grid with a top bar with \"Add\" button",
+            "height": "",
+            "searchbar": "",
+            "collapsed": "",
+            "width": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/buffergrid.js",
+            "line": 58,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/buffergrid.js",
+            "line": 104,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/buffergrid.js",
+            "line": 209,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 1,
+            "description": "A shipment may contains one or more cases where stock solutions and sample plates are stored",
+            "height": "",
+            "btneditvisible": "",
+            "btnremovevisible": "#onEditButtonClicked\n#onAddButtonClicked\n#onRemoveButtonClicked\n#onDuplicateButtonClicked",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 30,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 143,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 185,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 243,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 256,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 412,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 451,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/casegrid.js",
+            "line": 498,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 2,
+            "description": "Shows a list of experiment AKA data acquisitions",
+            "height": "",
+            "sorters": "",
+            "minheight": "",
+            "gridtype": ": Ext.ux.LiveSearchGridPanel or Ext.grid.Panel",
+            "tbar": "true or false",
+            "grouping": "true or false",
+            "width": "",
+            "title": "#onEditButtonClicked",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 28,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 33,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 81,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 163,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 172,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 206,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 262,
+            "description": "Date format: \"YYYY-MM-DD\"",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 267,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 286,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 302,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 331,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/experimentgrid.js",
+            "line": 586,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/frameselectorgrid.js",
+            "line": 6,
+            "description": "Fill the tree with information about the subtraction: samples, buffers,\naverages and subtrated curve *",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/frameselectorgrid.js",
+            "line": 12,
+            "description": "Given a data collection return the run numbers, sample and buffer\nacronym *",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/frameselectorgrid.js",
+            "line": 18,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/frameselectorgrid.js",
+            "line": 38,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/frameselectorgrid.js",
+            "line": 187,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/macromoleculegrid.js",
+            "line": 1,
+            "description": "Macromolecule Grid showing macromolecules and adding anb updating buttons",
+            "height": "",
+            "maxheight": "",
+            "width": "",
+            "cssfontstyle": "",
+            "searchbar": "makes this grid as Ext.ux.LiveSearchGridPanel",
+            "tbar": "top bar containing \"Add\" and \"Update From SMIS\" button",
+            "collapsed": "",
+            "collapsible": "",
+            "btneditvisible": "",
+            "btnremovevisible": "",
+            "multiselect": "makes it multiselect using Ext.selection.CheckboxModel\n\n#onSelected\n#onMacromoleculesChanged",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/macromoleculegrid.js",
+            "line": 36,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/macromoleculegrid.js",
+            "line": 214,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/macromoleculegrid.js",
+            "line": 277,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 1,
+            "description": "Macromolecule Grid showing macromolecules and adding anb updating buttons",
+            "height": "",
+            "maxheight": "",
+            "width": "",
+            "cssfontstyle": "",
+            "searchbar": "makes this grid as Ext.ux.LiveSearchGridPanel",
+            "tbar": "top bar containing \"Add\" and \"Update From SMIS\" button",
+            "collapsed": "",
+            "collapsible": "",
+            "btneditvisible": "",
+            "btnremovevisible": "",
+            "multiselect": "makes it multiselect using Ext.selection.CheckboxModel\n\n#onSelected\n#onMacromoleculesChanged",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 50,
+            "description": "Hash map containing the keys of the editable columns. Ex:\n'exposureTemperature' *",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 294,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 306,
+            "key": "name of the columns mathing the this.editor[key]",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 529,
+            "description": "If updateRowEnabled returns an array with Ext.grid.plugin.RowEditing",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 540,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 544,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 561,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 634,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 638,
+            "description": "We get and refresh experiment\nbecause specimens has changed *",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 660,
+            "description": "Set status bar to ready (ok icon)",
+            "msg": "message to be displayed on the bar",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 674,
+            "description": "Set status bar to busy (refreshing icon)",
+            "msg": "message to be displayed on the bar",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/measurementgrid.js",
+            "line": 688,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/molaritygrid.js",
+            "line": 1,
+            "description": "A shipment may contains one or more cases where stock solutions and sample\nplates are stored",
+            "height": "",
+            "btneditvisible": "",
+            "btnremovevisible": "#onEditButtonClicked",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/molaritygrid.js",
+            "line": 39,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/molaritygrid.js",
+            "line": 145,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/molaritygrid.js",
+            "line": 163,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/parcelgrid.js",
+            "line": 1,
+            "description": "A shipment may contains one or more cases where stock solutions and sample plates are stored",
+            "height": "",
+            "btneditvisible": "",
+            "btnremovevisible": "#onEditButtonClicked\n#onAddButtonClicked\n#onRemoveButtonClicked\n#onDuplicateButtonClicked",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/parcelgrid.js",
+            "line": 30,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/proposalgrid.js",
+            "line": 130,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/sessiongrid.js",
+            "line": 47,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/sessiongrid.js",
+            "line": 154,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/specimengrid.js",
+            "line": 90,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/specimengrid.js",
+            "line": 138,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/specimengrid.js",
+            "line": 172,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/specimengrid.js",
+            "line": 176,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/specimengrid.js",
+            "line": 203,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 7,
+            "description": "Shows a list of stock solutions with macromolecule, buffer, storage temperature, concentration, shipment and comments",
+            "multiselect": "allows multiple selection",
+            "height": "",
+            "minheight": "",
+            "width": "",
+            "tbar": "",
+            "showtitle": "",
+            "ispackedvisible": "shows is stock solution is in a box",
+            "btneditvisible": "shows edit button",
+            "btnaddvisible": "",
+            "btnaddexisting": "",
+            "btnunpackvisible": "allows to unpack a stock solution",
+            "btnremovevisible": "allow to remove a stock solution",
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 33,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 41,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 88,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 235,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 238,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 325,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/stocksolutiongrid.js",
+            "line": 339,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/templategrid.js",
+            "line": 111,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/templategrid.js",
+            "line": 150,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/volumegrid.js",
+            "line": 43,
+            "class": ""
+        },
+        {
+            "file": "js/widget/grid/volumegrid.js",
+            "line": 45,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 18,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 62,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 119,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 129,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 140,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 181,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 435,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 452,
+            "class": ""
+        },
+        {
+            "file": "js/widget/hplc/hplcgraph.js",
+            "line": 464,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/customsectiondatacollection.js",
+            "line": 42,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/customsectiondatacollection.js",
+            "line": 58,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 37,
+            "description": "Return a JSON formatted in the next way:\n{\"EDNAproc\":{\"run\":2,\"success\":2},\"fastproc\":{\"run\":2,\"success\":2},\"parallelproc\":{\"run\":16,\"success\":16}}",
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 86,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 191,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 226,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 285,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 288,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
+            "line": 291,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
+            "line": 11,
+            "description": "Input: \t\nwokflowSteps = \"Snapshots,Automesh,Line,Mesh,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation\"\nworkflowStepStatus = \"Success,Success,Success,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure\"\n\nOutput:\n[...{\"step\":\"Line\",\"count\":3,\"status\":\"Success\"}...]",
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
+            "line": 65,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
+            "line": 72,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/autoprocintegrationgrid.js",
+            "line": 89,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollectionmxgrid.js",
+            "line": 223,
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollectionsummarygrid.js",
+            "line": 7,
+            "description": "Shows a list of stock solutions with macromolecule, buffer, storage temperature, concentration, shipment and comments",
+            "multiselect": "allows multiple selection",
+            "height": "",
+            "minheight": "",
+            "width": "",
+            "tbar": "",
+            "showtitle": "",
+            "ispackedvisible": "shows is stock solution is in a box",
+            "btneditvisible": "shows edit button",
+            "btnaddvisible": "",
+            "btnaddexisting": "",
+            "btnunpackvisible": "allows to unpack a stock solution",
+            "btnremovevisible": "allow to remove a stock solution",
+            "class": ""
+        },
+        {
+            "file": "js/widget/mx/grid/datacollectionsummarygrid.js",
+            "line": 27,
+            "class": ""
+        },
+        {
+            "file": "js/widget/pdb/pdbviewer.js",
+            "line": 35,
+            "class": ""
+        },
+        {
+            "file": "js/widget/pdb/pdbviewer.js",
+            "line": 44,
+            "class": ""
+        },
+        {
+            "file": "js/widget/pdb/pdbviewer.js",
+            "line": 51,
+            "class": ""
+        },
+        {
+            "file": "js/widget/pdb/pdbviewer.js",
+            "line": 255,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 19,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 211,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 223,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 228,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 248,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 264,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 268,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 276,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 284,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 299,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 309,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 314,
+            "class": ""
+        },
+        {
+            "file": "js/widget/platelayouts/spine.js",
+            "line": 319,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/dataset.js",
+            "line": 22,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 3,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 6,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 16,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 21,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 25,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 28,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 34,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 41,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 45,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 53,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 63,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 69,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 73,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 95,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 98,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 135,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 149,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 156,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 165,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 185,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 196,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 206,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 263,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 323,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 330,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 337,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 362,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 366,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 386,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 437,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 454,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 486,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 497,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 502,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 522,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 572,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 586,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 679,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 701,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 800,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 836,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 862,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 891,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 906,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 919,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 940,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1083,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1156,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1181,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1183,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1202,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1222,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1235,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1419,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1435,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1446,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1514,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1527,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1545,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1578,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1619,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphcanvas.js",
+            "line": 1652,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphdataset.js",
+            "line": 26,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/graphdataset.js",
+            "line": 37,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/itemgraphformatter.js",
+            "line": 86,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/itemgraphformatter.js",
+            "line": 110,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/itemgraphformatter.js",
+            "line": 156,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 13,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 17,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 31,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 79,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 169,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 216,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 225,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 429,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 438,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkdatasetformatter.js",
+            "line": 443,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 37,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 56,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 68,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 74,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 79,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 84,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 89,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 94,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 103,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 119,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 133,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 138,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 182,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 227,
+            "class": ""
+        },
+        {
+            "file": "js/widget/plot/network/networkwidget.js",
+            "line": 236,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 42,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 102,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 109,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 117,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 133,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 142,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 146,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 155,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 181,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 198,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplategroupwidget.js",
+            "line": 237,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 1,
+            "nodesize": "",
+            "fontsize": "",
+            "strokewidth": "",
+            "showtooltip": "",
+            "showborderlabels": "",
+            "showfullname": "",
+            "showlabels": "",
+            "backgroundcolor": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 72,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 88,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 156,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 200,
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 316,
+            "description": "Input: specimenId of the sample containing a macromolecule\nOuput: color of the specimen buffer associated",
+            "class": ""
+        },
+        {
+            "file": "js/widget/sampleplate/sampleplatewidget.js",
+            "line": 355,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 1,
+            "description": "Widget container of Specimen grid and samplePlate widget\nDepending of the sample changer layout it may be displayed vertically or horizontally",
+            "params": [
+                {
+                    "name": "args\n\n#onExperimentChanged",
+                    "description": "It happens when specimen are modified"
+                }
+            ],
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 25,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 51,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 65,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 70,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 72,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 86,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 105,
+            "description": "Can we merge? We can merge when specimen are the\nsame. So, same buffer, macromolecule, concentration *",
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 137,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 141,
+            "description": "Return vbox or hbox depending on the slot positions of the plates",
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 169,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 174,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 185,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 202,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 205,
+            "class": ""
+        },
+        {
+            "file": "js/widget/specimen/specimenwidget.js",
+            "line": 212,
+            "description": "This is necessay because we can not know the sample changer layout before hand",
+            "class": ""
+        },
+        {
+            "file": "js/widget/spreadsheet/containerspreadsheet.js",
+            "line": 39,
+            "class": ""
+        },
+        {
+            "file": "js/widget/spreadsheet/containerspreadsheet.js",
+            "line": 228,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/macromoleculetabs.js",
+            "line": 1,
+            "description": "Main form tab for macromolecule",
+            "width": "",
+            "height": "#onClose when user clicks on close button in the MacromoleculeForm\n#onSave when macromole is saved by macromoleculeForm",
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/macromoleculetabs.js",
+            "line": 25,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/macromoleculetabs.js",
+            "line": 27,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/macromoleculetabs.js",
+            "line": 51,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/macromoleculetabs.js",
+            "line": 56,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/shipmenttabs.js",
+            "line": 7,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/shipmenttabs.js",
+            "line": 10,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/shipmenttabs.js",
+            "line": 21,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/shipmenttabs.js",
+            "line": 30,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/templatetabs.js",
+            "line": 1,
+            "description": "Shows an template with the specimens, measurements and the experiment's\nrequirement",
+            "targetid": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/templatetabs.js",
+            "line": 15,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/templatetabs.js",
+            "line": 20,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/templatetabs.js",
+            "line": 41,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/templatetabs.js",
+            "line": 157,
+            "class": ""
+        },
+        {
+            "file": "js/widget/tabs/templatetabs.js",
+            "line": 184,
+            "description": "Depending on the sample Changer configuration we want to display the plates vertically or horizontally \n Default is vertical",
+            "class": ""
+        },
+        {
+            "file": "js/widget/timeline/sessiontimelinewidget.js",
+            "line": 97,
+            "description": "start and end format: YYYYMMDD",
+            "class": ""
+        },
+        {
+            "file": "js/widget/timeline/sessiontimelinewidget.js",
+            "line": 108,
+            "class": ""
+        },
+        {
+            "file": "js/widget/window/casewindow.js",
+            "line": 38,
+            "class": ""
+        },
+        {
+            "file": "js/widget/window/genericwindow.js",
+            "line": 42,
+            "class": ""
+        },
+        {
+            "file": "js/widget/window/macromoleculewindow.js",
+            "line": 28,
+            "class": ""
+        },
+        {
+            "file": "js/widget/window/stocksolutionwindow.js",
+            "line": 26,
+            "class": ""
+        },
+        {
+            "file": "js/widget/window/stocksolutionwindow.js",
+            "line": 34,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/genericstepwizardform.js",
+            "line": 1,
+            "description": "",
+            "title": "",
+            "data": "",
+            "onnextfn": "",
+            "onbackfn": "",
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/genericstepwizardform.js",
+            "line": 28,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 1,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 19,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 475,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 504,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 530,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 606,
+            "description": "Given a set of measurements this class will set the a priori right position for each specimen",
+            "sampleparsed": "Array of:{\"SEUtemperature\":\"\",\"buffer\":\"CaCl2\",\"buffername\":\"CaCl2\",\"code\":\"CaCl2\",\"comments\":\"\",\"concentration\":0,\"enable\":true,\"flow\":true,\"recuperate\":false,\"title\":\"\",\"transmission\":100,\"macromolecule\":\"CaCl2\",\"type\":\"Buffer\",\"typen\":1,\"viscosity\":\"low\",\"volume\":800,\"volumeToLoad\":40,\"waittime\":0,\"plate\":null,\"row\":null,\"well\":null}",
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 620,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 623,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 631,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 645,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 648,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 659,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 685,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 703,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 709,
+            "description": "Position is important as it is the way to distiguish between same sample \nFor temperatures series two measurements pointing to the same macromolecule and buffer and concentration\nmeans that it is the same specimen",
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
+            "line": 722,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/wizardwidget.js",
+            "line": 1,
+            "description": "It contains a set of form that we will communicate each other up to status finish is reached",
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/wizardwidget.js",
+            "line": 36,
+            "class": ""
+        },
+        {
+            "file": "js/widget/wizard/wizardwidget.js",
+            "line": 58,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 12,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 15,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 43,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 45,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 52,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 57,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageresolutionviewer.js",
+            "line": 272,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 7,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 15,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 23,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 135,
+            "description": "Vertical gradient is undefined for vertical line\nhttps://www.mathsisfun.com/algebra/line-equation-2points.html",
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 231,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 255,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 269,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 300,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 308,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 310,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 380,
+            "class": ""
+        },
+        {
+            "file": "js/widget/imageviewer.js",
+            "line": 389,
+            "class": ""
+        }
+    ],
+    "warnings": [
+        {
+            "message": "unknown tag: width",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: labelswidth",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: targetid",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: custombars",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: ylabel",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: xlabel",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: showrangeselector",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "unknown tag: witdh",
+            "line": " js/widget/form/macromolecule/assemblyform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/form/macromolecule/assemblyform.js:1"
+        },
+        {
+            "message": "unknown tag: witdh",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:1"
+        },
+        {
+            "message": "unknown tag: witdh",
+            "line": " js/widget/form/macromolecule/molarityform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/form/macromolecule/molarityform.js:1"
+        },
+        {
+            "message": "unknown tag: witdh",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:1"
+        },
+        {
+            "message": "unknown tag: witdh",
+            "line": " js/widget/form/abinitioform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/form/abinitioform.js:1"
+        },
+        {
+            "message": "unknown tag: showtitle",
+            "line": " js/widget/form/caseform.js:1"
+        },
+        {
+            "message": "unknown tag: witdh",
+            "line": " js/widget/form/datareductionform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/form/datareductionform.js:1"
+        },
+        {
+            "message": "unknown tag: creationmode",
+            "line": " js/widget/form/shipmentform.js:1"
+        },
+        {
+            "message": "unknown tag: showtitle",
+            "line": " js/widget/form/shipmentform.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/buffergrid.js:1"
+        },
+        {
+            "message": "unknown tag: searchbar",
+            "line": " js/widget/grid/buffergrid.js:1"
+        },
+        {
+            "message": "unknown tag: collapsed",
+            "line": " js/widget/grid/buffergrid.js:1"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/grid/buffergrid.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/casegrid.js:1"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/grid/casegrid.js:1"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/grid/casegrid.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: sorters",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: minheight",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: gridtype",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: tbar",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: grouping",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: maxheight",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: cssfontstyle",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: searchbar",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: tbar",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: collapsed",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: collapsible",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: multiselect",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: maxheight",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: cssfontstyle",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: searchbar",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: tbar",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: collapsed",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: collapsible",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: multiselect",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "unknown tag: key",
+            "line": " js/widget/grid/measurementgrid.js:306"
+        },
+        {
+            "message": "unknown tag: msg",
+            "line": " js/widget/grid/measurementgrid.js:660"
+        },
+        {
+            "message": "unknown tag: msg",
+            "line": " js/widget/grid/measurementgrid.js:674"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/molaritygrid.js:1"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/grid/molaritygrid.js:1"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/grid/molaritygrid.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/parcelgrid.js:1"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/grid/parcelgrid.js:1"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/grid/parcelgrid.js:1"
+        },
+        {
+            "message": "unknown tag: multiselect",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: minheight",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: tbar",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: showtitle",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: ispackedvisible",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnaddvisible",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnaddexisting",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnunpackvisible",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "unknown tag: multiselect",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: minheight",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: tbar",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: showtitle",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: ispackedvisible",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: btneditvisible",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnaddvisible",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnaddexisting",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnunpackvisible",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: btnremovevisible",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "unknown tag: nodesize",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: fontsize",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: strokewidth",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: showtooltip",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: showborderlabels",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: showfullname",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: showlabels",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: backgroundcolor",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "unknown tag: width",
+            "line": " js/widget/tabs/macromoleculetabs.js:1"
+        },
+        {
+            "message": "unknown tag: height",
+            "line": " js/widget/tabs/macromoleculetabs.js:1"
+        },
+        {
+            "message": "unknown tag: targetid",
+            "line": " js/widget/tabs/templatetabs.js:1"
+        },
+        {
+            "message": "unknown tag: data",
+            "line": " js/widget/wizard/genericstepwizardform.js:1"
+        },
+        {
+            "message": "unknown tag: onnextfn",
+            "line": " js/widget/wizard/genericstepwizardform.js:1"
+        },
+        {
+            "message": "unknown tag: onbackfn",
+            "line": " js/widget/wizard/genericstepwizardform.js:1"
+        },
+        {
+            "message": "unknown tag: sampleparsed",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:606"
+        },
+        {
+            "message": "Missing item type\nurl to an ISPyB instance http://pc593.embl.fr:8080/ispyb-ws/rest",
+            "line": " js/core/app/authenticationcontroller.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:8"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:10"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:41"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:64"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:69"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:81"
+        },
+        {
+            "message": "Missing item type\nThis method append to args the values of the active connection: url, token and proposal",
+            "line": " js/core/app/exi.js:92"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:98"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/app/exi.js:100"
+        },
+        {
+            "message": "Missing item type\nAdds a new Main panel to the center panel",
+            "line": " js/core/app/exi.js:134"
+        },
+        {
+            "message": "Missing item type\nIf there is a credential then home tab will redirect to the welcome page (either manager or user)",
+            "line": " js/core/menu/mainmenu.js:19"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:11"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:18"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:23"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/exicontroller.js:35"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/labcontactexicontroller.js:45"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:8"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:20"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:25"
+        },
+        {
+            "message": "Missing item type\nLoading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "line": " js/core/router/mxexicontroller.js:29"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:70"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:107"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/mxexicontroller.js:119"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:46"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:58"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:67"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/offlineexicontroller.js:72"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/proposalexicontroller.js:35"
+        },
+        {
+            "message": "Missing item type\nLoading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
+            "line": " js/core/router/saxsexicontroller.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:33"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:49"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:75"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:82"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:89"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:94"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:124"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:138"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:149"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:171"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:197"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:205"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/saxsexicontroller.js:243"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:29"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:34"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:39"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/router/shippingexicontroller.js:62"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/security/credentialmanager.js:9"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/security/credentialmanager.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/security/credentialmanager.js:42"
+        },
+        {
+            "message": "Missing item type\nGroups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
+            "line": " js/core/util/bui.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:213"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:252"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:260"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:273"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:324"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:329"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:334"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:424"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:461"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:568"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:686"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/bui.js:731"
+        },
+        {
+            "message": "Missing item type\nUsing dygraph it plots a chart. Params: targetId, labelsContainerId, args",
+            "line": " js/core/util/dygraphwidget.js:2"
+        },
+        {
+            "message": "Missing item type\ndata: dygraphs.com/data.html",
+            "line": " js/core/util/dygraphwidget.js:79"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/dygraphwidget.js:90"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/dygraphwidget.js:95"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/core/util/string.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/mx/autoprocintegrationmainview.js:25"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/mx/autoprocintegrationmainview.js:97"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/mx/workflowstepmainview.js:70"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/mx/workflowstepmainview.js:72"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/mx/workflowstepmainview.js:78"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/mx/workflowstepmainview.js:84"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/run/dimplerunmainview.js:151"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/prepare/templatemainview.js:14"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/prepare/templatemainview.js:36"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/experimentmainview.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/experimentmainview.js:28"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/mergemainview.js:8"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/mergemainview.js:12"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/mergemainview.js:14"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/mergemainview.js:243"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/mergemainview.js:300"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/primarydatamainview.js:16"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/primarydatamainview.js:25"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/primarydatamainview.js:156"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/saxs/primarydatamainview.js:159"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/managerwelcomemainview.js:120"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/managerwelcomemainview.js:213"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/userwelcomemainview.js:157"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/userwelcomemainview.js:238"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/main/userwelcomemainview.js:243"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/navigation/saxs/datacollectionlistview.js:48"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/navigation/saxs/datacollectionlistview.js:53"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/navigation/saxs/experimentlistview.js:11"
+        },
+        {
+            "message": "Missing item type\nMain class used for the west panel. Main purpose is the navigation",
+            "line": " js/navigation/listview.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/navigation/listview.js:9"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/navigation/listview.js:93"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/navigation/workspacelistview.js:35"
+        },
+        {
+            "message": "Missing item type\nExample form",
+            "line": " js/widget/form/macromolecule/assemblyform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/assemblyform.js:52"
+        },
+        {
+            "message": "Missing item type\nMacromolecule form with the general parameters of a macromolecule",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:24"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:29"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:78"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:86"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:95"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:139"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:153"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:164"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:166"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:170"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:175"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:184"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:287"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:294"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:300"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/macromoleculeform.js:328"
+        },
+        {
+            "message": "Missing item type\nExample form",
+            "line": " js/widget/form/macromolecule/molarityform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/molarityform.js:112"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/molarityform.js:129"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/molarityform.js:141"
+        },
+        {
+            "message": "Missing item type\nExample form",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:128"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:160"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:177"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/macromolecule/rigidbodymodelingform.js:189"
+        },
+        {
+            "message": "Missing item type\nExample form",
+            "line": " js/widget/form/abinitioform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/abinitioform.js:22"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/abinitioform.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/abinitioform.js:41"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/abinitioform.js:51"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/abinitioform.js:117"
+        },
+        {
+            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
+            "line": " js/widget/form/addressform.js:1"
+        },
+        {
+            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
+            "line": " js/widget/form/bufferform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/caseform.js:1"
+        },
+        {
+            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
+            "line": " js/widget/form/crystalform.js:1"
+        },
+        {
+            "message": "Missing item type\nExample form",
+            "line": " js/widget/form/datareductionform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:23"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:29"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:187"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:191"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:195"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:216"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:231"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:249"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/datareductionform.js:272"
+        },
+        {
+            "message": "Missing item type\nShows the header for the experiments changing the color and parameters depending on experiment type",
+            "line": " js/widget/form/experimentheaderform.js:1"
+        },
+        {
+            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
+            "line": " js/widget/form/parcelform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/parcelform.js:32"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/parcelform.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/parcelform.js:50"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/parcelform.js:82"
+        },
+        {
+            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
+            "line": " js/widget/form/puckform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/puckform.js:33"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/puckform.js:111"
+        },
+        {
+            "message": "Missing item type\nWhen container type has changed from SPINE|| UNIPUCK || PLATE\n\nWe make the spreadsheet longer and the platelayout is rendered again",
+            "line": " js/widget/form/puckform.js:124"
+        },
+        {
+            "message": "Missing item type\nSame form as MX part",
+            "line": " js/widget/form/shipmentform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/shipmentform.js:94"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/shipmentform.js:99"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/form/shipmentform.js:127"
+        },
+        {
+            "message": "Missing item type\n#onSaved",
+            "line": " js/widget/form/stocksolutionform.js:2"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/abinitiogrid.js:27"
+        },
+        {
+            "message": "Missing item type\nStore in Memory",
+            "line": " js/widget/grid/abinitiogrid.js:67"
+        },
+        {
+            "message": "Missing item type\nRigid body grid to show PDB, symmetry and multiplicity\n\n\n#onUploadFile click on upload file",
+            "line": " js/widget/grid/aprioririgidbodygrid.js:3"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/aprioririgidbodygrid.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/aprioririgidbodygrid.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/aprioririgidbodygrid.js:40"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/aprioririgidbodygrid.js:85"
+        },
+        {
+            "message": "Missing item type\nIt shows buffer grid with a top bar with \"Add\" button",
+            "line": " js/widget/grid/buffergrid.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/buffergrid.js:58"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/buffergrid.js:104"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/buffergrid.js:209"
+        },
+        {
+            "message": "Missing item type\nA shipment may contains one or more cases where stock solutions and sample plates are stored",
+            "line": " js/widget/grid/casegrid.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:30"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:143"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:185"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:243"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:256"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:412"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:451"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/casegrid.js:498"
+        },
+        {
+            "message": "Missing item type\nShows a list of experiment AKA data acquisitions",
+            "line": " js/widget/grid/experimentgrid.js:2"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:28"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:33"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:81"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:163"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:172"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:206"
+        },
+        {
+            "message": "Missing item type\nDate format: \"YYYY-MM-DD\"",
+            "line": " js/widget/grid/experimentgrid.js:262"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:267"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:286"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:302"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:331"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/experimentgrid.js:586"
+        },
+        {
+            "message": "Missing item type\nFill the tree with information about the subtraction: samples, buffers,\naverages and subtrated curve *",
+            "line": " js/widget/grid/frameselectorgrid.js:6"
+        },
+        {
+            "message": "Missing item type\nGiven a data collection return the run numbers, sample and buffer\nacronym *",
+            "line": " js/widget/grid/frameselectorgrid.js:12"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/frameselectorgrid.js:18"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/frameselectorgrid.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/frameselectorgrid.js:187"
+        },
+        {
+            "message": "Missing item type\nMacromolecule Grid showing macromolecules and adding anb updating buttons",
+            "line": " js/widget/grid/macromoleculegrid.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/macromoleculegrid.js:36"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/macromoleculegrid.js:214"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/macromoleculegrid.js:277"
+        },
+        {
+            "message": "Missing item type\nMacromolecule Grid showing macromolecules and adding anb updating buttons",
+            "line": " js/widget/grid/measurementgrid.js:1"
+        },
+        {
+            "message": "Missing item type\nHash map containing the keys of the editable columns. Ex:\n'exposureTemperature' *",
+            "line": " js/widget/grid/measurementgrid.js:50"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:294"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:306"
+        },
+        {
+            "message": "Missing item type\nIf updateRowEnabled returns an array with Ext.grid.plugin.RowEditing",
+            "line": " js/widget/grid/measurementgrid.js:529"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:540"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:544"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:561"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:634"
+        },
+        {
+            "message": "Missing item type\nWe get and refresh experiment\nbecause specimens has changed *",
+            "line": " js/widget/grid/measurementgrid.js:638"
+        },
+        {
+            "message": "Missing item type\nSet status bar to ready (ok icon)",
+            "line": " js/widget/grid/measurementgrid.js:660"
+        },
+        {
+            "message": "Missing item type\nSet status bar to busy (refreshing icon)",
+            "line": " js/widget/grid/measurementgrid.js:674"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/measurementgrid.js:688"
+        },
+        {
+            "message": "Missing item type\nA shipment may contains one or more cases where stock solutions and sample\nplates are stored",
+            "line": " js/widget/grid/molaritygrid.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/molaritygrid.js:39"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/molaritygrid.js:145"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/molaritygrid.js:163"
+        },
+        {
+            "message": "Missing item type\nA shipment may contains one or more cases where stock solutions and sample plates are stored",
+            "line": " js/widget/grid/parcelgrid.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/parcelgrid.js:30"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/proposalgrid.js:130"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/sessiongrid.js:47"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/sessiongrid.js:154"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/specimengrid.js:90"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/specimengrid.js:138"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/specimengrid.js:172"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/specimengrid.js:176"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/specimengrid.js:203"
+        },
+        {
+            "message": "Missing item type\nShows a list of stock solutions with macromolecule, buffer, storage temperature, concentration, shipment and comments",
+            "line": " js/widget/grid/stocksolutiongrid.js:7"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:33"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:41"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:88"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:235"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:238"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:325"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/stocksolutiongrid.js:339"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/templategrid.js:111"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/templategrid.js:150"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/volumegrid.js:43"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/grid/volumegrid.js:45"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:18"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:62"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:119"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:129"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:140"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:181"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:435"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:452"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/hplc/hplcgraph.js:464"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/customsectiondatacollection.js:42"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/customsectiondatacollection.js:58"
+        },
+        {
+            "message": "Missing item type\nReturn a JSON formatted in the next way:\n{\"EDNAproc\":{\"run\":2,\"success\":2},\"fastproc\":{\"run\":2,\"success\":2},\"parallelproc\":{\"run\":16,\"success\":16}}",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:86"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:191"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:226"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:285"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:288"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/resultsectiondatacollection.js:291"
+        },
+        {
+            "message": "Missing item type\nInput: \t\nwokflowSteps = \"Snapshots,Automesh,Line,Mesh,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation\"\nworkflowStepStatus = \"Success,Success,Success,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure\"\n\nOutput:\n[...{\"step\":\"Line\",\"count\":3,\"status\":\"Success\"}...]",
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:11"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:72"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/autoprocintegrationgrid.js:89"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollectionmxgrid.js:223"
+        },
+        {
+            "message": "Missing item type\nShows a list of stock solutions with macromolecule, buffer, storage temperature, concentration, shipment and comments",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:7"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/mx/grid/datacollectionsummarygrid.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/pdb/pdbviewer.js:35"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/pdb/pdbviewer.js:44"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/pdb/pdbviewer.js:51"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/pdb/pdbviewer.js:255"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:19"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:211"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:223"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:228"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:248"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:264"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:268"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:276"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:284"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:299"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:309"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:314"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/platelayouts/spine.js:319"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/dataset.js:22"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:3"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:6"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:16"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:21"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:25"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:28"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:34"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:41"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:45"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:53"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:63"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:69"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:73"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:95"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:98"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:135"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:149"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:156"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:165"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:185"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:196"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:206"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:263"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:323"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:330"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:337"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:362"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:366"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:386"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:437"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:454"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:486"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:497"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:502"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:522"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:572"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:586"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:679"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:701"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:800"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:836"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:862"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:891"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:906"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:919"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:940"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1083"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1156"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1181"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1183"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1202"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1222"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1235"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1419"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1435"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1446"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1514"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1527"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1545"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1578"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1619"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphcanvas.js:1652"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphdataset.js:26"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/graphdataset.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/itemgraphformatter.js:86"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/itemgraphformatter.js:110"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/itemgraphformatter.js:156"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:13"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:17"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:31"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:79"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:169"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:216"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:225"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:429"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:438"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkdatasetformatter.js:443"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:37"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:56"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:68"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:74"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:79"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:84"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:89"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:94"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:103"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:119"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:133"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:138"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:182"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:227"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/plot/network/networkwidget.js:236"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:42"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:102"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:109"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:117"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:133"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:142"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:146"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:155"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:181"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:198"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplategroupwidget.js:237"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:72"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:88"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:156"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:200"
+        },
+        {
+            "message": "Missing item type\nInput: specimenId of the sample containing a macromolecule\nOuput: color of the specimen buffer associated",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:316"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/sampleplate/sampleplatewidget.js:355"
+        },
+        {
+            "message": "Missing item type\nWidget container of Specimen grid and samplePlate widget\nDepending of the sample changer layout it may be displayed vertically or horizontally",
+            "line": " js/widget/specimen/specimenwidget.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:25"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:51"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:65"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:70"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:72"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:86"
+        },
+        {
+            "message": "Missing item type\nCan we merge? We can merge when specimen are the\nsame. So, same buffer, macromolecule, concentration *",
+            "line": " js/widget/specimen/specimenwidget.js:105"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:137"
+        },
+        {
+            "message": "Missing item type\nReturn vbox or hbox depending on the slot positions of the plates",
+            "line": " js/widget/specimen/specimenwidget.js:141"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:169"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:174"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:185"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:202"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/specimen/specimenwidget.js:205"
+        },
+        {
+            "message": "Missing item type\nThis is necessay because we can not know the sample changer layout before hand",
+            "line": " js/widget/specimen/specimenwidget.js:212"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/spreadsheet/containerspreadsheet.js:39"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/spreadsheet/containerspreadsheet.js:228"
+        },
+        {
+            "message": "Missing item type\nMain form tab for macromolecule",
+            "line": " js/widget/tabs/macromoleculetabs.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/macromoleculetabs.js:25"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/macromoleculetabs.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/macromoleculetabs.js:51"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/macromoleculetabs.js:56"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/shipmenttabs.js:7"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/shipmenttabs.js:10"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/shipmenttabs.js:21"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/shipmenttabs.js:30"
+        },
+        {
+            "message": "Missing item type\nShows an template with the specimens, measurements and the experiment's\nrequirement",
+            "line": " js/widget/tabs/templatetabs.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/templatetabs.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/templatetabs.js:20"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/templatetabs.js:41"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/tabs/templatetabs.js:157"
+        },
+        {
+            "message": "Missing item type\nDepending on the sample Changer configuration we want to display the plates vertically or horizontally \n Default is vertical",
+            "line": " js/widget/tabs/templatetabs.js:184"
+        },
+        {
+            "message": "Missing item type\nstart and end format: YYYYMMDD",
+            "line": " js/widget/timeline/sessiontimelinewidget.js:97"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/timeline/sessiontimelinewidget.js:108"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/window/casewindow.js:38"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/window/genericwindow.js:42"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/window/macromoleculewindow.js:28"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/window/stocksolutionwindow.js:26"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/window/stocksolutionwindow.js:34"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/genericstepwizardform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/genericstepwizardform.js:28"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:19"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:475"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:504"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:530"
+        },
+        {
+            "message": "Missing item type\nGiven a set of measurements this class will set the a priori right position for each specimen",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:606"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:620"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:623"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:631"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:645"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:648"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:659"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:685"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:703"
+        },
+        {
+            "message": "Missing item type\nPosition is important as it is the way to distiguish between same sample \nFor temperatures series two measurements pointing to the same macromolecule and buffer and concentration\nmeans that it is the same specimen",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:709"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/measurementcreatorstepwizardform.js:722"
+        },
+        {
+            "message": "Missing item type\nIt contains a set of form that we will communicate each other up to status finish is reached",
+            "line": " js/widget/wizard/wizardwidget.js:1"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/wizardwidget.js:36"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/wizard/wizardwidget.js:58"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:12"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:43"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:45"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:52"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:57"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageresolutionviewer.js:272"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:7"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:15"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:23"
+        },
+        {
+            "message": "Missing item type\nVertical gradient is undefined for vertical line\nhttps://www.mathsisfun.com/algebra/line-equation-2points.html",
+            "line": " js/widget/imageviewer.js:135"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:231"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:255"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:269"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:300"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:308"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:310"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:380"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/imageviewer.js:389"
+        }
+    ]
+}

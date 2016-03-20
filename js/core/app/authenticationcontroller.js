@@ -24,11 +24,13 @@ AuthenticationManager.prototype.login = function(user, password, url){
 		EXI.setError("Permission denied");
 		BUI.showError("Your credentials are invalid");
 	};
-	
-	
+
 	EXI.getDataAdapter({
-		onSuccess :fn,
-		onError :err
+		onSuccess 	: fn,
+		onError 	: err,
+		url			: url,
+		username 	: user
+		
 	}).proposal.authentication.authenticate(user, password, url);
 	
 	

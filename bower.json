@@ -35,6 +35,10 @@
     "magnificent": "~2.1.4",
     "ispyb-js-api": "*",
     "vis": "^4.15.0",
-    "Snap.svg": "snap.svg#^0.4.1"
+    "Snap.svg": "snap.svg#^0.4.1",
+    "pathjs-amd": "^0.10.0"
+  },
+  "resolutions": {
+    "qunit": "^1.22.0"
   }
 }

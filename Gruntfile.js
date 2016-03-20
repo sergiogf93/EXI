@@ -7,18 +7,43 @@ module.exports = function(grunt) {
    };
   grunt.initConfig({
       pkg: grunt.file.readJSON('package.json'),
+      yuidoc: {
+		    compile: {
+		      name: '<%= pkg.name %>',
+		      description: '<%= pkg.description %>',
+		      version: '<%= pkg.version %>',
+		      url: '<%= pkg.homepage %>',
+		      options: {
+			paths: 'js/',
+			outdir: 'documentation'
+		      }
+		    }
+	  },
 	  concat : {
 		  prod:{
 			  files : {
 				  'min/core.min.js' 		: ["js/core/**/*js"],
-				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", "js/widget/addressform.js", "js/widget/**/*.js"],
-				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js","js/navigation/*/*js"],
+				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
+				                      		    "js/widget/addressform.js", 
+				                      		    "js/widget/**/*.js"],
+				  'min/navigation.min.js' 	: ["js/navigation/listview.js", 
+				                          	   "js/navigation/*.js",
+				                          	   "js/navigation/*/*js"],
 				  'min/main.min.js' 		: [
 				                    		   		"js/main/mainview.js", "js/main/puckmainview.js", "js/main/addressmainview.js", 
 				                    		   		"js/main/userwelcomemainview.js", 
-				                    		   		"js/main/managerwelcomemainview.js", "js/main/shippingmainview.js", "js/main/sessionmainview.js", "js/main/saxs/landing/*.js", 
-				                    		   		"js/main/saxs/hplc/*.js",   "js/main/landing/*.js", "js/main/saxs/prepare/*.js", "js/main/saxs/*.js", "js/main/mx/*.js", 
-				                    		   		"js/main/mx/*/*.js", "js/main/tool/*.js", "js/main/run/*.js"],
+				                    		   		"js/main/managerwelcomemainview.js", 
+				                    		   		"js/main/shippingmainview.js", 
+				                    		   		"js/main/sessionmainview.js", 
+				                    		   		"js/main/saxs/landing/*.js", 
+				                    		   		"js/main/saxs/hplc/*.js",   
+				                    		   		"js/main/landing/*.js", 
+				                    		   		"js/main/saxs/prepare/*.js", 
+				                    		   		"js/main/saxs/*.js", 
+				                    		   		"js/main/mx/*.js", 
+				                    		   		"js/main/mx/*/*.js", 
+				                    		   		"js/main/tool/*.js", 
+				                    		   		"js/main/run/*.js"],
 				 'min/bower_components.min.js' : [
 												   "bower_components/Snap.svg/dist/snap.svg-min.js",	
 												   "bower_components/ispyb-js-api/min/*js",
@@ -30,9 +55,13 @@ module.exports = function(grunt) {
 												   "bower_components/jquery-lazy/jquery.lazy.js", 
 												   "bower_components/moment/min/moment.min.js",  
 												   'bower_components/dustjs-helpers/dist/dust-helpers.min.js',
-				 								   "bower_components/fullcalendar/dist/fullcalendar.js"
+				 								   "bower_components/fullcalendar/dist/fullcalendar.js",
+				 								   "bower_components/pathjs-amd/dist/path.js",
+				 								   "bower_components/threejs/build/three.js"
 								],
-				 'min/dependency.min.js' 	: ["js/dependency/three49custom.js", "js/dependency/glmol.js", "js/dependency/pathjs/path.js"]
+				 'min/dependency.min.js' 		: [
+//				                         		   "dependency/three49custom.js", 
+				                         		   "dependency/glmol.js"]
 			  }
 		  }
 	  },
@@ -52,7 +81,12 @@ module.exports = function(grunt) {
 			      },
 			  },
 			  files : {
-				  'min/exi.min.js' 		: ['min/bower_components.min.js', 'min/core.min.js', 'min/widget.min.js', 'min/navigation.min.js', 'min/main.min.js', 'min/precompiled.templates.min.js']
+				  'min/exi.min.js' 		: ['min/bower_components.min.js', 
+				                   		   'min/core.min.js', 
+				                   		   'min/widget.min.js', 
+				                   		   'min/navigation.min.js', 
+				                   		   'min/main.min.js', 
+				                   		   'min/precompiled.templates.min.js']
 			  }
 		  }
 	  },
@@ -64,7 +98,17 @@ module.exports = function(grunt) {
 			  },
 			    files: {
 			          'min/exi.min.css': [  
-					'css/templatelist.css', 'css/beamlinesessionbox.css', 'bower_components/fullcalendar/dist/fullcalendar.css', 'bower_components/vis/dist/vis.css', 'css/dygraph-custom.css', 'css/exi.css', 'css/calendar.css', 'css/menu/mainmenu.css', 'css/override.css', 'bower_components/handsontable/dist/handsontable.full.css', 'js/dependency/timeline/timeline.css']
+			                              	'css/templatelist.css', 
+			                              	'css/beamlinesessionbox.css', 
+			                              	'bower_components/fullcalendar/dist/fullcalendar.css', 
+			                              	'bower_components/vis/dist/vis.css', 
+			                              	'css/dygraph-custom.css', 
+			                              	'css/exi.css', 
+			                              	'css/calendar.css', 
+			                              	'css/menu/mainmenu.css', 
+			                              	'css/override.css', 
+			                              	'bower_components/handsontable/dist/handsontable.full.css', 
+			                              	'js/dependency/timeline/timeline.css']
 			    }
 		}
 	},
@@ -114,10 +158,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-plato');
   grunt.loadNpmTasks('grunt-dustjs');
+  grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  
-  grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod']);
-
+  grunt.task.registerTask('doc', ['yuidoc:compile']);
+  grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' , 'plato:prod', 'concat:prod', 'uglify:prod', 'cssmin:prod', 'yuidoc:compile']);
   grunt.task.registerTask('dev', ['dustjs','includeSource:dev', 'cssmin:prod']);
   
 };

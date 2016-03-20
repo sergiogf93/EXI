@@ -1,5 +1,10 @@
 
-
+/**
+* Class for the manager landing page. It inherits from MainView
+*
+* @class ManagerWelcomeMainView
+* @constructor
+*/
 function ManagerWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
@@ -7,50 +12,25 @@ function ManagerWelcomeMainView() {
 	this.title = "Home";
 	this.closable = false;
 
-
-	this.proposalGrid = new ProposalGrid({
-		height : 500
-	});
-
-	var _this = this;
-	this.proposalGrid.onSelected.attach(function(sender, proposal){
-		_this.panel.setLoading(true);
-		_this.activeProposal(proposal);
-		_this.panel.setLoading(false);
-
-	});
-
-	this.timeLineWidget = new SessionTimeLineWidget();
-
-	this.timeLineWidget.onSelected.attach(function(sender, record){
-		EXI.setLoadingMainPanel();
-		var onSuccess = function(sender, proposals){
-			if (proposals.length > 0){
-				_this.activeProposal(proposals[0]);
-				EXI.setLoadingMainPanel(false);
-				if ((record.group == "BM29") || (record.group == "BM12")){
-				  	location.hash = "/session/nav/" + record.sessionId +"/session";
-				}
-				else{
-				  	location.hash = "/mx/datacollection/session/" + record.sessionId + "/main";
-				}
-			}
-			else{
-				BUI.showError("No proposal Found");
-			}
-
-		} ;
-		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.proposal.getProposalBySessionId(record.sessionId);
-	});
 }
 
 
 ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
+/**
+* This sets an active proposal into the credential Manager. It also retrieve all the information about the proposal: shipments, macromolecules, crystals, buffers, etc.. and store 
+* them in a local storage
+*
+* @method activeProposal
+* @param {Object} proposal Proposal object that should container at least: [code, number]
+*/
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
+<<<<<<< HEAD
 	/** I don't need this to be synchronous **/	
+=======
+>>>>>>> 137bebba1535b762b5ac0b14bcc95f1df4548759
 	EXI.proposalManager.get(false);
 };
 
@@ -68,78 +48,153 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 	return this.container;
 };
 
-
-
-ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
+/**
+* It receives a list of proposals and display them in the main container
+*
+* @param {Object} proposals Arrays of Proposal objects
+* @method displayProposals
+*/
+ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
           var _this = this;
           this.container.removeAll();
-          var sessionGrid = new SessionGrid({
-                                                width: 900,
-                                                height:600,
-                                                margin : '10 10 10 10'
+          var proposalGrid = new ProposalGrid({
+									        	  width: 900,
+									              height:600,
+									              margin : '10 10 10 10'
 
                                             });
-          this.container.insert(sessionGrid.getPanel());
-
-          /** Handling onSelected **/
-          sessionGrid.onSelected.attach(function(sender, session){
-              _this.activeProposal(session.proposalVO);
-
+          proposalGrid.onSelected.attach(function(sender, proposal){
+	             _this.panel.setLoading(true);
+	             var proposalCode = proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber;
+	             function onSuccess(sender, sessions){
+		           	  _this.displaySessions(sessions, sessions.length + " sessions for proposal " + proposalCode);
+		           	  _this.panel.setLoading(false);
+	             }
+	             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
           });
-
-
-          sessionGrid.panel.setLoading(true);
-          function onSuccess(sender, data){
-              sessionGrid.load(data);
-              sessionGrid.panel.setTitle("Sessions scheduled on " + moment(start, "YYYYMMDD").format("DD-MM-YYYY"));
-              sessionGrid.panel.setLoading(false);
-
-          };
-		      EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
+          
+          this.container.insert(proposalGrid.getPanel());
+          proposalGrid.load(proposals);
 };
 
+/**
+* Retrieves a list of sessions based on a start date and end date and loads them on the session grid
+*
+* @param {String} start Date should be in the format of YYYYMMDD
+* @param {String} end Date should be in the format of YYYYMMDD
+* @method loadByDate
+*/
+ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
+          var _this = this;
+          this.panel.setLoading(true);
+          function onSuccess(sender, data){
+        	  _this.displaySessions(data, data.length + " sessions scheduled on " + start);
+        	  _this.panel.setLoading(false);
+          }
+		  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
+};
+
+ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
+	 this.container.removeAll();
+	 var sessionGrid = new SessionGrid({
+         width: 900,
+         height:600,
+         margin : '10 10 10 10'
+
+     });
+	 this.container.insert(sessionGrid.getPanel());
+	 
+	  /** Handling onSelected **/
+     sessionGrid.onSelected.attach(function(sender, session){
+         _this.activeProposal(session.proposalVO);
+     });
+	 sessionGrid.load(sessions);
+	 sessionGrid.panel.setTitle(title);
+};
 ManagerWelcomeMainView.prototype.getToolbar = function() {
   var _this = this;
 
    var dateMenu = Ext.create('Ext.menu.DatePicker', {
         handler: function(dp, date){
-
           _this.loadByDate(Ext.Date.format(date, 'Ymd'), Ext.Date.format(date, 'Ymd'));
-
         }
     });
 
     return Ext.create('Ext.toolbar.Toolbar', {
         width   : 500,
+        cls 	: 'exi-top-bar',
         items: [
           {
                text: 'Choose a Date',
                icon : '../images/icon/sessions.png',
-               menu: dateMenu // <-- submenu by reference
+               menu: dateMenu 
            },
 
             {
                 xtype    : 'textfield',
                 name     : 'field1',
                 width    : 300,
-                emptyText: 'enter search term (proposal or title)'
+                emptyText: 'enter search term (proposal or title)',
+    			listeners : {
+    				specialkey : function(field, e) {
+    					if (e.getKey() == e.ENTER) {
+    						var found = _this.searchProposalByTerm(field.getValue());
+    						_this.displayProposals(found);
+    					}
+    				} 
+    			} 
             }
         ]
     });
 };
 
 
+<<<<<<< HEAD
 ManagerWelcomeMainView.prototype.loadSessions = function() {
 	this.timeLineWidget.load(moment().format("YYYYMMDD"),moment().add(1, "day").format("YYYYMMDD"));
 };
+=======
+ManagerWelcomeMainView.prototype.searchProposalByTerm = function(term) {
+	var result = [];
+	if (this.proposals != null){
+		for (var i = 0; i < this.proposals.length; i++) {
+			var proposalId = this.proposals[i]["Proposal_proposalCode"] +  this.proposals[i]["Proposal_proposalNumber"];
+			var title = this.proposals[i]["Proposal_title"];
+			if (title == null){
+				title = "";
+			}
+			if ((proposalId.toUpperCase().match(term.toUpperCase())) ||(title.toUpperCase().match(term.toUpperCase()))){
+				result.push(this.proposals[i]);
+			}
+		}
+	}
+	return result;
+};
+
+/**
+* Retrieves all proposas on ISPyB and stores them on this.proposal 
+* It is useful for fast search later on
+*
+* @method loadProposals
+*/
+ManagerWelcomeMainView.prototype.loadProposals = function() {
+	var _this = this;
+	var onSuccess = function(sender, proposals){
+		_this.proposals = proposals;
+	};
+	
+	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
+};
+
+>>>>>>> 137bebba1535b762b5ac0b14bcc95f1df4548759
 
 
 
 ManagerWelcomeMainView.prototype.load = function(username) {
-	this.username = username;
+  this.username = username;
   var today = moment().format("YYYYMMDD");
   this.loadByDate(today, today);
-	/** Loading proposals depending on your role **/
-	//this.loadUserView();
-	//this.loadSessions();
+  /** This is need for quick searchs on proposals **/
+  this.loadProposals();
+  
 };
