@@ -71,7 +71,7 @@ CustomSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 	
 	dust.render("customsectiondatacollection", items, function(err, out){
 		html = html + out;
-     });
+     	});
 	
 	
 	return html;

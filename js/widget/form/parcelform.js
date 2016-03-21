@@ -27,6 +27,27 @@ ParcelForm.prototype.render = function() {
 	var dewar = this.dewar;
 	this.panel.removeAll();
 	
+	console.log(dewar);
+	var html = "";debugger
+	dust.render("parcelformsummary", dewar, function(err, out){
+		html = out;
+     	});
+
+	// Adding general information of the parcel **/
+	this.panel.insert(
+				{
+					xtype 	: 'container',
+					width	: 200,
+					border : 1,
+					padding : 20,
+					items 	: [
+							{
+								html : html							}
+				
+					]
+				}
+
+	);
 	if (dewar != null){
 		if (dewar.containerVOs != null){
 			/** Sorting container by id **/

@@ -1615,22 +1615,22 @@
         },
         {
             "file": "js/widget/form/parcelform.js",
-            "line": 32,
+            "line": 53,
             "class": ""
         },
         {
             "file": "js/widget/form/parcelform.js",
-            "line": 37,
+            "line": 58,
             "class": ""
         },
         {
             "file": "js/widget/form/parcelform.js",
-            "line": 50,
+            "line": 71,
             "class": ""
         },
         {
             "file": "js/widget/form/parcelform.js",
-            "line": 82,
+            "line": 103,
             "class": ""
         },
         {
@@ -4580,19 +4580,19 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:32"
+            "line": " js/widget/form/parcelform.js:53"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:37"
+            "line": " js/widget/form/parcelform.js:58"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:50"
+            "line": " js/widget/form/parcelform.js:71"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:82"
+            "line": " js/widget/form/parcelform.js:103"
         },
         {
             "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
