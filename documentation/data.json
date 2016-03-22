@@ -445,7 +445,9 @@
         "js/widget/mx/grid/autoprocintegrationgrid.js": {
             "name": "js/widget/mx/grid/autoprocintegrationgrid.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "AutoProcIntegrationGrid": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -673,6 +675,19 @@
             "file": "js/main/managerwelcomemainview.js",
             "line": 2,
             "description": "Class for the manager landing page. It inherits from MainView",
+            "is_constructor": 1
+        },
+        "AutoProcIntegrationGrid": {
+            "name": "AutoProcIntegrationGrid",
+            "shortname": "AutoProcIntegrationGrid",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/widget/mx/grid/autoprocintegrationgrid.js",
+            "line": 1,
+            "description": "It shows information from the autoprocessing like cells (a,b,c,alpha,beta,gamma) and also about phasing",
             "is_constructor": 1
         }
     },
@@ -1291,53 +1306,53 @@
         {
             "file": "js/main/userwelcomemainview.js",
             "line": 157,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/main/userwelcomemainview.js",
             "line": 238,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/main/userwelcomemainview.js",
             "line": 243,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/saxs/datacollectionlistview.js",
             "line": 48,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/saxs/datacollectionlistview.js",
             "line": 53,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/saxs/experimentlistview.js",
             "line": 11,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/listview.js",
             "line": 1,
             "description": "Main class used for the west panel. Main purpose is the navigation",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/listview.js",
             "line": 9,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/listview.js",
             "line": 93,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/navigation/workspacelistview.js",
             "line": 35,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/assemblyform.js",
@@ -1345,12 +1360,12 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/assemblyform.js",
             "line": 52,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
@@ -1358,87 +1373,87 @@
             "description": "Macromolecule form with the general parameters of a macromolecule",
             "witdh": "",
             "height": "#onSave button save has been clicked\n#onClose button close has been clicked",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 24,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 29,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 78,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 86,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 95,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 139,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 153,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 164,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 166,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 170,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 175,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 184,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 287,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 294,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 300,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 328,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
@@ -1446,22 +1461,22 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
             "line": 112,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
             "line": 129,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
             "line": 141,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
@@ -1469,27 +1484,27 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 128,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 160,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 177,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 189,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
@@ -1497,56 +1512,56 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 22,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 38,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 41,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 51,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 117,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/addressform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/bufferform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/caseform.js",
             "line": 1,
             "showtitle": "#onSaved\n#onAddPlates\n#onRemovePlates",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/crystalform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
@@ -1554,106 +1569,106 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 23,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 29,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 187,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 191,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 195,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 216,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 231,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 249,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 272,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/experimentheaderform.js",
             "line": 1,
             "description": "Shows the header for the experiments changing the color and parameters depending on experiment type",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/parcelform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/parcelform.js",
             "line": 53,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/parcelform.js",
             "line": 58,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/parcelform.js",
             "line": 71,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/parcelform.js",
             "line": 103,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
             "line": 33,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
             "line": 111,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
             "line": 124,
             "description": "When container type has changed from SPINE|| UNIPUCK || PLATE\n\nWe make the spreadsheet longer and the platelayout is rendered again",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
@@ -1661,65 +1676,65 @@
             "description": "Same form as MX part",
             "creationmode": "if true a create button appears instead of save",
             "showtitle": "true or false",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
             "line": 94,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
             "line": 99,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
             "line": 127,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/form/stocksolutionform.js",
             "line": 2,
             "description": "#onSaved",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/abinitiogrid.js",
             "line": 27,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/abinitiogrid.js",
             "line": 67,
             "description": "Store in Memory",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 3,
             "description": "Rigid body grid to show PDB, symmetry and multiplicity\n\n\n#onUploadFile click on upload file",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 27,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 37,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 40,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 85,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
@@ -1729,22 +1744,22 @@
             "searchbar": "",
             "collapsed": "",
             "width": "",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
             "line": 58,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
             "line": 104,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
             "line": 209,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
@@ -1753,47 +1768,47 @@
             "height": "",
             "btneditvisible": "",
             "btnremovevisible": "#onEditButtonClicked\n#onAddButtonClicked\n#onRemoveButtonClicked\n#onDuplicateButtonClicked",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 30,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 143,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 185,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 243,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 256,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 412,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 451,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 498,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
@@ -1807,95 +1822,95 @@
             "grouping": "true or false",
             "width": "",
             "title": "#onEditButtonClicked",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 28,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 33,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 81,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 163,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 172,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 206,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 262,
             "description": "Date format: \"YYYY-MM-DD\"",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 267,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 286,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 302,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 331,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 586,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 6,
             "description": "Fill the tree with information about the subtraction: samples, buffers,\naverages and subtrated curve *",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 12,
             "description": "Given a data collection return the run numbers, sample and buffer\nacronym *",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 18,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 38,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 187,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
@@ -1912,22 +1927,22 @@
             "btneditvisible": "",
             "btnremovevisible": "",
             "multiselect": "makes it multiselect using Ext.selection.CheckboxModel\n\n#onSelected\n#onMacromoleculesChanged",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
             "line": 36,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
             "line": 214,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
             "line": 277,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
@@ -1944,75 +1959,75 @@
             "btneditvisible": "",
             "btnremovevisible": "",
             "multiselect": "makes it multiselect using Ext.selection.CheckboxModel\n\n#onSelected\n#onMacromoleculesChanged",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 50,
             "description": "Hash map containing the keys of the editable columns. Ex:\n'exposureTemperature' *",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 294,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 306,
             "key": "name of the columns mathing the this.editor[key]",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 529,
             "description": "If updateRowEnabled returns an array with Ext.grid.plugin.RowEditing",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 540,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 544,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 561,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 634,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 638,
             "description": "We get and refresh experiment\nbecause specimens has changed *",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 660,
             "description": "Set status bar to ready (ok icon)",
             "msg": "message to be displayed on the bar",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 674,
             "description": "Set status bar to busy (refreshing icon)",
             "msg": "message to be displayed on the bar",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 688,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
@@ -2021,22 +2036,22 @@
             "height": "",
             "btneditvisible": "",
             "btnremovevisible": "#onEditButtonClicked",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
             "line": 39,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
             "line": 145,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
             "line": 163,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/parcelgrid.js",
@@ -2045,52 +2060,52 @@
             "height": "",
             "btneditvisible": "",
             "btnremovevisible": "#onEditButtonClicked\n#onAddButtonClicked\n#onRemoveButtonClicked\n#onDuplicateButtonClicked",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/parcelgrid.js",
             "line": 30,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/proposalgrid.js",
             "line": 130,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/sessiongrid.js",
             "line": 47,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/sessiongrid.js",
             "line": 154,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/specimengrid.js",
             "line": 90,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/specimengrid.js",
             "line": 138,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/specimengrid.js",
             "line": 172,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/specimengrid.js",
             "line": 176,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/specimengrid.js",
             "line": 203,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
@@ -2108,174 +2123,194 @@
             "btnaddexisting": "",
             "btnunpackvisible": "allows to unpack a stock solution",
             "btnremovevisible": "allow to remove a stock solution",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 33,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 41,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 88,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 235,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 238,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 325,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/stocksolutiongrid.js",
             "line": 339,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/templategrid.js",
             "line": 111,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/templategrid.js",
             "line": 150,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/volumegrid.js",
             "line": 43,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/grid/volumegrid.js",
             "line": 45,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 18,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 62,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 119,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 129,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 140,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 181,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 435,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 452,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
             "line": 464,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/customsectiondatacollection.js",
             "line": 42,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/customsectiondatacollection.js",
             "line": 58,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 37,
             "description": "Return a JSON formatted in the next way:\n{\"EDNAproc\":{\"run\":2,\"success\":2},\"fastproc\":{\"run\":2,\"success\":2},\"parallelproc\":{\"run\":16,\"success\":16}}",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 86,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 191,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 226,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 285,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 288,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/resultsectiondatacollection.js",
             "line": 291,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
             "line": 11,
             "description": "Input: \t\nwokflowSteps = \"Snapshots,Automesh,Line,Mesh,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation,Line,Line,Line,Characterisation\"\nworkflowStepStatus = \"Success,Success,Success,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure,Success,Success,Success,Failure\"\n\nOutput:\n[...{\"step\":\"Line\",\"count\":3,\"status\":\"Success\"}...]",
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
             "line": 65,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
             "line": 72,
-            "class": ""
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/autoprocintegrationgrid.js",
-            "line": 89,
-            "class": ""
+            "line": 43,
+            "description": "Given an array objects it return the distinct value of a given property",
+            "itemtype": "method",
+            "name": "getPrograms",
+            "params": [
+                {
+                    "name": "autoProcIntegrations",
+                    "description": "These objects are coming from the phasing view: {\"v_datacollection_summary_phasing_processingStatus\":true,\"v_datacollection_summary_phasing_phasingStatus\":null,\"v_datacollection_summary_phasing_phasingStepId\":null,\"v_datacollection_summary_phasing_cell_b\":60.51,\"v_datacollection_summary_phasing_cell_a\":60.51,\"v_datacollection_summary_phasing_processingPrograms\":\"EDNA_proc\",\"v_datacollection_summary_phasing_cell_c\":157.92,\"v_datacollection_summary_phasing_solventContent\":null,\"v_datacollection_summary_phasing_phasingStartTime\":null,\"v_datacollection_summary_phasing_autoproc_space_group\":\"P 41 21 2\",\"v_datacollection_summary_phasing_phasingAnalysisId\":null,\"v_datacollection_summary_phasing_spaceGroupShortName\":null,\"v_datacollection_summary_phasing_method\":null,\"v_datacollection_summary_phasing_autoProcIntegrationId\":1073123,\"v_datacollection_summary_phasing_previousPhasingStepId\":null,\"v_datacollection_summary_phasing_autoproc_autoprocId\":964912,\"v_datacollection_summary_phasing_highRes\":null,\"v_datacollection_summary_phasing_cell_beta\":90.0,\"v_datacollection_summary_phasing_phasingPrograms\":null,\"v_datacollection_summary_phasing_cell_alpha\":90.0,\"v_datacollection_summary_phasing_autoProcScalingId\":964923,\"v_datacollection_summary_phasing_lowRes\":null,\"v_datacollection_summary_phasing_phasingStepType\":null,\"v_datacollection_summary_phasing_anomalous\":false,\"v_datacollection_summary_phasing_enantiomorph\":null,\"v_datacollection_summary_phasing_dataCollectionId\":1682396,\"v_datacollection_summary_phasing_phasingEndTime\":null,\"v_datacollection_summary_phasing_cell_gamma\":90.0}",
+                    "type": "Array"
+                },
+                {
+                    "name": "property",
+                    "description": "Property you want to get the distinct",
+                    "type": "String"
+                }
+            ],
+            "class": "AutoProcIntegrationGrid"
+        },
+        {
+            "file": "js/widget/mx/grid/autoprocintegrationgrid.js",
+            "line": 147,
+            "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollectionmxgrid.js",
@@ -5040,7 +5075,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/mx/grid/autoprocintegrationgrid.js:89"
+            "line": " js/widget/mx/grid/autoprocintegrationgrid.js:147"
         },
         {
             "message": "Missing item type",

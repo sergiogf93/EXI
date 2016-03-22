@@ -70,6 +70,12 @@ AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
 		record["autoProcIntegrationId"] = autoProcIntegrations[i][0]["v_datacollection_summary_phasing_autoProcIntegrationId"];
 		record["processingPrograms"] = autoProcIntegrations[i][0]["v_datacollection_summary_phasing_processingPrograms"];
 		
+		if (autoProcIntegrations[i][0]["v_datacollection_summary_phasing_anomalous"] == true){
+			record["anomalous"] = "yes";
+		}
+		else{
+			record["anomalous"] = false;
+		}
 		
 		
 		if (autoProcIntegrations[i].length > 1){
@@ -119,7 +125,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		groupField: 'v_datacollection_summary_phasing_anomalous',
+//		groupField: 'v_datacollection_summary_phasing_anomalous',
 		sorters : 'spaceGroup',
 		fields : [ 'autoProcId',
 		           'refinedCellA', 
@@ -129,9 +135,9 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		           'v_datacollection_summary_phasing_autoproc_space_group']
 	});
 
-	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-    });
-    
+//	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
+//    });
+//    
     
 	var selModel = Ext.create('Ext.selection.RowModel', {
 		allowDeselect : true,
@@ -163,33 +169,11 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		cls : 'border-grid',
 		maxHeight : this.maxHeight,
 		minHeight : this.maxHeight,
-		features: [groupingFeature],
 		columns : [ 
 		{
-			text : 'id',
-			dataIndex : 'autoProcId',
-			flex : 1,
-			hidden : true
-		},
-		{
-			text : 'anomalous',
-			dataIndex : 'v_datacollection_summary_phasing_anomalous',
-			flex : 0.5,
-			hidden : true
-		},
-		{
-			text : 'Autoproc',
-			dataIndex : 'v_datacollection_summary_phasing_processingPrograms',
-			flex : 1,
-			renderer : function(e,sample, record){
-				return record.data["v_datacollection_summary_phasing_processingPrograms"] + "<br />" + record.data["v_datacollection_summary_phasing_autoproc_space_group"]
-				
-			}
-		}, 
-		{
-			text : 'Cell',
+			text : 'Autoprocessing',
 			dataIndex : 'processingPrograms',
-			flex : 1,
+			width : 400,
 			renderer : function(e, sample, record){
 				var html  = "";
 				try{
@@ -231,12 +215,6 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			stripeRows : true,
 			preserveScrollOnRefresh: true,
 			listeners : {
-//				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-////					_this.onSelected.notify(record.data);
-//				},
-//				'selectionChange' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//					debugger
-//				}
 			}
 		}
 	});

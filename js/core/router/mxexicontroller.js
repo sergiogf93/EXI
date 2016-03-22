@@ -126,6 +126,14 @@ MXExiController.prototype.routeNavigation = function() {
 
 	}).enter(this.setPageBackground);
 	
+	Path.map("#/autoprocintegration/datacollection/:datacollectionId/phasingviewer/main").to(function() {
+		var mainView = new PhasingViewerMainView();
+		
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['datacollectionId']);
+
+	}).enter(this.setPageBackground);
+	
 	
 	Path.map("#/mx/workflow/step/:workflowStepIdList/main").to(function() {
 		var mainView = new WorkflowStepMainView();

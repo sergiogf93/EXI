@@ -38,6 +38,7 @@
                 
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
                             </ul>
                 
@@ -98,7 +99,7 @@ function AutoProcIntegrationMainView() {
 		}
 		catch(e){}
 		if (records.length == 1){
-			var record = _this.getByAutoProcId(records[0].autoProcId);
+			var record = _this.getByAutoProcId(records[0].v_datacollection_summary_phasing_autoproc_autoprocId);
 			if (record != null){
 				_this.autoProcIntegrationAttachmentGrid.load(record);
 			}
@@ -427,22 +428,38 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 	this.panel.setLoading(&quot;Generating plots&quot;);
 	var onSuccess = function(sender, data){
 		_this.data = data;
-		var autoProcIntegrationsIds = []; 
-		var autoProcs = [];
-		var autoProcIds = [];
+//		var autoProcIntegrationsIds = []; 
+//		var autoProcs = [];
+//		var autoProcIds = [];
+//		for (var i = 0; i &lt; data.length; i++) {
+//			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
+//			autoProcs.push(data[i].autoproc);
+//			autoProcIds.push(data[i].autoproc.autoProcId);
+//		}
+////		_this.autoProcIntegrationGrid.load(data);
+//		_this.panel.setLoading(false);
+//		
+////		_this.loadPlots(autoProcIntegrationsIds);
+//	
+//		
+	};
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getByDataCollectionId(dataCollectionId);
+	
+	var onSuccess2 = function(sender, data){
+		
+		data =  BUI.groupBy(data[0], function(item){
+			  			return [item.v_datacollection_summary_phasing_autoProcIntegrationId];
+		});
+		var autoProcIntegrationIds = [];
 		for (var i = 0; i &lt; data.length; i++) {
-			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
-			autoProcs.push(data[i].autoproc);
-			autoProcIds.push(data[i].autoproc.autoProcId);
+			autoProcIntegrationIds.push(data[i][0].v_datacollection_summary_phasing_autoProcIntegrationId);
 		}
 		_this.autoProcIntegrationGrid.load(data);
 		_this.panel.setLoading(false);
-		console.log(autoProcIntegrationsIds);
-		_this.loadPlots(autoProcIntegrationsIds);
-	
-		
+		console.log(data);
+		_this.loadPlots(autoProcIntegrationIds);
 	};
-	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getByDataCollectionId(dataCollectionId);
+	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.phasing.getViewByDataCollectionId(dataCollectionId);
 };
 
 

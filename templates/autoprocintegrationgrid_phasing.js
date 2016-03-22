@@ -2,9 +2,9 @@
 {#.}
 <tr>
 	<td>
-	 <span  class='summary_datacollection_parameter_name'>SpaceGroup </span><span  class='summary_datacollection_parameter'>{.spaceGroup}</span>
+	 <span  class='summary_datacollection_parameter_name'>SpaceGroup </span><br /><span  class='summary_datacollection_parameter'>{.spaceGroup}</span>
 	 <br />
-	 <span  class='summary_datacollection_parameter_name'>Method </span><span  class='summary_datacollection_parameter'>{.method}</span>
+	 <span  class='summary_datacollection_parameter_name'>Method </span><br /><span  class='summary_datacollection_parameter'>{.method}</span>
 		
 		
 	</td>

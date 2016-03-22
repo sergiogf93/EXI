@@ -75,8 +75,8 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		       ]
 	});
 
-	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-    });
+//	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
+//    });
     
     
 	
@@ -85,10 +85,12 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		store : this.store,
 		cls : 'border-grid',
 		margin : this.margin,
-		features: [groupingFeature],
+//		features: [groupingFeature],
 		overflow:'auto' ,
-		maxHeight : this.maxHeight,
-		minHeight : this.maxHeight,
+		width : this.width - 20,
+//		maxHeight : this.maxHeight,
+//		minHeight : this.maxHeight,
+//		layout : 'fit',
 		columns : [ 
 		
 		{

@@ -38,6 +38,7 @@
                 
                         <div id="api-tabview-panel">
                             <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
                             </ul>
                 
@@ -80,6 +81,12 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
+/**
+* It shows information from the autoprocessing like cells (a,b,c,alpha,beta,gamma) and also about phasing
+*
+* @class AutoProcIntegrationGrid
+* @constructor
+*/
 function AutoProcIntegrationGrid(args) {
 	this.height = 500;
 	this.tbar = false;
@@ -116,16 +123,73 @@ function AutoProcIntegrationGrid(args) {
 	
 };
 
+/**
+* Given an array objects it return the distinct value of a given property
+*
+* @method getPrograms
+* @param {Array} autoProcIntegrations These objects are coming from the phasing view: {&quot;v_datacollection_summary_phasing_processingStatus&quot;:true,&quot;v_datacollection_summary_phasing_phasingStatus&quot;:null,&quot;v_datacollection_summary_phasing_phasingStepId&quot;:null,&quot;v_datacollection_summary_phasing_cell_b&quot;:60.51,&quot;v_datacollection_summary_phasing_cell_a&quot;:60.51,&quot;v_datacollection_summary_phasing_processingPrograms&quot;:&quot;EDNA_proc&quot;,&quot;v_datacollection_summary_phasing_cell_c&quot;:157.92,&quot;v_datacollection_summary_phasing_solventContent&quot;:null,&quot;v_datacollection_summary_phasing_phasingStartTime&quot;:null,&quot;v_datacollection_summary_phasing_autoproc_space_group&quot;:&quot;P 41 21 2&quot;,&quot;v_datacollection_summary_phasing_phasingAnalysisId&quot;:null,&quot;v_datacollection_summary_phasing_spaceGroupShortName&quot;:null,&quot;v_datacollection_summary_phasing_method&quot;:null,&quot;v_datacollection_summary_phasing_autoProcIntegrationId&quot;:1073123,&quot;v_datacollection_summary_phasing_previousPhasingStepId&quot;:null,&quot;v_datacollection_summary_phasing_autoproc_autoprocId&quot;:964912,&quot;v_datacollection_summary_phasing_highRes&quot;:null,&quot;v_datacollection_summary_phasing_cell_beta&quot;:90.0,&quot;v_datacollection_summary_phasing_phasingPrograms&quot;:null,&quot;v_datacollection_summary_phasing_cell_alpha&quot;:90.0,&quot;v_datacollection_summary_phasing_autoProcScalingId&quot;:964923,&quot;v_datacollection_summary_phasing_lowRes&quot;:null,&quot;v_datacollection_summary_phasing_phasingStepType&quot;:null,&quot;v_datacollection_summary_phasing_anomalous&quot;:false,&quot;v_datacollection_summary_phasing_enantiomorph&quot;:null,&quot;v_datacollection_summary_phasing_dataCollectionId&quot;:1682396,&quot;v_datacollection_summary_phasing_phasingEndTime&quot;:null,&quot;v_datacollection_summary_phasing_cell_gamma&quot;:90.0}
+* @param {String} property Property you want to get the distinct
+*/
+AutoProcIntegrationGrid.prototype.getPrograms = function(autoProcIntegrations, property) {
+	function groupBy(items,propertyName)
+	{
+	    var result = [];
+	    $.each(items, function(index, item) {
+	       if ($.inArray(item[propertyName], result)==-1) {
+	          result.push(item[propertyName]);
+	       }
+	    });
+	    return result;
+	}
+	
+	return groupBy(autoProcIntegrations, property);
+	
+};
 
 AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
 	var data = [];
 	for (var i = 0; i &lt; autoProcIntegrations.length; i++) {
-		var record = autoProcIntegrations[i].autoproc;
-		record[&quot;anomalous&quot;] = autoProcIntegrations[i].autointegration.anomalous;
-		record[&quot;autoProcIntegrationId&quot;] = autoProcIntegrations[i].autointegration.autoProcIntegrationId;
-		record[&quot;processingPrograms&quot;] = autoProcIntegrations[i].autoprocprogram.processingPrograms;
+		var record = autoProcIntegrations[i][0];
+		record[&quot;autoProcIntegrationId&quot;] = autoProcIntegrations[i][0][&quot;v_datacollection_summary_phasing_autoProcIntegrationId&quot;];
+		record[&quot;processingPrograms&quot;] = autoProcIntegrations[i][0][&quot;v_datacollection_summary_phasing_processingPrograms&quot;];
+		
+		
+		
+		if (autoProcIntegrations[i].length &gt; 1){
+			phasingStep =  BUI.groupBy(autoProcIntegrations[i], function(item){
+				  			return [item.v_datacollection_summary_phasing_autoProcScalingId];
+			});
+			spaceGroups =  BUI.groupBy(phasingStep, function(item){
+	  			return [item.v_datacollection_summary_phasing_autoproc_space_group];
+			});
+			
+			record.phasing = [];
+			
+			function getDisplay(steps, programs){
+				var results = [];
+				for (var p = 0; p &lt; steps.length; p++) {
+					results.push({
+						step 	: steps[p],
+						program 	: programs[p]
+					});
+				}
+				return results;
+			}
+			for (var z = 0; z &lt; spaceGroups[0].length; z++) {
+				var step = this.getPrograms(spaceGroups[0][z], &#x27;v_datacollection_summary_phasing_phasingStepType&#x27;);
+				var programs = this.getPrograms(spaceGroups[0][z], &#x27;v_datacollection_summary_phasing_phasingPrograms&#x27;);
+				record.phasing.push({
+					spaceGroup  : spaceGroups[0][z][0][&quot;v_datacollection_summary_phasing_spaceGroupShortName&quot;],
+					programs    : programs,
+					step   		: step,
+					method	    : this.getPrograms(spaceGroups[0][z], &#x27;v_datacollection_summary_phasing_method&#x27;),
+					display     : getDisplay(step, programs)
+				});
+			}
+		}
 		data.push(record);
 	}
+	console.log(data);
 	this.store.loadData(data, false);
 };
 
@@ -138,19 +202,14 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create(&#x27;Ext.data.Store&#x27;, {
-		groupField: &#x27;anomalous&#x27;,
+		groupField: &#x27;v_datacollection_summary_phasing_anomalous&#x27;,
 		sorters : &#x27;spaceGroup&#x27;,
 		fields : [ &#x27;autoProcId&#x27;,
 		           &#x27;refinedCellA&#x27;, 
 		           &#x27;autoProcIntegrationId&#x27;,
-		           &#x27;refinedCellAlpha&#x27;, 
-		           &#x27;refinedCellB&#x27;, 
-		           &#x27;refinedCellBeta&#x27;, 
-		           &#x27;refinedCellC&#x27;,
-		           &#x27;refinedCellGamma&#x27;,
-		           &#x27;anomalous&#x27;,
-		           &#x27;processingPrograms&#x27;,
-		           &#x27;spaceGroup&#x27;]
+		           &#x27;v_datacollection_summary_phasing_anomalous&#x27;,
+		           &#x27;v_datacollection_summary_phasing_processingPrograms&#x27;,
+		           &#x27;v_datacollection_summary_phasing_autoproc_space_group&#x27;]
 	});
 
 	var groupingFeature = Ext.create(&#x27;Ext.grid.feature.Grouping&#x27;,{
@@ -194,71 +253,71 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			dataIndex : &#x27;autoProcId&#x27;,
 			flex : 1,
 			hidden : true
-		}, 
-		{
-			text : &#x27;Method&#x27;,
-			dataIndex : &#x27;processingPrograms&#x27;,
-			flex : 1
-		}, 
+		},
 		{
 			text : &#x27;anomalous&#x27;,
-			dataIndex : &#x27;anomalous&#x27;,
-			flex : 1,
+			dataIndex : &#x27;v_datacollection_summary_phasing_anomalous&#x27;,
+			flex : 0.5,
 			hidden : true
-		}, 
-		{
-			text : &#x27;spaceGroup&#x27;,
-			dataIndex : &#x27;spaceGroup&#x27;,
-			flex : 1
-		}, 
-		{
-			text : &#x27;cell a&#x27;,
-			dataIndex : &#x27;refinedCellA&#x27;,
-			flex : 1
-		}, 
-		{
-			text : &#x27;cell b&#x27;,
-			dataIndex : &#x27;refinedCellB&#x27;,
-			flex : 1
-		}, 
-		{
-			text : &#x27;cell c&#x27;,
-			dataIndex : &#x27;refinedCellC&#x27;,
-			flex : 1
-		}, 
-		{
-			text : &#x27;cell alpha&#x27;,
-			dataIndex : &#x27;refinedCellAlpha&#x27;,
-			flex : 1
 		},
 		{
-			text : &#x27;cell beta&#x27;,
-			dataIndex : &#x27;refinedCellBeta&#x27;,
-			flex : 1
-		},
-		{
-			text : &#x27;cell gamma&#x27;,
-			dataIndex : &#x27;refinedCellGamma&#x27;,
-			flex : 1
-		},
-		{
-			text : &#x27;Anomalous&#x27;,
-			dataIndex : &#x27;AutoProcIntegration_anomalous&#x27;,
+			text : &#x27;Autoproc&#x27;,
+			dataIndex : &#x27;v_datacollection_summary_phasing_processingPrograms&#x27;,
 			flex : 1,
-			hidden : true
+			renderer : function(e,sample, record){
+				var anomalous = &quot;non-anomalous&quot;;
+				if (record.data[&quot;v_datacollection_summary_phasing_anomalous&quot;] == true){
+					anomalous = &quot;anomalous&quot;;
+				}
+				return record.data[&quot;v_datacollection_summary_phasing_processingPrograms&quot;] + &quot;&lt;br /&gt;&quot; + record.data[&quot;v_datacollection_summary_phasing_autoproc_space_group&quot;]
+				
+			}
+		}, 
+		{
+			text : &#x27;Cell&#x27;,
+			dataIndex : &#x27;processingPrograms&#x27;,
+			flex : 1,
+			renderer : function(e, sample, record){
+				var html  = &quot;&quot;;
+				try{
+					dust.render(&quot;autoprocintegrationgrid_autoprocolumn&quot;, record.data, function(err, out){
+						html = out;
+					});
+				}
+				catch(e){
+					return &quot;Parsing error&quot;;
+				}
+				return html;
+			}
+		},
+		{
+			text : &#x27;Phasing&#x27;,
+			dataIndex : &#x27;processingPrograms&#x27;,
+			flex : 1.5,
+			renderer : function(e, sample, record){
+				var html  = &quot;&quot;;
+				if (record.data.phasing){
+					console.log(record.data.phasing);
+					
+					try{
+						dust.render(&quot;autoprocintegrationgrid_phasing&quot;, record.data.phasing, function(err, out){
+							html = out;
+						});
+					}
+					catch(e){
+						return &quot;Parsing error&quot;;
+					}
+				}
+				return html;
+			}
 		}
 		
 		],
 		flex : 1,
 		viewConfig : {
 			stripeRows : true,
+			preserveScrollOnRefresh: true,
 			listeners : {
-//				&#x27;cellclick&#x27; : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-////					_this.onSelected.notify(record.data);
-//				},
-//				&#x27;selectionChange&#x27; : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//					debugger
-//				}
 			}
 		}
 	});
