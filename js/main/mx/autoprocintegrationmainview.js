@@ -6,13 +6,18 @@ function AutoProcIntegrationMainView() {
 	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid({ maxHeight: 400});
 	
 	this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
+		
 		var ids = [];
 		for (var i = 0; i < records.length; i++) {
 			ids.push(records[i].autoProcIntegrationId);
 		}
-		_this.loadPlots(ids);
+		try{
+			_this.loadPlots(ids);
+		}
+		catch(e){}
 		if (records.length == 1){
-			var record = _this.getByAutoProcId(records[0].autoProcId);
+			debugger
+			var record = _this.getByAutoProcId(records[0].v_datacollection_summary_phasing_autoproc_autoprocId);
 			if (record != null){
 				_this.autoProcIntegrationAttachmentGrid.load(record);
 			}
@@ -158,7 +163,7 @@ function AutoProcIntegrationMainView() {
 			_this.phasingGrid.panel.setLoading(false);
 			
 		};
-		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(ids);
+		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoproc.getPhasingByAutoprocIds(ids);
 		
 	});
 	
@@ -244,7 +249,6 @@ AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 		        	 items : [
 		        	          this.getPlotContainer( this.cc2Plotter.getPanel()),
 		        	          this.getPlotContainer( this.sigmaAnnoPlotter.getPanel()),
-//		        	          this.getPlotContainer(this.wilsonPlotter.getPanel()),
 		        	          this.getPlotContainer(this.annoCorrPlotter.getPanel())
 		        	          
 		        	 ]
@@ -252,56 +256,6 @@ AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 		    ]
 	});
 };
-/*
-AutoProcIntegrationMainView.prototype.getPhasingPanel = function() {
-	return Ext.create('Ext.container.Container', {
-		layout: {
-	        type: 'fit'
-	    },
-		margin : 5,
-		height : 600,
-		items : [ 
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox',
-		        	 margin : '10 0 0 20',
-		        	 items : [
-			        	          Ext.create('Ext.container.Container', {
-			     		        	 layout: 'hbox',
-			     		        	 flex : 0.4,
-			     		        	 items : [
-			     		        	          	this.autoProcIntegrationPhasingGrid.getPanel()
-			     		        	          ]
-			     		         }),
-		        	          
-		        	          		this.phasingGrid.getPanel()
-		        	          ]
-		         }),
-		         		
-		    ]
-	});
-};*/
-
-//AutoProcIntegrationMainView.prototype.getDataCollectionPanel = function() {
-//	console.log(this.id)
-//	return Ext.create('Ext.container.Container', {
-//		layout: {
-//	        type: 'fit'
-//	    },
-//		margin : 5,
-//		
-//		height : 600,
-//		items : [ 
-//						Ext.create('Ext.Panel', {
-//						    id : this.id + "general",
-//						    layout: 'form',
-//						    autoScroll : true,
-//						    bodyPadding: 5,
-//						    items: []
-//						})
-//		         		
-//		    ]
-//	});
-//};
 
 
 
@@ -350,12 +304,12 @@ AutoProcIntegrationMainView.prototype.groupBy = function(array , f ){
 
 
 AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsIds) {
- 	this.completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCompleteness(autoProcIntegrationsIds.toString()));
-	this.rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleRfactor(autoProcIntegrationsIds.toString()));
-	this.isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleISigma(autoProcIntegrationsIds.toString()));
-	this.cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleCC2(autoProcIntegrationsIds.toString()));
-	this.sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleSigmaAno(autoProcIntegrationsIds.toString()));
-	this.annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getXScaleAnnoCorrection(autoProcIntegrationsIds.toString()));
+ 	this.completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationsIds.toString()));
+	this.rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationsIds.toString()));
+	this.isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationsIds.toString()));
+	this.cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationsIds.toString()));
+	this.sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationsIds.toString()));
+	this.annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationsIds.toString()));
 };
 
 
@@ -392,48 +346,38 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 	this.panel.setLoading("Generating plots");
 	var onSuccess = function(sender, data){
 		_this.data = data;
-		var autoProcIntegrationsIds = []; 
-		var autoProcs = [];
-		var autoProcIds = [];
+//		var autoProcIntegrationsIds = []; 
+//		var autoProcs = [];
+//		var autoProcIds = [];
+//		for (var i = 0; i < data.length; i++) {
+//			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
+//			autoProcs.push(data[i].autoproc);
+//			autoProcIds.push(data[i].autoproc.autoProcId);
+//		}
+////		_this.autoProcIntegrationGrid.load(data);
+//		_this.panel.setLoading(false);
+//		
+////		_this.loadPlots(autoProcIntegrationsIds);
+//	
+//		
+	};
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getByDataCollectionId(dataCollectionId);
+	
+	var onSuccess2 = function(sender, data){
+		
+		data =  BUI.groupBy(data[0], function(item){
+			  			return [item.v_datacollection_summary_phasing_autoProcIntegrationId];
+		});
+		var autoProcIntegrationIds = [];
 		for (var i = 0; i < data.length; i++) {
-			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
-			autoProcs.push(data[i].autoproc);
-			autoProcIds.push(data[i].autoproc.autoProcId);
+			autoProcIntegrationIds.push(data[i][0].v_datacollection_summary_phasing_autoProcIntegrationId);
 		}
 		_this.autoProcIntegrationGrid.load(data);
 		_this.panel.setLoading(false);
-		_this.loadPlots(autoProcIntegrationsIds);
-		
-		/*var onSuccessPhasing = function(sender, phasing){
-			var autoprocIdWithPhasing = [];
-			var autoProcWithPhasing = [];
-			for (var i = 0; i < phasing.length; i++) {
-				if (phasing[i].phasinganalysis != null){
-					autoprocIdWithPhasing.push(autoProcIds[i]);
-				}
-			}
-			
-			
-			for (var j = 0; j < data.length; j++) {
-				for (var k = 0; k < autoprocIdWithPhasing.length; k++) {
-					if (data[j].autoproc.autoProcId == autoprocIdWithPhasing[k]){
-						autoProcWithPhasing.push(data[j]);
-					}
-				}
-				
-			}
-			_this.autoProcIntegrationPhasingGrid.load(autoProcWithPhasing);
-			
-			_this.autoProcIntegrationGrid.load(data);
-			_this.loadPlots(autoProcIntegrationsIds);
-			
-		};*/
-	
-		
-		//EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoProcIntegrationDataAdapter.getPhasingByAutoprocIds(autoProcIds);
-		
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoProcIntegrationDataAdapter.getByDataCollectionId(dataCollectionId);
+		console.log(data);
+		_this.loadPlots(autoProcIntegrationIds);
+	}
+	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.phasing.getViewByDataCollectionId(dataCollectionId);
 };
 
 

@@ -1117,12 +1117,12 @@
         },
         {
             "file": "js/main/mx/autoprocintegrationmainview.js",
-            "line": 25,
+            "line": 29,
             "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/autoprocintegrationmainview.js",
-            "line": 97,
+            "line": 101,
             "class": "ManagerWelcomeMainView"
         },
         {
@@ -4248,11 +4248,11 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/autoprocintegrationmainview.js:25"
+            "line": " js/main/mx/autoprocintegrationmainview.js:29"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/autoprocintegrationmainview.js:97"
+            "line": " js/main/mx/autoprocintegrationmainview.js:101"
         },
         {
             "message": "Missing item type",

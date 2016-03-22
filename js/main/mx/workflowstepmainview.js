@@ -71,7 +71,7 @@ WorkflowStepMainView.prototype.load = function(workflowSteps) {
 		
 		/** Creating the img **/
 		var img = Ext.create('Ext.Img', {
-		    src: EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(workflowSteps[i].workflowStepId),
+		    src: EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(workflowSteps[i].workflowStepId),
 		    width: 150,
 		    height: 150
 		});

@@ -118,7 +118,7 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 					name   : steps[i],
 					workflowStepId  : ids[i],
 					workflowStepIds : ids, 
-					img : EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(ids[i])
+					img : EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(ids[i])
 			};
 			if (previous != steps[i]){
 				cleaned.push([step]);

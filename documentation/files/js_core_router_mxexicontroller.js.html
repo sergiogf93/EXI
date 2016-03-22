@@ -216,7 +216,7 @@ MXExiController.prototype.routeNavigation = function() {
 			mainView.load(JSON.parse(data));
 		};
 		
-		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowStepDataAdapter.getWorkflowstepByIdList(this.params[&#x27;workflowStepIdList&#x27;]);
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params[&#x27;workflowStepIdList&#x27;]);
 	}).enter(this.setPageBackground);
 	
 	

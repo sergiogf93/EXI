@@ -132,8 +132,7 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
                 icon: '../images/icon/ic_get_app_black_24dp.png',  // Use a URL in the icon config
                 tooltip: 'Download',
                 handler: function(grid, rowIndex, colIndex) {
-                	console.log(grid.store.getAt(rowIndex).data.autoProcProgramAttachmentId);
-                	window.open(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getDownloadAttachmentUrl(grid.store.getAt(rowIndex).data.autoProcProgramAttachmentId)); 
+                	window.open(EXI.getDataAdapter().mx.autoproc.getDownloadAttachmentUrl(grid.store.getAt(rowIndex).data.autoProcProgramAttachmentId)); 
                 }
             }]
         }
