@@ -40,6 +40,7 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
                             </ul>
                 
                 
@@ -97,7 +98,7 @@ ShippingExiController.prototype.notFound = function() {
 ShippingExiController.prototype.loadShipmentsNavigationPanel = function(listView) {
 	/** Cleaning up navigation panel * */
 	EXI.clearNavigationPanel();
-	EXI.setLoadingNavigationPanel(true);
+	EXI.setLoadingMainPanel(true);
 	
 	var onSuccess = function(sender, data) {
 		data = BUI.groupBy(data, function(item){return item[&quot;Shipping_shippingId&quot;];});
@@ -111,7 +112,7 @@ ShippingExiController.prototype.loadShipmentsNavigationPanel = function(listView
 		EXI.addNavigationPanel(listView);
 		/** Load data * */
 		listView.load(curated);
-		EXI.setLoadingNavigationPanel(false);
+		EXI.setLoadingMainPanel(false);
 	};
 	
 	/** Handle error * */

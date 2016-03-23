@@ -40,6 +40,7 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
                             </ul>
                 
                 
@@ -140,13 +141,14 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 	var html = &quot;&quot;;
 	if (dataCollectionGroup.WorkflowStep_workflowStepType){
 		parsed = this.parseWorkflow(dataCollectionGroup);
+		
 	}
 	dust.render(&quot;workflowstepsection&quot;, parsed, function(err, out){
 		html = out;
      });
 	
 	/** Adding button **/
-	html = html + &quot;&lt;br /&gt;&lt;a  href=&#x27;#/mx/workflow/step/&quot; + dataCollectionGroup.WorkflowStep_workflowStepId + &quot;/main&#x27;&gt;See all&lt;/a&gt;&quot;;
+	html = html + &quot;&lt;div style=&#x27;border:1px solid #3892d3;background-color:#3892d3;text-align:center;&#x27;&gt;&lt;a style=&#x27;color:white;&#x27; href=&#x27;#/mx/workflow/step/&quot;+dataCollectionGroup.WorkflowStep_workflowStepId+&quot;/main&#x27;&gt; See details&lt;/a&gt;&lt;/div&gt;&quot;;
 	return html;
 	
 };

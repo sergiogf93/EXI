@@ -40,6 +40,7 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
                             </ul>
                 
                 
@@ -86,28 +87,53 @@ function AutoProcIntegrationMainView() {
 	MainView.call(this);
 	var _this = this;
 	
-	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid({ maxHeight: 400});
+	
+	this.slaveWidth = 600;
+	
+	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid({ maxHeight: 900});
 	
 	this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
-		
 		var ids = [];
 		for (var i = 0; i &lt; records.length; i++) {
 			ids.push(records[i].autoProcIntegrationId);
 		}
+		
+		/** Loading plots **/
 		try{
 			_this.loadPlots(ids);
 		}
 		catch(e){}
+		
+		/** Loading attachments **/
 		if (records.length == 1){
 			var record = _this.getByAutoProcId(records[0].v_datacollection_summary_phasing_autoproc_autoprocId);
 			if (record != null){
 				_this.autoProcIntegrationAttachmentGrid.load(record);
 			}
 		}
+		
+		
+		/** Loading phasing network **/
+		var tmp = [].concat.apply([], _this.autoProcIntegrationPhasingViewList);
+		var filtered = [];
+		for ( i = 0; i &lt; tmp.length; i++) {
+			if ( tmp[i].v_datacollection_summary_phasing_autoProcIntegrationId == records[0].v_datacollection_summary_phasing_autoProcIntegrationId){
+				filtered.push( tmp[i]);
+			}
+		}
+		
+		_this.phasingNetworkWidget.load(tmp);
+		
 	});
 	
-	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({margin : &#x27;0 20 0 10&#x27;, maxHeight: 400, width : 300});
+	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({
+																					width : this.slaveWidth, 
+																					margin: 5
+																					
+	});
 	
+	/** Netowkrwidget for phasing **/
+	this.phasingNetworkWidget = new PhasingNetworkWidget({tbar : &quot;OPEN_VIEWER&quot;});
 	
 	/** Curve completenessPlotter * */
 	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({
@@ -180,76 +206,6 @@ function AutoProcIntegrationMainView() {
 		_this.onPlotClicked(id);
 	});
 	
-	
-	/** Phasing **/
-	this.autoProcIntegrationPhasingGrid = new AutoProcIntegrationGrid({ maxHeight: 500});
-
-	this.autoProcIntegrationPhasingGrid.onSelected.attach(function(sender, records){
-		var ids = [];
-		for (var i = 0; i &lt; records.length; i++) {
-			ids.push(records[i].autoProcId);
-		}
-		
-		_this.phasingGrid.panel.setLoading(); 
-		
-		var onSuccessPhasing = function(sender, data){
-			var parsed = [];
-			if (data != null){
-				if (data.length &gt; 0){
-					if (data[0].phasinganalysis != null){
-						for (var i = 0; i &lt; data[0].phasinganalysis.length; i++) {
-							var j = 0;
-							if (data[0].phasinganalysis[i].modelbuilding.length &gt; 0){
-								for (j = 0; j &lt; data[0].phasinganalysis[i].modelbuilding.length; j++) {
-									parsed.push(data[0].phasinganalysis[i].modelbuilding[j]);
-									parsed[parsed.length -1][&quot;name&quot;] = &quot;modelbuilding&quot;;
-									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].modelbuilding[j].spaceGroupVO);
-									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].modelbuilding[j].phasingAnalysisVO.phasingAnalysisId;
-								}
-							}
-							
-							if (data[0].phasinganalysis[i].preparephasingdata.length &gt; 0){
-								for ( j = 0; j &lt; data[0].phasinganalysis[i].preparephasingdata.length; j++) {
-									parsed.push(data[0].phasinganalysis[i].preparephasingdata[j]);
-									parsed[parsed.length -1][&quot;name&quot;] = &quot;preparephasingdata&quot;;
-									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].preparephasingdata[j].spaceGroupVO);
-									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].preparephasingdata[j].phasingAnalysisVO.phasingAnalysisId;
-								}
-							}
-							
-							if (data[0].phasinganalysis[i].phasing.length &gt; 0){
-								for (j = 0; j &lt; data[0].phasinganalysis[i].phasing.length; j++) {
-									parsed.push(data[0].phasinganalysis[i].phasing[j]);
-									parsed[parsed.length -1][&quot;name&quot;] = &quot;phasing&quot;;
-									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].phasing[j].spaceGroup3VO);
-									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].phasing[j].phasingAnalysisVO.phasingAnalysisId;
-								}
-							}
-		
-							if (data[0].phasinganalysis[i].substructureDetermination3VO.length &gt; 0){
-								for (j = 0; j &lt; data[0].phasinganalysis[i].substructureDetermination3VO.length; j++) {
-									parsed.push(data[0].phasinganalysis[i].substructureDetermination3VO[j]);
-									parsed[parsed.length -1][&quot;name&quot;] = &quot;substructureDetermination&quot;;
-									parsed[parsed.length -1] = $.extend({}, parsed[parsed.length -1], data[0].phasinganalysis[i].substructureDetermination3VO[j].spaceGroupVO);
-									parsed[parsed.length -1][&quot;phasingAnalysisId&quot;] =  data[0].phasinganalysis[i].substructureDetermination3VO[j].phasingAnalysisVO.phasingAnalysisId;
-								}
-							}
-							
-							
-						}
-					}
-				}
-			}
-			
-			_this.phasingGrid.load(parsed);
-			_this.phasingGrid.panel.setLoading(false);
-			
-		};
-		EXI.getDataAdapter({onSuccess : onSuccessPhasing}).mx.autoproc.getPhasingByAutoprocIds(ids);
-		
-	});
-	
-	this.phasingGrid = new PhasingGrid({margin : &#x27;0 0 0 10&#x27;});
 }
 
 AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -288,11 +244,11 @@ AutoProcIntegrationMainView.prototype.onPlotClicked = function(autoProcProgramAt
 AutoProcIntegrationMainView.prototype.getPlotContainer = function(panel) {
 	return {
   	  xtype : &#x27;container&#x27;,
-	  margin : 10,
+	  margin : 5,
 	  layout: {
 	        	type: &#x27;fit&#x27;
 	       },
-	       flex : 0.5,
+	       flex :1,
 	       items : [ 
 	                	panel
 	       ]
@@ -303,26 +259,47 @@ AutoProcIntegrationMainView.prototype.getPlotContainer = function(panel) {
 
 AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 	return Ext.create(&#x27;Ext.container.Container&#x27;, {
-		layout: {
-	        type: &#x27;fit&#x27;
-	    },
-		margin : 5,
+		
 		items : [ 
-		          Ext.create(&#x27;Ext.container.Container&#x27;, {
-		        	 layout: &#x27;hbox&#x27;,
-		        	 margin : &#x27;10 0 0 20&#x27;,
+		         Ext.create(&#x27;Ext.container.Container&#x27;, {
+		        	 layout: &#x27;hbox&#x27;, 
+		        	 margin : &#x27;0 50 0 0&#x27;,
 		        	 items : [
-		        	          	this.autoProcIntegrationGrid.getPanel(),
-		        	          	this.autoProcIntegrationAttachmentGrid.getPanel()
-		        	          ]
+		        	          this.getPlotContainer( this.rFactorPlotter.getPanel())
+		        	         
+		        	 ]
 		         }),
 		         Ext.create(&#x27;Ext.container.Container&#x27;, {
 		        	 layout: &#x27;hbox&#x27;, 
 		        	 margin : &#x27;0 50 0 0&#x27;,
 		        	 items : [
-		        	          this.getPlotContainer( this.rFactorPlotter.getPanel()),
-		        	          this.getPlotContainer( this.isigmaPlotter.getPanel()),
+		        	          this.getPlotContainer( this.isigmaPlotter.getPanel())
+		        	         
+		        	 ]
+		         }),
+		         Ext.create(&#x27;Ext.container.Container&#x27;, {
+		        	 layout: &#x27;hbox&#x27;, 
+		        	 margin : &#x27;0 50 0 0&#x27;,
+		        	 items : [
+		        	          this.getPlotContainer( this.sigmaAnnoPlotter.getPanel()),
+		        	         
+		        	 ]
+		         }),
+		         Ext.create(&#x27;Ext.container.Container&#x27;, {
+		        	 layout: &#x27;hbox&#x27;, 
+		        	 margin : &#x27;0 50 0 0&#x27;,
+		        	 items : [
+		        	         
 		        	          this.getPlotContainer( this.completenessPlotter.getPanel())
+		        	          
+		        	 ]
+		         }),
+		         Ext.create(&#x27;Ext.container.Container&#x27;, {
+		        	 layout: &#x27;hbox&#x27;, 
+		        	 margin : &#x27;0 50 0 0&#x27;,
+		        	 items : [
+		        	          this.getPlotContainer(this.annoCorrPlotter.getPanel())
+		        	          
 		        	 ]
 		         }),
 		         Ext.create(&#x27;Ext.container.Container&#x27;, {
@@ -330,8 +307,6 @@ AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 		        	 margin : &#x27;0 50 0 0&#x27;,
 		        	 items : [
 		        	          this.getPlotContainer( this.cc2Plotter.getPanel()),
-		        	          this.getPlotContainer( this.sigmaAnnoPlotter.getPanel()),
-		        	          this.getPlotContainer(this.annoCorrPlotter.getPanel())
 		        	          
 		        	 ]
 		         })
@@ -339,50 +314,53 @@ AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 	});
 };
 
-
+AutoProcIntegrationMainView.prototype.getSlaveTabPanel = function() {
+	return Ext.create(&#x27;Ext.tab.Panel&#x27;, {
+		margin : &#x27;0 5 5 5&#x27;,
+		cls : &#x27;border-grid&#x27;,
+		width : this.slaveWidth,
+	    items: [{
+	        title: &#x27;Autoprocessing Plots&#x27;,
+	        items :  this.getAutoProcPanel()
+	    }, {
+	        title: &#x27;Phasing&#x27;,
+	        items : this.phasingNetworkWidget.getPanel()
+	    }, {
+	        title: &#x27;Files&#x27;,
+	        items : this.autoProcIntegrationAttachmentGrid.getPanel()
+	    }
+	    
+	    
+	    ]
+	}); 
+};
 
 AutoProcIntegrationMainView.prototype.getContainer = function() {
-	return  Ext.createWidget(&#x27;tabpanel&#x27;,
+	return  Ext.createWidget(&#x27;panel&#x27;,
 			{
 				plain : true,
 				margin : &#x27;10 30 10 10&#x27;,
 				items : [
 					{
-						tabConfig : {
-							title : &#x27;Auto Processing&#x27;
-						},
-						items : [ {
 							xtype : &#x27;container&#x27;,
 							layout : &#x27;fit&#x27;,
-							style : {
-								borderColor : &#x27;gray&#x27;,
-								borderStyle : &#x27;solid&#x27;,
-								borderWidth : &#x27;1px&#x27;,
-								&#x27;background-color&#x27; : &#x27;white&#x27; 
-							},
+							cls : &#x27;border-grid&#x27;,
 							items : [ 
-							         this.getAutoProcPanel()
+													Ext.create(&#x27;Ext.container.Container&#x27;, {
+														 layout: &#x27;hbox&#x27;,
+														 margin : &#x27;10 0 0 10&#x27;,
+														 items : [
+														          	this.autoProcIntegrationGrid.getPanel(),
+														          	this.getSlaveTabPanel()
+														          ]
+													})
+							          
 							]
 						}
-						]
-				  }
 				  ]
 		});
 };
 
-
-AutoProcIntegrationMainView.prototype.groupBy = function(array , f ){
-	  var groups = {};
-	  array.forEach( function( o )
-	  {
-	    var group = JSON.stringify( f(o) );
-	    groups[group] = groups[group] || [];
-	    groups[group].push( o );  
-	  });
-	  return Object.keys(groups).map( function( group ){
-		  return groups[group]; 
-	  });
-	};
 
 
 AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsIds) {
@@ -395,53 +373,15 @@ AutoProcIntegrationMainView.prototype.loadPlots = function(autoProcIntegrationsI
 };
 
 
-AutoProcIntegrationMainView.prototype.loadGeneral = function(dataCollection) {
-	for (var key in dataCollection){
-		Ext.getCmp(this.id + &quot;general&quot;).insert({
-			xtype : &#x27;container&#x27;,
-			
-			layout : &#x27;hbox&#x27;,
-			items : [ 
-			          {
-					        xtype: &#x27;label&#x27;,
-					        forId: &#x27;myFieldId&#x27;,
-					        text: key + &#x27;:&#x27;,
-					        margin: &#x27;0 0 0 10&#x27;
-					  },
-					  {
-					        xtype: &#x27;label&#x27;,
-					        forId: &#x27;myFieldId&#x27;,
-					        text: dataCollection[key],
-					        margin: &#x27;0 0 0 10&#x27;
-					    }
-			]
-		});
-	}
-};
-	
 
 
 	
 AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
-	this.panel.setTitle(&quot;Data Collection&quot;);
+	this.panel.setTitle(&quot;Autoprocessing&quot;);
 	this.panel.setLoading(&quot;Generating plots&quot;);
 	var onSuccess = function(sender, data){
 		_this.data = data;
-//		var autoProcIntegrationsIds = []; 
-//		var autoProcs = [];
-//		var autoProcIds = [];
-//		for (var i = 0; i &lt; data.length; i++) {
-//			autoProcIntegrationsIds.push(data[i].autointegration.autoProcIntegrationId);
-//			autoProcs.push(data[i].autoproc);
-//			autoProcIds.push(data[i].autoproc.autoProcId);
-//		}
-////		_this.autoProcIntegrationGrid.load(data);
-//		_this.panel.setLoading(false);
-//		
-////		_this.loadPlots(autoProcIntegrationsIds);
-//	
-//		
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getByDataCollectionId(dataCollectionId);
 	
@@ -454,10 +394,12 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 		for (var i = 0; i &lt; data.length; i++) {
 			autoProcIntegrationIds.push(data[i][0].v_datacollection_summary_phasing_autoProcIntegrationId);
 		}
+		_this.autoProcIntegrationPhasingViewList = data;
+		
 		_this.autoProcIntegrationGrid.load(data);
 		_this.panel.setLoading(false);
-		console.log(data);
 		_this.loadPlots(autoProcIntegrationIds);
+		_this.phasingNetworkWidget.load(data);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.phasing.getViewByDataCollectionId(dataCollectionId);
 };

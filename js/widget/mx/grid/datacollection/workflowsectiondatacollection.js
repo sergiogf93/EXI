@@ -57,13 +57,14 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 	var html = "";
 	if (dataCollectionGroup.WorkflowStep_workflowStepType){
 		parsed = this.parseWorkflow(dataCollectionGroup);
+		
 	}
 	dust.render("workflowstepsection", parsed, function(err, out){
 		html = out;
      });
 	
 	/** Adding button **/
-	html = html + "<br /><a  href='#/mx/workflow/step/" + dataCollectionGroup.WorkflowStep_workflowStepId + "/main'>See all</a>";
+	html = html + "<div style='border:1px solid #3892d3;background-color:#3892d3;text-align:center;'><a style='color:white;' href='#/mx/workflow/step/"+dataCollectionGroup.WorkflowStep_workflowStepId+"/main'> See details</a></div>";
 	return html;
 	
 };

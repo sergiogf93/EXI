@@ -32,6 +32,7 @@ ProposalExiController.prototype.init = function() {
 
 		Path.map("#/proposal/session/nav").to(function() {
 			listView = new SessionListView();
+			
 			/** When selected move to hash * */
 			listView.onSelect.attach(function(sender, selected) {
 				if (EXI.credentialManager.getTechniqueByBeamline(selected[0].beamlineName) == "SAXS"){

@@ -27,8 +27,7 @@ ParcelForm.prototype.render = function() {
 	var dewar = this.dewar;
 	this.panel.removeAll();
 	
-	console.log(dewar);
-	var html = "";debugger
+	var html = "";
 	dust.render("parcelformsummary", dewar, function(err, out){
 		html = out;
      	});
@@ -40,9 +39,7 @@ ParcelForm.prototype.render = function() {
 					width	: 200,
 					border : 1,
 					padding : 20,
-					items 	: [
-							{
-								html : html							}
+					items 	: [	{html : html}
 				
 					]
 				}
@@ -52,7 +49,6 @@ ParcelForm.prototype.render = function() {
 		if (dewar.containerVOs != null){
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId});
-			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
 				/** Adding the puck layout **/

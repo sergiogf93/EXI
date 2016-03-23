@@ -3,6 +3,8 @@ function PuckLayout(args) {
 	this.height = 100;
 	this.width = this.height;
 
+	this.tbar = true;
+	
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -11,6 +13,9 @@ function PuckLayout(args) {
 		if (args.width != null) {
 			this.width = args.width;
 			this.height = args.width;
+		}
+		if (args.tbar != null) {
+			this.tbar = args.tbar;
 		}
 	}
 }
@@ -322,7 +327,6 @@ PuckLayout.prototype.getPanel = function() {
 		xtype : 'toolbar',
 		dock: 'bottom',
 		items : _this._getTopButtons()
-		//cls : 'exi-top-bar'
 	});
 	
 	
@@ -336,23 +340,24 @@ PuckLayout.prototype.getPanel = function() {
 PuckLayout.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
-
-	actions.push(Ext.create('Ext.Action', {
-		icon : '../images/icon/edit.png',
-		text : 'Edit',
-		disabled : false,
-		handler : function(widget, e) {
-			alert("Not implemented yet")
-		}
-	}));
-	actions.push(Ext.create('Ext.Action', {
-		icon : '../images/icon/ic_highlight_remove_black_24dp.png',
-		text : 'Remove',
-		disabled : false,
-		handler : function(widget, e) {
-			alert("Not implemented yet")
-		}
-	}));
+	if (this.tbar){
+		actions.push(Ext.create('Ext.Action', {
+			icon : '../images/icon/edit.png',
+			text : 'Edit',
+			disabled : false,
+			handler : function(widget, e) {
+				location.hash = '#/mx/puck/' + _this.puck.containerId + '/main'; 
+			}
+		}));
+		actions.push(Ext.create('Ext.Action', {
+			icon : '../images/icon/ic_highlight_remove_black_24dp.png',
+			text : 'Remove',
+			disabled : false,
+			handler : function(widget, e) {
+				alert("Not implemented yet")
+			}
+		}));
+	}
 	
 	
 

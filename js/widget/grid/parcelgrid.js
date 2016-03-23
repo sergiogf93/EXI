@@ -14,7 +14,7 @@ function ParcelGrid(args) {
 	this.height = 100;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
-	
+
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -33,9 +33,6 @@ function ParcelGrid(args) {
 	this.onRemove = new Event(this);
 }
 
-
-
-
 ParcelGrid.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
@@ -48,31 +45,31 @@ ParcelGrid.prototype._getTopButtons = function() {
 			_this.edit();
 		}
 	}));
-	
 
 	return actions;
 };
-
-
 
 ParcelGrid.prototype.load = function(shipment) {
 	var _this = this;
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
-	
+
 	this.parcelForms = [];
-	
+
 	this.panel.removeAll();
-	
-	this.dewars.sort(function(a,b){return a.dewarId - b.dewarId;});
-	
-	
+
+	this.dewars.sort(function(a, b) {
+		return a.dewarId - b.dewarId;
+	});
+
 	for ( var i in this.dewars) {
-		var parcelForm = new ParcelForm({height : 340});
+		var parcelForm = new ParcelForm({
+			height : 340
+		});
 		this.panel.insert(parcelForm.getPanel());
 		parcelForm.load(this.dewars[i]);
-		
-		parcelForm.onSavedClick.attach(function(sender, dewar){
+
+		parcelForm.onSavedClick.attach(function(sender, dewar) {
 			var adapter = new DataAdapter();
 			_this.panel.setLoading();
 			var onSuccess = (function(sender, shipment) {
@@ -82,71 +79,70 @@ ParcelGrid.prototype.load = function(shipment) {
 			});
 			dewar["sessionId"] = dewar.firstExperimentId;
 			dewar["shippingId"] = _this.shipment.shippingId;
-			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar( _this.shipment.shippingId, dewar);
-			
+			EXI.getDataAdapter({
+				onSuccess : onSuccess
+			}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
+
 		});
-		
+
 		this.parcelForms.push(parcelForm);
 	}
 };
 
-
 ParcelGrid.prototype.edit = function(dewar) {
 	var _this = this;
 	var caseForm = new CaseForm();
-	
+
 	var window = Ext.create('Ext.window.Window', {
-	    title: 'Parcel',
-	    height: 450,
-	    width: 600,
-	    modal : true,
-	    layout: 'fit',
-	    items: [
-	            	caseForm.getPanel(dewar)
-	    ],
-	    listeners : {
+		title : 'Parcel',
+		height : 450,
+		width : 600,
+		modal : true,
+		layout : 'fit',
+		items : [ caseForm.getPanel(dewar) ],
+		listeners : {
 			afterrender : function(component, eOpts) {
-				if (_this.puck != null){
-						_this.render(_this.puck);
+				if (_this.puck != null) {
+					_this.render(_this.puck);
 				}
 			}
-	    },
-	    buttons : [ {
-						text : 'Save',
-						handler : function() {
-							var adapter = new DataAdapter();
-							_this.panel.setLoading();
-							var dewar = caseForm.getDewar();
-							var onSuccess = (function(sender, shipment) {
-								_this.load(shipment);
-								_this.panel.setLoading(false);
-								window.close();
-							});
-							dewar["sessionId"] = dewar.firstExperimentId;
-							dewar["shippingId"] = _this.shipment.shippingId;
-							EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
-						}
-					}, {
-						text : 'Cancel',
-						handler : function() {
-							window.close();
-						}
-					} ]
+		},
+		buttons : [ {
+			text : 'Save',
+			handler : function() {
+				var adapter = new DataAdapter();
+				_this.panel.setLoading();
+				var dewar = caseForm.getDewar();
+				var onSuccess = (function(sender, shipment) {
+					_this.load(shipment);
+					_this.panel.setLoading(false);
+					window.close();
+				});
+				dewar["sessionId"] = dewar.firstExperimentId;
+				dewar["shippingId"] = _this.shipment.shippingId;
+				EXI.getDataAdapter({
+					onSuccess : onSuccess
+				}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
+			}
+		}, {
+			text : 'Cancel',
+			handler : function() {
+				window.close();
+			}
+		} ]
 	});
 	window.show();
-	
-};
 
+};
 
 ParcelGrid.prototype.getPanel = function() {
 	var _this = this;
 
-	
 	this.panel = Ext.create('Ext.panel.Panel', {
 		cls : 'border-grid',
 		height : 800,
 		autoScroll : true
-		
+
 	});
 
 	this.panel.addDocked({
@@ -158,4 +154,3 @@ ParcelGrid.prototype.getPanel = function() {
 
 	return this.panel;
 };
-

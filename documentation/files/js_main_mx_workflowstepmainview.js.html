@@ -40,6 +40,7 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
                             </ul>
                 
                 
@@ -96,8 +97,6 @@ WorkflowStepMainView.prototype.getTabs = function() {
 	this.summaryTab = Ext.createWidget(&#x27;tabpanel&#x27;,{
 			cls 	: &#x27;border-grid&#x27;,
 			items 	: [
-			      	   {html : &quot;test&quot;},
-			      	   {html : &quot;test&quot;}
 			]
 	});
 	
@@ -107,12 +106,12 @@ WorkflowStepMainView.prototype.getTabs = function() {
 
 WorkflowStepMainView.prototype.getSummaryTab = function() {
 	this.summaryTab = Ext.create(&#x27;Ext.panel.Panel&#x27;, {
-	    bodyPadding: 5,  
 	    cls : &#x27;border-grid&#x27;,
 	    title: &#x27;Summary&#x27;,
 	    layout: {
-	        type: &#x27;hbox&#x27;
+	        type: &#x27;vbox&#x27;
 	    },
+	    height : 800,
 	    autoScroll : true,
 	    items: [
 	            
@@ -122,20 +121,28 @@ WorkflowStepMainView.prototype.getSummaryTab = function() {
 	return this.summaryTab;
 };
 
+WorkflowStepMainView.prototype.getMainPanel = function() {
+	this.mainPanel = Ext.create(&#x27;Ext.panel.Panel&#x27;, {
+	    cls : &#x27;border-grid&#x27;,
+	    title: &#x27;Main&#x27;,
+	    margin : &#x27;0 10 0 10&#x27;,
+	    height : 800,
+	    flex : 1,
+	    items: [
+	    ]
+	});
+	return this.mainPanel;
+};
+
 
 WorkflowStepMainView.prototype.getContainer = function() {
-	return  Ext.create(&#x27;Ext.tab.Panel&#x27;, {
-		
+	return  Ext.create(&#x27;Ext.panel.Panel&#x27;, {
+		margin : &#x27;10 0 0 10&#x27;,
+		layout : &#x27;hbox&#x27;,
+		height : 800,
 	    items: [
-	            	this.getSummaryTab(),
-	    
-				    {
-				        title: &#x27;Bar&#x27;,
-				        tabConfig: {
-				            title: &#x27;Custom Title&#x27;,
-				            tooltip: &#x27;A button tooltip&#x27;
-				        }
-				    }
+        		 this.getSummaryTab(),
+        		 this.getMainPanel()
     	]
 	});
 };
@@ -143,42 +150,51 @@ WorkflowStepMainView.prototype.getContainer = function() {
 
 
 	
-WorkflowStepMainView.prototype.load = function(workflowSteps) {
+WorkflowStepMainView.prototype.load = function(workflowSteps, selectedWorkflowStepId) {
 	var _this = this;
 	this.panel.setTitle(&quot;Workflow&quot;);
 	
 	
+	var workflowStepIds = [];
+	var selected = null;
+	
 	for (var i = 0; i &lt; workflowSteps.length; i++) {
-		
-		/** SUMMARY TAB **/
-		
-		/** Creating the img **/
-		var img = Ext.create(&#x27;Ext.Img&#x27;, {
-		    src: EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(workflowSteps[i].workflowStepId),
-		    width: 150,
-		    height: 150
-		});
-		/** Creating the status **/
-		var status = &quot;&lt;div class=&#x27;summary_datacollection_failed&#x27;&gt;&lt;/div&gt;&quot;;
-		if ( workflowSteps[i].status == &quot;Success&quot;){
-			status = &quot;&lt;div class=&#x27;summary_datacollection_success&#x27;&gt;&lt;/div&gt;&quot;;
-		}
-		
-		/** Adding as container within the symmary tab **/
-		this.summaryTab.insert(
-				{
-					xtype 	: &#x27;container&#x27;,
-					margin : 5,
-					items 	: [
-					         	{
-					         		html 	: &quot;&lt;div style=&#x27;border-bottom:1px solid gray;width:140px;&#x27;&gt;&quot; + status + workflowSteps[i].workflowStepType + &quot;&lt;/div&gt;&quot;,
-					         		margin 	: 10
-					         	},
-					         	img
-					]
+		workflowStepIds.push(workflowSteps[i].workflowStepId);
+		workflowSteps[i].selected = false;
+		if (selectedWorkflowStepId != null){
+			if (selected == null){
+				if (workflowSteps[i].workflowStepId == selectedWorkflowStepId){
+					selected = workflowSteps[i];
+					selected.htmlURL = EXI.getDataAdapter().mx.workflowstep.getHtmlByWorkflowStepId(selectedWorkflowStepId);
+					
+					workflowSteps[i].selected = &quot;yes&quot;;
 				}
-		);
+			}
+		}
 	}
+	for ( i = 0; i &lt; workflowSteps.length; i++) {
+		workflowSteps[i].imageURL = EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(workflowSteps[i].workflowStepId);
+		workflowSteps[i].workflowStepIds = workflowStepIds;
+		
+	}
+	
+	
+	dust.render(&quot;workflowstepmain_steps&quot;, workflowSteps, function(err, out){
+		_this.summaryTab.insert({
+				html : out
+		});
+     });
+	/** it loads the main panel with the selected workflowStepId **/
+	if (selectedWorkflowStepId != null){
+		dust.render(&quot;workflowstepmain_main_steps&quot;, selected, function(err, out){
+			_this.mainPanel.insert({
+					padding : 10,
+					border : 0,
+					html : out
+			});
+	     });
+	}
+				
 };
 
 

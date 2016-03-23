@@ -4,32 +4,99 @@
 * @class PhasingNetworkWidget
 * @constructor
 */
-function PhasingNetworkWidget(){
+function PhasingNetworkWidget(args){
 	this.id = BUI.id();
 	this.data = [];
+
+	/** "OPEN_VIEWER" **/
+	this.tbar = "MENU";
+	
+	this.layout = {
+			improvedLayout : true
+			
+	};
+    
+	if (args != null){
+		if (args.tbar != null){
+			this.tbar = args.tbar;
+		}
+	}
 }
-
-
 
 PhasingNetworkWidget.prototype.clear = function(){
 	document.getElementById(this.id).innerHTML = "";
 };
 
+PhasingNetworkWidget.prototype.getTbar = function(){
+	var _this = this;
+	if (this.tbar == "MENU"){
+		return [
+						Ext.create('Ext.button.Split', {
+						    text: 'View',
+						    handler: function() {
+						       
+						    },
+						    menu: new Ext.menu.Menu({
+						        items: [
+									{
+										text: 'Default', 
+										handler: function(){ 
+											_this.layout = {
+											    };
+											_this.render();
+										
+									}},
+						            {
+						            	text: 'Horizontal',      	
+						            	handler: function(){ 
+						            		_this.layout = {
+						            		        hierarchical: {
+						            		            direction: "UD",
+						            		            levelSeparation : 100
+						            		        }
+						            		    };
+						            		_this.render();
+						            	
+						            }},
+						            {
+ 
+						            	text: 'Vertical', 
+						            	handler: function(){ 
+						            		_this.layout = {
+						            		        hierarchical: {
+						            		            direction: "LR",
+						            		            levelSeparation : 100
+						            		        }
+						            		    };
+						            		_this.render();
+						            	
+						            }},
+						        ]
+						    })
+						})
+		       ];
+		
+	}
+	else{
+		return [
+		           { 
+		        	   xtype: 'button', 
+		        	   text: 'Open Viewer', 
+		        	   handler : function(sender){
+		        		   location.hash = "/autoprocintegration/datacollection/" + _this.data[0].v_datacollection_summary_phasing_dataCollectionId + "/phasingviewer/main";
+		        	   } 
+		           }
+	    ];
+	}
+};
+
 PhasingNetworkWidget.prototype.getPanel = function(){
 	var _this = this;
-	return Ext.create('Ext.panel.Panel', {
+	this.panel = Ext.create('Ext.panel.Panel', {
 	   layout : 'fit',
 	    border: 1,
 	    margin : 5,
-	    tbar: [
-	           { 
-	        	   xtype: 'button', 
-	        	   text: 'Open Viewer', 
-	        	   handler : function(sender){
-	        		   location.hash = "/autoprocintegration/datacollection/" + _this.data[0].v_datacollection_summary_phasing_dataCollectionId + "/phasingviewer/main";
-	        	   } 
-	           }
-	         ],
+	    tbar: this.getTbar(),
 	    cls : "borderGrid",
 	    items: [
 	    {
@@ -37,12 +104,55 @@ PhasingNetworkWidget.prototype.getPanel = function(){
 	    }],
 	    listeners : {
 			afterrender : function(component, eOpts) {
-				_this.render(_this.data);
+				_this.render();
 		}
 	    }
 	});
+	return this.panel;
 };
 
+
+PhasingNetworkWidget.prototype.getLabelByNode = function(node){
+	if (node.v_datacollection_summary_phasing_phasingStepType == "PREPARE"){
+		return "PR" +
+				"\n" +
+				node.v_datacollection_summary_phasing_phasingPrograms +
+				"\n" +
+				node.v_datacollection_summary_phasing_lowRes + " - " + node.v_datacollection_summary_phasing_highRes +
+				"\n" +
+				node.v_datacollection_summary_phasing_spaceGroupShortName +
+				"\n" +
+				node.v_datacollection_summary_phasing_method
+				
+		
+	}
+	
+	if (node.v_datacollection_summary_phasing_phasingStepType == "PHASING"){
+		return "PH" +
+		"\n" +
+		node.v_datacollection_summary_phasing_phasingPrograms +
+		"\n" +
+		node.v_datacollection_summary_phasing_spaceGroupShortName +
+		"\n" +
+		node.v_datacollection_summary_phasing_lowRes + " - " + node.v_datacollection_summary_phasing_highRes +
+		"\n" +
+		"Enan: " + node.v_datacollection_summary_phasing_enantiomorph + 
+		"\n" +
+		"Solvent: " + node.v_datacollection_summary_phasing_solventContent;
+		
+	}
+	
+	if (node.v_datacollection_summary_phasing_phasingStepType == "SUBSTRUCTUREDETERMINATION"){
+		return "SUB" +
+		"\n" +
+		node.v_datacollection_summary_phasing_phasingPrograms +
+		"\n" +
+		node.v_datacollection_summary_phasing_spaceGroupShortName +
+		"\n" +
+		node.v_datacollection_summary_phasing_lowRes + " - " + node.v_datacollection_summary_phasing_highRes; 
+	}
+	return node.v_datacollection_summary_phasing_phasingStepType;
+};
 /**
 * It renders the network by using viz.js
 * http://visjs.org/
@@ -50,8 +160,31 @@ PhasingNetworkWidget.prototype.getPanel = function(){
 * @method render
 */
 PhasingNetworkWidget.prototype.render = function(){
+	var _this =this;
+	 
+	_this.panel.setLoading("Rendering");
+//	$.when(_this._render()).then(function( data, textStatus, jqXHR ) {
+//		  _this.panel.setLoading(false);
+//	});
+	/* contrived example alert */
+	setTimeout(function(){  _this.panel.setLoading(false); }, 6000);
+	setTimeout(function(){ _this._render(); }, 1000);
+//	_this._render();
+	
+};
+
+
+PhasingNetworkWidget.prototype._render = function(){
 	var nodes = [];
 	var edges = [];
+	
+	/** Start Node **/
+	nodes.push({
+		id 		: 1,
+		label 	: "START",
+		font	: {size:32}
+	});
+	
 	for (var i = 0; i < this.data.length; i++) {
 		if (this.data[i].v_datacollection_summary_phasing_phasingStepId != null){
 			var color = 'lime';
@@ -65,60 +198,74 @@ PhasingNetworkWidget.prototype.render = function(){
 				    default:
 				    	color = '#B7A800';
 			}
+			
 			nodes.push({
 				id 		: this.data[i].v_datacollection_summary_phasing_phasingStepId,
-//				label 	: this.data[i].v_datacollection_summary_phasing_phasingStepType + "-- " + this.data[i].v_datacollection_summary_phasing_phasingStepId+ "-- " + this.data[i].v_datacollection_summary_phasing_previousPhasingStepId,
-				label 	: this.data[i].v_datacollection_summary_phasing_phasingStepType + "-- " + this.data[i].v_datacollection_summary_phasing_spaceGroupShortName,
-				color	: color
+				label 	: this.getLabelByNode(this.data[i]),// + "-- " + this.data[i].v_datacollection_summary_phasing_spaceGroupShortName,
+				color	: color,
+				font	: {size:8}
 			});
 			
+			
+			/** Edges **/
+			var previous = this.data[i].v_datacollection_summary_phasing_previousPhasingStepId;
+			var label = "";
+			
+			/** This is root **/
+			if (previous == null){
+//					label = this.data[i].v_datacollection_summary_phasing_spaceGroupShortName;
+					if (this.data[i].v_datacollection_summary_phasing_phasingStepType == "PHASING"){
+						previous = -1;
+					}
+					else{
+						/** Adding spacegroup Node**/
+						nodes.push({
+							id 		: this.data[i].v_datacollection_summary_phasing_phasingStepId + this.data[i].v_datacollection_summary_phasing_spaceGroupShortName,
+							label 	: this.data[i].v_datacollection_summary_phasing_spaceGroupShortName,
+							color	: "orange",
+							font	: {size:32}
+						});
+						previous = this.data[i].v_datacollection_summary_phasing_phasingStepId + this.data[i].v_datacollection_summary_phasing_spaceGroupShortName;
+						
+						edges.push({
+							 from	: 1, 
+							 to		: this.data[i].v_datacollection_summary_phasing_phasingStepId + this.data[i].v_datacollection_summary_phasing_spaceGroupShortName,
+							 label	: label,
+							 arrows	:'to',
+							 font	: {size:32}
+						});
+					}
+			}
+			
+			
+			
+			
 			edges.push({
-					 from	: this.data[i].v_datacollection_summary_phasing_previousPhasingStepId, 
+					 from	: previous, 
 					 to		: this.data[i].v_datacollection_summary_phasing_phasingStepId,
-					 arrows:'to'
+					 label	: label,
+					 arrows	:'to',
+					 font	: {size:32}
 			});
 		}
 	}
-	  // create an array with nodes
-//	  var nodes = new vis.DataSet([
-//	    {id: 1, label: 'Node 1'},
-//	    {id: 2, label: 'Node 2'},
-//	    {id: 3, label: 'Node 3'},
-//	    {id: 4, label: 'Node 4'},
-//	    {id: 5, label: 'Node 5'}
-//	  ]);
-//
-//	  // create an array with edges
-//	  var edges = new vis.DataSet([
-//	    {from: 1, to: 3},
-//	    {from: 1, to: 2},
-//	    {from: 2, to: 4},
-//	    {from: 2, to: 5}
-//	  ]);
-	
-
-	  // create a network
 	  var container = document.getElementById('mynetwork');
 	  var data = {
 	    nodes: nodes,
 	    edges: edges
 	  };
 	  var options = {
-//			  edges: {
+			  edges: {
 //                  smooth: {
 //                      type: 'cubicBezier',
 //                      forceDirection: 'vertical' ,
-//                      roundness: 0.4
-//                  }
-//              },
-//			  layout: {
-//		          hierarchical: {
-//		            sortMethod: "directed",
-//		            direction: "LR"
-//		          }
-//		        }
+//                      roundness: 0.4,
+//                  },
+              },
+			  layout : this.layout
 	  };
-	  var network = new vis.Network(document.getElementById(this.id), data, options);
+	  
+	  this.network = new vis.Network(document.getElementById(this.id), data, options)
 };
 
 /**

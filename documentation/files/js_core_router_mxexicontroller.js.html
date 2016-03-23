@@ -40,6 +40,7 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
                             </ul>
                 
                 
@@ -209,6 +210,14 @@ MXExiController.prototype.routeNavigation = function() {
 
 	}).enter(this.setPageBackground);
 	
+	Path.map(&quot;#/autoprocintegration/datacollection/:datacollectionId/phasingviewer/main&quot;).to(function() {
+		var mainView = new PhasingViewerMainView();
+		
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params[&#x27;datacollectionId&#x27;]);
+
+	}).enter(this.setPageBackground);
+	
 	
 	Path.map(&quot;#/mx/workflow/step/:workflowStepIdList/main&quot;).to(function() {
 		var mainView = new WorkflowStepMainView();
@@ -219,6 +228,19 @@ MXExiController.prototype.routeNavigation = function() {
 		
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params[&#x27;workflowStepIdList&#x27;]);
 	}).enter(this.setPageBackground);
+	
+	Path.map(&quot;#/mx/workflow/step/:workflowStepIdList/:workflowStepId/main&quot;).to(function() {
+		var mainView = new WorkflowStepMainView();
+		EXI.addMainPanel(mainView);
+		
+		var workflowStepId = this.params[&#x27;workflowStepId&#x27;];
+		var onSuccess = function(sender, data){
+			mainView.load(JSON.parse(data), workflowStepId);
+		};
+		
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params[&#x27;workflowStepIdList&#x27;] );
+	}).enter(this.setPageBackground);
+	
 	
 	
 	Path.map(&quot;#/mx/datacollection/protein_acronym/:acronmys/main&quot;).to(function() {

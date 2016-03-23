@@ -40,6 +40,7 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
                             </ul>
                 
                 
@@ -153,6 +154,12 @@ AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
 		record[&quot;autoProcIntegrationId&quot;] = autoProcIntegrations[i][0][&quot;v_datacollection_summary_phasing_autoProcIntegrationId&quot;];
 		record[&quot;processingPrograms&quot;] = autoProcIntegrations[i][0][&quot;v_datacollection_summary_phasing_processingPrograms&quot;];
 		
+		if (autoProcIntegrations[i][0][&quot;v_datacollection_summary_phasing_anomalous&quot;] == true){
+			record[&quot;anomalous&quot;] = &quot;yes&quot;;
+		}
+		else{
+			record[&quot;anomalous&quot;] = false;
+		}
 		
 		
 		if (autoProcIntegrations[i].length &gt; 1){
@@ -202,7 +209,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create(&#x27;Ext.data.Store&#x27;, {
-		groupField: &#x27;v_datacollection_summary_phasing_anomalous&#x27;,
+//		groupField: &#x27;v_datacollection_summary_phasing_anomalous&#x27;,
 		sorters : &#x27;spaceGroup&#x27;,
 		fields : [ &#x27;autoProcId&#x27;,
 		           &#x27;refinedCellA&#x27;, 
@@ -212,9 +219,9 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		           &#x27;v_datacollection_summary_phasing_autoproc_space_group&#x27;]
 	});
 
-	var groupingFeature = Ext.create(&#x27;Ext.grid.feature.Grouping&#x27;,{
-    });
-    
+//	var groupingFeature = Ext.create(&#x27;Ext.grid.feature.Grouping&#x27;,{
+//    });
+//    
     
 	var selModel = Ext.create(&#x27;Ext.selection.RowModel&#x27;, {
 		allowDeselect : true,
@@ -246,37 +253,11 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		cls : &#x27;border-grid&#x27;,
 		maxHeight : this.maxHeight,
 		minHeight : this.maxHeight,
-		features: [groupingFeature],
 		columns : [ 
 		{
-			text : &#x27;id&#x27;,
-			dataIndex : &#x27;autoProcId&#x27;,
-			flex : 1,
-			hidden : true
-		},
-		{
-			text : &#x27;anomalous&#x27;,
-			dataIndex : &#x27;v_datacollection_summary_phasing_anomalous&#x27;,
-			flex : 0.5,
-			hidden : true
-		},
-		{
-			text : &#x27;Autoproc&#x27;,
-			dataIndex : &#x27;v_datacollection_summary_phasing_processingPrograms&#x27;,
-			flex : 1,
-			renderer : function(e,sample, record){
-				var anomalous = &quot;non-anomalous&quot;;
-				if (record.data[&quot;v_datacollection_summary_phasing_anomalous&quot;] == true){
-					anomalous = &quot;anomalous&quot;;
-				}
-				return record.data[&quot;v_datacollection_summary_phasing_processingPrograms&quot;] + &quot;&lt;br /&gt;&quot; + record.data[&quot;v_datacollection_summary_phasing_autoproc_space_group&quot;]
-				
-			}
-		}, 
-		{
-			text : &#x27;Cell&#x27;,
+			text : &#x27;Autoprocessing&#x27;,
 			dataIndex : &#x27;processingPrograms&#x27;,
-			flex : 1,
+			width : 400,
 			renderer : function(e, sample, record){
 				var html  = &quot;&quot;;
 				try{

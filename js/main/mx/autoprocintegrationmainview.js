@@ -32,7 +32,7 @@ function AutoProcIntegrationMainView() {
 		/** Loading phasing network **/
 		var tmp = [].concat.apply([], _this.autoProcIntegrationPhasingViewList);
 		var filtered = [];
-		for (var i = 0; i < tmp.length; i++) {
+		for ( i = 0; i < tmp.length; i++) {
 			if ( tmp[i].v_datacollection_summary_phasing_autoProcIntegrationId == records[0].v_datacollection_summary_phasing_autoProcIntegrationId){
 				filtered.push( tmp[i]);
 			}
@@ -49,7 +49,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	/** Netowkrwidget for phasing **/
-	this.phasingNetworkWidget = new PhasingNetworkWidget();
+	this.phasingNetworkWidget = new PhasingNetworkWidget({tbar : "OPEN_VIEWER"});
 	
 	/** Curve completenessPlotter * */
 	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({

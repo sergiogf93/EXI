@@ -5,7 +5,7 @@ function PhasingViewerMainView() {
 	MainView.call(this);
 	
 	var _this = this;
-	this.phasingNetworkWidget = new PhasingNetworkWidget();
+	this.phasingNetworkWidget = new PhasingNetworkWidget({tbar : "MENU"});
 }
 
 PhasingViewerMainView.prototype.getPanel = MainView.prototype.getPanel;

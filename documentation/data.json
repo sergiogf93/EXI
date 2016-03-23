@@ -465,6 +465,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "js/widget/network/phasing/phasingnetworkwidget.js": {
+            "name": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "modules": {},
+            "classes": {
+                "PhasingNetworkWidget": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "js/widget/pdb/pdbviewer.js": {
             "name": "js/widget/pdb/pdbviewer.js",
             "modules": {},
@@ -689,6 +698,19 @@
             "line": 1,
             "description": "It shows information from the autoprocessing like cells (a,b,c,alpha,beta,gamma) and also about phasing",
             "is_constructor": 1
+        },
+        "PhasingNetworkWidget": {
+            "name": "PhasingNetworkWidget",
+            "shortname": "PhasingNetworkWidget",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 1,
+            "description": "This class renders a network graph with the PhasingStep",
+            "is_constructor": 1
         }
     },
     "elements": {},
@@ -905,7 +927,7 @@
         },
         {
             "file": "js/core/router/proposalexicontroller.js",
-            "line": 35,
+            "line": 36,
             "class": "ManagerWelcomeMainView"
         },
         {
@@ -1132,32 +1154,32 @@
         },
         {
             "file": "js/main/mx/autoprocintegrationmainview.js",
-            "line": 29,
+            "line": 17,
             "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/autoprocintegrationmainview.js",
-            "line": 101,
+            "line": 23,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/autoprocintegrationmainview.js",
+            "line": 32,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/autoprocintegrationmainview.js",
+            "line": 51,
+            "class": "ManagerWelcomeMainView"
+        },
+        {
+            "file": "js/main/mx/autoprocintegrationmainview.js",
+            "line": 54,
             "class": "ManagerWelcomeMainView"
         },
         {
             "file": "js/main/mx/workflowstepmainview.js",
-            "line": 70,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/main/mx/workflowstepmainview.js",
-            "line": 72,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/main/mx/workflowstepmainview.js",
-            "line": 78,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/main/mx/workflowstepmainview.js",
-            "line": 84,
+            "line": 103,
             "class": "ManagerWelcomeMainView"
         },
         {
@@ -2279,12 +2301,12 @@
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
-            "line": 65,
+            "line": 66,
             "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
-            "line": 72,
+            "line": 73,
             "class": "AutoProcIntegrationGrid"
         },
         {
@@ -2309,13 +2331,13 @@
         },
         {
             "file": "js/widget/mx/grid/autoprocintegrationgrid.js",
-            "line": 147,
+            "line": 153,
             "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollectionmxgrid.js",
             "line": 223,
-            "class": ""
+            "class": "PhasingNetworkWidget"
         },
         {
             "file": "js/widget/mx/grid/datacollectionsummarygrid.js",
@@ -2333,12 +2355,65 @@
             "btnaddexisting": "",
             "btnunpackvisible": "allows to unpack a stock solution",
             "btnremovevisible": "allow to remove a stock solution",
-            "class": ""
+            "class": "PhasingNetworkWidget"
         },
         {
             "file": "js/widget/mx/grid/datacollectionsummarygrid.js",
             "line": 27,
-            "class": ""
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 11,
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 156,
+            "description": "It renders the network by using viz.js\nhttp://visjs.org/",
+            "itemtype": "method",
+            "name": "render",
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 181,
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 210,
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 214,
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 221,
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 271,
+            "description": "It just loads the data but it will not be rendered\nRendering is done when afterrender method is triggered",
+            "itemtype": "method",
+            "name": "load",
+            "params": [
+                {
+                    "name": "autoprocIntegrationList",
+                    "description": "This is a list of autoprocintegration retrieved from the phasing view",
+                    "type": "Object"
+                }
+            ],
+            "class": "PhasingNetworkWidget"
+        },
+        {
+            "file": "js/widget/network/phasing/phasingnetworkwidget.js",
+            "line": 279,
+            "class": "PhasingNetworkWidget"
         },
         {
             "file": "js/widget/pdb/pdbviewer.js",
@@ -4111,7 +4186,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/core/router/proposalexicontroller.js:35"
+            "line": " js/core/router/proposalexicontroller.js:36"
         },
         {
             "message": "Missing item type\nLoading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
@@ -4283,27 +4358,27 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/autoprocintegrationmainview.js:29"
+            "line": " js/main/mx/autoprocintegrationmainview.js:17"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/autoprocintegrationmainview.js:101"
+            "line": " js/main/mx/autoprocintegrationmainview.js:23"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/workflowstepmainview.js:70"
+            "line": " js/main/mx/autoprocintegrationmainview.js:32"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/workflowstepmainview.js:72"
+            "line": " js/main/mx/autoprocintegrationmainview.js:51"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/workflowstepmainview.js:78"
+            "line": " js/main/mx/autoprocintegrationmainview.js:54"
         },
         {
             "message": "Missing item type",
-            "line": " js/main/mx/workflowstepmainview.js:84"
+            "line": " js/main/mx/workflowstepmainview.js:103"
         },
         {
             "message": "Missing item type",
@@ -5067,15 +5142,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:65"
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:66"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:72"
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:73"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/mx/grid/autoprocintegrationgrid.js:147"
+            "line": " js/widget/mx/grid/autoprocintegrationgrid.js:153"
         },
         {
             "message": "Missing item type",
@@ -5088,6 +5163,30 @@
         {
             "message": "Missing item type",
             "line": " js/widget/mx/grid/datacollectionsummarygrid.js:27"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/network/phasing/phasingnetworkwidget.js:11"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/network/phasing/phasingnetworkwidget.js:181"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/network/phasing/phasingnetworkwidget.js:210"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/network/phasing/phasingnetworkwidget.js:214"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/network/phasing/phasingnetworkwidget.js:221"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/network/phasing/phasingnetworkwidget.js:279"
         },
         {
             "message": "Missing item type",
