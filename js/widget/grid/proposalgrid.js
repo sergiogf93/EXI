@@ -2,7 +2,7 @@ function ProposalGrid(args) {
 	this.height = 500;
 	this.tbar = false;
 	this.id = BUI.id();
-	
+	this.margin = '0 0 0 0';
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -21,6 +21,10 @@ function ProposalGrid(args) {
 
 		if (args.width != null) {
 			this.width = args.width;
+		}
+		
+		if (args.margin != null) {
+			this.margin = args.margin;
 		}
 	}
 	
@@ -63,13 +67,6 @@ ProposalGrid.prototype._getTbar = function() {
   					} 
           		} 
 	    }
-//		listeners : {
-//			specialkey : function(field, e) {
-//				if (e.getKey() == e.ENTER) {
-//					_this.filter(field.getValue());
-//				}
-//			} 
-//		} 
 	);
 	return actions;
 };
@@ -86,17 +83,19 @@ ProposalGrid.prototype.getPanel = function() {
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : 'Proposals',
 		store : this.store,
-		cls : 'border-grid',
 		tbar : this._getTbar(),
+		layout : 'fit',
+		cls : 'border-grid',
 		height : this.height,
-		width : this.width,
+		margin : this.margin,
+		emptyText : "No proposals",
 		columns : [ 
 		{
 			text : 'Proposal',
 			dataIndex : 'Proposal_code',
 			width : 125,
 			renderer : function(grid, a, record){
-				return record.data.Proposal_proposalCode + record.data.Proposal_proposalNumber 
+				return "<a href='#'>" + record.data.Proposal_proposalCode + record.data.Proposal_proposalNumber + "</a>"; 
 			}
 		}, 
 		{

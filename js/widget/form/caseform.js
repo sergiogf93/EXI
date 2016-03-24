@@ -88,7 +88,7 @@ CaseForm.prototype.getPanel = function(dewar) {
 //			cls : 'border-grid',
 //			margin : 10,
 			padding : 10,
-			height : 300,
+			height : 320,
 			items : [ {
 				xtype : 'container',
 				margin : "2 2 2 2",
@@ -110,14 +110,6 @@ CaseForm.prototype.getPanel = function(dewar) {
 					]
 				}, 
 				this.getStorageLocationCombo(),
-//				{
-//					xtype : 'requiredtextfield',
-//					margin : '10 0 0 0',
-//					width : 350,
-//					labelWidth : 200,
-//					fieldLabel : 'Storage Location',
-//					id : 'dewar_storageLocation'
-//				},
 				{
 					xtype : 'numberfield',
 					width : 500,
@@ -126,7 +118,6 @@ CaseForm.prototype.getPanel = function(dewar) {
 					fieldLabel : 'Transport Value',
 					id : this.id + 'dewar_transportValue'
 				},
-				//this.getSessionCombo(),
 				{
 					xtype : 'textareafield',
 					name : 'comments',

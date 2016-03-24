@@ -76,24 +76,6 @@ ShippingExiController.prototype.init = function() {
 			EXI.addMainPanel(new ShippingWelcomeMainView());
 		});
 		
-		Path.map("#/proposal/addresses/nav").to(function() {
-			EXI.clearNavigationPanel();
-			EXI.setLoadingNavigationPanel(true);
-			listView = new AddressListView();
-			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/proposal/address/" + selected[0].labContactId + "/main";
-			});
-			
-			EXI.addNavigationPanel(listView);
-			
-			adapter = loadNavigationPanel(listView);
-			adapter.proposal.shipping.getLabContacts();
-			
-			/** Loading welcome page **/
-			EXI.addMainPanel(new AddressWelcomeMainView());
-			
-		}).enter(this.setPageBackground);
-	
 		Path.map("#/shipping/:shippingId/main").to(function() {
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
@@ -104,12 +86,6 @@ ShippingExiController.prototype.init = function() {
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();
-		}).enter(this.setPageBackground);
-		
-		Path.map("#/proposal/address/:lacontactId/main").to(function() {
-			var mainView = new AddressMainView();
-			EXI.addMainPanel(mainView);
-			mainView.load(this.params['lacontactId']);
 		}).enter(this.setPageBackground);
 		
 };

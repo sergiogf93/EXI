@@ -113,19 +113,9 @@ PuckLayout.prototype.renderPlateContainer = function(canvas, width, height) {
 	bigCircle.mouseout( deselectSVG );
 	bigCircle.click( clickSVG );
 	
-	/*var p = s.path("M10-5-10,15M15,0,0,15M0-5-20,15").attr({
-        fill: "D8D8D8",
-        stroke: "#000000",
-        strokeWidth: 1,
-        "stroke-opacity": 0.2
-    });
-	p = p.pattern(0, 0, 10, 10);
-	bigCircle.attr({
-	    fill: p
-	});*/
 };
 
-
+/** To be moved **/
 PuckLayout.prototype.renderContainer = function(canvas, centerX, centerY, radius) {
 	var _this = this;
 	var s = Snap(canvas);
@@ -163,23 +153,12 @@ PuckLayout.prototype.renderContainer = function(canvas, centerX, centerY, radius
 	bigCircle.mouseout( deselectSVG );
 	bigCircle.click( clickSVG );
 	
-	/*var p = s.path("M10-5-10,15M15,0,0,15M0-5-20,15").attr({
-        fill: "D8D8D8",
-        stroke: "#000000",
-        strokeWidth: 1,
-        "stroke-opacity": 0.2
-    });
-	p = p.pattern(0, 0, 10, 10);
-	bigCircle.attr({
-	    fill: p
-	});*/
 };
 
 
 
 PuckLayout.prototype.renderPlateWell = function(canvas, x, y, label) {
-var s = Snap(canvas);
-	
+	var s = Snap(canvas);
 	var width = (this.width-40)/12;
 	var emptyWell = s.rect(x,y, width, width);
 	emptyWell.attr({
@@ -187,15 +166,12 @@ var s = Snap(canvas);
 	    stroke: "#000",
 	    strokeWidth: 1
 	});
-	
-	
 };
 
 
 
 PuckLayout.prototype.renderWell = function(canvas, x, y, label) {
 	var s = Snap(canvas);
-	//var radius = 10;
 	var radius = this.width/12;
 	var well = s.circle(x, y, radius);
 	well.attr({
@@ -308,7 +284,8 @@ PuckLayout.prototype.render = function(puck) {
 	if (this.puck != null){
 		/** Unipuck **/
 		if (this.puck.capacity == 16){
-			this.renderAsUnipuck(this.puck);
+			//this.renderAsUnipuck(this.puck);
+			new UnipuckLayout({width : this.width}).render(this.id, this.puck);
 		}
 		
 		/** Spine **/
@@ -340,13 +317,13 @@ PuckLayout.prototype.getPanel = function() {
 	});
 	
 	
-	/*this.panel.addDocked({
+	this.panel.addDocked({
 		height : 45,
 		xtype : 'toolbar',
 		dock: 'bottom',
-		items : _this._getTopButtons(),
-		cls : 'exi-top-bar'
-	});*/
+		items : _this._getTopButtons()
+		//cls : 'exi-top-bar'
+	});
 	
 	
 	
@@ -365,25 +342,15 @@ PuckLayout.prototype._getTopButtons = function() {
 		text : 'Edit',
 		disabled : false,
 		handler : function(widget, e) {
-			var containerId = _this.puck.containerId;
-			var puckForm = new PuckForm({
-				width : 910
-			});
-
-			puckForm.onSaved.attach(function(sender, puck){
-				_this.load(_this.shipment);
-				window.close();
-			});
-			var window = Ext.create('Ext.window.Window', {
-				    title: 'Edit Puck',
-				    height: 705,
-				    modal : true,
-				    resizable : true,
-				    layout: 'fit',
-				    items: puckForm.getPanel()
-				}).show();
-
-			puckForm.load(_this.puck);
+			alert("Not implemented yet")
+		}
+	}));
+	actions.push(Ext.create('Ext.Action', {
+		icon : '../images/icon/ic_highlight_remove_black_24dp.png',
+		text : 'Remove',
+		disabled : false,
+		handler : function(widget, e) {
+			alert("Not implemented yet")
 		}
 	}));
 	

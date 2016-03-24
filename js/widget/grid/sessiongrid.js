@@ -3,13 +3,13 @@ function SessionGrid(args) {
 	this.tbar = false;
 	this.id = BUI.id();
 	this.width = 100;
-	
+
 	this.title = null;
 	this.margin = null;
 
-	
+
 	this.hiddenGoColumn = true;
-	
+
 	if (args != null) {
 		if (args.title != null) {
 			this.title = args.title;
@@ -17,7 +17,7 @@ function SessionGrid(args) {
 		if (args.margin != null) {
 			this.margin = args.margin;
 		}
-		
+
 		if (args.height != null) {
 			this.height = args.height;
 		}
@@ -33,9 +33,9 @@ function SessionGrid(args) {
 			this.hiddenGoColumn = args.hiddenGoColumn;
 		}
 	}
-	
+
 	this.onSelected = new Event(this);
-	
+
 };
 
 
@@ -59,7 +59,6 @@ SessionGrid.prototype.getPanel = function() {
 
 	this.store = Ext.create('Ext.data.Store', {
 		fields : [ 'startDate', 'beamlineName', 'beamlineOperator', 'diff' ],
-//		fields : [ 'beamlineName' ],
 		emptyText : "No sessions",
 		data : []
 	});
@@ -67,51 +66,54 @@ SessionGrid.prototype.getPanel = function() {
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : this.title,
 		store : this.store,
+		layout : 'fit',
 		icon : '../images/icon/sessions.png',
 		cls : 'border-grid',
 		height : this.height,
 		margin : this.margin,
-		width : this.width,
 		emptyText : "No sessions",
-		
-		columns : [ 
-       	{
-			text : 'Proposal',
-			dataIndex : 'beamlineName',
-			flex : 0.75,
-			renderer : function(grid, a, record){
-				return record.data.proposalVO.code + record.data.proposalVO.number; 
-			}
-		}, 
+
+		columns : [
+      	{
+			      text          : 'Beamline',
+			      dataIndex     : 'beamlineName',
+			      width         : 100
+		    },
+
+      	{
+          text              : 'Date',
+          dataIndex         : 'startDate',
+          width             : 150,
+          renderer          : function(grid, a, record){
+                      return moment(record.data.startDate).format("lll");
+          }
+		  },
 		{
-			text : 'Type',
-			dataIndex : 'beamlineName',
-			flex : 0.5,
-			renderer : function(grid, a, record){
-				if (record.data.beamlineName != null){
-					return EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName);
-				}
-			}
-		}, 
-		{
-			text : 'Beamline',
-			dataIndex : 'beamlineName',
-			flex : 1
-		}, 
-		{
-			text : 'Date',
-			dataIndex : 'startDate',
-			flex : 2,
-			renderer : function(grid, a, record){
-				return moment(record.data.startDate).format("lll"); 
-			}
-		}, 
-		{
-			text : 'Local Contact',
-			dataIndex : 'beamlineOperator',
-			flex : 1
+			text                : 'Local Contact',
+			dataIndex           : 'beamlineOperator',
+			width               : 200
 		},
-		{
+   {
+     text : 'Proposal',
+     dataIndex : 'beamlineName',
+      flex : 0.1,
+     renderer : function(grid, a, record){
+       return record.data.proposalVO.code + record.data.proposalVO.number;
+     }
+   },
+      {
+        text : 'Title',
+        dataIndex : 'beamlineName',
+        flex : 1,
+        renderer : function(grid, a, record){
+          return record.data.proposalVO.title;
+        }
+      }
+
+
+
+
+		/*{
 			xtype:'actioncolumn',
             icon: '../images/icon/ic_arrow_forward_black_48dp.png',
             flex : 0.5,
@@ -120,17 +122,16 @@ SessionGrid.prototype.getPanel = function() {
             handler: function(grid, rowIndex, colIndex) {
                 _this.goToSession(grid.getStore().getAt(rowIndex).data);
             }
-        }
+        }*/
 		],
-		flex : 1,
 		viewConfig : {
 			stripeRows : true,
 			getRowClass : function(record, rowIndex, rowParams, store){
-				
+
 				if (record.data.beamlineName != null){
 		        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "SAXS"){
 		        		 return ((rowIndex % 2) == 0) ? "saxs-grid-row-light" : "saxs-grid-row-dark";
-		        	} 
+		        	}
 		        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "MX"){
 		        		 return ((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
 		        	}
@@ -141,11 +142,11 @@ SessionGrid.prototype.getPanel = function() {
 				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
 					_this.onSelected.notify(record.data);
 				},
-				
+
 				'itemdblclick' : function( grid, record, item, index, e, eOpts ){
 					 _this.goToSession(record.data);
 				}
-	
+
 			}
 		}
 	});

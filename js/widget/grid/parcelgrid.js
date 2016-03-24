@@ -68,7 +68,7 @@ ParcelGrid.prototype.load = function(shipment) {
 	
 	
 	for ( var i in this.dewars) {
-		var parcelForm = new ParcelForm({height : 300});
+		var parcelForm = new ParcelForm({height : 340});
 		this.panel.insert(parcelForm.getPanel());
 		parcelForm.load(this.dewars[i]);
 		

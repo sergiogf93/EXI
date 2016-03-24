@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>js/main/saxs/prepare/templatemainview.js - EXI</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="icon" href="../assets/favicon.ico">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+                <h1><img src="../assets/css/logo.png" title="EXI" width="117" height="52"></h1>
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: 1.0.0</em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+                    <h2 class="off-left">APIs</h2>
+                    <div id="api-tabview" class="tabview">
+                        <ul class="tabs">
+                            <li><a href="#api-classes">Classes</a></li>
+                            <li><a href="#api-modules">Modules</a></li>
+                        </ul>
+                
+                        <div id="api-tabview-filter">
+                            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+                        </div>
+                
+                        <div id="api-tabview-panel">
+                            <ul id="api-classes" class="apis classes">
+                                <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                            </ul>
+                
+                
+                            <ul id="api-modules" class="apis modules">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+                    Show:
+                    <label for="api-show-inherited">
+                        <input type="checkbox" id="api-show-inherited" checked>
+                        Inherited
+                    </label>
+            
+                    <label for="api-show-protected">
+                        <input type="checkbox" id="api-show-protected">
+                        Protected
+                    </label>
+            
+                    <label for="api-show-private">
+                        <input type="checkbox" id="api-show-private">
+                        Private
+                    </label>
+                    <label for="api-show-deprecated">
+                        <input type="checkbox" id="api-show-deprecated">
+                        Deprecated
+                    </label>
+            
+                </div>
+            
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+<h1 class="file-heading">File: js/main/saxs/prepare/templatemainview.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+function TemplateMainView() {
+	
+	this.icon = &#x27;images/icon/ic_satellite_black_18dp.png&#x27;;
+	this.queueGridList = [];
+
+	MainView.call(this);
+
+	
+	this.experimentHeaderForm = new ExperimentHeaderForm();
+	
+	var _this = this;
+	
+	
+	/** Viscosity **/
+	var storeViscosity = Ext.create(&#x27;Ext.data.Store&#x27;, {
+		fields : [ &#x27;name&#x27; ],
+		data : [ {
+			&quot;name&quot; : &quot;low&quot;
+		}, {
+			&quot;name&quot; : &quot;medium&quot;
+		}, {
+			&quot;name&quot; : &quot;high&quot;
+		} ]
+	});
+
+	// Create the combo box, attached to the states data store
+	var viscosityEditor = Ext.create(&#x27;Ext.form.ComboBox&#x27;, {
+		fieldLabel : &#x27;&#x27;,
+		store : storeViscosity,
+		queryMode : &#x27;local&#x27;,
+		displayField : &#x27;name&#x27;,
+		valueField : &#x27;name&#x27;
+	});
+	
+	
+	/** Specimen Widget contains a specimenGrid and a sampleChangerWidget than can be displayed with are vertical or horizontal layout **/
+	this.specimenWidget = new SpecimenWidget({
+		height : this.height,
+		width : 1200
+	});
+	
+	this.measurementGrid = new MeasurementGrid({
+//		maxWidth : 1500,
+//		width : 1200,
+		height : 600,
+		minHeight : 600,
+		maxHeight : 600,
+		estimateTime : false,
+		positionColumnsHidden : true,
+		isPriorityColumnHidden : true,
+		isStatusColumnHidden : true,
+		addBtnEnable : true,
+		isTimeColumnHidden : true,
+		updateRowEnabled : true,
+		collapsed : true,
+		removeBtnEnabled : true,
+		showTitle : false,
+		collapseBtnEnable : false,
+		addBtnMultipleEdit : true,
+		sortingBtnEnable : true,
+		editor : {
+			exposureTemperature : {
+				xtype : &#x27;textfield&#x27;,
+				allowBlank : true
+			},
+			comments : {
+				xtype : &#x27;textfield&#x27;,
+				allowBlank : true
+			},
+			volumeToLoad : {
+				xtype : &#x27;numberfield&#x27;,
+				allowBlank : true
+			},
+			transmission : {
+				xtype : &#x27;numberfield&#x27;,
+				allowBlank : true
+			},
+			viscosity : viscosityEditor,
+			waitTime : {
+				xtype : &#x27;numberfield&#x27;,
+				allowBlank : true
+			},
+			flow : {
+				xtype : &#x27;checkbox&#x27;,
+				allowBlank : true
+			}
+		}
+	});
+
+
+	this.measurementGrid.onMeasurementChanged.attach(function(sender, measurement) {
+		_this.experiment.setMeasurement(measurement);
+		_this.measurementGrid.loadExperiment(_this.experiment);
+		_this.volumePlanificator.load(_this.experiment);
+	});
+
+	this.measurementGrid.onExperimentChanged.attach(function(sender, json) {
+		_this.experiment = new Experiment(json);
+		_this.measurementGrid.loadExperiment(_this.experiment);
+		_this.specimenWidget.refresh(_this.experiment);
+		_this.volumePlanificator.load(_this.experiment);
+	});
+
+	this.measurementGrid.onRemoved.attach(function(sender, experiments) {
+		_this.experiment = new Experiment(experiments[0]);
+		_this.specimenWidget.refresh(_this.experiment);
+		_this.volumePlanificator.load(_this.experiment);
+	});
+
+	this.volumePlanificator = new VolumeGrid();
+}
+
+TemplateMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+TemplateMainView.prototype.getHeader = function(beamlineName, startDate) {
+	return &quot;&lt;span class=&#x27;item&#x27;&gt;&quot; + beamlineName + &quot;&lt;/span&gt;&lt;span class=&#x27;item_description&#x27;&gt;&quot; + startDate + &quot;&lt;/span&gt;&quot;;
+};
+
+TemplateMainView.prototype.getSelected = function() {
+	var selected = [];
+	for (var i = 0; i &lt; this.queueGridList.length; i++) {
+		selected = this.queueGridList[i].getSelected().concat(selected);
+	}
+	return selected;
+};
+
+
+TemplateMainView.prototype.getTabs = function() {
+	return  Ext.createWidget(&#x27;tabpanel&#x27;,
+			{
+				plain : true,
+				margin : &#x27;20 0 0 0&#x27;,
+				items : [
+					{
+						tabConfig : {
+							title : &#x27;Measurements&#x27;
+						},
+						items : [ {
+							xtype : &#x27;container&#x27;,
+							layout : &#x27;fit&#x27;,
+							height : 700,
+							padding : 20,
+							style : {
+								borderColor : &#x27;gray&#x27;,
+								borderStyle : &#x27;solid&#x27;,
+								borderWidth : &#x27;1px&#x27;,
+								&#x27;background-color&#x27; : &#x27;white&#x27; 
+							},
+							items : [ 
+							         
+							         this.measurementGrid.getPanel()
+							]
+						}
+
+						]
+					},
+					{
+						tabConfig : {
+							title : &quot;Sample Plate Setup&quot;
+						},
+						items : [  
+									{
+										xtype : &#x27;container&#x27;,
+										layout : &#x27;vbox&#x27;,
+										height : 700,
+										padding : 20,
+										style : {
+											borderColor : &#x27;gray&#x27;,
+											borderStyle : &#x27;solid&#x27;,
+											borderWidth : &#x27;1px&#x27;,
+											&#x27;background-color&#x27; : &#x27;white&#x27; 
+										},
+										items : [ 
+										     	this.specimenWidget.getPanel()
+										     	]
+									}
+					]
+			},
+			{
+				tabConfig : {
+					title : &quot;Sample Requirements&quot;
+				},
+				items : [  
+							{
+								xtype : &#x27;container&#x27;,
+								layout : &#x27;fit&#x27;,
+								height : 700,
+								padding : 20,
+								style : {
+									borderColor : &#x27;gray&#x27;,
+									borderStyle : &#x27;solid&#x27;,
+									borderWidth : &#x27;1px&#x27;,
+									&#x27;background-color&#x27; : &#x27;white&#x27; 
+								},
+								items : [ 
+								     	this.volumePlanificator.getPanel()
+								     	]
+							}
+			]
+			}
+			]});
+};
+
+
+TemplateMainView.prototype.getContainer = function() {
+	return Ext.create(&#x27;Ext.container.Container&#x27;, {
+	    layout: {
+	        type: &#x27;anchor&#x27;
+	    },
+	    defaults : {
+			anchor : &#x27;100%&#x27;,
+			hideEmptyLabel : false },
+	    margin : 30,
+		bodyStyle : {
+			&quot;background-color&quot; : &quot;#E6E6E6&quot; 
+		},
+	    items: [
+	            
+	            this.experimentHeaderForm.getPanel(),
+	            this.getTabs()
+	            ]
+	});
+};
+
+
+
+TemplateMainView.prototype.load = function(experiments) {
+	var _this = this;
+	_this.panel.setLoading();
+	var onSuccess = function(sender, experiments){
+		_this.experiment = new Experiment(experiments[0]);
+		_this.experimentHeaderForm.load(_this.experiment);
+		_this.measurementGrid.loadExperiment(_this.experiment);
+		_this.specimenWidget.refresh(_this.experiment);
+		_this.volumePlanificator.load(_this.experiment);
+		_this.panel.setLoading(false);
+	};
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experiments[0].experimentId);
+	this.panel.setTitle(&quot;Template&quot;);
+};
+
+    </pre>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

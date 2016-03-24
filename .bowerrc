@@ -1,5 +1,0 @@
-{
-
- "proxy":"http://proxy.esrf.fr:3128",
- "https-proxy":"http://proxy.esrf.fr:3128"
-}
