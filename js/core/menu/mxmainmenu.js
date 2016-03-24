@@ -19,9 +19,13 @@ MXMainMenu.prototype.getMenuItems = function() {
 		this.getHomeItem(),
 		this.getShipmentItem(),
 		{
+			text : this._convertToHTMLWhiteSpan("Proteins and Crystals"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getProteinCrystalsMenu() 
+	    },
+	    {
 			text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 			cls : 'ExiSAXSMenuToolBar',
-			menu : this.getPrepareExperimentMenu() 
 	    },
         {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
@@ -115,7 +119,7 @@ MXMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 };
  
 
-MXMainMenu.prototype.getPrepareExperimentMenu = function() {
+MXMainMenu.prototype.getProteinCrystalsMenu = function() {
 	function onItemCheck(item, checked) {
 		if (item.text == "My Crystals") {
 			location.hash = "/crystal/nav";
