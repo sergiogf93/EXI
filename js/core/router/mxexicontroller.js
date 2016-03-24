@@ -169,6 +169,34 @@ MXExiController.prototype.routeNavigation = function() {
 
 	}).enter(this.setPageBackground);
 	
+	Path.map("#/mx/prepare/main").to(function() {
+		alert("Main");
+		EXI.addMainPanel(new PuckWelcomeMainView());
+		EXI.clearNavigationPanel();
+		EXI.setLoadingNavigationPanel(true);
+		listView = new PuckListView();
+		listView.onSelect.attach(function(sender, selected) {
+			//location.hash = "/mx/puck/" + selected[0].Container_containerId+ "/main";
+			console.log(selected[0].Container_containerId)
+		});
+
+		EXI.addNavigationPanel(listView);
+		var onSuccessProposal = function(sender, pucks) {
+			console.log(pucks);
+			listView.load(pucks);
+			EXI.setLoadingNavigationPanel(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.proposal.getDewarByProposalId();
+		
+//		var mainView = new DataCollectionMxMainView();
+//		EXI.addMainPanel(mainView);
+//		var onSuccess = function(sender, data){
+//			mainView.load(data);
+//		};
+//		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByAcronymList(this.params['acronmys']);
+
+	}).enter(this.setPageBackground);
+	
 	
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
 		var mainView = new DataCollectionMxMainView();

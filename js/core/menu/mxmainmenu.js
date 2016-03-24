@@ -26,6 +26,9 @@ MXMainMenu.prototype.getMenuItems = function() {
 	    {
 			text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 			cls : 'ExiSAXSMenuToolBar',
+			handler : function(){
+				location.hash = "/mx/prepare/main";
+			}
 	    },
         {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
