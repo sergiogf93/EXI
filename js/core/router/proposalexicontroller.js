@@ -45,6 +45,7 @@ ProposalExiController.prototype.init = function() {
 			adapter = loadNavigationPanel(listView);
 			adapter.proposal.session.getSessions();
 			
+			
 		}).enter(this.setPageBackground);
 	
 

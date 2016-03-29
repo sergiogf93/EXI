@@ -24,7 +24,7 @@ CustomSectionDataCollection.prototype.getMeshScan = function(dataCollectionGroup
 					status : status[i],
 					name   : steps[i],
 					workflowStepId  : ids[i],
-					img : EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(ids[i])
+					img : EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(ids[i])
 			};
 			if (step.name == "Mesh"){
 				return step;
@@ -44,7 +44,7 @@ CustomSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 		var mesh = this.getMeshScan(dataCollectionGroup);
 		if (mesh != null){
 			items.push({
-				img 	: EXI.getDataAdapter().mx.workflowStepDataAdapter.getImageByWorkflowStepId(mesh.workflowStepId),
+				img 	: EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(mesh.workflowStepId),
 				title 	: mesh.name
 			});
 		}

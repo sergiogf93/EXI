@@ -2,7 +2,8 @@ function PuckLayout(args) {
 	this.id = BUI.id();
 	this.height = 100;
 	this.width = this.height;
-
+	this.tbar = true;
+	
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -12,6 +13,10 @@ function PuckLayout(args) {
 			this.width = args.width;
 			this.height = args.width;
 		}
+		if (args.tbar != null) {
+			this.tbar = args.tbar;
+		}
+		
 	}
 }
 
@@ -315,56 +320,9 @@ PuckLayout.prototype.getPanel = function() {
 	    }
 	});
 	
-	
-	/*this.panel.addDocked({
-		height : 45,
-		xtype : 'toolbar',
-		dock: 'bottom',
-		items : _this._getTopButtons(),
-		cls : 'exi-top-bar'
-	});*/
-	
-	
-	
 	return this.panel;
 };
 
 
 
-
-PuckLayout.prototype._getTopButtons = function() {
-	var _this = this;
-	var actions = [];
-
-	actions.push(Ext.create('Ext.Action', {
-		icon : '../images/icon/edit.png',
-		text : 'Edit',
-		disabled : false,
-		handler : function(widget, e) {
-			var containerId = _this.puck.containerId;
-			var puckForm = new PuckForm({
-				width : 910
-			});
-
-			puckForm.onSaved.attach(function(sender, puck){
-				_this.load(_this.shipment);
-				window.close();
-			});
-			var window = Ext.create('Ext.window.Window', {
-				    title: 'Edit Puck',
-				    height: 705,
-				    modal : true,
-				    resizable : true,
-				    layout: 'fit',
-				    items: puckForm.getPanel()
-				}).show();
-
-			puckForm.load(_this.puck);
-		}
-	}));
-	
-	
-
-	return actions;
-};
 

@@ -102,7 +102,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 	         }, 
 	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 50}}, 
 	         { text :'Space<br /> Group', id : 'Space Group',column : {
-			        	 													width : 60,
+			        	 													width : 80,
 			        	 													type: 'dropdown',
 			        	 													source: this.getSpaceGroups()
 			         								}

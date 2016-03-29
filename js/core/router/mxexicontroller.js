@@ -126,6 +126,14 @@ MXExiController.prototype.routeNavigation = function() {
 
 	}).enter(this.setPageBackground);
 	
+	Path.map("#/autoprocintegration/datacollection/:datacollectionId/phasingviewer/main").to(function() {
+		var mainView = new PhasingViewerMainView();
+		
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['datacollectionId']);
+
+	}).enter(this.setPageBackground);
+	
 	
 	Path.map("#/mx/workflow/step/:workflowStepIdList/main").to(function() {
 		var mainView = new WorkflowStepMainView();
@@ -134,8 +142,21 @@ MXExiController.prototype.routeNavigation = function() {
 			mainView.load(JSON.parse(data));
 		};
 		
-		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowStepDataAdapter.getWorkflowstepByIdList(this.params['workflowStepIdList']);
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params['workflowStepIdList']);
 	}).enter(this.setPageBackground);
+	
+	Path.map("#/mx/workflow/step/:workflowStepIdList/:workflowStepId/main").to(function() {
+		var mainView = new WorkflowStepMainView();
+		EXI.addMainPanel(mainView);
+		
+		var workflowStepId = this.params['workflowStepId'];
+		var onSuccess = function(sender, data){
+			mainView.load(JSON.parse(data), workflowStepId);
+		};
+		
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params['workflowStepIdList'] );
+	}).enter(this.setPageBackground);
+	
 	
 	
 	Path.map("#/mx/datacollection/protein_acronym/:acronmys/main").to(function() {

@@ -75,8 +75,8 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		       ]
 	});
 
-	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-    });
+//	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
+//    });
     
     
 	
@@ -85,10 +85,12 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		store : this.store,
 		cls : 'border-grid',
 		margin : this.margin,
-		features: [groupingFeature],
+//		features: [groupingFeature],
 		overflow:'auto' ,
-		maxHeight : this.maxHeight,
-		minHeight : this.maxHeight,
+		width : this.width - 20,
+//		maxHeight : this.maxHeight,
+//		minHeight : this.maxHeight,
+//		layout : 'fit',
 		columns : [ 
 		
 		{
@@ -132,8 +134,7 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
                 icon: '../images/icon/ic_get_app_black_24dp.png',  // Use a URL in the icon config
                 tooltip: 'Download',
                 handler: function(grid, rowIndex, colIndex) {
-                	console.log(grid.store.getAt(rowIndex).data.autoProcProgramAttachmentId);
-                	window.open(EXI.getDataAdapter().mx.autoProcIntegrationDataAdapter.getDownloadAttachmentUrl(grid.store.getAt(rowIndex).data.autoProcProgramAttachmentId)); 
+                	window.open(EXI.getDataAdapter().mx.autoproc.getDownloadAttachmentUrl(grid.store.getAt(rowIndex).data.autoProcProgramAttachmentId)); 
                 }
             }]
         }

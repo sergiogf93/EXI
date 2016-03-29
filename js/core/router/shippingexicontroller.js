@@ -14,7 +14,7 @@ ShippingExiController.prototype.notFound = function() {
 ShippingExiController.prototype.loadShipmentsNavigationPanel = function(listView) {
 	/** Cleaning up navigation panel * */
 	EXI.clearNavigationPanel();
-	EXI.setLoadingNavigationPanel(true);
+	EXI.setLoadingMainPanel(true);
 	
 	var onSuccess = function(sender, data) {
 		data = BUI.groupBy(data, function(item){return item["Shipping_shippingId"];});
@@ -28,7 +28,7 @@ ShippingExiController.prototype.loadShipmentsNavigationPanel = function(listView
 		EXI.addNavigationPanel(listView);
 		/** Load data * */
 		listView.load(curated);
-		EXI.setLoadingNavigationPanel(false);
+		EXI.setLoadingMainPanel(false);
 	};
 	
 	/** Handle error * */

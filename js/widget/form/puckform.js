@@ -1,7 +1,5 @@
 /**
- * Edit the information of a buffer
  * 
- * #onRemoveAdditive
  */
 function PuckForm(args) {
 	this.id = BUI.id();
@@ -20,7 +18,7 @@ function PuckForm(args) {
 	
 	var _this = this;
 	
-	this.puckLayout = new PuckLayout({width : 150});
+	this.puckLayout = new PuckLayout({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
 	
 	this.containerSpreadSheet.onModified.attach(function(sender, puck){
