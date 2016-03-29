@@ -1,6 +1,7 @@
 report/
-
+.tern*
 *~
+.bowerrc
 
 bower_components
 node_modules
