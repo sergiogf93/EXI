@@ -28,7 +28,49 @@ function SamplesGrid(args) {
 	}
 
 	this.onSelected = new Event(this);
-
+	
+	Ext.define('BLSampleModel', {
+			extend : 'Ext.data.Model',
+			fields : [
+				{
+					name : 'proteinAcronym',
+					mapping : 'proteinAcronym'
+				},{
+					name : 'name',
+					mapping : 'name'
+				}, {
+					name : 'spaceGroup',
+					mapping : 'spaceGroup'
+				}, {
+					name : 'beamlineLocation',
+					mapping : 'beamlineLocation'
+				}, {
+					name : 'code',
+					mapping : 'code'
+				}, {
+					name : 'shipment',
+					mapping : 'shipping'
+				}, {
+					name : 'cellA',
+					mapping : 'cellA'
+				}, {
+					name : 'cellB',
+					mapping : 'cellB'
+				}, {
+					name : 'cellC',
+					mapping : 'cellC'
+				}, {
+					name : 'cellAlpha',
+					mapping : 'cellAlpha'
+				}, {
+					name : 'cellBeta',
+					mapping : 'cellBeta'
+				}, {
+					name : 'cellGamma',
+					mapping : 'cellGamma'
+				}],
+			idProperty : 'blSampleId'
+		});
 };
 
 SamplesGrid.prototype.load = function(crystal) {
@@ -52,12 +94,30 @@ SamplesGrid.prototype.loadSampleList = function() {
 	EXI.getDataAdapter({onSuccess: onSuccess}).mx.sample.getSamplesByCrystalId(this.crystal.crystalId);
 };
 
+SamplesGrid.prototype._getColumns = function () {
+	var _this = this;
+	// render functions
+	
+	
+	
+		// build columns
+	var columns = [];
+	columns.push( );    	
 
+};
+		
 SamplesGrid.prototype.getPanel = function() {
 	var _this = this;
+	
+	this.store2 = Ext.create('Ext.data.Store', {
+			model : 'BLSampleModel',
+			data : []
+		});
+		
+	var columns = _this._getColumns();
 
 	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'Protein', 'SpaceGroup', 'Name', 'Code' ],
+		fields : [ 'Protein', 'SpaceGroup', 'Name', 'Code', 'Shipment', 'Dewar', 'Container', 'Location', 'Cell' ],
 		emptyText : "No samples",
 		data : []
 	});
@@ -71,12 +131,11 @@ SamplesGrid.prototype.getPanel = function() {
 		height : this.height,
 		margin : this.margin,
 		emptyText : "No samples",
-
-		columns : [
-      	{
+		columns : 	[	
+		{
 			text          : 'Protein',
 			dataIndex     : 'proteinAcronym',
-			width         : 100,
+			flex : 0.1,
 			renderer : function(grid, a, record){
 						return record.data.crystalVO.proteinVO.acronym;
 			}
@@ -87,20 +146,71 @@ SamplesGrid.prototype.getPanel = function() {
 			dataIndex     : 'spaceGroup',
 			flex : 0.1,
 			renderer : function(grid, a, record){
-			return record.data.crystalVO.spaceGroup;
+				return record.data.crystalVO.spaceGroup;
 			}
 		},
 		{
 			text          : 'Name',
 			dataIndex     : 'name',
-			width         : 200
+			width         : 100
 		},
 		{
 			text          : 'Code',
 			dataIndex     : 'code',
-			width         : 200
-		}
-	]});
+			width         : 100
+		},	
+		{
+			text          : 'Location in SC',
+			dataIndex     : 'sampleChangerLocation',
+			flex : 0.1,
+			renderer : function(grid, a, record){
+				return record.data.containerVO.sampleChangerLocation;
+			}
+		},	
+		{
+			text          : 'Cell',
+			dataIndex     : 'cell',
+			flex : 0.1,
+			renderer : function renderUnitCell(grid, a, record) {
+				var nbDec = 2;
+				if (record.data.crystalVO) {
+					var s = (record.data.crystalVO.CellA ? Number(record.data.crystalVO.CellA).toFixed(nbDec) + ", " : "");
+					s += (record.data.crystalVO.CellB ? Number(record.data.crystalVO.CellB).toFixed(nbDec) + ", ": "");
+					s += (record.data.crystalVO.CellC ? Number(record.data.crystalVO.CellC).toFixed(nbDec) + "<br />": "");
+					s += (record.data.crystalVO.CellAlpha ? Number(record.data.crystalVO.CellAlpha).toFixed(nbDec) + ", " : "");
+					s += (record.data.crystalVO.CellBeta ? Number(record.data.crystalVO.CellBeta).toFixed(nbDec) + ", " : "");
+					s += (record.data.crystalVO.CellGamma ? Number(record.data.crystalVO.CellGamma).toFixed(nbDec): "");
+					return s;
+				}
+			return "";
+			}
+		},	
+				{
+			text          : 'Shipment',
+			dataIndex     : 'shipment',
+			flex : 0.1,
+			renderer : function(grid, a, record){
+				return record.data.containerVO.DewarVO.ShippingVO.name;
+			}
+		},
+		{
+			text          : 'Dewar',
+			dataIndex     : 'dewar',
+			flex : 0.1,
+			renderer : function(grid, a, record){
+				return record.data.containerVO.DewarVO.code;
+			}
+		},
+		{
+			text          : 'Container',
+			dataIndex     : 'container',
+			flex : 0.1,
+			renderer : function(grid, a, record){
+				return record.data.containerVO.code;
+			}
+		}	
+		] 
+	});
 	return this.panel;
 };
 

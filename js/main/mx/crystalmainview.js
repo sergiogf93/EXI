@@ -17,7 +17,7 @@ CrystalMainView.prototype.getContainer = function() {
 				items : [
 					{
 						tabConfig : {
-							title : 'Summary'
+							title : 'Samples list'
 						},
 						items : [ {
 							xtype : 'container',
@@ -30,8 +30,27 @@ CrystalMainView.prototype.getContainer = function() {
 							},
 							items : 
 								[
-							        this.crystalForm.getPanel(),
 									this.samplesGrid.getPanel()
+							]
+						}
+						]
+				  },
+				  {
+						tabConfig : {
+							title : 'Create a new CrystalForm'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							style : {
+								borderColor : 'gray',
+								borderStyle : 'solid',
+								borderWidth : '1px',
+								'background-color' : 'white' 
+							},
+							items : 
+								[
+							        this.crystalForm.getPanel()
 							]
 						}
 						]
