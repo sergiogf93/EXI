@@ -91,21 +91,18 @@ SamplesGrid.prototype.loadSampleList = function() {
 		_this.store.loadData(samples);
 		_this.panel.setLoading(false);
 	}
-	EXI.getDataAdapter({onSuccess: onSuccess}).mx.sample.getSamplesByCrystalId(this.crystal.crystalId);
+	EXI.getDataAdapter({onSuccess: onSuccess}).mx.sample.getSampleInfoByCrystalId(this.crystal.crystalId);
+	//EXI.getDataAdapter({onSuccess: onSuccess}).mx.sample.getSamplesByCrystalId(this.crystal.crystalId);
+	//EXI.getDataAdapter({onSuccess: onSuccess}).mx.sample.getSampleInfoByProposalId();
 };
-
-SamplesGrid.prototype._getColumns = function () {
-	var _this = this;
-	// render functions
 	
-	
-	
-		// build columns
-	var columns = [];
-	columns.push( );    	
-
-};
-		
+SamplesGrid.prototype.getByCrystalId = function(crystal) {
+	for (var i = 0; i < this.data.length; i++) {
+				if (this.data[i].crystalId == crystal.crystalId){
+					return this.data[i];
+				} 
+	}
+};	
 SamplesGrid.prototype.getPanel = function() {
 	var _this = this;
 	
@@ -113,11 +110,9 @@ SamplesGrid.prototype.getPanel = function() {
 			model : 'BLSampleModel',
 			data : []
 		});
-		
-	var columns = _this._getColumns();
 
 	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'Protein', 'SpaceGroup', 'Name', 'Code', 'Shipment', 'Dewar', 'Container', 'Location', 'Cell' ],
+		fields : [ 'Protein', 'SpaceGroup', 'SampleName', 'Code' , 'Shipment', 'Dewar', 'Container', 'Location', 'Cell'],
 		emptyText : "No samples",
 		data : []
 	});
@@ -133,58 +128,30 @@ SamplesGrid.prototype.getPanel = function() {
 		emptyText : "No samples",
 		columns : 	[	
 		{
+			text          : 'SampleName',
+			dataIndex     : 'sampleName',
+			width         : 100
+		},
+		{
 			text          : 'Protein',
 			dataIndex     : 'proteinAcronym',
-			flex : 0.1,
-			renderer : function(grid, a, record){
-						return record.data.crystalVO.proteinVO.acronym;
-			}
-
+			width:100
 		},
 		{
 			text          : 'SpaceGroup',
-			dataIndex     : 'spaceGroup',
-			flex : 0.1,
-			renderer : function(grid, a, record){
-				return record.data.crystalVO.spaceGroup;
-			}
-		},
-		{
-			text          : 'Name',
-			dataIndex     : 'name',
-			width         : 100
-		},
+			dataIndex     : 'crystalSpaceGroup',
+			width:100
+		},		
 		{
 			text          : 'Code',
 			dataIndex     : 'code',
 			width         : 100
-		},	
+		},
 		{
-			text          : 'Location in SC',
-			dataIndex     : 'sampleChangerLocation',
-			flex : 0.1,
-			renderer : function(grid, a, record){
-				return record.data.containerVO.sampleChangerLocation;
-			}
-		},	
-		{
-			text          : 'Cell',
-			dataIndex     : 'cell',
-			flex : 0.1,
-			renderer : function renderUnitCell(grid, a, record) {
-				var nbDec = 2;
-				if (record.data.crystalVO) {
-					var s = (record.data.crystalVO.CellA ? Number(record.data.crystalVO.CellA).toFixed(nbDec) + ", " : "");
-					s += (record.data.crystalVO.CellB ? Number(record.data.crystalVO.CellB).toFixed(nbDec) + ", ": "");
-					s += (record.data.crystalVO.CellC ? Number(record.data.crystalVO.CellC).toFixed(nbDec) + "<br />": "");
-					s += (record.data.crystalVO.CellAlpha ? Number(record.data.crystalVO.CellAlpha).toFixed(nbDec) + ", " : "");
-					s += (record.data.crystalVO.CellBeta ? Number(record.data.crystalVO.CellBeta).toFixed(nbDec) + ", " : "");
-					s += (record.data.crystalVO.CellGamma ? Number(record.data.crystalVO.CellGamma).toFixed(nbDec): "");
-					return s;
-				}
-			return "";
-			}
-		},	
+			text          : 'Location',
+			dataIndex     : 'containerSampleChangerLocation',
+			width         : 100
+		},		
 				{
 			text          : 'Shipment',
 			dataIndex     : 'shipment',
@@ -202,11 +169,37 @@ SamplesGrid.prototype.getPanel = function() {
 			}
 		},
 		{
-			text          : 'Container',
-			dataIndex     : 'container',
+			text          : 'Location in SC',
+			dataIndex     : 'sampleChangerLocation',
 			flex : 0.1,
 			renderer : function(grid, a, record){
-				return record.data.containerVO.code;
+				return record.data.containerVO.sampleChangerLocation;
+			}
+		},	
+		{
+			text          : 'Cell',
+			dataIndex     : 'cell',
+			flex : 0.1,
+			renderer : function renderUnitCell(grid, a, record) {
+				var nbDec = 2;
+				if (record.data.crystalVO) {
+					var s = (record.data.CellA ? Number(record.data.crystalVO.CellA).toFixed(nbDec) + ", " : "");
+					s += (record.data.crystalVO.CellB ? Number(record.data.crystalVO.CellB).toFixed(nbDec) + ", ": "");
+					s += (record.data.crystalVO.CellC ? Number(record.data.crystalVO.CellC).toFixed(nbDec) + "<br />": "");
+					s += (record.data.crystalVO.CellAlpha ? Number(record.data.crystalVO.CellAlpha).toFixed(nbDec) + ", " : "");
+					s += (record.data.crystalVO.CellBeta ? Number(record.data.crystalVO.CellBeta).toFixed(nbDec) + ", " : "");
+					s += (record.data.crystalVO.CellGamma ? Number(record.data.crystalVO.CellGamma).toFixed(nbDec): "");
+					return s;
+				}
+			return "";
+			}
+		},
+		{
+			text          : 'Protein',
+			dataIndex     : 'proteinAcronym',
+			flex : 0.1,
+			renderer : function(grid, a, record){
+						return record.data.crystalVO.proteinVO.acronym;
 			}
 		}	
 		] 
