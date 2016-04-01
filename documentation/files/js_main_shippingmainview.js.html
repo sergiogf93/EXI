@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>js/core/util/string.js - EXI</title>
+    <title>js/main/shippingmainview.js - EXI</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -40,7 +40,10 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/ParcelGrid.html">ParcelGrid</a></li>
+                                <li><a href="../classes/ParcelPanel.html">ParcelPanel</a></li>
                                 <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
+                                <li><a href="../classes/ShippingMainView.html">ShippingMainView</a></li>
                             </ul>
                 
                 
@@ -78,29 +81,94 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: js/core/util/string.js</h1>
+<h1 class="file-heading">File: js/main/shippingmainview.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/** Function for String **/
-String.prototype.format = function (args) {
-	var str = this;
-	return str.replace(String.prototype.format.regex, function(item) {
-		var intVal = parseInt(item.substring(1, item.length - 1));
-		var replace;
-		if (intVal &gt;= 0) {
-			replace = args[intVal];
-		} else if (intVal === -1) {
-			replace = &quot;{&quot;;
-		} else if (intVal === -2) {
-			replace = &quot;}&quot;;
-		} else {
-			replace = &quot;&quot;;
-		}
-		return replace;
+
+/**
+* This main class deals with the creation and edition of shipments
+*
+* @class ShippingMainView
+* @constructor
+*/
+function ShippingMainView() {
+	MainView.call(this);
+	var _this = this;
+	
+	/**
+	* 
+	* @property shipmentForm
+	*/
+	this.shipmentForm = new ShipmentForm();
+	this.shipmentForm.onSaved.attach(function(sender, shipment){
+		location.hash = &quot;#/proposal/shipping/nav?nomain&quot;;
 	});
+	
+	/**
+	* 
+	* @property parcelGrid
+	*/
+	this.parcelGrid = new ParcelGrid({
+		height : 300
+	});
+}
+
+ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
+ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
+
+ShippingMainView.prototype.getContainer = function() {
+	this.tabPanel =  Ext.createWidget(&#x27;tabpanel&#x27;,
+			{
+				margin : 10,
+				defaults : {
+						anchor : &#x27;100%&#x27;
+				},
+				items : [
+				     		{
+							tabConfig : {
+								title : &#x27;Delivery Details&#x27;
+							},
+							items : [ 
+							         	this.shipmentForm.getPanel()
+							]
+						},
+						{
+							tabConfig : {
+								id : this.id + &quot;grid&quot;,
+								title : &#x27;Parcels&#x27;,
+								icon : &#x27;../images/icon/shipping.png&#x27;
+							},
+							items : [ 
+							         	this.parcelGrid.getPanel()
+							]
+						}
+					]
+			});
+
+	return this.tabPanel;
+
 };
-String.prototype.format.regex = new RegExp(&quot;{-?[0-9]+}&quot;, &quot;g&quot;);
+
+
+ShippingMainView.prototype.load = function(shippingId) {
+	var _this = this;
+	this.shippingId = shippingId;
+	
+	if (shippingId == null){
+		Ext.getCmp(this.id + &quot;grid&quot;).disable(true);
+	}
+	this.panel.setTitle(&quot;Shipment&quot;);
+	if (shippingId != null){
+		this.panel.setLoading();
+		var onSuccess = function(sender, shipment){
+			_this.shipmentForm.load(shipment);
+			_this.parcelGrid.load(shipment);
+			_this.panel.setLoading(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	}
+};
 
     </pre>
 </div>

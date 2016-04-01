@@ -40,7 +40,10 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/ParcelGrid.html">ParcelGrid</a></li>
+                                <li><a href="../classes/ParcelPanel.html">ParcelPanel</a></li>
                                 <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
+                                <li><a href="../classes/ShippingMainView.html">ShippingMainView</a></li>
                             </ul>
                 
                 
@@ -250,6 +253,33 @@ MXExiController.prototype.routeNavigation = function() {
 			mainView.load(data);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByAcronymList(this.params[&#x27;acronmys&#x27;]);
+
+	}).enter(this.setPageBackground);
+	
+	Path.map(&quot;#/mx/prepare/main&quot;).to(function() {
+		alert(&quot;Main&quot;);
+		EXI.addMainPanel(new PuckWelcomeMainView());
+		EXI.clearNavigationPanel();
+		EXI.setLoadingNavigationPanel(true);
+		listView = new PuckListView();
+		listView.onSelect.attach(function(sender, selected) {
+			//location.hash = &quot;/mx/puck/&quot; + selected[0].Container_containerId+ &quot;/main&quot;;
+		});
+
+		EXI.addNavigationPanel(listView);
+		var onSuccessProposal = function(sender, pucks) {
+			console.log(pucks);
+			listView.load(pucks);
+			EXI.setLoadingNavigationPanel(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.proposal.getDewarByProposalId();
+		
+//		var mainView = new DataCollectionMxMainView();
+//		EXI.addMainPanel(mainView);
+//		var onSuccess = function(sender, data){
+//			mainView.load(data);
+//		};
+//		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByAcronymList(this.params[&#x27;acronmys&#x27;]);
 
 	}).enter(this.setPageBackground);
 	

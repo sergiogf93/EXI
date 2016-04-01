@@ -1,28 +1,27 @@
 
-
+/**
+* This main class deals with the creation and edition of shipments
+*
+* @class ShippingMainView
+* @constructor
+*/
 function ShippingMainView() {
-	
 	MainView.call(this);
-	
 	var _this = this;
+	
+	/**
+	* 
+	* @property shipmentForm
+	*/
 	this.shipmentForm = new ShipmentForm();
-
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = "#/proposal/shipping/nav?nomain";
 	});
 	
-	/*this.caseGrid = new CaseGrid({
-		height : 300
-	});
-	
-	this.caseGrid.onRemove.attach(function(sender, dewar){
-		var onSuccess = function(sender){
-			_this.load(_this.shippingId);
-			_this.panel.setLoading(false);
-		};
-		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.removeDewar(_this.shippingId, dewar.dewarId );
-	});*/
-	
+	/**
+	* 
+	* @property parcelGrid
+	*/
 	this.parcelGrid = new ParcelGrid({
 		height : 300
 	});
@@ -66,13 +65,13 @@ ShippingMainView.prototype.getContainer = function() {
 
 
 ShippingMainView.prototype.load = function(shippingId) {
+	var _this = this;
 	this.shippingId = shippingId;
 	
 	if (shippingId == null){
 		Ext.getCmp(this.id + "grid").disable(true);
 	}
 	this.panel.setTitle("Shipment");
-	var _this = this;
 	if (shippingId != null){
 		this.panel.setLoading();
 		var onSuccess = function(sender, shipment){

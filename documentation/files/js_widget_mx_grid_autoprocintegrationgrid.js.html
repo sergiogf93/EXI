@@ -40,7 +40,10 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/ParcelGrid.html">ParcelGrid</a></li>
+                                <li><a href="../classes/ParcelPanel.html">ParcelPanel</a></li>
                                 <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
+                                <li><a href="../classes/ShippingMainView.html">ShippingMainView</a></li>
                             </ul>
                 
                 
@@ -267,6 +270,42 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 				}
 				catch(e){
 					return &quot;Parsing error&quot;;
+				}
+				return html;
+			}
+		},
+		{
+			text : &#x27;Statistics&#x27;,
+			dataIndex : &#x27;processingPrograms&#x27;,
+			width : 400,
+			renderer : function(e, sample, record){
+				try{
+					var type = record.data.scalingStatisticsType.split(&quot;,&quot;);
+					var resolutionLimitLow = record.data.resolutionLimitLow.split(&quot;,&quot;);
+					var resolutionLimitHigh = record.data.resolutionLimitHigh.split(&quot;,&quot;);
+					var multiplicity = record.data.multiplicity.split(&quot;,&quot;);
+					var meanIOverSigI = record.data.meanIOverSigI.split(&quot;,&quot;);
+					var completeness = record.data.completeness.split(&quot;,&quot;);
+					
+					var parsed = [];
+					for (var i = 0; i &lt; type.length; i++) {
+						parsed.push({
+							type 					: type[i],
+							resolutionLimitLow 		: resolutionLimitLow[i],
+							resolutionLimitHigh 	: resolutionLimitHigh[i],
+							multiplicity 			: multiplicity[i],
+							meanIOverSigI 			: meanIOverSigI[i],
+							completeness 			: completeness[i]
+							
+						});
+					}
+					var html  = &quot;&quot;;
+					dust.render(&quot;autoprocintegrationgrid_statistics&quot;, parsed, function(err, out){
+						html = out;
+					});
+				}
+				catch(e){
+					return &quot;&lt;span class=&#x27;summary_datacollection_parameter_name&#x27;&gt;Not found&lt;/span&gt;&quot;;
 				}
 				return html;
 			}

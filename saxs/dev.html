@@ -37,13 +37,64 @@
 	<script type="text/javascript" src="../dependency/jssurfaceplot/SurfacePlot.js"></script>
 	<script type="text/javascript" src="../dependency/jssurfaceplot/ColourGradient.js"></script>
 	
+ 	
+
+	  <!--This is used by  grunt-wiredep http://grunt-tasks.com/grunt-wiredep/ -->
+	  <!-- bower:js -->
+	  <!-- endbower -->
+
 	
 
-
-
-
-       <script type="text/javascript" src="../min/bower_components.min.js"></script>
-
+		<script src="../bower_components/exi-ui-utils/js/bui.js"></script>
+		<script src="../bower_components/exi-ui-utils/js/dygraphwidget.js"></script>
+		<script src="../bower_components/exi-ui-utils/js/event.js"></script>
+		<script src="../bower_components/exi-ui-utils/js/imageutils.js"></script>
+		<script src="../bower_components/exi-ui-utils/js/progressbar.js"></script>
+		<script src="../bower_components/exi-ui-utils/js/string.js"></script>
+	
+	<script src="../bower_components/lodash/lodash.js"></script>
+	<script src="../bower_components/exi-ui-viz/min/exi-ui-viz.min.js"></script>
+			
+		<script src="../bower_components/ispyb-js-api/js/dataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/event.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposalmanager.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/exi/exidataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/exi/exidataadaptergroup.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/security/authenticationdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/dataadapterfactory.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/dewardataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/labcontactdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/proposaldataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/proposaldataadaptergroup.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/sessiondataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/proposal/shippingdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/autoprocintegrationdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/crystaldataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/datacollectiondataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/mxdataadapterfactory.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/mxdataadaptergroup.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/phasingdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/proteindataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/sampledataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/mx/workflowstepdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/buffersaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/datacollectionsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/experiment.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/experimentlist.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/experimentsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/framesaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/hplcsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/macromoleculesaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/measurementsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/modelsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/saxsdataadapterfactory.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/saxsdataadaptergroup.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/specimensaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/stocksolutionsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/subtractionsaxsdataadapter.js"></script>
+		<script src="../bower_components/ispyb-js-api/js/saxs/templatesaxsdataadapter.js"></script>
+		  
+		  
 	    <script src="../js/core/app/appcontroller.js"></script>
 	    <script src="../js/core/app/authenticationcontroller.js"></script>
 	    <script src="../js/core/app/exi.js"></script>
@@ -63,12 +114,6 @@
 	    <script src="../js/core/router/shippingexicontroller.js"></script>
 	    <script src="../js/core/security/credential.js"></script>
 	    <script src="../js/core/security/credentialmanager.js"></script>
-	    <script src="../js/core/util/bui.js"></script>
-	    <script src="../js/core/util/dygraphwidget.js"></script>
-	    <script src="../js/core/util/event.js"></script>
-	    <script src="../js/core/util/imageutils.js"></script>
-	    <script src="../js/core/util/progressbar.js"></script>
-	    <script src="../js/core/util/string.js"></script>
 	    <script src="../js/main/mainview.js"></script>
 	    <script src="../js/main/run/runmainview.js"></script>
 	    <script src="../js/main/addressmainview.js"></script>
@@ -140,7 +185,6 @@
 	    <script src="../js/widget/form/macromolecule/macromoleculeform.js"></script>
 	    <script src="../js/widget/form/macromolecule/molarityform.js"></script>
 	    <script src="../js/widget/form/macromolecule/rigidbodymodelingform.js"></script>
-	    <script src="../js/widget/form/parcelform.js"></script>
 	    <script src="../js/widget/form/puckform.js"></script>
 	    <script src="../js/widget/form/shipmentform.js"></script>
 	    <script src="../js/widget/form/stocksolutionform.js"></script>
@@ -178,11 +222,9 @@
 	    <script src="../js/widget/mx/grid/datacollectionsummarygrid.js"></script>
 	    <script src="../js/widget/mx/grid/phasinggrid.js"></script>
 	    <script src="../js/widget/network/phasing/phasingnetworkwidget.js"></script>
+	    <script src="../js/widget/parcelpanel.js"></script>
 	    <script src="../js/widget/pdb/pdbviewer.js"></script>
-	    <script src="../js/widget/platelayouts/containers/spinelayout.js"></script>
-	    <script src="../js/widget/platelayouts/containers/unipucklayout.js"></script>
-	    <script src="../js/widget/platelayouts/pucklayout.js"></script>
-	    <script src="../js/widget/platelayouts/spine.js"></script>
+	    <script src="../js/widget/platelayouts/puckpanel.js"></script>
 	    <script src="../js/widget/plot/autoprocintegrationcurveplotter.js"></script>
 	    <script src="../js/widget/plot/curveplotter.js"></script>
 	    <script src="../js/widget/plot/curveplotterCANVAS.js"></script>

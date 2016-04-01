@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>PhasingNetworkWidget - EXI</title>
+    <title>ShippingMainView - EXI</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -81,12 +81,12 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1>PhasingNetworkWidget Class</h1>
+<h1>ShippingMainView Class</h1>
 <div class="box meta">
 
 
         <div class="foundat">
-            Defined in: <a href="../files/js_widget_network_phasing_phasingnetworkwidget.js.html#l1"><code>js&#x2F;widget&#x2F;network&#x2F;phasing&#x2F;phasingnetworkwidget.js:1</code></a>
+            Defined in: <a href="../files/js_main_shippingmainview.js.html#l2"><code>js&#x2F;main&#x2F;shippingmainview.js:2</code></a>
         </div>
 
 
@@ -94,14 +94,14 @@
 
 
 <div class="box intro">
-    <p>This class renders a network graph with the PhasingStep</p>
+    <p>This main class deals with the creation and edition of shipments</p>
 
 </div>
 
     <div class="constructor">
         <h2>Constructor</h2>
-<div id="method_PhasingNetworkWidget" class="method item">
-    <h3 class="name"><code>PhasingNetworkWidget</code></h3>
+<div id="method_ShippingMainView" class="method item">
+    <h3 class="name"><code>ShippingMainView</code></h3>
 
         <span class="paren">()</span>
 
@@ -115,7 +115,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/js_widget_network_phasing_phasingnetworkwidget.js.html#l1"><code>js&#x2F;widget&#x2F;network&#x2F;phasing&#x2F;phasingnetworkwidget.js:1</code></a>
+        <a href="../files/js_main_shippingmainview.js.html#l2"><code>js&#x2F;main&#x2F;shippingmainview.js:2</code></a>
         </p>
 
 
@@ -136,48 +136,39 @@
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
-            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
     </ul>
 
     <div>
         <div id="index" class="api-class-tabpanel index">
             <h2 class="off-left">Item Index</h2>
 
-                <div class="index-section methods">
-                    <h3>Methods</h3>
 
-                    <ul class="index-list methods">
-                            <li class="index-item method">
-                                <a href="#method_load">load</a>
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                            <li class="index-item property">
+                                <a href="#property_parcelGrid">parcelGrid</a>
 
                             </li>
-                            <li class="index-item method">
-                                <a href="#method_render">render</a>
+                            <li class="index-item property">
+                                <a href="#property_shipmentForm">shipmentForm</a>
 
                             </li>
                     </ul>
                 </div>
 
 
-
-        </div>
-
-            <div id="methods" class="api-class-tabpanel">
-                <h2 class="off-left">Methods</h2>
-
-<div id="method_load" class="method item">
-    <h3 class="name"><code>load</code></h3>
-
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>autoprocIntegrationList</code>
-                </li>
-            </ul><span class="paren">)</span>
         </div>
 
 
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
 
+<div id="property_parcelGrid" class="property item">
+    <h3 class="name"><code>parcelGrid</code></h3>
+    <span class="type">Unknown</span>
 
 
 
@@ -186,47 +177,22 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/js_widget_network_phasing_phasingnetworkwidget.js.html#l271"><code>js&#x2F;widget&#x2F;network&#x2F;phasing&#x2F;phasingnetworkwidget.js:271</code></a>
+        <a href="../files/js_main_shippingmainview.js.html#l21"><code>js&#x2F;main&#x2F;shippingmainview.js:21</code></a>
         </p>
-
 
 
     </div>
 
     <div class="description">
-        <p>It just loads the data but it will not be rendered
-Rendering is done when afterrender method is triggered</p>
-
+        
     </div>
-
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">autoprocIntegrationList</code>
-                        <span class="type">Object</span>
-
-
-                    <div class="param-description">
-                        <p>This is a list of autoprocintegration retrieved from the phasing view</p>
-
-                    </div>
-
-                </li>
-            </ul>
-        </div>
 
 
 
 </div>
-<div id="method_render" class="method item">
-    <h3 class="name"><code>render</code></h3>
-
-        <span class="paren">()</span>
-
-
-
+<div id="property_shipmentForm" class="property item">
+    <h3 class="name"><code>shipmentForm</code></h3>
+    <span class="type">Unknown</span>
 
 
 
@@ -235,25 +201,20 @@ Rendering is done when afterrender method is triggered</p>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/js_widget_network_phasing_phasingnetworkwidget.js.html#l156"><code>js&#x2F;widget&#x2F;network&#x2F;phasing&#x2F;phasingnetworkwidget.js:156</code></a>
+        <a href="../files/js_main_shippingmainview.js.html#l12"><code>js&#x2F;main&#x2F;shippingmainview.js:12</code></a>
         </p>
-
 
 
     </div>
 
     <div class="description">
-        <p>It renders the network by using viz.js
-<a href="http://visjs.org/">http://visjs.org/</a></p>
-
+        
     </div>
-
 
 
 
 </div>
             </div>
-
 
 
     </div>

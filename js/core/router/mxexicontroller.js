@@ -177,7 +177,6 @@ MXExiController.prototype.routeNavigation = function() {
 		listView = new PuckListView();
 		listView.onSelect.attach(function(sender, selected) {
 			//location.hash = "/mx/puck/" + selected[0].Container_containerId+ "/main";
-			console.log(selected[0].Container_containerId)
 		});
 
 		EXI.addNavigationPanel(listView);

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>js/widget/form/parcelform.js - EXI</title>
+    <title>js/widget/parcelpanel.js - EXI</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -40,7 +40,10 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/ParcelGrid.html">ParcelGrid</a></li>
+                                <li><a href="../classes/ParcelPanel.html">ParcelPanel</a></li>
                                 <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
+                                <li><a href="../classes/ShippingMainView.html">ShippingMainView</a></li>
                             </ul>
                 
                 
@@ -78,16 +81,18 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-<h1 class="file-heading">File: js/widget/form/parcelform.js</h1>
+<h1 class="file-heading">File: js/widget/parcelpanel.js</h1>
 
 <div class="file">
     <pre class="code prettyprint linenums">
+
 /**
- * Edit the information of a buffer
- * 
- * #onRemoveAdditive
- */
-function ParcelForm(args) {
+* This is a form  for parcels. It includes all items includes in a parcel. Include pucks
+*
+* @class ParcelPanel
+* @constructor
+*/
+function ParcelPanel(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
@@ -107,49 +112,52 @@ function ParcelForm(args) {
 	this.onSavedClick = new Event(this);
 }
 
-ParcelForm.prototype.render = function() {
-	var dewar = this.dewar;
-	this.panel.removeAll();
-	
-	console.log(dewar);
-	var html = &quot;&quot;;debugger
-	dust.render(&quot;parcelformsummary&quot;, dewar, function(err, out){
+/**
+* It inserts a panel into the this.panel with the template parcelformsummary
+*
+* @method addHeaderPanel
+*/
+ParcelPanel.prototype.addHeaderPanel = function() {
+	var html = &quot;No information&quot;;
+	dust.render(&quot;parcelformsummary&quot;, this.dewar, function(err, out){
 		html = out;
-     	});
-
-	// Adding general information of the parcel **/
+    });
 	this.panel.insert(
 				{
 					xtype 	: &#x27;container&#x27;,
 					width	: 200,
 					border : 1,
 					padding : 20,
-					items 	: [
-							{
-								html : html							}
+					items 	: [	{html : html}
 				
 					]
 				}
-
 	);
+};
+
+ParcelPanel.prototype.render = function() {
+	var dewar = this.dewar;
+	this.panel.removeAll();
+
+	this.addHeaderPanel();
+	
 	if (dewar != null){
 		if (dewar.containerVOs != null){
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId});
-			
 			for (var i = 0; i&lt; dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
 				/** Adding the puck layout **/
-				var pucklayout = new PuckLayout({height : 200});
-				this.panel.insert(pucklayout.getPanel());
-				pucklayout.load(container);
+				var puckPanel = new PuckPanel({height : 200});
+				this.panel.insert(puckPanel.getPanel());
+				puckPanel.load(container);
 				
 			}
 		}
 	}
 };
 
-ParcelForm.prototype.load = function(dewar) {
+ParcelPanel.prototype.load = function(dewar) {
 	this.dewar = dewar;
 	try {
 		/** Rendering pucks **/
@@ -160,8 +168,12 @@ ParcelForm.prototype.load = function(dewar) {
 	}
 };
 
-
-ParcelForm.prototype.addPuckToDewar = function() {
+/**
+* It inserts a new puck into the dewar and reloads the widget
+*
+* @method addPuckToDewar
+*/
+ParcelPanel.prototype.addPuckToDewar = function() {
 	var _this = this;
 	var onSuccess = function(sender, puck){
 		_this.dewar.containerVOs.push(puck);
@@ -170,7 +182,48 @@ ParcelForm.prototype.addPuckToDewar = function() {
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.addPuck(this.dewar.dewarId, this.dewar.dewarId);
 };
 
-ParcelForm.prototype._getTopButtons = function() {
+/**
+* It displays a window with a case form
+*
+* @method showCaseForm
+*/
+ParcelPanel.prototype.showCaseForm = function() {
+	var _this = this;
+	/** Opens a window with the cas form **/
+	var caseForm = new CaseForm();
+	var window = Ext.create(&#x27;Ext.window.Window&#x27;, {
+	    title: &#x27;Parcel&#x27;,
+	    height: 450,
+	    width: 600,
+	    modal : true,
+	    layout: &#x27;fit&#x27;,
+	    items: [
+	            	caseForm.getPanel(_this.dewar)
+	    ],
+	    listeners : {
+			afterrender : function(component, eOpts) {
+				if (_this.puck != null){
+						_this.render(_this.puck);
+				}
+			}
+	    },
+	    buttons : [ {
+						text : &#x27;Save&#x27;,
+						handler : function() {
+							_this.onSavedClick.notify(caseForm.getDewar());
+							window.close();
+						}
+					}, {
+						text : &#x27;Cancel&#x27;,
+						handler : function() {
+							window.close();
+						}
+					} ]
+	});
+	window.show();
+};
+
+ParcelPanel.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
 	
@@ -184,38 +237,7 @@ ParcelForm.prototype._getTopButtons = function() {
 		text : &#x27;Edit&#x27;,
 		disabled : false,
 		handler : function(widget, event) {
-			/** Opens a window with the cas form **/
-			var caseForm = new CaseForm();
-			var window = Ext.create(&#x27;Ext.window.Window&#x27;, {
-			    title: &#x27;Parcel&#x27;,
-			    height: 450,
-			    width: 600,
-			    modal : true,
-			    layout: &#x27;fit&#x27;,
-			    items: [
-			            	caseForm.getPanel(_this.dewar)
-			    ],
-			    listeners : {
-					afterrender : function(component, eOpts) {
-						if (_this.puck != null){
-								_this.render(_this.puck);
-						}
-					}
-			    },
-			    buttons : [ {
-								text : &#x27;Save&#x27;,
-								handler : function() {
-									_this.onSavedClick.notify(caseForm.getDewar());
-									window.close();
-								}
-							}, {
-								text : &#x27;Cancel&#x27;,
-								handler : function() {
-									window.close();
-								}
-							} ]
-			});
-			window.show();
+					_this.showCaseForm();
 		}
 	}));
 	
@@ -244,42 +266,43 @@ ParcelForm.prototype._getTopButtons = function() {
 };
 
 
-ParcelForm.prototype.getPanel = function() {
+ParcelPanel.prototype.getPanel = function() {
 	var _this = this;
 	this.panel = Ext.create(&#x27;Ext.panel.Panel&#x27;, {
-		layout : &#x27;hbox&#x27;,
-		cls : &quot;border-grid&quot;,
-		margin : 10,
-		height : this.height,
-		autoScroll: true,
-		items : [ ],
+		layout 		: &#x27;hbox&#x27;,
+		cls 		: &quot;border-grid&quot;,
+		margin 		: 10,
+		height 		: this.height,
+		autoScroll	: true,
+		items 		: [],
 		listeners : {
 			afterrender : function(component, eOpts) {
 						_this.render();
 			}
-	    },
-		toolbar : [ {
-						text : &#x27;Save&#x27;,
-						handler : function() {
-								var adapter = new DataAdapter();
-								_this.panel.setLoading();
-								var dewar = caseForm.getDewar();
-								var onSuccess = (function(sender, shipment) {
-									_this.load(shipment);
-									window.close();
-									_this.panel.setLoading(false);
-								});
-								dewar[&quot;sessionId&quot;] = dewar.firstExperimentId;
-								dewar[&quot;shippingId&quot;] = _this.shipment.shippingId;
-								EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
-						}
-					}, 
-					{
-							text : &#x27;Cancel&#x27;,
-							handler : function() {
-								window.close();
-							}
-					}]
+	    }
+//	,
+//		toolbar : [ {
+//						text : &#x27;Save&#x27;,
+//						handler : function() {
+//								var adapter = new DataAdapter();
+//								_this.panel.setLoading();
+//								var dewar = caseForm.getDewar();
+//								var onSuccess = (function(sender, shipment) {
+//									_this.load(shipment);
+//									window.close();
+//									_this.panel.setLoading(false);
+//								});
+//								dewar[&quot;sessionId&quot;] = dewar.firstExperimentId;
+//								dewar[&quot;shippingId&quot;] = _this.shipment.shippingId;
+//								EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
+//						}
+//					}, 
+//					{
+//							text : &#x27;Cancel&#x27;,
+//							handler : function() {
+//								window.close();
+//							}
+//					}]
 	});
 	
 	this.panel.addDocked({
@@ -289,7 +312,6 @@ ParcelForm.prototype.getPanel = function() {
 		items 	: _this._getTopButtons(),
 		cls 	: &#x27;exi-top-bar&#x27;
 	});
-	
 	return this.panel;
 };
 

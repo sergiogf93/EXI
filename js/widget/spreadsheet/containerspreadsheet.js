@@ -100,9 +100,9 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 																						source: this.getAcronyms()
 																					}
 	         }, 
-	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 50}}, 
+	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 100}}, 
 	         { text :'Space<br /> Group', id : 'Space Group',column : {
-			        	 													width : 80,
+			        	 													width : 100,
 			        	 													type: 'dropdown',
 			        	 													source: this.getSpaceGroups()
 			         								}
@@ -181,7 +181,10 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 		sample["comments"] = rows[i]["Comments"];
 		if (sample["crystalVO"] == null){
 			sample["crystalVO"] = {};
-			sample["crystalVO"]["proteinVO"] = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			var proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			if (proteins != null){
+				sample["crystalVO"]["proteinVO"] = proteins[0];
+			}
 		}
 		sample["crystalVO"]["spaceGroup"] = rows[i]["Space Group"];
 		sample["crystalVO"]["cellA"] = Number(rows[i]["Unit cell A"]);

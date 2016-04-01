@@ -30,9 +30,8 @@ PuckMainView.prototype.getContainer = function() {
 
 
 PuckMainView.prototype.load = function(puck) {
-	
 	var _this = this;
-	
+	debugger
 	this.puckForm.load(puck, null);
 	
 };

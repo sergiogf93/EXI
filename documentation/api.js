@@ -3,7 +3,10 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         "AutoProcIntegrationGrid",
         "ManagerWelcomeMainView",
-        "PhasingNetworkWidget"
+        "ParcelGrid",
+        "ParcelPanel",
+        "PhasingNetworkWidget",
+        "ShippingMainView"
     ],
     "modules": [],
     "allModules": [],

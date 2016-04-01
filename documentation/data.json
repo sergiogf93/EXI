@@ -83,27 +83,6 @@
             "fors": {},
             "namespaces": {}
         },
-        "js/core/util/bui.js": {
-            "name": "js/core/util/bui.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "js/core/util/dygraphwidget.js": {
-            "name": "js/core/util/dygraphwidget.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "js/core/util/string.js": {
-            "name": "js/core/util/string.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
         "js/main/mx/autoprocintegrationmainview.js": {
             "name": "js/main/mx/autoprocintegrationmainview.js",
             "modules": {},
@@ -162,6 +141,15 @@
             "fors": {},
             "namespaces": {}
         },
+        "js/main/shippingmainview.js": {
+            "name": "js/main/shippingmainview.js",
+            "modules": {},
+            "classes": {
+                "ShippingMainView": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "js/main/userwelcomemainview.js": {
             "name": "js/main/userwelcomemainview.js",
             "modules": {},
@@ -192,6 +180,13 @@
         },
         "js/navigation/workspacelistview.js": {
             "name": "js/navigation/workspacelistview.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "js/test/test.js": {
+            "name": "js/test/test.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -269,13 +264,6 @@
         },
         "js/widget/form/experimentheaderform.js": {
             "name": "js/widget/form/experimentheaderform.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "js/widget/form/parcelform.js": {
-            "name": "js/widget/form/parcelform.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -368,7 +356,9 @@
         "js/widget/grid/parcelgrid.js": {
             "name": "js/widget/grid/parcelgrid.js",
             "modules": {},
-            "classes": {},
+            "classes": {
+                "ParcelGrid": 1
+            },
             "fors": {},
             "namespaces": {}
         },
@@ -481,29 +471,8 @@
             "fors": {},
             "namespaces": {}
         },
-        "js/widget/platelayouts/containers/spinelayout.js": {
-            "name": "js/widget/platelayouts/containers/spinelayout.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "js/widget/platelayouts/containers/unipucklayout.js": {
-            "name": "js/widget/platelayouts/containers/unipucklayout.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "js/widget/platelayouts/pucklayout.js": {
-            "name": "js/widget/platelayouts/pucklayout.js",
-            "modules": {},
-            "classes": {},
-            "fors": {},
-            "namespaces": {}
-        },
-        "js/widget/platelayouts/spine.js": {
-            "name": "js/widget/platelayouts/spine.js",
+        "js/widget/platelayouts/puckpanel.js": {
+            "name": "js/widget/platelayouts/puckpanel.js",
             "modules": {},
             "classes": {},
             "fors": {},
@@ -669,6 +638,15 @@
             "classes": {},
             "fors": {},
             "namespaces": {}
+        },
+        "js/widget/parcelpanel.js": {
+            "name": "js/widget/parcelpanel.js",
+            "modules": {},
+            "classes": {
+                "ParcelPanel": 1
+            },
+            "fors": {},
+            "namespaces": {}
         }
     },
     "modules": {},
@@ -684,6 +662,32 @@
             "file": "js/main/managerwelcomemainview.js",
             "line": 2,
             "description": "Class for the manager landing page. It inherits from MainView",
+            "is_constructor": 1
+        },
+        "ShippingMainView": {
+            "name": "ShippingMainView",
+            "shortname": "ShippingMainView",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/main/shippingmainview.js",
+            "line": 2,
+            "description": "This main class deals with the creation and edition of shipments",
+            "is_constructor": 1
+        },
+        "ParcelGrid": {
+            "name": "ParcelGrid",
+            "shortname": "ParcelGrid",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/widget/grid/parcelgrid.js",
+            "line": 2,
+            "description": "This is a grid for parcels",
             "is_constructor": 1
         },
         "AutoProcIntegrationGrid": {
@@ -710,6 +714,19 @@
             "file": "js/widget/network/phasing/phasingnetworkwidget.js",
             "line": 1,
             "description": "This class renders a network graph with the PhasingStep",
+            "is_constructor": 1
+        },
+        "ParcelPanel": {
+            "name": "ParcelPanel",
+            "shortname": "ParcelPanel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "js/widget/parcelpanel.js",
+            "line": 2,
+            "description": "This is a form  for parcels. It includes all items includes in a parcel. Include pucks",
             "is_constructor": 1
         }
     },
@@ -927,7 +944,7 @@
         },
         {
             "file": "js/core/router/proposalexicontroller.js",
-            "line": 36,
+            "line": 35,
             "class": "ManagerWelcomeMainView"
         },
         {
@@ -1049,107 +1066,6 @@
         {
             "file": "js/core/security/credentialmanager.js",
             "line": 42,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 37,
-            "description": "Groups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 213,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 252,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 260,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 273,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 324,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 329,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 334,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 424,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 461,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 568,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 686,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/bui.js",
-            "line": 731,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/dygraphwidget.js",
-            "line": 2,
-            "description": "Using dygraph it plots a chart. Params: targetId, labelsContainerId, args",
-            "width": "",
-            "height": "",
-            "labelswidth": "",
-            "targetid": "",
-            "custombars": "",
-            "ylabel": "",
-            "xlabel": "",
-            "showrangeselector": "Show or hide the range selector widget.",
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/dygraphwidget.js",
-            "line": 79,
-            "description": "data: dygraphs.com/data.html",
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/dygraphwidget.js",
-            "line": 90,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/dygraphwidget.js",
-            "line": 95,
-            "class": "ManagerWelcomeMainView"
-        },
-        {
-            "file": "js/core/util/string.js",
-            "line": 1,
             "class": "ManagerWelcomeMainView"
         },
         {
@@ -1326,55 +1242,74 @@
             "class": "ManagerWelcomeMainView"
         },
         {
+            "file": "js/main/shippingmainview.js",
+            "line": 12,
+            "itemtype": "property",
+            "name": "shipmentForm",
+            "class": "ShippingMainView"
+        },
+        {
+            "file": "js/main/shippingmainview.js",
+            "line": 21,
+            "itemtype": "property",
+            "name": "parcelGrid",
+            "class": "ShippingMainView"
+        },
+        {
             "file": "js/main/userwelcomemainview.js",
             "line": 157,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/main/userwelcomemainview.js",
             "line": 238,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/main/userwelcomemainview.js",
             "line": 243,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/saxs/datacollectionlistview.js",
             "line": 48,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/saxs/datacollectionlistview.js",
             "line": 53,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/saxs/experimentlistview.js",
             "line": 11,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/listview.js",
             "line": 1,
             "description": "Main class used for the west panel. Main purpose is the navigation",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/listview.js",
             "line": 9,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/listview.js",
             "line": 93,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/navigation/workspacelistview.js",
             "line": 35,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
+        },
+        {
+            "file": "js/test/test.js",
+            "line": 1,
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/assemblyform.js",
@@ -1382,12 +1317,12 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/assemblyform.js",
             "line": 52,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
@@ -1395,87 +1330,87 @@
             "description": "Macromolecule form with the general parameters of a macromolecule",
             "witdh": "",
             "height": "#onSave button save has been clicked\n#onClose button close has been clicked",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 24,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 29,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 78,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 86,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 95,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 139,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 153,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 164,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 166,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 170,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 175,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 184,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 287,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 294,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 300,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/macromoleculeform.js",
             "line": 328,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
@@ -1483,22 +1418,22 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
             "line": 112,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
             "line": 129,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/molarityform.js",
             "line": 141,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
@@ -1506,27 +1441,27 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 128,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 160,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 177,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/macromolecule/rigidbodymodelingform.js",
             "line": 189,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
@@ -1534,56 +1469,56 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 22,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 38,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 41,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 51,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/abinitioform.js",
             "line": 117,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/addressform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/bufferform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/caseform.js",
             "line": 1,
             "showtitle": "#onSaved\n#onAddPlates\n#onRemovePlates",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/crystalform.js",
             "line": 1,
             "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
@@ -1591,106 +1526,79 @@
             "description": "Example form",
             "witdh": "",
             "height": "",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 23,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 29,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 187,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 191,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 195,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 216,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 231,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 249,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/datareductionform.js",
             "line": 272,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/experimentheaderform.js",
             "line": 1,
             "description": "Shows the header for the experiments changing the color and parameters depending on experiment type",
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/form/parcelform.js",
-            "line": 1,
-            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/form/parcelform.js",
-            "line": 53,
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/form/parcelform.js",
-            "line": 58,
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/form/parcelform.js",
-            "line": 71,
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/form/parcelform.js",
-            "line": 103,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
             "line": 1,
-            "description": "Edit the information of a buffer\n\n#onRemoveAdditive",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
-            "line": 33,
-            "class": "AutoProcIntegrationGrid"
+            "line": 31,
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
-            "line": 111,
-            "class": "AutoProcIntegrationGrid"
+            "line": 109,
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/puckform.js",
-            "line": 124,
+            "line": 122,
             "description": "When container type has changed from SPINE|| UNIPUCK || PLATE\n\nWe make the spreadsheet longer and the platelayout is rendered again",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
@@ -1698,65 +1606,65 @@
             "description": "Same form as MX part",
             "creationmode": "if true a create button appears instead of save",
             "showtitle": "true or false",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
             "line": 94,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
             "line": 99,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/shipmentform.js",
             "line": 127,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/form/stocksolutionform.js",
             "line": 2,
             "description": "#onSaved",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/abinitiogrid.js",
             "line": 27,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/abinitiogrid.js",
             "line": 67,
             "description": "Store in Memory",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 3,
             "description": "Rigid body grid to show PDB, symmetry and multiplicity\n\n\n#onUploadFile click on upload file",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 27,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 37,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 40,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/aprioririgidbodygrid.js",
             "line": 85,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
@@ -1766,22 +1674,22 @@
             "searchbar": "",
             "collapsed": "",
             "width": "",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
             "line": 58,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
             "line": 104,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/buffergrid.js",
             "line": 209,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
@@ -1790,47 +1698,47 @@
             "height": "",
             "btneditvisible": "",
             "btnremovevisible": "#onEditButtonClicked\n#onAddButtonClicked\n#onRemoveButtonClicked\n#onDuplicateButtonClicked",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 30,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 143,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 185,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 243,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 256,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 412,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 451,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/casegrid.js",
             "line": 498,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
@@ -1844,95 +1752,95 @@
             "grouping": "true or false",
             "width": "",
             "title": "#onEditButtonClicked",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 28,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 33,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 81,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 163,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 172,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 206,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 262,
             "description": "Date format: \"YYYY-MM-DD\"",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 267,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 286,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 302,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 331,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/experimentgrid.js",
             "line": 586,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 6,
             "description": "Fill the tree with information about the subtraction: samples, buffers,\naverages and subtrated curve *",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 12,
             "description": "Given a data collection return the run numbers, sample and buffer\nacronym *",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 18,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 38,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/frameselectorgrid.js",
             "line": 187,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
@@ -1949,22 +1857,22 @@
             "btneditvisible": "",
             "btnremovevisible": "",
             "multiselect": "makes it multiselect using Ext.selection.CheckboxModel\n\n#onSelected\n#onMacromoleculesChanged",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
             "line": 36,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
             "line": 214,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/macromoleculegrid.js",
             "line": 277,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
@@ -1981,75 +1889,75 @@
             "btneditvisible": "",
             "btnremovevisible": "",
             "multiselect": "makes it multiselect using Ext.selection.CheckboxModel\n\n#onSelected\n#onMacromoleculesChanged",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 50,
             "description": "Hash map containing the keys of the editable columns. Ex:\n'exposureTemperature' *",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 294,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 306,
             "key": "name of the columns mathing the this.editor[key]",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 529,
             "description": "If updateRowEnabled returns an array with Ext.grid.plugin.RowEditing",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 540,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 544,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 561,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 634,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 638,
             "description": "We get and refresh experiment\nbecause specimens has changed *",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 660,
             "description": "Set status bar to ready (ok icon)",
             "msg": "message to be displayed on the bar",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 674,
             "description": "Set status bar to busy (refreshing icon)",
             "msg": "message to be displayed on the bar",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/measurementgrid.js",
             "line": 688,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
@@ -2058,36 +1966,27 @@
             "height": "",
             "btneditvisible": "",
             "btnremovevisible": "#onEditButtonClicked",
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
             "line": 39,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
             "line": 145,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/molaritygrid.js",
             "line": 163,
-            "class": "AutoProcIntegrationGrid"
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/parcelgrid.js",
-            "line": 1,
-            "description": "A shipment may contains one or more cases where stock solutions and sample plates are stored",
-            "height": "",
-            "btneditvisible": "",
-            "btnremovevisible": "#onEditButtonClicked\n#onAddButtonClicked\n#onRemoveButtonClicked\n#onDuplicateButtonClicked",
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/grid/parcelgrid.js",
-            "line": 30,
-            "class": "AutoProcIntegrationGrid"
+            "line": 25,
+            "class": "ParcelGrid"
         },
         {
             "file": "js/widget/grid/proposalgrid.js",
@@ -2229,22 +2128,17 @@
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
-            "line": 181,
+            "line": 404,
             "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
-            "line": 435,
+            "line": 421,
             "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/hplc/hplcgraph.js",
-            "line": 452,
-            "class": "AutoProcIntegrationGrid"
-        },
-        {
-            "file": "js/widget/hplc/hplcgraph.js",
-            "line": 464,
+            "line": 433,
             "class": "AutoProcIntegrationGrid"
         },
         {
@@ -2301,12 +2195,12 @@
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
-            "line": 66,
+            "line": 67,
             "class": "AutoProcIntegrationGrid"
         },
         {
             "file": "js/widget/mx/grid/datacollection/workflowsectiondatacollection.js",
-            "line": 73,
+            "line": 74,
             "class": "AutoProcIntegrationGrid"
         },
         {
@@ -2418,722 +2312,582 @@
         {
             "file": "js/widget/pdb/pdbviewer.js",
             "line": 35,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/pdb/pdbviewer.js",
             "line": 44,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/pdb/pdbviewer.js",
             "line": 51,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/pdb/pdbviewer.js",
             "line": 255,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/containers/spinelayout.js",
-            "line": 19,
-            "class": ""
+            "file": "js/widget/platelayouts/puckpanel.js",
+            "line": 24,
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/containers/spinelayout.js",
-            "line": 54,
-            "class": ""
+            "file": "js/widget/platelayouts/puckpanel.js",
+            "line": 123,
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 61,
-            "class": ""
+            "file": "js/widget/platelayouts/puckpanel.js",
+            "line": 192,
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 77,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 81,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 89,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 99,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 102,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/containers/unipucklayout.js",
-            "line": 164,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 19,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 187,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 199,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
+            "file": "js/widget/platelayouts/puckpanel.js",
             "line": 204,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 224,
-            "class": ""
+            "file": "js/widget/platelayouts/puckpanel.js",
+            "line": 209,
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 240,
-            "class": ""
+            "file": "js/widget/platelayouts/puckpanel.js",
+            "line": 247,
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 244,
-            "class": ""
+            "file": "js/widget/platelayouts/puckpanel.js",
+            "line": 261,
+            "class": "ParcelPanel"
         },
         {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 252,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 260,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
+            "file": "js/widget/platelayouts/puckpanel.js",
             "line": 275,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 285,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 290,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/pucklayout.js",
-            "line": 295,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 19,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 118,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 187,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 199,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 204,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 224,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 240,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 244,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 252,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 260,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 275,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 285,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 291,
-            "class": ""
-        },
-        {
-            "file": "js/widget/platelayouts/spine.js",
-            "line": 296,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/dataset.js",
             "line": 22,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 3,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 6,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 16,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 21,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 25,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 28,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 34,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 41,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 45,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 53,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 63,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 69,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 73,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 95,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 98,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 135,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 149,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 156,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 165,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 185,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 196,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 206,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 263,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 323,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 330,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 337,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 362,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 366,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 386,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 437,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 454,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 486,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 497,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 502,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 522,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 572,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 586,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 679,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 701,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 800,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 836,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 862,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 891,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 906,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 919,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 940,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1083,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1156,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1181,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1183,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1202,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1222,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1235,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1419,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1435,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1446,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1514,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1527,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1545,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1578,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1619,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphcanvas.js",
             "line": 1652,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphdataset.js",
             "line": 26,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/graphdataset.js",
             "line": 37,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/itemgraphformatter.js",
             "line": 86,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/itemgraphformatter.js",
             "line": 110,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/itemgraphformatter.js",
             "line": 156,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 13,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 17,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 31,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 79,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 169,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 216,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 225,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 429,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 438,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkdatasetformatter.js",
             "line": 443,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 37,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 56,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 68,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 74,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 79,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 84,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 89,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 94,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 103,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 119,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 133,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 138,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 182,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 227,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/plot/network/networkwidget.js",
             "line": 236,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 42,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 102,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 109,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 117,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 133,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 142,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 146,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 155,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 181,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 198,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplategroupwidget.js",
             "line": 237,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
@@ -3146,38 +2900,38 @@
             "showfullname": "",
             "showlabels": "",
             "backgroundcolor": "",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
             "line": 72,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
             "line": 88,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
             "line": 156,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
             "line": 200,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
             "line": 316,
             "description": "Input: specimenId of the sample containing a macromolecule\nOuput: color of the specimen buffer associated",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/sampleplate/sampleplatewidget.js",
             "line": 355,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
@@ -3189,95 +2943,95 @@
                     "description": "It happens when specimen are modified"
                 }
             ],
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 25,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 51,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 65,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 70,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 72,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 86,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 105,
             "description": "Can we merge? We can merge when specimen are the\nsame. So, same buffer, macromolecule, concentration *",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 137,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 141,
             "description": "Return vbox or hbox depending on the slot positions of the plates",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 169,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 174,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 185,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 202,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 205,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/specimen/specimenwidget.js",
             "line": 212,
             "description": "This is necessay because we can not know the sample changer layout before hand",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/spreadsheet/containerspreadsheet.js",
             "line": 39,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/spreadsheet/containerspreadsheet.js",
             "line": 228,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/macromoleculetabs.js",
@@ -3285,116 +3039,116 @@
             "description": "Main form tab for macromolecule",
             "width": "",
             "height": "#onClose when user clicks on close button in the MacromoleculeForm\n#onSave when macromole is saved by macromoleculeForm",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/macromoleculetabs.js",
             "line": 25,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/macromoleculetabs.js",
             "line": 27,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/macromoleculetabs.js",
             "line": 51,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/macromoleculetabs.js",
             "line": 56,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/shipmenttabs.js",
             "line": 7,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/shipmenttabs.js",
             "line": 10,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/shipmenttabs.js",
             "line": 21,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/shipmenttabs.js",
             "line": 30,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/templatetabs.js",
             "line": 1,
             "description": "Shows an template with the specimens, measurements and the experiment's\nrequirement",
             "targetid": "",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/templatetabs.js",
             "line": 15,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/templatetabs.js",
             "line": 20,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/templatetabs.js",
             "line": 41,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/templatetabs.js",
             "line": 157,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/tabs/templatetabs.js",
             "line": 184,
             "description": "Depending on the sample Changer configuration we want to display the plates vertically or horizontally \n Default is vertical",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/timeline/sessiontimelinewidget.js",
             "line": 97,
             "description": "start and end format: YYYYMMDD",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/timeline/sessiontimelinewidget.js",
             "line": 108,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/window/casewindow.js",
             "line": 38,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/window/genericwindow.js",
             "line": 42,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/window/macromoleculewindow.js",
             "line": 28,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/window/stocksolutionwindow.js",
             "line": 26,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/window/stocksolutionwindow.js",
             "line": 34,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/genericstepwizardform.js",
@@ -3404,242 +3158,254 @@
             "data": "",
             "onnextfn": "",
             "onbackfn": "",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/genericstepwizardform.js",
             "line": 28,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 1,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 19,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 475,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 504,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 530,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 606,
             "description": "Given a set of measurements this class will set the a priori right position for each specimen",
             "sampleparsed": "Array of:{\"SEUtemperature\":\"\",\"buffer\":\"CaCl2\",\"buffername\":\"CaCl2\",\"code\":\"CaCl2\",\"comments\":\"\",\"concentration\":0,\"enable\":true,\"flow\":true,\"recuperate\":false,\"title\":\"\",\"transmission\":100,\"macromolecule\":\"CaCl2\",\"type\":\"Buffer\",\"typen\":1,\"viscosity\":\"low\",\"volume\":800,\"volumeToLoad\":40,\"waittime\":0,\"plate\":null,\"row\":null,\"well\":null}",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 620,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 623,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 631,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 645,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 648,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 659,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 685,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 703,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 709,
             "description": "Position is important as it is the way to distiguish between same sample \nFor temperatures series two measurements pointing to the same macromolecule and buffer and concentration\nmeans that it is the same specimen",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/measurementcreatorstepwizardform.js",
             "line": 722,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/wizardwidget.js",
             "line": 1,
             "description": "It contains a set of form that we will communicate each other up to status finish is reached",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/wizardwidget.js",
             "line": 36,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/wizard/wizardwidget.js",
             "line": 58,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 12,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 15,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 43,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 45,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 52,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 57,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageresolutionviewer.js",
             "line": 272,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 7,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 15,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 23,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 135,
             "description": "Vertical gradient is undefined for vertical line\nhttps://www.mathsisfun.com/algebra/line-equation-2points.html",
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 231,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 255,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 269,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 300,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 308,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 310,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 380,
-            "class": ""
+            "class": "ParcelPanel"
         },
         {
             "file": "js/widget/imageviewer.js",
             "line": 389,
-            "class": ""
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 28,
+            "description": "It inserts a panel into the this.panel with the template parcelformsummary",
+            "itemtype": "method",
+            "name": "addHeaderPanel",
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 59,
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 63,
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 76,
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 84,
+            "description": "It inserts a new puck into the dewar and reloads the widget",
+            "itemtype": "method",
+            "name": "addPuckToDewar",
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 98,
+            "description": "It displays a window with a case form",
+            "itemtype": "method",
+            "name": "showCaseForm",
+            "class": "ParcelPanel"
+        },
+        {
+            "file": "js/widget/parcelpanel.js",
+            "line": 105,
+            "class": "ParcelPanel"
         }
     ],
     "warnings": [
-        {
-            "message": "unknown tag: width",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: height",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: labelswidth",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: targetid",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: custombars",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: ylabel",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: xlabel",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "unknown tag: showrangeselector",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
         {
             "message": "unknown tag: witdh",
             "line": " js/widget/form/macromolecule/assemblyform.js:1"
@@ -3867,18 +3633,6 @@
         {
             "message": "unknown tag: btnremovevisible",
             "line": " js/widget/grid/molaritygrid.js:1"
-        },
-        {
-            "message": "unknown tag: height",
-            "line": " js/widget/grid/parcelgrid.js:1"
-        },
-        {
-            "message": "unknown tag: btneditvisible",
-            "line": " js/widget/grid/parcelgrid.js:1"
-        },
-        {
-            "message": "unknown tag: btnremovevisible",
-            "line": " js/widget/grid/parcelgrid.js:1"
         },
         {
             "message": "unknown tag: multiselect",
@@ -4186,7 +3940,7 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/core/router/proposalexicontroller.js:36"
+            "line": " js/core/router/proposalexicontroller.js:35"
         },
         {
             "message": "Missing item type\nLoading navigation panel\n\n#/session/nav #/experiment/nav #/macromolecule/nav",
@@ -4283,78 +4037,6 @@
         {
             "message": "Missing item type",
             "line": " js/core/security/credentialmanager.js:42"
-        },
-        {
-            "message": "Missing item type\nGroups an array based on a function\nExample:\n\t\tdata =  this.groupBy(data, function(item){\n\t\t\treturn [item.bufferAcronym];\n\t\t});",
-            "line": " js/core/util/bui.js:37"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:213"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:252"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:260"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:273"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:324"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:329"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:334"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:424"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:461"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:568"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:686"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/bui.js:731"
-        },
-        {
-            "message": "Missing item type\nUsing dygraph it plots a chart. Params: targetId, labelsContainerId, args",
-            "line": " js/core/util/dygraphwidget.js:2"
-        },
-        {
-            "message": "Missing item type\ndata: dygraphs.com/data.html",
-            "line": " js/core/util/dygraphwidget.js:79"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/dygraphwidget.js:90"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/dygraphwidget.js:95"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/core/util/string.js:1"
         },
         {
             "message": "Missing item type",
@@ -4487,6 +4169,10 @@
         {
             "message": "Missing item type",
             "line": " js/navigation/workspacelistview.js:35"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/test/test.js:1"
         },
         {
             "message": "Missing item type\nExample form",
@@ -4685,40 +4371,20 @@
             "line": " js/widget/form/experimentheaderform.js:1"
         },
         {
-            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
-            "line": " js/widget/form/parcelform.js:1"
-        },
-        {
             "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:53"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:58"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:71"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/form/parcelform.js:103"
-        },
-        {
-            "message": "Missing item type\nEdit the information of a buffer\n\n#onRemoveAdditive",
             "line": " js/widget/form/puckform.js:1"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/form/puckform.js:33"
+            "line": " js/widget/form/puckform.js:31"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/form/puckform.js:111"
+            "line": " js/widget/form/puckform.js:109"
         },
         {
             "message": "Missing item type\nWhen container type has changed from SPINE|| UNIPUCK || PLATE\n\nWe make the spreadsheet longer and the platelayout is rendered again",
-            "line": " js/widget/form/puckform.js:124"
+            "line": " js/widget/form/puckform.js:122"
         },
         {
             "message": "Missing item type\nSame form as MX part",
@@ -4977,12 +4643,8 @@
             "line": " js/widget/grid/molaritygrid.js:163"
         },
         {
-            "message": "Missing item type\nA shipment may contains one or more cases where stock solutions and sample plates are stored",
-            "line": " js/widget/grid/parcelgrid.js:1"
-        },
-        {
             "message": "Missing item type",
-            "line": " js/widget/grid/parcelgrid.js:30"
+            "line": " js/widget/grid/parcelgrid.js:25"
         },
         {
             "message": "Missing item type",
@@ -5086,19 +4748,15 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/hplc/hplcgraph.js:181"
+            "line": " js/widget/hplc/hplcgraph.js:404"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/hplc/hplcgraph.js:435"
+            "line": " js/widget/hplc/hplcgraph.js:421"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/hplc/hplcgraph.js:452"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/hplc/hplcgraph.js:464"
+            "line": " js/widget/hplc/hplcgraph.js:433"
         },
         {
             "message": "Missing item type",
@@ -5142,11 +4800,11 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:66"
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:67"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:73"
+            "line": " js/widget/mx/grid/datacollection/workflowsectiondatacollection.js:74"
         },
         {
             "message": "Missing item type",
@@ -5206,147 +4864,35 @@
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/spinelayout.js:19"
+            "line": " js/widget/platelayouts/puckpanel.js:24"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/spinelayout.js:54"
+            "line": " js/widget/platelayouts/puckpanel.js:123"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:61"
+            "line": " js/widget/platelayouts/puckpanel.js:192"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:77"
+            "line": " js/widget/platelayouts/puckpanel.js:204"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:81"
+            "line": " js/widget/platelayouts/puckpanel.js:209"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:89"
+            "line": " js/widget/platelayouts/puckpanel.js:247"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:99"
+            "line": " js/widget/platelayouts/puckpanel.js:261"
         },
         {
             "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:102"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/containers/unipucklayout.js:164"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:19"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:187"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:199"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:204"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:224"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:240"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:244"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:252"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:260"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:275"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:285"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:290"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/pucklayout.js:295"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:19"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:118"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:187"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:199"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:204"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:224"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:240"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:244"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:252"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:260"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:275"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:285"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:291"
-        },
-        {
-            "message": "Missing item type",
-            "line": " js/widget/platelayouts/spine.js:296"
+            "line": " js/widget/platelayouts/puckpanel.js:275"
         },
         {
             "message": "Missing item type",
@@ -6111,6 +5657,22 @@
         {
             "message": "Missing item type",
             "line": " js/widget/imageviewer.js:389"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/parcelpanel.js:59"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/parcelpanel.js:63"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/parcelpanel.js:76"
+        },
+        {
+            "message": "Missing item type",
+            "line": " js/widget/parcelpanel.js:105"
         }
     ]
 }

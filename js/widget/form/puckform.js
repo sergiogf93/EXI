@@ -18,7 +18,7 @@ function PuckForm(args) {
 	
 	var _this = this;
 	
-	this.puckLayout = new PuckLayout({width : 150, tbar : false});
+	this.puckLayout = new PuckPanel({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
 	
 	this.containerSpreadSheet.onModified.attach(function(sender, puck){
@@ -111,6 +111,7 @@ PuckForm.prototype.save = function() {
 	puck.capacity = _this.capacityCombo.getValue();
 	
 	var onSuccess = function(sender, puck){
+		debugger
 		_this.panel.setLoading(false);
 		_this.load(puck);
 		_this.onSaved.notify();

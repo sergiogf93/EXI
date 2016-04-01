@@ -37,22 +37,36 @@
 	<script type="text/javascript" src="../dependency/jssurfaceplot/SurfacePlot.js"></script>
 	<script type="text/javascript" src="../dependency/jssurfaceplot/ColourGradient.js"></script>
 	
+ 	
+
+	  <!--This is used by  grunt-wiredep http://grunt-tasks.com/grunt-wiredep/ -->
+	  <!-- bower:js -->
+	  <!-- endbower -->
+
 	
 
-
-
-
-       <script type="text/javascript" src="../min/bower_components.min.js"></script>
-
-	    <!-- include: "type": "js", "files": "core/**/*.js" -->
+		<!-- include: "type": "js", "files": "bower_components/exi-ui-utils/js/*.js" -->
+	
+	<script src="../bower_components/lodash/lodash.js"></script>
+	<script src="../bower_components/exi-ui-viz/min/exi-ui-viz.min.js"></script>
+			
+		<!-- include: "type": "js", "files": "bower_components/ispyb-js-api/js/*.js" -->
+		<!-- include: "type": "js", "files": "bower_components/ispyb-js-api/js/exi/*.js" -->
+		<!-- include: "type": "js", "files": "bower_components/ispyb-js-api/js/security/*.js" -->
+		<!-- include: "type": "js", "files": "bower_components/ispyb-js-api/js/proposal/*.js" -->
+		<!-- include: "type": "js", "files": "bower_components/ispyb-js-api/js/mx/*.js" -->
+		<!-- include: "type": "js", "files": "bower_components/ispyb-js-api/js/saxs/*.js" -->
+		  
+		  
+	    <!-- include: "type": "js", "files": "js/core/**/*.js" -->
 	    <script src="../js/main/mainview.js"></script>
 	    <script src="../js/main/run/runmainview.js"></script>
-	    <!-- include: "type": "js", "files": "main/**/*.js" -->
+	    <!-- include: "type": "js", "files": "js/main/**/*.js" -->
 	    <script src="../js/navigation/listview.js"></script>
-	    <!-- include: "type": "js", "files": "navigation/**/*.js" -->
+	    <!-- include: "type": "js", "files": "js/navigation/**/*.js" -->
 	    <script src="../js/widget/timeline/timelinewidget.js"></script>
 	    <script src="../js/widget/window/genericwindow.js"></script>
-	    <!-- include: "type": "js", "files": "widget/**/*.js" -->
+	    <!-- include: "type": "js", "files": "js/widget/**/*.js" -->
 	    <script src="config.js"></script>
 
 		<script type="text/javascript" src="../dependency/glmol.js"></script>

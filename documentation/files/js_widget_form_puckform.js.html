@@ -40,7 +40,10 @@
                             <ul id="api-classes" class="apis classes">
                                 <li><a href="../classes/AutoProcIntegrationGrid.html">AutoProcIntegrationGrid</a></li>
                                 <li><a href="../classes/ManagerWelcomeMainView.html">ManagerWelcomeMainView</a></li>
+                                <li><a href="../classes/ParcelGrid.html">ParcelGrid</a></li>
+                                <li><a href="../classes/ParcelPanel.html">ParcelPanel</a></li>
                                 <li><a href="../classes/PhasingNetworkWidget.html">PhasingNetworkWidget</a></li>
+                                <li><a href="../classes/ShippingMainView.html">ShippingMainView</a></li>
                             </ul>
                 
                 
@@ -83,9 +86,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 /**
- * Edit the information of a buffer
  * 
- * #onRemoveAdditive
  */
 function PuckForm(args) {
 	this.id = BUI.id();
@@ -104,7 +105,7 @@ function PuckForm(args) {
 	
 	var _this = this;
 	
-	this.puckLayout = new PuckLayout({width : 150});
+	this.puckLayout = new PuckLayout({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
 	
 	this.containerSpreadSheet.onModified.attach(function(sender, puck){

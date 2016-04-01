@@ -1,15 +1,10 @@
+
 /**
- * A shipment may contains one or more cases where stock solutions and sample plates are stored
- * 
- * @height
- * @btnEditVisible
- * @btnRemoveVisible
- * 
- * #onEditButtonClicked
- * #onAddButtonClicked
- * #onRemoveButtonClicked
- * #onDuplicateButtonClicked
- */
+* This is a grid for parcels
+*
+* @class ParcelGrid
+* @constructor
+*/
 function ParcelGrid(args) {
 	this.height = 100;
 	this.btnEditVisible = true;
@@ -36,17 +31,14 @@ function ParcelGrid(args) {
 ParcelGrid.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
-
-	actions.push(Ext.create('Ext.Action', {
+	return [(Ext.create('Ext.Action', {
 		icon : '../images/icon/add.png',
 		text : 'Add New Parcel',
 		disabled : false,
 		handler : function(widget, event) {
 			_this.edit();
 		}
-	}));
-
-	return actions;
+	}))];
 };
 
 ParcelGrid.prototype.load = function(shipment) {
@@ -63,25 +55,26 @@ ParcelGrid.prototype.load = function(shipment) {
 	});
 
 	for ( var i in this.dewars) {
-		var parcelForm = new ParcelForm({
+		var parcelForm = new ParcelPanel({
 			height : 340
 		});
+		
 		this.panel.insert(parcelForm.getPanel());
 		parcelForm.load(this.dewars[i]);
 
 		parcelForm.onSavedClick.attach(function(sender, dewar) {
-			var adapter = new DataAdapter();
 			_this.panel.setLoading();
-			var onSuccess = (function(sender, shipment) {
-				//_this.load(shipment);
-				window.close();
-				_this.panel.setLoading(false);
-			});
+			
 			dewar["sessionId"] = dewar.firstExperimentId;
 			dewar["shippingId"] = _this.shipment.shippingId;
-			EXI.getDataAdapter({
-				onSuccess : onSuccess
-			}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
+			
+			var adapter = new DataAdapter();
+			var onSuccess = (function(sender, shipment) {
+				alert("test");
+				_this.panel.setLoading(false);
+			});
+			
+			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
 
 		});
 

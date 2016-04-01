@@ -55,6 +55,7 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataCollectionGroup){
 	var parsed = [];
 	var html = "";
+
 	if (dataCollectionGroup.WorkflowStep_workflowStepType){
 		parsed = this.parseWorkflow(dataCollectionGroup);
 		

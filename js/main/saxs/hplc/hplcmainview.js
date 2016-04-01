@@ -71,14 +71,6 @@ function HPLCMainView() {
 
 HPLCMainView.prototype.getPanel = MainView.prototype.getPanel;
 
-HPLCMainView.prototype._selectFrame = function(frameNumber) {
-	try {
-		//		this._renderScatteringCurve(frameNumber);
-		//		this.frameGrid.refresh([this.mainPlotPanel.getDataByFrameNumber(frameNumber)], this.experiment.experimentId);
-	} catch (e) {
-		console.log(e);
-	}
-};
 
 HPLCMainView.prototype.getHeader = function(beamlineName, startDate) {
 	return "<span class='item'>" + beamlineName + "</span><span class='item_description'>" + startDate + "</span>";
@@ -87,33 +79,11 @@ HPLCMainView.prototype.getHeader = function(beamlineName, startDate) {
 HPLCMainView.prototype.getPlotContainer = function() {
 	return {
 		xtype : 'container',
-		//		layout : 'fit',
-		//		 layout : 'vbox',
 		cls : 'defaultGridPanel',
 		border : 0,
 		defaults : {
 			height : 450 },
-		//		items : [ 
-		//		         {
-		//		        	 xtype : 'panel',
-		//		        	 layout : 'vbox',
-		////		        	 layout: {
-		////		        	        type: 'accordion',
-		////		        	        titleCollapse: false,
-		////		        	        animate: true,
-		////		        	        activeOnTop: true
-		////		        	    },
-		//		        	    flex : 1,
-		//		        		border : 1,
-		//		        		style : {
-		//		        			borderColor : '#000000',
-		//		        			borderStyle : 'solid',
-		//		        			borderWidth : '1px' },
 		items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
-
-		//			        	          ]
-		//		         },
-
 		] };
 };
 
@@ -190,11 +160,8 @@ HPLCMainView.prototype.load = function(experimentId) {
 		this.grid.panel.setLoading();
 
 		var onSuccess = function(sender, data) {
-//			_this.panel.setTitle(data[0].name);
-//			_this.grid.panel.setTitle(_this.getHeader(data[0].name, data[0].creationDate));
 			_this.grid.load(data);
 			_this.grid.panel.setLoading(false);
-
 		};
 
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
