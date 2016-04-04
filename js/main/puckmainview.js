@@ -8,7 +8,6 @@ function PuckMainView() {
 }
 
 PuckMainView.prototype.getPanel = MainView.prototype.getPanel;
-PuckMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 PuckMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
@@ -31,7 +30,5 @@ PuckMainView.prototype.getContainer = function() {
 
 PuckMainView.prototype.load = function(puck) {
 	var _this = this;
-	debugger
 	this.puckForm.load(puck, null);
-	
 };

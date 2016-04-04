@@ -4,6 +4,7 @@ function CrystalMainView() {
 	var _this = this;
 	
 	this.crystalForm = new CrystalForm();
+	this.samplesGrid = new SamplesGrid();
 }
 
 CrystalMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -16,7 +17,7 @@ CrystalMainView.prototype.getContainer = function() {
 				items : [
 					{
 						tabConfig : {
-							title : 'Summary'
+							title : 'Samples list'
 						},
 						items : [ {
 							xtype : 'container',
@@ -29,25 +30,40 @@ CrystalMainView.prototype.getContainer = function() {
 							},
 							items : 
 								[
-							        this.crystalForm.getPanel() 	
+									this.samplesGrid.getPanel()
+							]
+						}
+						]
+				  },
+				  {
+						tabConfig : {
+							title : 'Create a new CrystalForm'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							style : {
+								borderColor : 'gray',
+								borderStyle : 'solid',
+								borderWidth : '1px',
+								'background-color' : 'white' 
+							},
+							items : 
+								[
+							        this.crystalForm.getPanel()
 							]
 						}
 						]
 				  }]
 		});
-	
-	
-
-
-
-	return this.panel;
-	
+	return this.panel;	
 };
 
 CrystalMainView.prototype.load = function(crystal) {
 	var _this = this;
 	this.panel.setTitle(crystal.proteinVO.acronym);
 	this.crystalForm.load(crystal);
+	this.samplesGrid.load(crystal);
 	
 };
 

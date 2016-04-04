@@ -103,7 +103,6 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
 	 
 	  /** Handling onSelected **/
      sessionGrid.onSelected.attach(function(sender, session){
-         debugger
          EXI.proposalManager.clear();
          _this.activeProposal(session.proposalVO);
      });

@@ -30,6 +30,10 @@ CrystalForm.prototype.getCrystalsForAcronym = function() {
 	return EXI.proposalManager.getCrystals(this.crystal.proteinVO.acronym);
 };
 
+CrystalForm.prototype.getSamplesForCrystalForm= function() {
+	
+	return EXI.proposalManager.getSamplesForCrystalForm(this.crystal.crystalId);
+};
 
 CrystalForm.prototype.getSpaceGroupGrid = function() {
 	
