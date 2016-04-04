@@ -45,7 +45,7 @@ MXExiController.prototype.routeNavigation = function() {
 			});
 			EXI.addNavigationPanel(listView);
 			
-			listView.load(EXI.proposalManager.getSessions());
+			listView.load(EXI.proposalManager.getSessions().slice(0, 100));
 			EXI.setLoadingNavigationPanel(false);
 		}
 		
