@@ -79,7 +79,7 @@ function Exi(args) {
 			}
 			
 			/** Authenticating EXI **/
-			_this.getDataAdapter().exi.offline.authenticate();
+			//_this.getDataAdapter().exi.offline.authenticate();
 			
 		});
 		

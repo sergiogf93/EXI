@@ -44,7 +44,7 @@ SessionGrid.prototype.load = function(sessions) {
 };
 
 
-/** This method routes the the session list on SAXS and goes to the session information for MX directly **/
+/** This method routes the the session list on SAXS and goes to the session information for MX directly 
 SessionGrid.prototype.goToSession = function(session) {
   	if (EXI.credentialManager.getTechniqueByBeamline(session.beamlineName) == "SAXS"){
 		location.hash = "/session/nav/" + session.sessionId + "/session";
@@ -52,7 +52,7 @@ SessionGrid.prototype.goToSession = function(session) {
 	else{
 		location.hash = "/mx/datacollection/session/" + session.sessionId + "/main";
 	}
-};
+};**/
 
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
@@ -74,12 +74,26 @@ SessionGrid.prototype.getPanel = function() {
 		emptyText : "No sessions",
 
 		columns : [
-      	{
+        {
+			text : 'Proposal',
+			dataIndex : 'Proposal_code',
+			width : 125,
+			renderer : function(grid, a, record){
+                    var location = "#";
+                	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "SAXS"){
+                        location = "#/session/nav/" + record.data.sessionId + "/session";
+                    }
+                    else{
+                        location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
+                    }
+				return "<a href='" +  location +"'>" + record.data.beamlineName + "</a>"; 
+			}
+		}, 
+      	/*{
 			      text          : 'Beamline',
 			      dataIndex     : 'beamlineName',
 			      width         : 100
-		    },
-
+		    },*/
       	{
           text              : 'Date',
           dataIndex         : 'startDate',
@@ -109,20 +123,6 @@ SessionGrid.prototype.getPanel = function() {
           return record.data.proposalVO.title;
         }
       }
-
-
-
-
-		/*{
-			xtype:'actioncolumn',
-            icon: '../images/icon/ic_arrow_forward_black_48dp.png',
-            flex : 0.5,
-            text : "Go",
-            hidden : this.hiddenGoColumn,
-            handler: function(grid, rowIndex, colIndex) {
-                _this.goToSession(grid.getStore().getAt(rowIndex).data);
-            }
-        }*/
 		],
 		viewConfig : {
 			stripeRows : true,

@@ -27,9 +27,7 @@ function ProposalGrid(args) {
 			this.margin = args.margin;
 		}
 	}
-	
 	this.onSelected = new Event(this);
-	
 };
 
 
