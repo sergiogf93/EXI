@@ -43,17 +43,6 @@ SessionGrid.prototype.load = function(sessions) {
 	this.store.loadData(sessions, true);
 };
 
-
-/** This method routes the the session list on SAXS and goes to the session information for MX directly 
-SessionGrid.prototype.goToSession = function(session) {
-  	if (EXI.credentialManager.getTechniqueByBeamline(session.beamlineName) == "SAXS"){
-		location.hash = "/session/nav/" + session.sessionId + "/session";
-	}
-	else{
-		location.hash = "/mx/datacollection/session/" + session.sessionId + "/main";
-	}
-};**/
-
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
 
@@ -75,7 +64,7 @@ SessionGrid.prototype.getPanel = function() {
 
 		columns : [
         {
-			text : 'Proposal',
+			text : 'Beamline',
 			dataIndex : 'Proposal_code',
 			width : 125,
 			renderer : function(grid, a, record){
@@ -89,11 +78,6 @@ SessionGrid.prototype.getPanel = function() {
 				return "<a href='" +  location +"'>" + record.data.beamlineName + "</a>"; 
 			}
 		}, 
-      	/*{
-			      text          : 'Beamline',
-			      dataIndex     : 'beamlineName',
-			      width         : 100
-		    },*/
       	{
           text              : 'Date',
           dataIndex         : 'startDate',
