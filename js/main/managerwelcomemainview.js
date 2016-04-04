@@ -85,7 +85,7 @@ ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
           var _this = this;
           this.panel.setLoading(true);
           function onSuccess(sender, data){
-        	  _this.displaySessions(data, data.length + " sessions scheduled on " + start);
+        	  _this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
         	  _this.panel.setLoading(false);
           }
 		  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
@@ -103,6 +103,8 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
 	 
 	  /** Handling onSelected **/
      sessionGrid.onSelected.attach(function(sender, session){
+         debugger
+         EXI.proposalManager.clear();
          _this.activeProposal(session.proposalVO);
      });
 	 sessionGrid.load(sessions);
