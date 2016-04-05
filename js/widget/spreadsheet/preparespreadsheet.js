@@ -1,4 +1,4 @@
-function ContainerSpreadSheet(args){
+function PrepareSpreadSheet(args){
 	this.id = BUI.id();
 	this.height = 380;
 	this.width = 500;
@@ -14,7 +14,7 @@ function ContainerSpreadSheet(args){
 	this.onModified = new Event(this);
 }
 
-ContainerSpreadSheet.prototype.getPanel = function(){
+PrepareSpreadSheet.prototype.getPanel = function(){
 	var _this = this;
 	this.panel = Ext.create('Ext.panel.Panel', {
 		layout : 'vbox',
@@ -33,10 +33,10 @@ ContainerSpreadSheet.prototype.getPanel = function(){
 };
 
 
-ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
-	var samples = puck.sampleVOs;
+PrepareSpreadSheet.prototype.getDewarsData = function(dewars) {
+	
 	var data = [];
-	/** Sorting samples by location * */
+	/** Sorting samples by location
 	samples.sort(function(a,b){return Number(a.location) - Number(b.location);});
 	function getSampleByLocation(samples, location){
 		for (var i = 0; i < samples.length; i++) {
@@ -45,94 +45,61 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 			}
 		}
 	}
-
+ * */
 	function getValue(value){
 		if (!value) return "";
 	}
 	
-	for (var i = 0; i < puck.capacity; i++) {
-		var sample = getSampleByLocation(samples, i + 1);
-		if (sample!= null){
-				var crystal = sample.crystalVO;
-				var protein = crystal.proteinVO;
-				var diffraction = sample.diffractionPlanVO;
-				if (diffraction == null){
-					diffraction = {};
-				}
-				data.push(
-					[(i+1), protein.acronym, sample.name, crystal.spaceGroup, diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
-					 crystal.cellA, crystal.cellB, crystal.cellC, crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, sample.smiles, sample.comments
-					 ]
-				);
-		}
-		else{
-			data.push([(i+1)]);
-		}
+	for (var i = 0; i < dewars.length; i++) {
+        debugger
+        for (var j = 0; j< dewars[i].containerVOs.length; j++) {
+            data.push(
+                        [
+                            (i+1),
+                            dewars[i].code,
+                            dewars[i].barCode,
+                            dewars[i].containerVOs[j].containerType,
+                            dewars[i].containerVOs[j].code,
+                            dewars[i].containerVOs[j].containerStatus,
+                            dewars[i].containerVOs[j].sampleVOs.length + " of " + dewars[i].containerVOs[j].capacity,
+                            dewars[i].containerVOs[j].beamlineLocation,
+                            dewars[i].containerVOs[j].sampleChangerLocation
+                        ]);
+        }
+		
 	}
 	return data;
 };
 
 
-ContainerSpreadSheet.prototype.getSpaceGroups = function() {
-	return ["P1","P2","P21","C2","P222","P2221","P21212","P212121","C222","C2221","F222","I222","I212121","P4","P41","P42","P43","P422","P4212","P4122","P41212","P4222","P42212","P4322","P43212",
-                	"I4","I41","I422","I4122","P3","P31","P32","P31","P321","P3112","P3121","P3212","P3221","P6","P61","P65","P62","P64","P63","P622","P6122","P6522","P6222","P6422","P6322","R3","R32","P23","P213",
-                	"P432",	"P4232","P4332","P4132","F23","F432","F4132","I23",	"I213","I432","I4132", "UNKNOWN"];
-};
 
 
-ContainerSpreadSheet.prototype.getAcronyms = function() {
-	var proteins = EXI.proposalManager.getProteins();
-	var acronyms = [];
-	for (var i = 0; i < proteins.length; i++) {
-		acronyms.push(proteins[i].acronym);
-	}
-	return acronyms;
-};
 
 
-ContainerSpreadSheet.prototype.getHeader = function() {
+
+PrepareSpreadSheet.prototype.getHeader = function() {
 	return  [
 	         { text : '#', 	id: 'position', column : {width : 20}}, 
-	         { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-																						width : 60,
-																						type: 'dropdown',
-																						source: this.getAcronyms()
-																					}
-	         }, 
-	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
-	         { text :'Space<br /> Group', id : 'Space Group',column : {
+	         { text :'Dewar<br /> Code', id :'Dewar Code', column : {width : 120}},
+             { text :'Dewar<br /> Barcode', id :'Dewar Barcode', column : {width : 120}},
+             { text :'Type', id :'Type', column : {width : 80}},
+             { text :'Code', id :'Code', column : {width : 120}},
+             { text :'Status', id :'Status', column : {width : 120}},
+             { text :'Samples', id :'Samples', column : {width : 120}},
+             { text :'Beamline', id : 'Beamline',column : {
 			        	 													width : 90,
 			        	 													type: 'dropdown',
-			        	 													source: this.getSpaceGroups()
+			        	 													source: EXI.credentialManager.getBeamlines()
 			         								}
-	         }, 
-	         { text :'Exp.<br /> Type', id : 'Experiment Type', column : {
-							        	 								width : 80,  
-							        	 								type: 'dropdown',
-							        	 								source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
-							         								}
-	         }, 
-	         { text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 45}},  
-	         { text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 45}}, 
-	         { text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 45}}, 
-	         { text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 45}}, 
-	         { text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 45}}, 
-	         { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 60}}, 
-	         { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
-	         { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 60}}, 
-	         { text :'A', id :'Unit cell A', column : {width : 40}}, 
-	         { text :'B', id :'Unit cell B', column : {width : 40}}, 
-	         { text :'C', id : 'Unit cell C', column : {width : 40}}, 
-	         { text :'&#945;', id :'Unit cell Alpha', column : {width : 40}}, 
-	         { text :'&#946;', id :'Unit cell Beta', column : {width : 40}}, 
-	         { text :'&#947;', id :'Unit cell Gamma', column : {width : 40}}, 
-	         { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
-	         { text :'Comments', id :'Comments', column : {width : 45}}
+	         },
+             
+             { text :'Sample Changer Position', id :'Position', column : {width : 120}}
+             
+	       
 	         ];
 };
 
-ContainerSpreadSheet.prototype.getHeaderWidth = function() {
+PrepareSpreadSheet.prototype.getHeaderWidth = function() {
 	var header = this.getHeader();
 	var text = [];
 	for (var i =0; i < header.length; i++){
@@ -141,7 +108,7 @@ ContainerSpreadSheet.prototype.getHeaderWidth = function() {
 	return text;
 };
 
-ContainerSpreadSheet.prototype.getHeaderId = function() {
+PrepareSpreadSheet.prototype.getHeaderId = function() {
 	var header = this.getHeader();
 	var text = [];
 	for (var i =0; i < header.length; i++){
@@ -150,7 +117,7 @@ ContainerSpreadSheet.prototype.getHeaderId = function() {
 	return text;
 };
 
-ContainerSpreadSheet.prototype.getHeaderText = function() {
+PrepareSpreadSheet.prototype.getHeaderText = function() {
 	var header = this.getHeader();
 	var text = [];
 	for (var i =0; i < header.length; i++){
@@ -160,7 +127,7 @@ ContainerSpreadSheet.prototype.getHeaderText = function() {
 };
 
 
-ContainerSpreadSheet.prototype.getColumns = function() {
+PrepareSpreadSheet.prototype.getColumns = function() {
 	var columns = [];
 	for (var i = 0; i < this.getHeader().length; i++) {
 		columns.push(this.getHeader()[i].column);
@@ -169,8 +136,8 @@ ContainerSpreadSheet.prototype.getColumns = function() {
 };
 
 
-ContainerSpreadSheet.prototype.getPuck = function() {
-	var myPuck = JSON.parse(JSON.stringify(this.puck));
+PrepareSpreadSheet.prototype.getPuck = function() {
+	/*var myPuck = JSON.parse(JSON.stringify(this.puck));
 	var rows = this.parseTableData();
 	myPuck.sampleVOs = [];
 	for (var i = 0; i < rows.length; i++) {
@@ -206,11 +173,11 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 		
 		myPuck.sampleVOs.push(sample);
 	}
-	return myPuck;
+	return myPuck;*/
 };
 
 
-ContainerSpreadSheet.prototype.parseTableData = function() {
+PrepareSpreadSheet.prototype.parseTableData = function() {
 	var parsed = [];
 	var data = this.spreadSheet.getData();
 	for (var j = 0; j < data.length; j++) {
@@ -239,8 +206,8 @@ ContainerSpreadSheet.prototype.parseTableData = function() {
 	return curated;
 };
 
-ContainerSpreadSheet.prototype.load = function(puck){
-	this.puck = puck;
+PrepareSpreadSheet.prototype.load = function(dewars){
+	this.dewars = dewars;debugger;
 	var container = document.getElementById(this.id + '_samples');
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
@@ -272,15 +239,24 @@ ContainerSpreadSheet.prototype.load = function(puck){
 		      lastChange = changes;
 		      
 		},
-	    data: this.getSamplesData(puck),
+	    data: this.getDewarsData(dewars),
 	    colWidths: 70,
 	    height : this.height,
 	    width : this.width,
 	    manualColumnResize: true,
-	    colWidths: this.getHeaderWidth(),
+	    //colWidths: this.getHeaderWidth(),
 	    colHeaders: this.getHeaderText(),
 	    stretchH: 'last',
-	    columns: this.getColumns()
+	    columns: this.getColumns(),
+         cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (col < 7) {
+                    cellProperties.readOnly = true; // make cell read-only if it is first row or the text reads 'readOnly'
+                }
+               
+            
+                return cellProperties;
+        }
 	  });
 
 	  

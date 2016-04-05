@@ -24,16 +24,6 @@ PuckListView.prototype.getRow = function(record){
 
 PuckListView.prototype.getFilter = function(value){
 	return [{property : "creationDate", value : value, anyMatch : true}];
-//	, {property : "shippingStatus", value : value, anyMatch : true}];
-//	var filters = [
-//	               new Ext.util.Filter({
-//	                property: "creationDate", value: value,
-//	               }),
-//	               new Ext.util.Filter({
-//	            	   property: "shippingStatus", value: value, anyMatch : true
-//	               })
-//	              ];
-//	return filters;
 };
 
 PuckListView.prototype.getColumns = function(){

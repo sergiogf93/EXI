@@ -1,6 +1,9 @@
 /**
- * 
- */
+* This class containes name, description, samples spreadsheet and puck loyout for a given puck 
+*
+* @class PuckForm
+* @constructor
+**/
 function PuckForm(args) {
 	this.id = BUI.id();
 	this.height = 500;
@@ -18,11 +21,11 @@ function PuckForm(args) {
 	
 	var _this = this;
 	
-	this.puckLayout = new PuckPanel({width : 150, tbar : false});
+	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
 	
 	this.containerSpreadSheet.onModified.attach(function(sender, puck){
-		_this.loadPlateLayout(puck);
+		//_this.loadPlateLayout(puck);
 	});
 	
 	this.onSaved = new Event(this);
@@ -32,16 +35,22 @@ function PuckForm(args) {
 PuckForm.prototype.load = function(puck, shippingId) {
 	var _this = this;
 	this.puck = puck;
+    
 	if (puck != null){
 		Ext.getCmp(this.id + "puck_name").setValue(this.puck.code);
 		this.capacityCombo.setValue(this.puck.capacity);
+        Ext.getCmp(this.id + "puck_beamline").setValue(this.puck.beamlineLocation);
+        Ext.getCmp(this.id + "puck_sampleChangerLocation").setValue(this.puck.sampleChangerLocation);
+        Ext.getCmp(this.id + "puck_status").setValue(this.puck.containerStatus);
+        
+        
 	}
 	
 	this.containerSpreadSheet.load(puck);
-    this.loadPlateLayout(puck);
+    //this.loadPlateLayout(puck);
 };
 
-
+/*
 PuckForm.prototype.loadPlateLayout = function(puck) {
 	 try{
 		 this.puckLayout.load(puck);
@@ -50,7 +59,7 @@ PuckForm.prototype.loadPlateLayout = function(puck) {
 	  catch(e){
 		  console.log(e);
 	  }
-};
+};*/
 
 PuckForm.prototype.getToolBar = function() {
 	var _this = this;
@@ -111,7 +120,6 @@ PuckForm.prototype.save = function() {
 	puck.capacity = _this.capacityCombo.getValue();
 	
 	var onSuccess = function(sender, puck){
-		debugger
 		_this.panel.setLoading(false);
 		_this.load(puck);
 		_this.onSaved.notify();
@@ -137,12 +145,12 @@ PuckForm.prototype.containerTypeChanged = function(capacity) {
 		data = data.slice(0, capacity);
 	}
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	this.loadPlateLayout(this.puck);
+	//this.loadPlateLayout(this.puck);
 };
 
 PuckForm.prototype.getPanel = function() {
 	var _this =this;
-	var capacityCombo = BIOSAXS_COMBOMANAGER.getComboPuckType({margin : '10 0 10 20', labelWidth : 100, width : 300});
+	var capacityCombo = BIOSAXS_COMBOMANAGER.getComboPuckType({margin : '10 0 10 5', labelWidth : 100, width : 250});
 	capacityCombo.on('select', function(capacityCombo, record){
 		var capacity = record[0].data.value;
 		_this.containerTypeChanged(capacity);
@@ -154,14 +162,14 @@ PuckForm.prototype.getPanel = function() {
 		items : [ 
 		         {
 							xtype : 'container',
-							margin : '12 0 2 20',
+							margin : '5 0 2 5',
 							layout : 'hbox',
 							items : [
 										
-										 this.puckLayout.getPanel(),
+										
 								         {
 								        	 xtype : 'container',
-											margin : '12 0 2 50',
+											margin : '12 0 2 0',
 											layout : 'vbox',
 											items : [ 
 							         				   {
@@ -169,16 +177,46 @@ PuckForm.prototype.getPanel = function() {
 																id : this.id + 'puck_name',
 																fieldLabel : 'Name',
 																name : 'name',
-																width : 300,
-																margin : '0 0 0 20',
+																width : 250,
+																margin : '0 0 0 5',
 																labelWidth : 100
 														},
-														this.capacityCombo
+														this.capacityCombo,
+                                                        {
+																xtype: 'textfield',
+																id : this.id + 'puck_beamline',
+																fieldLabel : 'Beamline',
+																width : 250,
+                                                                disabled : true,
+																margin : '0 0 0 5',
+																labelWidth : 100
+														},
+                                                        {
+																xtype: 'textfield',
+																id : this.id + 'puck_sampleChangerLocation',
+																fieldLabel : '#Sample Changer',
+																width : 250,
+                                                                disabled : true,
+																margin : '0 0 0 5',
+																labelWidth : 100
+														},
+                                                        ,
+                                                        {
+																xtype: 'textfield',
+																id : this.id + 'puck_status',
+																fieldLabel : 'Status',
+																width : 250,
+                                                                disabled : true,
+																margin : '0 0 0 5',
+																labelWidth : 100
+														}
 													]
-								         }
+								         },
+                                         // this.puckLayout.getPanel()
 							         ]
 		         },
-		         this.containerSpreadSheet.getPanel()
+		         this.containerSpreadSheet.getPanel(),
+                
 	         ] 
 		} 
 	);

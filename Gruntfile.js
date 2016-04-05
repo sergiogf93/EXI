@@ -46,23 +46,27 @@ module.exports = function(grunt) {
 				                    		   		"js/main/mx/*/*.js", 
 				                    		   		"js/main/tool/*.js", 
 				                    		   		"js/main/run/*.js"],
-				 'min/bower_components.min.js' : [
+				 'min/bower_components.min.js' : [ 
+								
+							           "bower_components/dustjs-linkedin/dist/dust-full.min.js",
+								   "bower_components/dustjs-helpers/dist/dust-helpers.min.js",
 				                                   "bower_components/lodash/lodash.js",
-												   "bower_components/Snap.svg/dist/snap.svg-min.js",
-												   "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
-												   "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
-												   "bower_components/ispyb-js-api/min/ispyb-js-api-min.js",
-				  								   "bower_components/vis/dist/vis.min.js",
-				  								   "bower_components/dustjs-linkedin/dist/dust-full.min.js",
+								   "bower_components/Snap.svg/dist/snap.svg-min.js",
+								   "bower_components/vis/dist/vis.min.js",		  
 				                               	   "bower_components/dygraphs/dygraph-combined.js", 
 				                               	   "bower_components/handsontable/dist/handsontable.full.js",
 				                               	   "bower_components/jquery/dist/jquery.min.js",
-												   "bower_components/jquery-lazy/jquery.lazy.js", 
-												   "bower_components/moment/min/moment.min.js",  
-												   //'bower_components/dustjs-helpers/dist/dust-helpers.min.js',
-				 								   //"bower_components/fullcalendar/dist/fullcalendar.js",
-				 								   "bower_components/pathjs-amd/dist/path.js",
-				 								   "bower_components/threejs/build/three.min.js"
+								   "bower_components/jquery-lazy/jquery.lazy.js", 
+								   "bower_components/moment/min/moment.min.js",  
+ 								   "bower_components/pathjs-amd/dist/path.js",
+ 								   "bower_components/threejs/build/three.min.js",
+								   "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
+								   "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
+								   "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
+
+								  
+								  
+  								 
 								],
 				 'min/dependency.min.js' 		: [
 				                         		   "dependency/glmol.js"]
@@ -75,7 +79,8 @@ module.exports = function(grunt) {
 			  options: {
 			  },
 			  files : {
-				  'min/exi.min.js' 		: ['min/bower_components.min.js', 
+				  'min/exi.min.js' 		: [
+								   //'min/bower_components.min.js', 
 				                   		   'min/core.min.js', 
 				                   		   'min/widget.min.js', 
 				                   		   'min/navigation.min.js', 

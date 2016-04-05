@@ -68,7 +68,16 @@ PuckPanel.prototype.render = function(puck) {
 		
 		/** Spine **/
 		if (this.puck.capacity == 96){
-			this.renderAsPlate(this.puck);
+			var puckLayout = new SamplePlateLayout({
+				width  		:  this.width,
+				height 		:  this.height,
+				fontSize	: 10, 
+				fill		:"#2E2E2E",
+				fontColor 	: '#FFFFFF'
+			});
+			
+			puckLayout.render(this.id);
+			puckLayout.load(this.getWells(this.puck));
 		}
 	}
 	
