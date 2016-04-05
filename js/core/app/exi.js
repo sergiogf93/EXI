@@ -65,24 +65,29 @@ function Exi(args) {
 	this.authenticationForm = new AuthenticationForm();
 	this.authenticationForm.onAuthenticate.attach(function(sender, args){
 		var authenticationManager = new AuthenticationManager();
+        
 		authenticationManager.onSuccess.attach(function(sender, data){
+            
 			/** This user has been authenticated **/
 			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl, args.properties);
 			_this.authenticationForm.window.close();
 			
 			var credential = EXI.credentialManager.getCredentialByUserName(data.user);
-			if (credential.isManager()){
+			if (credential.isManager()||credential.isLocalContact()){
 				location.hash = "/welcome/manager/" + data.user + "/main";
 			}
 			else{
-				location.hash = "/welcome/user/" + data.user + "/main";
+				//location.hash = "/welcome/user/" + data.user + "/main";
+                BUI.showError("Only local contacts are managers are allowed");
 			}
 			
 			/** Authenticating EXI **/
 			//_this.getDataAdapter().exi.offline.authenticate();
 			
 		});
-		
+		authenticationManager.onError.attach(function(sender, data){
+			alert("error");
+		});
 		authenticationManager.login(args.user, args.password, args.site);
 	});
 	
@@ -108,7 +113,7 @@ Exi.prototype.appendDataAdapterParameters = function(args) {
 
 
 
-Exi.prototype.getDataAdapter = function(args) {
+Exi.prototype.getDataAdapter = function(args) {   
 	return new DataAdapterFactory(this.appendDataAdapterParameters(args));
 };
 

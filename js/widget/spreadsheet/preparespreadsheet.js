@@ -51,7 +51,7 @@ PrepareSpreadSheet.prototype.getDewarsData = function(dewars) {
 	}
 	
 	for (var i = 0; i < dewars.length; i++) {
-        debugger
+        
         for (var j = 0; j< dewars[i].containerVOs.length; j++) {
             data.push(
                         [
@@ -207,7 +207,7 @@ PrepareSpreadSheet.prototype.parseTableData = function() {
 };
 
 PrepareSpreadSheet.prototype.load = function(dewars){
-	this.dewars = dewars;debugger;
+	this.dewars = dewars;
 	var container = document.getElementById(this.id + '_samples');
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {

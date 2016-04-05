@@ -13,7 +13,6 @@ ExiSAXS.prototype.addNavigationPanel = Exi.prototype.addNavigationPanel;
 ExiSAXS.prototype.clearNavigationPanel = Exi.prototype.clearNavigationPanel;
 ExiSAXS.prototype.clearMainPanel = Exi.prototype.clearMainPanel;
 ExiSAXS.prototype.setLoadingNavigationPanel = Exi.prototype.setLoadingNavigationPanel;
-ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiSAXS.prototype.setError = Exi.prototype.setError;
 ExiSAXS.prototype.setLoading = Exi.prototype.setLoading;
 ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;

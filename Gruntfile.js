@@ -31,6 +31,7 @@ module.exports = function(grunt) {
 				                          	   "js/navigation/*/*js"],
 				  'min/main.min.js' 		: [
 				                    		   		"js/main/mainview.js", 
+                                                       "js/main/preparemainview.js", 
 				                    		   		"js/main/puckmainview.js", 
 				                    		   		"js/main/addressmainview.js", 
 				                    		   		"js/main/userwelcomemainview.js", 

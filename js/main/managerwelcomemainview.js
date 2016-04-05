@@ -25,9 +25,19 @@ ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 * @method activeProposal
 * @param {Object} proposal Proposal object that should container at least: [code, number]
 */
-ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
-	EXI.credentialManager.setActiveProposal(this.username, proposal.code + proposal.number);
+ManagerWelcomeMainView.prototype.activeProposal = function(proposalCode, proposalNumber) {
+    debugger
+    EXI.mainStatusBar.showBusy("Loading proposal " + proposalCode +  proposalNumber); 
+    
+	 EXI.credentialManager.setActiveProposal(this.username, proposalCode + proposalNumber);
+     EXI.proposalManager.clear();
 	/** I don't need this to be synchronous **/	
+    EXI.proposalManager.onActiveProposalChanged = new Event();
+    EXI.proposalManager.onActiveProposalChanged.attach(function(){
+        debugger
+        EXI.mainStatusBar.showReady();
+        console.log(EXI.proposalManager.get());
+    });
 	EXI.proposalManager.get();
 };
 
@@ -68,6 +78,12 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
 		           	  _this.panel.setLoading(false);
 	             }
 	             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
+                 
+                 
+                 /** Loading Proposal info */
+                 
+                 _this.activeProposal( proposal.Proposal_proposalCode, proposal.Proposal_proposalNumber);
+                
           });
           
           this.container.insert(proposalGrid.getPanel());
@@ -104,7 +120,7 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
 	  /** Handling onSelected **/
      sessionGrid.onSelected.attach(function(sender, session){
          EXI.proposalManager.clear();
-         _this.activeProposal(session.proposalVO);
+         _this.activeProposal(session.proposalVO.code, session.proposalVO.number);
      });
 	 sessionGrid.load(sessions);
 	 sessionGrid.panel.setTitle(title);
