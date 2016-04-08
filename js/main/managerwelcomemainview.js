@@ -26,15 +26,14 @@ ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 * @param {Object} proposal Proposal object that should container at least: [code, number]
 */
 ManagerWelcomeMainView.prototype.activeProposal = function(proposalCode, proposalNumber) {
-    debugger
+    
     EXI.mainStatusBar.showBusy("Loading proposal " + proposalCode +  proposalNumber); 
     
-	 EXI.credentialManager.setActiveProposal(this.username, proposalCode + proposalNumber);
-     EXI.proposalManager.clear();
+	EXI.credentialManager.setActiveProposal(this.username, proposalCode + proposalNumber);
+    EXI.proposalManager.clear();
 	/** I don't need this to be synchronous **/	
     EXI.proposalManager.onActiveProposalChanged = new Event();
     EXI.proposalManager.onActiveProposalChanged.attach(function(){
-        debugger
         EXI.mainStatusBar.showReady();
         console.log(EXI.proposalManager.get());
     });
@@ -78,10 +77,8 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
 		           	  _this.panel.setLoading(false);
 	             }
 	             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
-                 
-                 
-                 /** Loading Proposal info */
-                 
+                                  
+                 /** Loading Proposal info */                 
                  _this.activeProposal( proposal.Proposal_proposalCode, proposal.Proposal_proposalNumber);
                 
           });

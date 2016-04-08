@@ -148,7 +148,7 @@ module.exports = function(grunt) {
 	dustjs: {
 	    compile: {
 	      files: {
-	        'min/precompiled.templates.min.js': ['templates/*js']
+	        'min/precompiled.templates.min.js': ['templates/**/*js']
 	      }
 	    }
 	  }
