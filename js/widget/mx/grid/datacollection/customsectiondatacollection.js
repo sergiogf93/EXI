@@ -45,7 +45,7 @@ CustomSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 		if (mesh != null){
 			items.push({
 				img 	: EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(mesh.workflowStepId),
-				title 	: mesh.name
+				//title 	: mesh.name
 			});
 		}
 		
@@ -60,7 +60,7 @@ CustomSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 		if (dataCollectionGroup.DataCollection_bestWilsonPlotPath != null){
 			items.push({
 				img 	: EXI.getDataAdapter().mx.dataCollection.getWilsonPlot(dataCollectionGroup.DataCollection_dataCollectionId),
-				title 	: "Wilson"
+				//title 	: "Wilson"
 			});
 			
 		}

@@ -1,4 +1,29 @@
 
+
+.showme{ 
+display: none;
+}
+.showhim:hover .showme{
+display : block;
+}
+
+.selected-region:hover{
+    cursor: pointer;
+    # background-color:red;
+    overflow:auto;
+    height:190px;
+   
+   
+    
+}
+.selected-region{
+    #overflow:auto;
+    height:190px;
+   
+  
+    
+}
+
 .result-autoprocessing-anchor{
 	text-decoration: none !important;
 	color : #0B0B61;

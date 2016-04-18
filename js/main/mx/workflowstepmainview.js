@@ -24,7 +24,7 @@ WorkflowStepMainView.prototype.getContainer = function() {
 };
 
 
-WorkflowStepMainView.prototype.getGrid = function(columns, data) {
+WorkflowStepMainView.prototype.getGrid = function(title, columns, data) {
 	var store = Ext.create('Ext.data.Store', {
         fields:columns,
         data:data
@@ -34,7 +34,7 @@ WorkflowStepMainView.prototype.getGrid = function(columns, data) {
          gridColumns.push({ text: columns[i],  dataIndex: columns[i], flex: 1 });
     }
     return Ext.create('Ext.grid.Panel', {
-        title: 'To be added',
+        title: title,
         flex : 1,
         margin : '10 180 10 10',
         cls : 'border-grid',	 
@@ -43,19 +43,54 @@ WorkflowStepMainView.prototype.getGrid = function(columns, data) {
     });
 };
 
+WorkflowStepMainView.prototype.getImageResolution = function(imageItem) {  
+    if (imageItem.xsize){
+        var ratio = imageItem.xsize/1024;
+        imageItem.xsize = imageItem.xsize*ratio;
+        imageItem.ysize = imageItem.ysize*ratio;
+    }
+    return imageItem;
+};
+
+WorkflowStepMainView.prototype.getImagesResolution = function(imageItems) {  
+    var resolution = 1024;
+   
+    resolution = resolution/imageItems.length;
+    for (var i = 0; i < imageItems.length; i++) {
+        var imageItem = imageItems[i];
+        
+         if (imageItem.xsize){
+            var ratio = resolution/imageItem.xsize;
+            imageItem.xsize = imageItem.xsize*ratio;
+            imageItem.ysize = imageItem.ysize*ratio;
+        } 
+    }
+    return imageItems;
+};
+
 WorkflowStepMainView.prototype.load = function(workflowStep) {
     var _this = this;
     this.panel.setTitle("Workflow");
     _this.mainPanel.removeAll();
      _this.mainPanel.setLoading();
     function onSuccess(sender, data){    
+      console.log(JSON.parse(data));
         var items = JSON.parse(data).items;
         _this.panel.setTitle(JSON.parse(data).title);
         for (var i = 0; i < items.length; i++) {
             if (items[i].type == "table"){
-                  _this.mainPanel.insert(_this.getGrid(items[i].columns, items[i].data));
+                  _this.mainPanel.insert(_this.getGrid(items[i].title,items[i].columns, items[i].data));
             }
             else{
+                if (items[i].type == "image"){
+                    items[i] = _this.getImageResolution(items[i]);
+                }
+                
+                 if (items[i].type == "images"){
+                    items[i].items = _this.getImagesResolution(items[i].items);
+                   
+                }
+               
                 dust.render("workflowstepmain_main_steps", items[i], function(err, out){        
                     _this.mainPanel.insert({
                             padding : 2,
