@@ -12,7 +12,7 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,
         store: this.store,
-        
+       
         columns: this.getColumns(),
         features: [{
             id: 'dataCollectionGroup',
@@ -39,43 +39,6 @@ GenericDataCollectionPanel.prototype._getHTMLImage = function(url) {
 };
 
 
-/*
-GenericDataCollectionPanel.prototype.getHTMLTable = function(jsonArray) {
-    var table = document.createElement("table");
-    for (var i = 0; i < jsonArray.length; i++) {
-        var tr = document.createElement("tr");
-        var td1 = document.createElement("td");
-
-        td1.appendChild(document.createTextNode(jsonArray[i].key));
-        if (jsonArray[i].value == null) {
-            td1.setAttribute("class", "summary_datacollection_null_parameter");
-        }
-
-
-        if ((jsonArray[i].value) != null) {
-            td1.setAttribute("class", "summary_datacollection_parameter_name");
-        }
-
-        var td2 = document.createElement("td");
-        if ((jsonArray[i].value) != null) {
-            td2.appendChild(document.createTextNode(jsonArray[i].value));
-            td2.setAttribute("class", "summary_datacollection_parameter");
-        }
-
-        var td3 = document.createElement("td");
-        if (jsonArray[i].units != null) {
-            td3.appendChild(document.createTextNode(jsonArray[i].units));
-            td3.setAttribute("class", "summary_datacollection_parameter");
-        }
-
-        tr.appendChild(td1);
-        tr.appendChild(td2);
-        tr.appendChild(td3);
-        table.appendChild(tr);
-    }
-    return "<table>" + table.innerHTML + "</table>";
-};
-*/
 GenericDataCollectionPanel.prototype.getColumns = function() {
     var _this = this;
     var columns = [
@@ -94,41 +57,9 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
                 
                 return html;
 
-                /*return _this.getHTMLTable([
-                                           {key : "Workflow", value : record.data.Workflow_workflowType},
-                                           {key : "Type ", value : record.data.DataCollectionGroup_experimentType},
-                                           {key : "Sample Name", value :record.data.BLSample_name},
-                                           {key : "Protein", value :record.data.Protein_acronym},
-                                           {key : "Images", value :record.data.DataCollection_numberOfImages},
-                                           {key : "Prefix", value :record.data.DataCollection_imagePrefix},
-                                           {key : "Start", value :record.data.DataCollectionGroup_startTime}
-                                           
-                ]);*/
             }
         },
-        /*{
-            header: 'Acquisition',
-            dataIndex: 'dataCollectionGroup',
-            name: 'dataCollectionGroup',
-            flex: 1,
-            renderer: function(grid, e, record) {
-                return _this.getHTMLTable([
-
-                    { key: "Resolution", value: record.data.DataCollection_resolution, units: 'Å' },
-                    { key: "Wavelength", value: record.data.DataCollection_wavelength },
-                    { key: "Flux ", value: Number(record.data.DataCollection_flux).toExponential(), units: 'ph/sec' },
-                    { key: "Flux End", value: Number(record.data.DataCollection_flux_end).toExponential(), units: 'ph/sec' },
-                    { key: "Φ", value: record.data.DataCollection_phiStart },
-                    { key: "Κ", value: record.data.DataCollection_kappaStart },
-                    { key: "Ω", value: record.data.DataCollection_omegaStart },
-                    { key: "Total Exp. Time", value: record.data.DataCollection_numberOfImages * record.data.DataCollection_exposureTime, units: 's' }
-                    // {key : "Comments", value :record.data.DataCollectionGroup_comments}
-
-
-
-                ]);
-            }
-        },*/
+    
         {
             header: 'Online Data Analysis',
             dataIndex: 'dataCollectionGroup',
@@ -136,11 +67,11 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             flex: 0.75,
             
             renderer: function(grid, e, record) {
-                return new ResultSectionDataCollection().getHTML(record.data);
+                return new OnlineResultSectionDataCollection().getHTML(record.data);
             }
         },
          {
-            header: '',
+            header: 'Thumbnails',
             dataIndex: 'DataCollection_imagePrefix',
             width: 200,
             renderer: function(val, y, record) {
@@ -159,7 +90,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             }
         },
         {
-            header: '',
+            header: 'Custom',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             width: 200,
@@ -172,7 +103,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
         {
             header: 'Crystal Snapshot',
             dataIndex: 'DataCollection_imagePrefix',
-            width: 310,
+              width: 200,
             renderer: function(val, y, record) {
                 var html = "<table>"
                 var img1 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
@@ -184,7 +115,18 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
                 html = html + "<tr><td>" + img3 + "</td><td>" + img4 + "</td><tr>";
                 return html + "</table>";
             }
-        }
+        },
+         {
+            header: 'Comments',
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            width: 200,
+            renderer: function(grid, e, record) {
+                return  "<textarea class='ta2-comment'  rows='15' cols='26' >" + record.data.DataCollectionGroup_comments + "</textarea>";
+
+            }
+        },
+        
 
     ];
     return columns;
@@ -194,4 +136,5 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 GenericDataCollectionPanel.prototype.load = function(dataCollectionGroup) {
     dataCollectionGroup.reverse();
     this.store.loadData(dataCollectionGroup);
+    this.panel.setTitle("Data collections (" + dataCollectionGroup.length +")");
 };

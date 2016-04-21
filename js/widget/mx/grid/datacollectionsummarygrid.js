@@ -15,7 +15,7 @@ function DataCollectionSummaryGrid(args) {
 	}
 
 	
-	this.dataCollectionGroupFactory = new DataCollectionGroupFactory();
+	this.genericDataCollectionPanel = new GenericDataCollectionPanel();
 }
 
 
@@ -32,21 +32,33 @@ DataCollectionSummaryGrid.prototype.parse = function(data) {
 
 
 DataCollectionSummaryGrid.prototype.load = function(data) {	
-    var data = _.filter(data, function(u) {console.log(u);
+    var data = _.filter(data, function(u) {
         return u.DataCollection_dataCollectionId != null;
     });
-	this.dataCollectionGroupFactory.load(data);
+    
+    for (var i = 0; i < data.length; i++) {
+        console.log(data[i]);
+        if (data[i].DataCollection_resolutionAtCorner != null){
+            //data[i].DataCollection_resolutionAtCorner = '-> 2 digits';
+        }
+        if (data[i].DataCollection_resolution != null){
+            
+        }
+    }
+    
+    
+	this.genericDataCollectionPanel.load(data);
 	
 };
 
 
 DataCollectionSummaryGrid.prototype.getPanel = function() {
-//	return this._renderGrid();
-	this.panel = Ext.create('Ext.panel.Panel', {
-		title : "Data Collections",
-	    items: [     		this.dataCollectionGroupFactory.getPanel()]
-	});
-	return this.panel;
+    //	return this._renderGrid();
+	//this.panel = Ext.create('Ext.panel.Panel', {
+		//title : "Data Collections",
+	//    items: [     		this.dataCollectionGroupFactory.getPanel()]
+	//});
+	return this.genericDataCollectionPanel.getPanel();
 	
 };
 

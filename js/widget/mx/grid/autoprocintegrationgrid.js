@@ -63,20 +63,100 @@ AutoProcIntegrationGrid.prototype.getPrograms = function(autoProcIntegrations, p
 	
 };
 
+
+AutoProcIntegrationGrid.prototype.unflatten = function(array, parentNode, tree){
+    var children = _.filter(array, function(child){ return child.v_datacollection_summary_phasing_previousPhasingStepId == parentNode.v_datacollection_summary_phasing_phasingStepId});
+    if (children.length == 0){
+        return parentNode;
+    }
+    else{
+        for (var i = 0; i < children.length; i++) {
+            tree.push(this.unflatten(array, children[i], tree));
+        }  
+    }
+    
+    return tree;
+    
+}
+
+function unflatten( array, parent, tree ){
+   debugger
+    tree = typeof tree !== 'undefined' ? tree : [];
+    //parent = typeof parent !== 'undefined' ? parent : { v_datacollection_summary_phasing_phasingStepId: null };
+        
+    var children = _.filter( array, function(child){ return child.v_datacollection_summary_phasing_previousPhasingStepId == parent.v_datacollection_summary_phasing_phasingStepId; });
+    
+    if( !_.isEmpty( children )  ){
+        if( parent.v_datacollection_summary_phasing_previousPhasingStepId == null ){
+           tree = children;   
+        }else{
+           parent['children'] = children
+        }
+        _.each( children, function( child ){ unflatten( array, child ) } );                    
+    }
+    
+    return tree;
+}
 AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
+    var data = [];
+    console.log(autoProcIntegrations);
+    /** This should be a loop */
+    autoProcIntegrations = autoProcIntegrations[0];
+    
+    /** Grouping by v_datacollection_summary_phasing_autoProcIntegrationId */
+    var groupedByAutoproIntegration = _.groupBy(autoProcIntegrations, 'v_datacollection_summary_phasing_autoProcIntegrationId');
+    for (var key in groupedByAutoproIntegration){
+        /** There is no phasing */
+        var autoprocIntegrationList = groupedByAutoproIntegration[key];
+        if (autoprocIntegrationList.length == 1){
+            var record = groupedByAutoproIntegration[key][0];
+            record["autoProcIntegrationId"] = record.v_datacollection_summary_phasing_autoProcIntegrationId;
+            record["processingPrograms"] = record.v_datacollection_summary_phasing_processingPrograms;
+			data.push(record);
+            
+        }
+        else{
+            /** Get Phasing */
+            debugger
+             var parents = _.filter( autoprocIntegrationList, function(node){ return node.v_datacollection_summary_phasing_previousPhasingStepId == null; });
+                
+            
+                    for (var j = 0; j< parents.length; j++){
+            debugger
+                       console.log(unflatten(autoprocIntegrationList));
+                       
+                       this.unflatten(autoProcIntegrationList[key], parents[j]);
+                    }
+           
+            debugger
+            this.unflatten(autoprocIntegrationList, null, []);
+        }
+        
+    }
+    
+    
+    /*
+    debugger
 	var data = [];
 	for (var i = 0; i < autoProcIntegrations.length; i++) {
 		var record = autoProcIntegrations[i][0];
 		record["autoProcIntegrationId"] = autoProcIntegrations[i][0]["v_datacollection_summary_phasing_autoProcIntegrationId"];
 		record["processingPrograms"] = autoProcIntegrations[i][0]["v_datacollection_summary_phasing_processingPrograms"];
 		
-		if (autoProcIntegrations[i][0]["v_datacollection_summary_phasing_anomalous"] == true){
-			record["anomalous"] = "yes";
-		}
-		else{
-			record["anomalous"] = false;
-		}
-		
+	    autoProcIntegrationList = _.groupBy(autoProcIntegrations[i], 'v_datacollection_summary_phasing_autoProcIntegrationId')
+        console.log(autoProcIntegrationList);
+        
+        for (var key in  autoProcIntegrationList) {
+            if (autoProcIntegrationList[key].length > 1){
+                var parents = _.filter( autoProcIntegrationList[key], function(node){ return node.v_datacollection_summary_phasing_previousPhasingStepId == null; });
+                
+            
+                    for (var j = 0; j< parents.length; j++){
+                       this.unflatten(autoProcIntegrationList[key], parents[j]);
+                    }
+            
+            }
+        }
 		
 		if (autoProcIntegrations[i].length > 1){
 			phasingStep =  BUI.groupBy(autoProcIntegrations[i], function(item){
@@ -111,7 +191,7 @@ AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
 			}
 		}
 		data.push(record);
-	}
+	}*/
 	console.log(data);
 	this.store.loadData(data, false);
 };
@@ -248,7 +328,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		],
 		flex : 1,
 		viewConfig : {
-			stripeRows : true,
+			//stripeRows : true,
 			preserveScrollOnRefresh: true,
 			listeners : {
 			}

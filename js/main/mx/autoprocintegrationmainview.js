@@ -302,7 +302,7 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getByDataCollectionId(dataCollectionId);
 	
 	var onSuccess2 = function(sender, data){
-		
+		_this.autoProcIntegrationGrid.load(data);
 		data =  BUI.groupBy(data[0], function(item){
 			  			return [item.v_datacollection_summary_phasing_autoProcIntegrationId];
 		});
@@ -312,10 +312,10 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
 		}
 		_this.autoProcIntegrationPhasingViewList = data;
 		
-		_this.autoProcIntegrationGrid.load(data);
+		
 		_this.panel.setLoading(false);
 		_this.loadPlots(autoProcIntegrationIds);
-		_this.phasingNetworkWidget.load(data);
+		//_this.phasingNetworkWidget.load(data);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.phasing.getViewByDataCollectionId(dataCollectionId);
 };

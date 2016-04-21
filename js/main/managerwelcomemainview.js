@@ -98,9 +98,12 @@ ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
           var _this = this;
           this.panel.setLoading(true);
           function onSuccess(sender, data){
+              
         	  _this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
         	  _this.panel.setLoading(false);
           }
+          /** Increasing one day */
+          end = moment(end, "YYYYMMDD").add(1, 'days').format("YYYYMMDD");
 		  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
 };
 
@@ -119,6 +122,7 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
          EXI.proposalManager.clear();
          _this.activeProposal(session.proposalVO.code, session.proposalVO.number);
      });
+     console.log(sessions);
 	 sessionGrid.load(sessions);
 	 sessionGrid.panel.setTitle(title);
 };
@@ -127,6 +131,7 @@ ManagerWelcomeMainView.prototype.getToolbar = function() {
 
    var dateMenu = Ext.create('Ext.menu.DatePicker', {
         handler: function(dp, date){
+            
           _this.loadByDate(Ext.Date.format(date, 'Ymd'), Ext.Date.format(date, 'Ymd'));
         }
     });

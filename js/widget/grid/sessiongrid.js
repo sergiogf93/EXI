@@ -40,6 +40,7 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
+    debugger
 	this.store.loadData(sessions, true);
 };
 
@@ -47,7 +48,7 @@ SessionGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'startDate', 'beamlineName', 'beamlineOperator', 'diff' ],
+		fields : ['beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName'],
 		emptyText : "No sessions",
 		data : []
 	});
@@ -60,79 +61,168 @@ SessionGrid.prototype.getPanel = function() {
 		cls : 'border-grid',
 		height : this.height,
 		margin : this.margin,
-		emptyText : "No sessions",
+		
 
 		columns : [
-        {
-			text : 'Beamline',
-			dataIndex : 'Proposal_code',
-			width : 125,
-			renderer : function(grid, a, record){
-                    var location = "#";
-                	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "SAXS"){
-                        location = "#/session/nav/" + record.data.sessionId + "/session";
+             {
+                    text : 'Beamline',
+                    dataIndex : 'Proposal_code',
+                    width : 125,
+                    renderer : function(grid, a, record){
+                            var location = "#";
+                            if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "SAXS"){
+                                location = "#/session/nav/" + record.data.sessionId + "/session";
+                            }
+                            else{
+                                location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
+                            }
+                        return "<a href='" +  location +"'>" + record.data.beamLineName + "</a>"; 
                     }
-                    else{
-                        location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
+		    }, 
+            {
+                text : 'Proposal',
+                dataIndex : 'beamlineName',
+                flex : 1,
+                renderer : function(grid, a, record){
+                    return record.data.Proposal_proposalCode + record.data.Proposal_ProposalNumber;
+                }
+            },
+         
+           {
+			    text                : 'Local Contact',
+			    dataIndex           : 'beamLineOperator',
+			    width               : 200,
+                flex                : 1
+		    },
+            {
+			    text                : 'Title',
+			    dataIndex           : 'Proposal_title',
+			    width               : 200,
+                flex               : 4
+		    },
+            {
+			    text                : 'PI',
+			    dataIndex           : 'Proposal_title',
+			    width               : 200,
+                 hidden              : true,
+                renderer : function(grid, a, record){                        
+                        return record.data.Person_familyName + ", " + record.data.Person_givenName;
                     }
-				return "<a href='" +  location +"'>" + record.data.beamlineName + "</a>"; 
-			}
-		}, 
-      	{
-          text              : 'Date',
-          dataIndex         : 'startDate',
-          width             : 150,
-          renderer          : function(grid, a, record){
-                      return moment(record.data.startDate).format("lll");
-          }
-		  },
-		{
-			text                : 'Local Contact',
-			dataIndex           : 'beamlineOperator',
-			width               : 200
-		},
-   {
-     text : 'Proposal',
-     dataIndex : 'beamlineName',
-      flex : 0.1,
-     renderer : function(grid, a, record){
-       return record.data.proposalVO.code + record.data.proposalVO.number;
-     }
-   },
-      {
-        text : 'Title',
-        dataIndex : 'beamlineName',
-        flex : 1,
-        renderer : function(grid, a, record){
-          return record.data.proposalVO.title;
-        }
-      }
-		],
-		viewConfig : {
-			stripeRows : true,
-			getRowClass : function(record, rowIndex, rowParams, store){
+		    },
+             {
+			    text                : 'e-mail',
+			    dataIndex           : 'Person_emailAddress',
+			    width               : 200,
+                hidden              : true,
+                flex               : 1
+		    },
+             {
+			    text                : 'Energy Scan',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){ 
+                      if (record.data.energyScanCount != 0){                       
+                        return record.data.energyScanCount;
+                      }
+                 }
+		    },
+            {
+			    text                : 'SRF Spectrums',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){   
+                      if (record.data.xrfSpectrumCount != 0){                          
+                        return record.data.xrfSpectrumCount;
+                      }
+                    }
+		    },
+            {
+			    text                : 'Characterizations',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){   
+                         if (record.data.CharacterizationdataCollectionGroupCount != 0){                          
+                            return record.data.CharacterizationdataCollectionGroupCount;
+                        }                     
+                        
+                    }
+		    },
+             {
+			    text                : 'Hellical',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){       
+                        if (record.data.HellicaldataCollectionGroupCount != 0){                          
+                            return record.data.HellicaldataCollectionGroupCount;
+                        }                   
+                       
+                    }
+		    },
+            {
+			    text                : 'Mesh',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){                        
+                        
+                          if (record.data.MeshdataCollectionGroupCount != 0){                          
+                            return record.data.MeshdataCollectionGroupCount;
+                        }    
+                    }
+		    },
+            {
+			    text                : 'OSC',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){       
+                          if (record.data.OSCdataCollectionGroupCount != 0){                          
+                            return record.data.OSCdataCollectionGroupCount;
+                        }                    
+                     
+                    }
+		    },
+         
 
-				if (record.data.beamlineName != null){
-		        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "SAXS"){
-		        		 return ((rowIndex % 2) == 0) ? "saxs-grid-row-light" : "saxs-grid-row-dark";
-		        	}
-		        	if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamlineName) == "MX"){
-		        		 return ((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
-		        	}
-				}
-				return "warning-grid-row";
-	    	},
-			listeners : {
-				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-					_this.onSelected.notify(record.data);
-				},
+            {
+                text              : 'Start',
+                dataIndex         : 'BLSession_startDate',
+                flex             : 1,
+                renderer          : function(grid, a, record){                    
+                                        return record.data.BLSession_startDate;
+                }
+		   },
+            {
+                text              : 'End',
+                dataIndex         : 'BLSession_endDate',
+                  hidden              : true,
+                flex             : 1,                
+                renderer          : function(grid, a, record){                    
+                                        return record.data.BLSession_endDate;
+                }
+		   }
+           ], 
+      	   viewConfig : {
+                stripeRows : true,
+                getRowClass : function(record, rowIndex, rowParams, store){
 
-				'itemdblclick' : function( grid, record, item, index, e, eOpts ){
-					 _this.goToSession(record.data);
-				}
-
-			}
-		}
+                    if (record.data.beamLineName != null){
+                        
+                        if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "SAXS"){
+                            return ((rowIndex % 2) == 0) ? "saxs-grid-row-light" : "saxs-grid-row-dark";
+                        }
+                        if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "MX"){
+                            return ((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
+                        }
+                    }
+                    return "warning-grid-row";
+                }
+	    	}
+		
 	});
 
 	/** Adding the tbar **/
