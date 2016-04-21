@@ -8,7 +8,6 @@ function PuckMainView() {
 }
 
 PuckMainView.prototype.getPanel = MainView.prototype.getPanel;
-PuckMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 PuckMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
@@ -19,7 +18,7 @@ PuckMainView.prototype.getContainer = function() {
 	    defaults : {
 			anchor : '100%',
 			hideEmptyLabel : false },
-	    margin : 30,
+	    margin : 0,
 		bodyStyle : {
 			"background-color" : "#E6E6E6" 
 		},
@@ -30,9 +29,6 @@ PuckMainView.prototype.getContainer = function() {
 
 
 PuckMainView.prototype.load = function(puck) {
-	
 	var _this = this;
-	
 	this.puckForm.load(puck, null);
-	
 };

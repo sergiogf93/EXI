@@ -1,5 +1,5 @@
 
-<div style='overflow:auto;height:290px;border:1px solid #3892d3;'>
+<div style='overflow:auto;height:190px;border:1px solid #3892d3;'>
 	{#.}
 		<div>
 					{#.}

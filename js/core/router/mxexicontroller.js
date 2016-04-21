@@ -45,7 +45,7 @@ MXExiController.prototype.routeNavigation = function() {
 			});
 			EXI.addNavigationPanel(listView);
 			
-			listView.load(EXI.proposalManager.getSessions());
+			listView.load(EXI.proposalManager.getSessions().slice(0, 100));
 			EXI.setLoadingNavigationPanel(false);
 		}
 		
@@ -78,7 +78,7 @@ MXExiController.prototype.routeNavigation = function() {
 
 			EXI.addNavigationPanel(listView);
 			var onSuccessProposal = function(sender, pucks) {
-				listView.load(pucks);
+				listView.load(pucks.slice(0, 100));
 				EXI.setLoadingNavigationPanel(false);
 			};
 			EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.proposal.getDewarByProposalId();
@@ -136,25 +136,24 @@ MXExiController.prototype.routeNavigation = function() {
 	
 	
 	Path.map("#/mx/workflow/step/:workflowStepIdList/main").to(function() {
+        EXI.clearNavigationPanel();
+		EXI.setLoadingNavigationPanel(true);
+		listView = new WorkflowStepListView();
+		listView.onSelect.attach(function(sender, selected) {
+            if (selected != null){
+                mainView.load(selected[0]);
+            }
+		});
+        EXI.addNavigationPanel(listView);    
+            
 		var mainView = new WorkflowStepMainView();
 		EXI.addMainPanel(mainView);
 		var onSuccess = function(sender, data){
-			mainView.load(JSON.parse(data));
+            listView.load(JSON.parse(data));
+            EXI.setLoadingNavigationPanel(false);
 		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params['workflowStepIdList']);
-	}).enter(this.setPageBackground);
-	
-	Path.map("#/mx/workflow/step/:workflowStepIdList/:workflowStepId/main").to(function() {
-		var mainView = new WorkflowStepMainView();
-		EXI.addMainPanel(mainView);
-		
-		var workflowStepId = this.params['workflowStepId'];
-		var onSuccess = function(sender, data){
-			mainView.load(JSON.parse(data), workflowStepId);
-		};
-		
-		EXI.getDataAdapter({onSuccess : onSuccess}).mx.workflowstep.getWorkflowstepByIdList(this.params['workflowStepIdList'] );
 	}).enter(this.setPageBackground);
 	
 	
@@ -168,6 +167,47 @@ MXExiController.prototype.routeNavigation = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByAcronymList(this.params['acronmys']);
 
 	}).enter(this.setPageBackground);
+	
+	Path.map("#/mx/prepare/main").to(function() {
+		//EXI.addMainPanel(new PrepareMainView());
+		EXI.clearNavigationPanel();
+		EXI.setLoadingNavigationPanel(true);
+		listView = new DewarListView();
+		listView.onSelect.attach(function(sender, selected) {
+            
+            var selectedIds = [];
+            for (var i= 0; i < selected.length; i++){
+                selectedIds.push(selected[i].dewarId);
+            }
+			location.hash = "/mx/prepare/" + selectedIds.toString() + "/main";
+		});
+
+		EXI.addNavigationPanel(listView);
+		var onSuccessProposal = function(sender, dewars) {			
+			listView.load(dewars);
+			EXI.setLoadingNavigationPanel(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByStatus("processing");
+	}).enter(this.setPageBackground);
+    
+    Path.map("#/mx/prepare/:dewarIds/main").to(function() {
+        var mainView = new PrepareMainView();
+        var ids = this.params['dewarIds'].split(",");
+		EXI.addMainPanel(mainView);
+        EXI.setLoadingMainPanel();
+		var onSuccessProposal = function(sender, dewars) {
+            var filtered = [];
+            for(var i = 0; i< ids.length; i++){
+                filtered.push(_.find(dewars, {dewarId : Number(ids[i]) }));
+            }
+           EXI.setLoadingMainPanel(false);
+			mainView.load(filtered);
+			EXI.setLoadingNavigationPanel(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByProposal();
+        
+	}).enter(this.setPageBackground);
+    
 	
 	
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {

@@ -98,10 +98,10 @@ var ExtISPyB ={
          }
       },
       {
-          name:'Alex',
-          url:'http://172.24.9.29:8080/ispyb/ispyb-ws/rest',
-          exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest'
-       },
+         name:'Alex',
+         url:'http://lindemaria:8080/ispyb/ispyb-ws/rest',
+         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest'
+      },
       {
          name:'Local',
          url:'http://localhost:8080/ispyb/ispyb-ws/rest',
@@ -114,5 +114,6 @@ var ExtISPyB ={
                "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
             ]
          }
+      }
    ]
 };

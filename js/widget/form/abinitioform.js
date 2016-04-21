@@ -54,7 +54,7 @@ AbinitioForm.prototype._renderPDB = function(modelsIdList) {
 		for (var i = 0; i < modelsIdList.length; i++) {
 			viz.push({
 				modelId : modelsIdList[i],
-				color : "0xFF6600",
+				color : new THREE.Color(0xFF6600),
 				opacity : 0.8
 			});
 		}

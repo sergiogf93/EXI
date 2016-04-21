@@ -9,40 +9,13 @@ function WorkflowStepMainView() {
 WorkflowStepMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
-WorkflowStepMainView.prototype.getTabs = function() {
-	this.summaryTab = Ext.createWidget('tabpanel',{
-			cls 	: 'border-grid',
-			items 	: [
-			]
-	});
-	
-	return this.summaryTab;
-	
-};
-
-WorkflowStepMainView.prototype.getSummaryTab = function() {
-	this.summaryTab = Ext.create('Ext.panel.Panel', {
-	    cls : 'border-grid',
-	    title: 'Summary',
-	    layout: {
-	        type: 'vbox'
-	    },
-	    height : 800,
-	    autoScroll : true,
-	    items: [
-	            
-	            
-	    ]
-	});
-	return this.summaryTab;
-};
-
-WorkflowStepMainView.prototype.getMainPanel = function() {
+WorkflowStepMainView.prototype.getContainer = function() {
 	this.mainPanel = Ext.create('Ext.panel.Panel', {
-	    cls : 'border-grid',
-	    title: 'Main',
-	    margin : '0 10 0 10',
-	    height : 800,
+	    cls : 'border-grid',	 
+        autoScroll: true,
+        title : "Workflow",
+        margin : '10 0 0 10',
+	    //height : 800,
 	    flex : 1,
 	    items: [
 	    ]
@@ -51,66 +24,53 @@ WorkflowStepMainView.prototype.getMainPanel = function() {
 };
 
 
-WorkflowStepMainView.prototype.getContainer = function() {
-	return  Ext.create('Ext.panel.Panel', {
-		margin : '10 0 0 10',
-		layout : 'hbox',
-		height : 800,
-	    items: [
-        		 this.getSummaryTab(),
-        		 this.getMainPanel()
-    	]
-	});
+WorkflowStepMainView.prototype.getGrid = function(columns, data) {
+	var store = Ext.create('Ext.data.Store', {
+        fields:columns,
+        data:data
+    });
+    var gridColumns = [];
+    for (var i = 0; i < columns.length; i++) {
+         gridColumns.push({ text: columns[i],  dataIndex: columns[i], flex: 1 });
+    }
+    return Ext.create('Ext.grid.Panel', {
+        title: 'To be added',
+        flex : 1,
+        margin : '10 180 10 10',
+        cls : 'border-grid',	 
+        store: store,
+        columns: gridColumns
+    });
 };
 
-
-
-	
-WorkflowStepMainView.prototype.load = function(workflowSteps, selectedWorkflowStepId) {
-	var _this = this;
-	this.panel.setTitle("Workflow");
-	
-	
-	var workflowStepIds = [];
-	var selected = null;
-	
-	for (var i = 0; i < workflowSteps.length; i++) {
-		workflowStepIds.push(workflowSteps[i].workflowStepId);
-		workflowSteps[i].selected = false;
-		if (selectedWorkflowStepId != null){
-			if (selected == null){
-				if (workflowSteps[i].workflowStepId == selectedWorkflowStepId){
-					selected = workflowSteps[i];
-					selected.htmlURL = EXI.getDataAdapter().mx.workflowstep.getHtmlByWorkflowStepId(selectedWorkflowStepId);
-					
-					workflowSteps[i].selected = "yes";
-				}
-			}
-		}
-	}
-	for ( i = 0; i < workflowSteps.length; i++) {
-		workflowSteps[i].imageURL = EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(workflowSteps[i].workflowStepId);
-		workflowSteps[i].workflowStepIds = workflowStepIds;
+WorkflowStepMainView.prototype.load = function(workflowStep) {
+    var _this = this;
+    this.panel.setTitle("Workflow");
+    _this.mainPanel.removeAll();
+     _this.mainPanel.setLoading();
+    function onSuccess(sender, data){    
+        var items = JSON.parse(data).items;
+        _this.panel.setTitle(JSON.parse(data).title);
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].type == "table"){
+                  _this.mainPanel.insert(_this.getGrid(items[i].columns, items[i].data));
+            }
+            else{
+                dust.render("workflowstepmain_main_steps", items[i], function(err, out){        
+                    _this.mainPanel.insert({
+                            padding : 2,
+                           
+                            html : out
+                    });
+                });
+            }
+        }
+      
+        _this.mainPanel.setLoading(false);
+    }
+    
+    EXI.getDataAdapter({onSuccess: onSuccess}).mx.workflowstep.getResultByWorkflowStepId(workflowStep.workflowStepId);
 		
-	}
-	
-	
-	dust.render("workflowstepmain_steps", workflowSteps, function(err, out){
-		_this.summaryTab.insert({
-				html : out
-		});
-     });
-	/** it loads the main panel with the selected workflowStepId **/
-	if (selectedWorkflowStepId != null){
-		dust.render("workflowstepmain_main_steps", selected, function(err, out){
-			_this.mainPanel.insert({
-					padding : 10,
-					border : 0,
-					html : out
-			});
-	     });
-	}
-				
 };
 
 

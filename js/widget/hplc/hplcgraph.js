@@ -178,37 +178,6 @@ HPLCGraph.prototype.reloadData = function(hplcData) {
 
 	var data = hplcData;
 
-	/** In case of having peaks **/
-	//	if (this.peaks != null) {
-	//		for (var peak in this.peaks) {
-	//			var values = [];
-	//			var std = [];
-	//			for (var i = 0; i < this.peaks[peak].length; i++) {
-	//				values.push(this.peaks[peak][i][1]);
-	//				std.push(this.peaks[peak][i][2]);
-	//			}
-	//			data.push({
-	//				param : peak,
-	//				data : values,
-	//				showOnMenu : false,
-	//				fdata : function (a) {
-	//					var value = (Math.log(parseFloat(a)));
-	//					if (isNumber(value)) {
-	//						return value;
-	//					}
-	//				},
-	//				fstd : function (a) {
-	//					var value =  Math.log(Math.abs(parseFloat(a)));
-	//					if (isNumber(value))
-	//						return value;
-	//				},
-	//				std : std,
-	//				color : this.colorPeak[peak],
-	//				label : peak
-	//			});
-	//			
-	//		}
-	//	}
 
 	if (this.scaled) {
 		data = this.scaledData(JSON.parse(JSON.stringify(hplcData)));

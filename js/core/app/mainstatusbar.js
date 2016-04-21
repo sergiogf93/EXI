@@ -9,14 +9,18 @@ MainStatusBar.prototype.getBar = function(){
 	    text: 'Ready',
 	    iconCls: 'accept',
 	    busyIconCls: 'busy',
-	    busyText: 'Connecting to servers...',
+	    busyText:   this.busyText,
 	    cls : 'statusBar',
 		statusAlign : 'right'
 	});
 	return this.statusBar;
 };
 
-MainStatusBar.prototype.showBusy = function(){
+MainStatusBar.prototype.showBusy = function(msg){
+    if (msg == null){
+        msg = 'Connecting to servers...';
+    }
+    this.statusBar.busyText = msg;
 	this.statusBar.showBusy();
 };
 

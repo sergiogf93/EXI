@@ -188,6 +188,42 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			}
 		},
 		{
+			text : 'Statistics',
+			dataIndex : 'processingPrograms',
+			width : 400,
+			renderer : function(e, sample, record){
+				try{
+					var type = record.data.scalingStatisticsType.split(",");
+					var resolutionLimitLow = record.data.resolutionLimitLow.split(",");
+					var resolutionLimitHigh = record.data.resolutionLimitHigh.split(",");
+					var multiplicity = record.data.multiplicity.split(",");
+					var meanIOverSigI = record.data.meanIOverSigI.split(",");
+					var completeness = record.data.completeness.split(",");
+					
+					var parsed = [];
+					for (var i = 0; i < type.length; i++) {
+						parsed.push({
+							type 					: type[i],
+							resolutionLimitLow 		: resolutionLimitLow[i],
+							resolutionLimitHigh 	: resolutionLimitHigh[i],
+							multiplicity 			: multiplicity[i],
+							meanIOverSigI 			: meanIOverSigI[i],
+							completeness 			: completeness[i]
+							
+						});
+					}
+					var html  = "";
+					dust.render("autoprocintegrationgrid_statistics", parsed, function(err, out){
+						html = out;
+					});
+				}
+				catch(e){
+					return "<span class='summary_datacollection_parameter_name'>Not found</span>";
+				}
+				return html;
+			}
+		},
+		{
 			text : 'Phasing',
 			dataIndex : 'processingPrograms',
 			flex : 1.5,

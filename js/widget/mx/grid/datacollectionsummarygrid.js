@@ -1,26 +1,4 @@
 
-
-
-
-
-
-/**
- * Shows a list of stock solutions with macromolecule, buffer, storage temperature, concentration, shipment and comments
- * 
- * @multiselect allows multiple selection
- * @height 
- * @minHeight
- * @width
- * @tbar
- * @showTitle
- * @isPackedVisible shows is stock solution is in a box
- * @btnEditVisible shows edit button
- * @btnAddVisible
- * @btnAddExisting
- * @btnUnpackVisible allows to unpack a stock solution
- * @btnRemoveVisible allow to remove a stock solution
- */
-
 function DataCollectionSummaryGrid(args) {
 	this.id = BUI.id();
 
@@ -42,7 +20,7 @@ function DataCollectionSummaryGrid(args) {
 
 
 
-
+/*
 DataCollectionSummaryGrid.prototype.parse = function(data) {
 	data =  BUI.groupBy(data, function(item){
 	 			return [item.DataCollectionGroup_dataCollectionGroupId];
@@ -50,10 +28,13 @@ DataCollectionSummaryGrid.prototype.parse = function(data) {
 	});
 	
 	return data;
-};
+};*/
 
 
 DataCollectionSummaryGrid.prototype.load = function(data) {	
+    var data = _.filter(data, function(u) {console.log(u);
+        return u.DataCollection_dataCollectionId != null;
+    });
 	this.dataCollectionGroupFactory.load(data);
 	
 };

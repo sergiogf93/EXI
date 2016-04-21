@@ -100,15 +100,15 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 																						source: this.getAcronyms()
 																					}
 	         }, 
-	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 50}}, 
+	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
 	         { text :'Space<br /> Group', id : 'Space Group',column : {
-			        	 													width : 80,
+			        	 													width : 90,
 			        	 													type: 'dropdown',
 			        	 													source: this.getSpaceGroups()
 			         								}
 	         }, 
 	         { text :'Exp.<br /> Type', id : 'Experiment Type', column : {
-							        	 								width : 90,  
+							        	 								width : 80,  
 							        	 								type: 'dropdown',
 							        	 								source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
 							         								}
@@ -121,12 +121,12 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 	         { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 60}}, 
 	         { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
 	         { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 60}}, 
-	         { text :'A', id :'Unit cell A', column : {width : 30}}, 
-	         { text :'B', id :'Unit cell B', column : {width : 30}}, 
-	         { text :'C', id : 'Unit cell C', column : {width : 30}}, 
-	         { text :'&#945;', id :'Unit cell Alpha', column : {width : 30}}, 
-	         { text :'&#946;', id :'Unit cell Beta', column : {width : 30}}, 
-	         { text :'&#947;', id :'Unit cell Gamma', column : {width : 30}}, 
+	         { text :'A', id :'Unit cell A', column : {width : 40}}, 
+	         { text :'B', id :'Unit cell B', column : {width : 40}}, 
+	         { text :'C', id : 'Unit cell C', column : {width : 40}}, 
+	         { text :'&#945;', id :'Unit cell Alpha', column : {width : 40}}, 
+	         { text :'&#946;', id :'Unit cell Beta', column : {width : 40}}, 
+	         { text :'&#947;', id :'Unit cell Gamma', column : {width : 40}}, 
 	         { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
 	         { text :'Comments', id :'Comments', column : {width : 45}}
 	         ];
@@ -181,7 +181,10 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 		sample["comments"] = rows[i]["Comments"];
 		if (sample["crystalVO"] == null){
 			sample["crystalVO"] = {};
-			sample["crystalVO"]["proteinVO"] = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			var proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			if (proteins != null){
+				sample["crystalVO"]["proteinVO"] = proteins[0];
+			}
 		}
 		sample["crystalVO"]["spaceGroup"] = rows[i]["Space Group"];
 		sample["crystalVO"]["cellA"] = Number(rows[i]["Unit cell A"]);
