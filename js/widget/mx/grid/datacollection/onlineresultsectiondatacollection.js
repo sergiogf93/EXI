@@ -46,7 +46,7 @@ OnlineResultSectionDataCollection.prototype.getScreeningData = function(dataColl
     
     if (dataCollectionGroup.ScreeningOutput_strategySuccess){
            var subItems = [ {
-                        name  : 'Ranking Resolution',
+                        name  : 'Ranking Res.',
                         value : dataCollectionGroup.ScreeningOutput_rankingResolution,
                         units : 'Å'
                     },                              

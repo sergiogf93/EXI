@@ -40,7 +40,6 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
-    debugger
 	this.store.loadData(sessions, true);
 };
 
@@ -60,8 +59,9 @@ SessionGrid.prototype.getPanel = function() {
 		icon : '../images/icon/sessions.png',
 		cls : 'border-grid',
 		height : this.height,
+       
 		margin : this.margin,
-		
+		selMode : null,
 
 		columns : [
              {
@@ -117,6 +117,30 @@ SessionGrid.prototype.getPanel = function() {
                 flex               : 1
 		    },
              {
+			    text                : 'OSC',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){       
+                          if (record.data.OSCdataCollectionGroupCount != 0){                          
+                            return record.data.OSCdataCollectionGroupCount;
+                        }                    
+                     
+                    }
+		    },
+            {
+			    text                : 'Characterization',
+			    dataIndex           : 'xrfSpectrumCount',
+			    width               : 200,
+                flex               : 1,
+                  renderer : function(grid, a, record){   
+                         if (record.data.CharacterizationdataCollectionGroupCount != 0){                          
+                            return record.data.CharacterizationdataCollectionGroupCount;
+                        }                     
+                        
+                    }
+		    },
+             {
 			    text                : 'Energy Scan',
 			    dataIndex           : 'xrfSpectrumCount',
 			    width               : 200,
@@ -138,18 +162,7 @@ SessionGrid.prototype.getPanel = function() {
                       }
                     }
 		    },
-            {
-			    text                : 'Characterizations',
-			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
-                flex               : 1,
-                  renderer : function(grid, a, record){   
-                         if (record.data.CharacterizationdataCollectionGroupCount != 0){                          
-                            return record.data.CharacterizationdataCollectionGroupCount;
-                        }                     
-                        
-                    }
-		    },
+            
              {
 			    text                : 'Hellical',
 			    dataIndex           : 'xrfSpectrumCount',
@@ -174,18 +187,7 @@ SessionGrid.prototype.getPanel = function() {
                         }    
                     }
 		    },
-            {
-			    text                : 'OSC',
-			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
-                flex               : 1,
-                  renderer : function(grid, a, record){       
-                          if (record.data.OSCdataCollectionGroupCount != 0){                          
-                            return record.data.OSCdataCollectionGroupCount;
-                        }                    
-                     
-                    }
-		    },
+           
          
 
             {
@@ -221,7 +223,20 @@ SessionGrid.prototype.getPanel = function() {
                     }
                     return "warning-grid-row";
                 }
-	    	}
+	    	},
+            listeners : {
+				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {                    
+					_this.onSelected.notify({
+                       proposalCode   : record.data.Proposal_proposalCode,
+                       proposalNumber : record.data.Proposal_ProposalNumber
+                        
+                    });
+				}
+
+				
+
+			}
+		
 		
 	});
 

@@ -77,6 +77,15 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
       console.log(JSON.parse(data));
         var items = JSON.parse(data).items;
         _this.panel.setTitle(JSON.parse(data).title);
+        
+        var insertContainer = function(err, out){        
+                    _this.mainPanel.insert({
+                            padding : 2,
+                           
+                            html : out
+                    });
+        };
+        
         for (var i = 0; i < items.length; i++) {
             if (items[i].type == "table"){
                   _this.mainPanel.insert(_this.getGrid(items[i].title,items[i].columns, items[i].data));
@@ -91,13 +100,7 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
                    
                 }
                
-                dust.render("workflowstepmain_main_steps", items[i], function(err, out){        
-                    _this.mainPanel.insert({
-                            padding : 2,
-                           
-                            html : out
-                    });
-                });
+                dust.render("workflowstepmain_main_steps", items[i], insertContainer);
             }
         }
       

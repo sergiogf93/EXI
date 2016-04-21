@@ -118,9 +118,9 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
 	 this.container.insert(sessionGrid.getPanel());
 	 
 	  /** Handling onSelected **/
-     sessionGrid.onSelected.attach(function(sender, session){
+     sessionGrid.onSelected.attach(function(sender, args){
          EXI.proposalManager.clear();
-         _this.activeProposal(session.proposalVO.code, session.proposalVO.number);
+         _this.activeProposal(args.proposalCode, args.proposalNumber);
      });
      console.log(sessions);
 	 sessionGrid.load(sessions);

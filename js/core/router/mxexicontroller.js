@@ -158,15 +158,7 @@ MXExiController.prototype.routeNavigation = function() {
 	
 	
 	
-	Path.map("#/mx/datacollection/protein_acronym/:acronmys/main").to(function() {
-		var mainView = new DataCollectionMxMainView();
-		EXI.addMainPanel(mainView);
-		var onSuccess = function(sender, data){
-			mainView.load(data);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByAcronymList(this.params['acronmys']);
-
-	}).enter(this.setPageBackground);
+	
 	
 	Path.map("#/mx/prepare/main").to(function() {
 		//EXI.addMainPanel(new PrepareMainView());
@@ -209,16 +201,37 @@ MXExiController.prototype.routeNavigation = function() {
 	}).enter(this.setPageBackground);
     
 	
-	
+	Path.map("#/mx/datacollection/protein_acronym/:acronmys/main").to(function() {
+		var mainView = new DataCollectionMxMainView();
+		EXI.addMainPanel(mainView);
+        
+		var onSuccess = function(sender, data){
+			mainView.loadCollections(data);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByAcronymList(this.params['acronmys']);
+
+       
+	}).enter(this.setPageBackground);
+    
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
 		EXI.setLoadingMainPanel(true);
 		var onSuccess = function(sender, data){
-			mainView.load(data);
+			mainView.loadCollections(data);
 			EXI.setLoadingMainPanel(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getDataCollectionViewBySessionId(this.params['sessionId']);
+        
+        
+        var onSuccessEnergy = function(sender, data){
+            console.log(data)
+			mainView.loadEnergyScans(data);
+			EXI.setLoadingMainPanel(false);
+		};
+         /** retrieving energy scans */
+        EXI.getDataAdapter({onSuccess : onSuccessEnergy}).mx.energyscan.getEnergyScanListBySessionId(this.params['sessionId'])
+        
 
 	}).enter(this.setPageBackground);
 	

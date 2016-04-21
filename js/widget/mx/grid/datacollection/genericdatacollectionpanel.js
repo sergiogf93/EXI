@@ -1,18 +1,16 @@
 function GenericDataCollectionPanel(args) {
-    this.title = "Generic";
-
-}
+ }
 
 
 GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
-
     this.store = Ext.create('Ext.data.Store', {
         fields: ["dataCollectionGroup"]
     });
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,
+        padding : 5,
         store: this.store,
-       
+        disableSelection: true,
         columns: this.getColumns(),
         features: [{
             id: 'dataCollectionGroup',
@@ -136,5 +134,5 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
 GenericDataCollectionPanel.prototype.load = function(dataCollectionGroup) {
     dataCollectionGroup.reverse();
     this.store.loadData(dataCollectionGroup);
-    this.panel.setTitle("Data collections (" + dataCollectionGroup.length +")");
+    
 };

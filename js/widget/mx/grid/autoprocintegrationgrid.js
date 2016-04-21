@@ -80,9 +80,9 @@ AutoProcIntegrationGrid.prototype.unflatten = function(array, parentNode, tree){
 }
 
 function unflatten( array, parent, tree ){
-   debugger
+   
     tree = typeof tree !== 'undefined' ? tree : [];
-    //parent = typeof parent !== 'undefined' ? parent : { v_datacollection_summary_phasing_phasingStepId: null };
+    
         
     var children = _.filter( array, function(child){ return child.v_datacollection_summary_phasing_previousPhasingStepId == parent.v_datacollection_summary_phasing_phasingStepId; });
     
@@ -117,19 +117,19 @@ AutoProcIntegrationGrid.prototype.load = function(autoProcIntegrations) {
         }
         else{
             /** Get Phasing */
-            debugger
-             var parents = _.filter( autoprocIntegrationList, function(node){ return node.v_datacollection_summary_phasing_previousPhasingStepId == null; });
+            
+             //var parents = _.filter( autoprocIntegrationList, function(node){ return node.v_datacollection_summary_phasing_previousPhasingStepId == null; });
                 
             
-                    for (var j = 0; j< parents.length; j++){
-            debugger
-                       console.log(unflatten(autoprocIntegrationList));
+                   // for (var j = 0; j< parents.length; j++){
+            
+                       //console.log(unflatten(autoprocIntegrationList));
                        
-                       this.unflatten(autoProcIntegrationList[key], parents[j]);
-                    }
+                       //this.unflatten(autoProcIntegrationList[key], parents[j]);
+                  //  }
            
-            debugger
-            this.unflatten(autoprocIntegrationList, null, []);
+            
+            //this.unflatten(autoprocIntegrationList, null, []);
         }
         
     }
