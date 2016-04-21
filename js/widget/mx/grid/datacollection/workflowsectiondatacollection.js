@@ -65,7 +65,7 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
      });
 	
 	/** Adding button **/
-	html = html + "<div style='border:1px solid #3892d3;background-color:#3892d3;text-align:center;'><a style='color:white;' href='#/mx/workflow/step/"+dataCollectionGroup.WorkflowStep_workflowStepId+"/main'> See details</a></div>";
+	//html = html + "<div style='border:1px solid #3892d3;background-color:#3892d3;text-align:center;'><a style='color:white;' href='#/mx/workflow/step/"+dataCollectionGroup.WorkflowStep_workflowStepId+"/main'> See details</a></div>";
 	return html;
 	
 };

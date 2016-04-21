@@ -12,6 +12,7 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,
         store: this.store,
+        
         columns: this.getColumns(),
         features: [{
             id: 'dataCollectionGroup',
@@ -86,8 +87,6 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             flex: 1.5,
             renderer: function(grid, e, record) {
                 var html = "";
-
-                debugger
                 dust.render("resultsection.general", record.data, function(err, out) {
                   
                     html = out;
@@ -134,7 +133,8 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             header: 'Online Data Analysis',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
-            flex: 1,
+            flex: 0.75,
+            
             renderer: function(grid, e, record) {
                 return new ResultSectionDataCollection().getHTML(record.data);
             }
@@ -152,9 +152,8 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             header: 'Workflow',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
-            flex: 1,
+            flex: 0.75,
             renderer: function(grid, e, record) {
-
                 return new WorkflowSectionDataCollection().getHTML(record.data);
 
             }
@@ -163,7 +162,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             header: '',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
-            width: 160,
+            width: 200,
             renderer: function(grid, e, record) {
                 return new CustomSectionDataCollection().getHTML(record.data);
 
