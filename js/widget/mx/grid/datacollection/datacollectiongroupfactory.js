@@ -1,7 +1,6 @@
 
 
-
-function DataCollectionGroupFactory() {
+/*CollectionGroupFactory() {
 	this.dataCollectionPanel = new GenericDataCollectionPanel();
 }
 
@@ -9,7 +8,7 @@ DataCollectionGroupFactory.prototype.load = function( dataCollectionGroup ) {
 	this.dataCollectionPanel.load(dataCollectionGroup);
 };
 
-DataCollectionGroupFactory.prototype.getPanel = function( dataCollectionGroup ) {
+DataCollectionGroupFactory.prototype.getPanel = function( dataCollectionGroup ) {*/
 	 /* if (dataCollectionGroup != null){
 			  var dataCollectionGroupType = dataCollectionGroup[0]["DataCollectionGroup_experimentType"]; 
 			  var workflowType = dataCollectionGroup[0]["Workflow_workflowType"];
@@ -41,7 +40,7 @@ DataCollectionGroupFactory.prototype.getPanel = function( dataCollectionGroup ) 
 			        break;
 			}
 	  }*/
-	  return this.dataCollectionPanel.getPanel();
-};
+	  //return this.dataCollectionPanel.getPanel();
+//};
 	
 	
