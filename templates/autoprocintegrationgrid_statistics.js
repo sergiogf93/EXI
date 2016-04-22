@@ -7,7 +7,7 @@
 </tr>
 {#.}
 	<tr>
-			<td class='datacollection_parameter_name'>
+			<td class='summary_datacollection_parameter_name'>
 				{.type}
 			</td>
 			<td style='padding-left:10px;'>

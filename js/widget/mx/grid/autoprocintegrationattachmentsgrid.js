@@ -30,31 +30,12 @@ function AutoProcIntegrationAttachmentGrid(args) {
 		if (args.maxHeight != null) {
 			this.maxHeight = args.maxHeight;
 		}
-		
-		
 	}
-	
 	this.onSelected = new Event(this);
-	
 };
 
 
-AutoProcIntegrationAttachmentGrid.prototype.load = function(autoProcIntegrations) {
-	var data = [];
-	
-	
-	for (var i = 0; i < autoProcIntegrations.details.autoProcProgAttachmentsWebBeans.length; i++) {
-		var record = autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i];
-		if (autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i].ispybAutoProcAttachment != null){
-			record["fileName"] = autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i].ispybAutoProcAttachment.fileName;
-			record["step"] = autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i].ispybAutoProcAttachment.step;
-			record["category"] = autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i].ispybAutoProcAttachment.fileCategory;
-			record["description"] = autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i].ispybAutoProcAttachment.description;
-			record["autoProcProgramAttachmentId"] = autoProcIntegrations.details.autoProcProgAttachmentsWebBeans[i].autoProcProgramAttachmentId;
-			
-		}
-		data.push(record);
-	}
+AutoProcIntegrationAttachmentGrid.prototype.load = function(data) {
 	this.store.loadData(data, false);
 };
 
@@ -75,9 +56,6 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		       ]
 	});
 
-//	var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-//    });
-    
     
 	
 	this.panel = Ext.create('Ext.grid.Panel', {
@@ -85,12 +63,8 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		store : this.store,
 		cls : 'border-grid',
 		margin : this.margin,
-//		features: [groupingFeature],
 		overflow:'auto' ,
 		width : this.width - 20,
-//		maxHeight : this.maxHeight,
-//		minHeight : this.maxHeight,
-//		layout : 'fit',
 		columns : [ 
 		
 		{
@@ -104,28 +78,6 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 				return val.data.fileName;
 			}
 		}, 
-		
-		{
-			text : 'autoProcProgramAttachmentId',
-			dataIndex : 'autoProcProgramAttachmentId',
-			hidden : true,
-			flex : 0.5
-		}, 
-		{
-			text : 'step',
-			dataIndex : 'step',
-			flex : 0.2
-		}, 
-		{
-			text : 'category',
-			dataIndex : 'category',
-			flex : 0.3
-		}, 
-		{
-			text : 'description',
-			dataIndex : 'description',
-			flex : 1
-		},
 		{
             xtype:'actioncolumn',
             flex : 0.3,
@@ -143,12 +95,6 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		viewConfig : {
 			stripeRows : true,
 			listeners : {
-//				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-////					_this.onSelected.notify(record.data);
-//				},
-//				'selectionChange' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//					debugger
-//				}
 			}
 		}
 	});

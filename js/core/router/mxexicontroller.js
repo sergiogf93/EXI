@@ -112,11 +112,12 @@ MXExiController.prototype.routeNavigation = function() {
 	
 	
 	Path.map("#/autoprocintegration/datacollection/:datacollectionId/main").to(function() {
+        
 		var mainView = new AutoProcIntegrationMainView();
 		
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['datacollectionId']);
-		/** Selecting data collections from experiment * */
+		
 		mainView.onSelect.attach(function(sender, element) {
 			EXI.localExtorage.selectedSubtractionsManager.append(element);
 		});
@@ -225,12 +226,18 @@ MXExiController.prototype.routeNavigation = function() {
         
         
         var onSuccessEnergy = function(sender, data){
-            console.log(data)
 			mainView.loadEnergyScans(data);
 			EXI.setLoadingMainPanel(false);
 		};
          /** retrieving energy scans */
-        EXI.getDataAdapter({onSuccess : onSuccessEnergy}).mx.energyscan.getEnergyScanListBySessionId(this.params['sessionId'])
+        EXI.getDataAdapter({onSuccess : onSuccessEnergy}).mx.energyscan.getEnergyScanListBySessionId(this.params['sessionId']);
+        
+          var onSuccessXFE = function(sender, data){
+			mainView.loadFXEScans(data);
+			EXI.setLoadingMainPanel(false);
+		};
+         /** retrieving XFE scans */
+        EXI.getDataAdapter({onSuccess : onSuccessXFE}).mx.xfescan.getXFEScanListBySessionId(this.params['sessionId']);
         
 
 	}).enter(this.setPageBackground);

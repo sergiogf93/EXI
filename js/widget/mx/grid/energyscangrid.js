@@ -18,20 +18,12 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
         fields: ["dataCollectionGroup"]
     });
     
-    this.panel = Ext.create('Ext.grid.Panel', {
-        
+      this.panel = Ext.create('Ext.grid.Panel', {
+        border: 1,
         padding : 5,
-        cls : 'border-grid',
         store: this.store,
         disableSelection: true,
         columns: this.getColumns(),
-        features: [{
-            id: 'dataCollectionGroup',
-            ftype: 'groupingsummary',
-            groupHeaderTpl: '{dataCollectionGroup}',
-            hideGroupedHeader: true,
-            enableGroupingMenu: false
-        }],
         viewConfig: {
 	        			enableTextSelection: true
         }
@@ -51,25 +43,51 @@ EnergyScanGrid.prototype._getHTMLZoomImage = function(url, dataCollectionId, ima
 EnergyScanGrid.prototype.getColumns = function() {
     var _this = this;
     var columns = [
-       
         {
-            header: 'DataCollection',
+            header: 'Element',
+            
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
-            flex: 1,
+            flex: 0.2,
             renderer: function(grid, e, record) {
                 var html = "";
-                dust.render("energyscangrid.general", record.data, function(err, out) {
-                  
+                dust.render("energyscangrid.element", record.data, function(err, out) {  
                     html = out;
                 });
-                
                 return html;
 
             }
         },
         {
-            header: 'Image',
+            header: '',
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            flex: 1,
+            renderer: function(grid, e, record) {
+                var html = "";
+                dust.render("energyscangrid.primary", record.data, function(err, out) {  
+                    html = out;
+                });
+                return html;
+
+            }
+        },
+        {
+            header: '',
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            flex: 1,
+            renderer: function(grid, e, record) {
+                var html = "";
+                dust.render("energyscangrid.secondary", record.data, function(err, out) {  
+                    html = out;
+                });
+                return html;
+
+            }
+        },
+        {
+            header: 'Chooch',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,

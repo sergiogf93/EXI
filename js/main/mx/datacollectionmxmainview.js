@@ -11,14 +11,13 @@ function DataCollectionMxMainView() {
 	
 	this.genericDataCollectionPanel = new GenericDataCollectionPanel();
     this.energyScanGrid = new EnergyScanGrid();
-
+    this.xfeScanGrid = new XFEScanGrid();
 }
 
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 DataCollectionMxMainView.prototype.getContainer = function() {
-		this.container = Ext.create('Ext.tab.Panel', {
-        
+		this.container = Ext.create('Ext.tab.Panel', {       
         padding : "5 40 0 5",
         items: [ {
                         title: 'Data Collection',
@@ -29,14 +28,16 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                 }, 
                 {
                         title: 'Energy Scan',
+                        cls : 'border-grid',
                         items:[
                              this.energyScanGrid.getPanel()
                         ]
                 }, 
                 {
                         title: 'Fluorescence Spectrum',
+                        cls : 'border-grid',                         
                         items:[
-                        
+                            this.xfeScanGrid.getPanel()
                         ]
                 }]
         });
@@ -48,19 +49,23 @@ DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
      this.energyScanGrid.load(data);
 };
 
-DataCollectionMxMainView.prototype.loadCollections = function(data) {
-	  var data = _.filter(data, function(u) {
+DataCollectionMxMainView.prototype.loadFXEScans = function(data) {    
+     this.xfeScanGrid.load(data);
+};
+
+DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
+	var data = _.filter(dataCollections, function(u) {
         return u.DataCollection_dataCollectionId != null;
     });
     
     for (var i = 0; i < data.length; i++) {
         try{
             if (data[i].DataCollectionGroup_startTime != null){
-                data[i].time =  moment(data[i].DataCollectionGroup_startTime, "MMMM Do YYYY, h:mm:ss A").format("h:mm:ss A")
+                data[i].time =  moment(data[i].DataCollectionGroup_startTime, "MMMM Do YYYY, h:mm:ss A").format("h:mm:ss A");
             }
             
             if (data[i].DataCollectionGroup_startTime != null){
-                data[i].date =  moment(data[i].DataCollectionGroup_startTime, "MMMM Do YYYY").format("MMMM Do YYYY")
+                data[i].date =  moment(data[i].DataCollectionGroup_startTime, "MMMM Do YYYY").format("MMMM Do YYYY");
             }
             
             if (data[i].DataCollection_resolutionAtCorner != null){
@@ -92,21 +97,5 @@ DataCollectionMxMainView.prototype.loadCollections = function(data) {
             console.log(error);
         }
     }
-    
-    
-	this.genericDataCollectionPanel.load(data);
-	
+	this.genericDataCollectionPanel.load(data);	
 };
-
-
-
-
-
-
-
-
-
-
-
-
-

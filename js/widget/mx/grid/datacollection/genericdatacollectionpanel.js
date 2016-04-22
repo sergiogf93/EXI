@@ -12,13 +12,6 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
         store: this.store,
         disableSelection: true,
         columns: this.getColumns(),
-        features: [{
-            id: 'dataCollectionGroup',
-            ftype: 'groupingsummary',
-            groupHeaderTpl: '{dataCollectionGroup}',
-            hideGroupedHeader: true,
-            enableGroupingMenu: false
-        }],
         viewConfig: {
 	        			enableTextSelection: true
         }

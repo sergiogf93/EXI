@@ -112,6 +112,11 @@ CurvePlotter.prototype.load = function(selections) {
 };
 
 
+
+
+
+
+
 function AutoProcIntegrationCurvePlotter(args) {
 	CurvePlotter.call(this, args);
 	
@@ -123,7 +128,7 @@ function AutoProcIntegrationCurvePlotter(args) {
 			this.height = args.height;
 		}
 		if (args.title != null){
-			this.title = args.title;
+			this.title = args.title;  
 		}
 	}
 }

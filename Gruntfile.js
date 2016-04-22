@@ -124,7 +124,7 @@ module.exports = function(grunt) {
 		options: {
 		},
 		prod: {
-		  files : {'report' : ['js/core/**/*.js', 'js/widget/*/*.js', 'js/main/*/*.js', 'js/navigation/**/*.js']}
+		  files : {'report' : ['js/core/**/*.js', 'js/widget/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']}
 		}
         },
 	includeSource: {
