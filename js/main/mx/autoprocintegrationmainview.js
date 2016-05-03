@@ -175,9 +175,10 @@ AutoProcIntegrationMainView.prototype.getAutoprocIntegrationIdByautoProcProgramA
 * @method onPlotClicked
 */
 AutoProcIntegrationMainView.prototype.onPlotClicked = function(autoProcProgramAttachmentId) {
-   var autoProcIntegrationId = this.getAutoprocIntegrationIdByautoProcProgramAttachmentId(autoProcProgramAttachmentId);
-   if (autoProcIntegrationId){
-        this.autoProcIntegrationGrid.selectRowByAutoProcIntegrationId(autoProcessing.v_datacollection_summary_phasing_autoProcIntegrationId);
+    
+   var autoProcIntegration = this.getAutoprocIntegrationIdByautoProcProgramAttachmentId(autoProcProgramAttachmentId);
+   if (autoProcIntegration){
+        this.autoProcIntegrationGrid.selectRowByAutoProcIntegrationId(autoProcIntegration.v_datacollection_summary_phasing_autoProcIntegrationId);
    }
 };
 

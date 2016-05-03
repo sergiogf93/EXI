@@ -12,10 +12,18 @@ function AutoProcIntegrationGrid(args) {
 	this.preventSelection = false;
 	this.maxHeight = 500;
 	this.minHeight = 500;
+    this.minHeight = 500;
+    
+    this.spaceGroupColumnHidden = false;
+    this.unitCellColumnHidden = false;
+    this.statisticsColumnHidden = false;
+    this.phasingColumnHidden = false;
+    
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
 		}
+        
 		if (args.maxHeight != null) {
 			this.maxHeight = args.maxHeight;
 		}
@@ -33,6 +41,22 @@ function AutoProcIntegrationGrid(args) {
 
 		if (args.width != null) {
 			this.width = args.width;
+		}
+        
+        if (args.spaceGroupColumnHidden != null) {
+			this.spaceGroupColumnHidden = args.spaceGroupColumnHidden;
+		}
+        
+        if (args.unitCellColumnHidden != null) {
+			this.unitCellColumnHidden = args.unitCellColumnHidden;
+		}
+        
+        if (args.statisticsColumnHidden != null) {
+			this.statisticsColumnHidden = args.statisticsColumnHidden;
+		}
+        
+        if (args.phasingColumnHidden != null) {
+			this.phasingColumnHidden = args.phasingColumnHidden;
 		}
 	}
 	
@@ -87,13 +111,11 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		} });
 	
 	this.panel = Ext.create('Ext.grid.Panel', {
-		title : 'Auto-Processing Integration',
+		
 		store : this.store,
 		selModel : selModel,
 		cls : 'border-grid',
         layout : 'fit',
-		//maxHeight : this.maxHeight,
-		//minHeight : this.maxHeight,
 		columns : [ 
             
             {
@@ -102,7 +124,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
             flex : 1,
             hidden : true,
 			renderer : function(e, sample, record){
-				return record.data.autoProcIntegrationId;
+                return record.data.v_datacollection_summary_phasing_autoProcIntegrationId;
 			}
 		},
         {
@@ -116,8 +138,10 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
         {
 			text : 'Space Group',
             flex : 0.75,
+            hidden : this.spaceGroupColumnHidden,
 			dataIndex : 'v_datacollection_summary_phasing_autoproc_space_group',
 			renderer : function(e, sample, record){
+                
 				return record.data.v_datacollection_summary_phasing_autoproc_space_group;
 			}
 		},
@@ -125,6 +149,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Unit cell',
 			dataIndex : 'processingPrograms',
 			flex : 1.5,
+            hidden : this.unitCellColumnHidden,
 			renderer : function(e, sample, record){
 				var html  = "";
 				try{
@@ -142,6 +167,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Statistics',
 			dataIndex : 'processingPrograms',
 			flex : 3,
+            hidden : this.statisticsColumnHidden,
 			renderer : function(e, sample, record){
 				try{
 					var type = record.data.scalingStatisticsType.split(",");
@@ -178,11 +204,13 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Phasing',
 			dataIndex : 'processingPrograms',
 			flex : 1.5,
+            hidden : this.phasingColumnHidden,
 			renderer : function(e, sample, record){
 				var html  = "";
+                debugger
 				if (record.data.phasingStepType){			
 					try{
-						dust.render("autoprocintegrationgrid_phasing", record.data, function(err, out){
+						dust.render("autoprocintegrationgrid_phasing", record.data.spaceGroupShortName.split(','), function(err, out){
 							html = out;
 						});
 					}

@@ -36,7 +36,9 @@ function AutoProcIntegrationAttachmentGrid(args) {
 
 
 AutoProcIntegrationAttachmentGrid.prototype.load = function(data) {
-	this.store.loadData(data, false);
+    if (data){
+	       this.store.loadData(data, false);
+    }
 };
 
 AutoProcIntegrationAttachmentGrid.prototype.selectRowByAutoProcIntegrationId = function(autoProcIntegrationId) {
@@ -47,13 +49,8 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		groupField: 'category',
-		fields : [ 'fileName',
-		           'step',
-		           'category',
-		           'description',
-		           'autoProcProgramAttachmentId'
-		       ]
+
+		fields : [  ]
 	});
 
     
@@ -63,8 +60,9 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		store : this.store,
 		cls : 'border-grid',
 		margin : this.margin,
-		overflow:'auto' ,
-		width : this.width - 20,
+		overflow :'auto',
+        height : 500,
+		//width : this.width - 20,
 		columns : [ 
 		
 		{

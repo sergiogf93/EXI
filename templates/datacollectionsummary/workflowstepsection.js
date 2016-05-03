@@ -1,6 +1,6 @@
 
 <div class="showhim">
-    <div class='selected-region' >
+    <div class='selected-region' style='height:180px;' >
         
         {#.}
             <div>
@@ -19,7 +19,7 @@
     
     </div>
     {#.[0]}
-        <div class="showme" style='color:white;border-radius: 5px;text-align:center;height:20px;background-color:#3892d3;'>
+        <div class="showme" style='color:white;margin-top:20px;border-radius: 5px;text-align:center;height:20px;background-color:#3892d3;'>
             <a style='color:white;text-decoration: none;' href='#/mx/workflow/step/{.workflowStepIds}/main'>Open Workflows</a>
         </div>
     {/.[0]}

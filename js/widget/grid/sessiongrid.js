@@ -152,7 +152,7 @@ SessionGrid.prototype.getPanel = function() {
                  }
 		    },
             {
-			    text                : 'SRF Spectrums',
+			    text                : 'XRF Spectrum',
 			    dataIndex           : 'xrfSpectrumCount',
 			    width               : 200,
                 flex               : 1,
@@ -164,7 +164,7 @@ SessionGrid.prototype.getPanel = function() {
 		    },
             
              {
-			    text                : 'Hellical',
+			    text                : 'Helical',
 			    dataIndex           : 'xrfSpectrumCount',
 			    width               : 200,
                 flex               : 1,

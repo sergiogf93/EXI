@@ -27,11 +27,17 @@
                 
            
     {/.}
-    {#.[0]}
-      <div class="showme" style='color:white;border-radius: 5px;text-align:center;height:20px;background-color:#3892d3;'>
-            <a style='color:white;text-decoration: none;' href='#/autoprocintegration/datacollection/{.datacollectionId}/main'>Open Online Data analysis</a>
-        </div>
-     {/.[0]}
+   
         
      </div>
+      {#.[0]}
+      <div class="showme" >
+            <table>
+                <tr>
+                    <td style='width : 100px;color:white;border-radius: 5px;text-align:center;height:20px;background-color:#3892d3;'><a style='color:white;text-decoration: none;' href='#/autoprocintegration/datacollection/{.datacollectionId}/main'>Open Analysis</a></td>
+                    <td style='width : 100px;color:white;border-radius: 5px;text-align:center;height:20px;background-color:#3892d3;'><a style='color:white;text-decoration: none;' href='#/autoprocintegration/datacollection/{.datacollectionId}/files'>Explore Files</a></td>
+                </tr>
+            </table>
+        </div>
+     {/.[0]}
 </div>
