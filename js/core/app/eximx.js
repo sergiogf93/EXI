@@ -2,7 +2,22 @@ function ExiMX() {
 	 Exi.call(this, {
 		 					menu: new MXMainMenu(),
 		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new MXExiController(),new SAXSExiController(), new OfflineExiController(), new ProposalExiController(), new LabContactExiController()],
+		 					controllers : [
+									
+									new SessionController(), 
+									new SAXSExiController(), 
+									new OfflineExiController(), 
+									new ProposalExiController(), 
+									new LabContactExiController(),
+									new PuckController(),
+									new CrystalController(),
+									new ProteinController(),
+									new AutoprocIntegrationController(),
+									new MxDataCollectionController(),
+									new WorkflowController(),
+									new MxPrepare(),
+									new ImageController()
+							],
 		 					headerCssClass : 'mxTitlePanel'
 
 	 });
@@ -32,8 +47,5 @@ ExiMX.prototype.getHeader = function(){
 
 ExiMX.prototype.getDataAdapter = function(args){
 	return  new MxDataAdapterFactory(this.appendDataAdapterParameters(args));
-    
-    
-    
 };
 

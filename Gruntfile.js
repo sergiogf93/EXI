@@ -22,7 +22,8 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				  'min/core.min.js' 		: ["js/core/**/*js"],
+				  'min/core.min.js' 		: ["js/core/**/*js","js/controller/**/*js"],
+
 				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
 				                      		    "js/widget/addressform.js", 
 				                      		    "js/widget/**/*.js"],
@@ -31,7 +32,7 @@ module.exports = function(grunt) {
 				                          	   "js/navigation/*/*js"],
 				  'min/main.min.js' 		: [
 				                    		   		"js/main/mainview.js", 
-                                                       "js/main/preparemainview.js", 
+                                                       				"js/main/preparemainview.js", 
 				                    		   		"js/main/puckmainview.js", 
 				                    		   		"js/main/addressmainview.js", 
 				                    		   		"js/main/userwelcomemainview.js", 
@@ -118,13 +119,13 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/controller/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
 	},
 	plato: {
 		options: {
 		},
 		prod: {
-		  files : {'report' : ['js/core/**/*.js', 'js/widget/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']}
+		  files : {'report' : ['js/**/*.js']}
 		}
         },
 	includeSource: {
