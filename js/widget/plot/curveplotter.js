@@ -133,7 +133,7 @@ function AutoProcIntegrationCurvePlotter(args) {
 	}
 }
 
-AutoProcIntegrationCurvePlotter.prototype.getPanel = CurvePlotter.prototype.getPanel;
+
 AutoProcIntegrationCurvePlotter.prototype.getPointCount = CurvePlotter.prototype.getPointCount;
 AutoProcIntegrationCurvePlotter.prototype.getLabels = CurvePlotter.prototype.getLabels;
 AutoProcIntegrationCurvePlotter.prototype.render = CurvePlotter.prototype.render;

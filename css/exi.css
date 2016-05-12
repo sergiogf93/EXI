@@ -1,4 +1,28 @@
+.selectable_row:hover {
+    background-color:#3892d3;
+    font-weight : bold;
+    cursor: pointer;
+    color : white;
+}
 
+.openGridButton:hover{
+    background-color:#BCA9F5;
+    width : 100px;
+    
+    
+}
+
+.openGridButton{
+    color:white;
+    text-decoration: none;
+    color:white;
+    margin-top:0px;
+    border-radius: 5px;
+    text-align:center;
+    height:20px;
+    background-color:#3892d3;
+     width : 100px;
+}
 
 .showme{ 
     display: none;
@@ -11,7 +35,7 @@
 
 .selected-region:hover{
     cursor: pointer;
-    # background-color:red;
+    
     overflow:auto;
     height:190px;
    
@@ -150,7 +174,7 @@
 
 .summary_datacollection_parameter_name{
 	color:#A4A4A4;
-    #background-color:#F2F2F2;
+   
 	font-size : 10px;
     font-weight : bold;
     width : 100px;
@@ -170,7 +194,7 @@
 
 .datacollection_parameter_name{
 	color:#A4A4A4;
-    background-color:#F2F2F2;
+    
 	font-size : 10px;
     font-weight : bold;
     width : 100px;
@@ -518,7 +542,7 @@ img.smalllazy {
 }
 
 .mxTitlePanel{
-	background-color: #0B0B61;
+	background-color: #132577;
 	color: white;
 	font-weight: bold;
 	font-size: 25px;

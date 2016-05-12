@@ -69,10 +69,11 @@
 		  
 		  
 	    <!-- include: "type": "js", "files": "js/core/**/*.js" -->
+	    <!-- include: "type": "js", "files": "js/menu/**/*.js" -->
 	    <!-- include: "type": "js", "files": "js/controller/**/*.js" -->
-	    <script src="../js/main/mainview.js"></script>
-	    <script src="../js/main/run/runmainview.js"></script>
-	    <!-- include: "type": "js", "files": "js/main/**/*.js" -->
+	    <script src="../js/view/mainview.js"></script>
+	    <script src="../js/view/run/runmainview.js"></script>
+	    <!-- include: "type": "js", "files": "js/view/**/*.js" -->
 	    <script src="../js/navigation/listview.js"></script>
 	    <!-- include: "type": "js", "files": "js/navigation/**/*.js" -->
 	    <script src="../js/widget/timeline/timelinewidget.js"></script>
@@ -108,7 +109,7 @@
 
 		Ext.Loader.setPath('Ext.ux', '../dependency/ext/examples/ux/');
 		Ext.Loader.setPath('Ext.Extended', '../dependency/extended/');
-
+       
 		Ext.require([
 		  'Ext.ux.statusbar.StatusBar',
 		  'Ext.Extended.RequiredTextField',

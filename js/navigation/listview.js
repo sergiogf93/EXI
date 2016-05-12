@@ -28,6 +28,21 @@ ListView.prototype.load = function(data){
 	}
 };
 
+
+ListView.prototype.getColumns = function(){
+	var _this = this;
+	return  [
+		        { text: this.title,  flex: 1, dataIndex: 'shippingId', 
+		        	renderer : function(list, token, record){
+		        		return _this.getRow(record);
+		        } }
+		    ];
+};
+
+ListView.prototype.getFields = function(){
+	return  [];
+};
+
 ListView.prototype.getPanel = function(){
 	var _this =this;
 	this.store = Ext.create('Ext.data.Store', {

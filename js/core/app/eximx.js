@@ -16,7 +16,9 @@ function ExiMX() {
 									new MxDataCollectionController(),
 									new WorkflowController(),
 									new MxPrepare(),
-									new ImageController()
+									new ImageController(),
+                                    new PhasingController(),
+                                    new XfeController()
 							],
 		 					headerCssClass : 'mxTitlePanel'
 
@@ -33,7 +35,6 @@ ExiMX.prototype.setLoadingNavigationPanel = Exi.prototype.setLoadingNavigationPa
 ExiMX.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiMX.prototype.setError = Exi.prototype.setError;
 ExiMX.prototype.setLoading = Exi.prototype.setLoading;
-ExiMX.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiMX.prototype.show = Exi.prototype.show;
 ExiMX.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiMX.prototype.setUserMenu = Exi.prototype.setUserMenu;
@@ -42,7 +43,18 @@ ExiMX.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterPar
 
 
 ExiMX.prototype.getHeader = function(){
-	return '<img class="titleImage" src="../images/logo_EMBL.png"><span class="title">ExiMX</span><span class="subtitle">Extended ISPyB for MX<sub style="font-size:10px;color:orange">BETA</sub></span>';
+    var html = "";
+    var data = {
+        version         : ExtISPyB.version,
+        release_date    : ExtISPyB.release_date
+       
+        
+    };
+    dust.render("mxheader", data, function(err, out){
+		html = out;
+     });
+    return html;
+	
 };
 
 ExiMX.prototype.getDataAdapter = function(args){

@@ -14,7 +14,7 @@ function AutoProcIntegrationGrid(args) {
 	this.minHeight = 500;
     this.minHeight = 500;
     
-    this.spaceGroupColumnHidden = false;
+    this.spaceGroupColumnHidden = true;
     this.unitCellColumnHidden = false;
     this.statisticsColumnHidden = false;
     this.phasingColumnHidden = false;
@@ -132,7 +132,18 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			dataIndex : 'processingPrograms',
             flex : 1,
 			renderer : function(e, sample, record){
-				return record.data.v_datacollection_summary_phasing_processingPrograms;
+				
+                var html  = "";
+				try{
+					dust.render("autoprocintegrationgrid_tool", record.data, function(err, out){
+						html = out;
+					});
+				}
+				catch(e){
+					return "Parsing error";
+				}
+				return html;
+                
 			}
 		},
         {
@@ -148,12 +159,12 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		{
 			text : 'Unit cell',
 			dataIndex : 'processingPrograms',
-			flex : 1.5,
+			width : 150,
             hidden : this.unitCellColumnHidden,
 			renderer : function(e, sample, record){
 				var html  = "";
 				try{
-					dust.render("autoprocintegrationgrid_autoprocolumn", record.data, function(err, out){
+					dust.render("autoprocintegrationgrid_unitcell", record.data, function(err, out){
 						html = out;
 					});
 				}
@@ -166,26 +177,33 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		{
 			text : 'Statistics',
 			dataIndex : 'processingPrograms',
-			flex : 3,
+			flex : 4,
             hidden : this.statisticsColumnHidden,
 			renderer : function(e, sample, record){
 				try{
+                    
 					var type = record.data.scalingStatisticsType.split(",");
-					var resolutionLimitLow = record.data.resolutionLimitLow.split(",");
-					var resolutionLimitHigh = record.data.resolutionLimitHigh.split(",");
-					var multiplicity = record.data.multiplicity.split(",");
-					var meanIOverSigI = record.data.meanIOverSigI.split(",");
-					var completeness = record.data.completeness.split(",");
-					
+                    function getValue(attribute, i){
+                        if (attribute){
+                            var splitted = attribute.split(",");
+                            if (splitted[i]){
+                                return splitted[i];
+                            }
+                        }
+                        return "N/A";
+                        
+                    }
 					var parsed = [];
 					for (var i = 0; i < type.length; i++) {
 						parsed.push({
 							type 					: type[i],
-							resolutionLimitLow 		: resolutionLimitLow[i],
-							resolutionLimitHigh 	: resolutionLimitHigh[i],
-							multiplicity 			: multiplicity[i],
-							meanIOverSigI 			: meanIOverSigI[i],
-							completeness 			: completeness[i]
+							resolutionLimitLow 		: getValue(record.data.resolutionLimitLow, i),
+							resolutionLimitHigh 	: getValue(record.data.resolutionLimitHigh, i),
+							multiplicity 			: getValue(record.data.multiplicity, i),
+							meanIOverSigI 			: getValue(record.data.meanIOverSigI, i),
+							completeness 			: getValue(record.data.completeness, i),
+                            rMerge 			        : getValue(record.data.rMerge, i),
+                            ccHalf 			        : getValue(record.data.ccHalf, i)
 							
 						});
 					}
@@ -195,7 +213,8 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 					});
 				}
 				catch(e){
-					return "<span class='summary_datacollection_parameter_name'>Not found</span>";
+                    
+					return "<span class='summary_datacollection_parameter_name'>Not found " + e +"</span>";
 				}
 				return html;
 			}
@@ -206,11 +225,19 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			flex : 1.5,
             hidden : this.phasingColumnHidden,
 			renderer : function(e, sample, record){
-				var html  = "";
-                debugger
+				var html  = "";           
 				if (record.data.phasingStepType){			
 					try{
-						dust.render("autoprocintegrationgrid_phasing", record.data.spaceGroupShortName.split(','), function(err, out){
+                        var spaceGroups = record.data.spaceGroupShortName.split(',');
+                        var dataForDust = [];
+                        for(var i = 0; i < spaceGroups.length; i++){
+                            dataForDust.push({
+                                spaceGroup : spaceGroups[i],
+                                autoProcIntegrationId : record.data.v_datacollection_summary_phasing_autoProcIntegrationId
+                            });
+                        }
+                        
+						dust.render("autoprocintegrationgrid_phasing", dataForDust, function(err, out){
 							html = out;
 						});
 					}
@@ -224,12 +251,21 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		
 		],
 		flex : 1,
-		viewConfig : {
-			//stripeRows : true,
-			preserveScrollOnRefresh: true,
-			listeners : {
-			}
-		}
+          viewConfig : {
+                preserveScrollOnRefresh: true,
+                stripeRows : true,
+                getRowClass : function(record, rowIndex, rowParams, store){
+
+                    if (record.data.v_datacollection_summary_phasing_anomalous != null){
+                         if (record.data.v_datacollection_summary_phasing_anomalous == true){
+                            return;//((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
+                        
+                        }
+                        
+                    }
+                    //return "warning-grid-row";
+                }
+	    	}
 	});
 
 	return this.panel;
