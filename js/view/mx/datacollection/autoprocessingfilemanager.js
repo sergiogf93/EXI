@@ -93,6 +93,7 @@ AutoProcessingFileManager.prototype.show = function(dataCollectionIds){
 AutoProcessingFileManager.prototype.reloadData = function(programId, filtered){
     this.programId = programId;
     this.filtered = filtered;
+    debugger
     /** Get all attachments */
     var dataByProgram = _.flatten(this.attachments);
     
@@ -106,7 +107,10 @@ AutoProcessingFileManager.prototype.reloadData = function(programId, filtered){
                 return b.fileName.indexOf(".mtz") != -1;
         })
     }
-    
+    console.log(dataByProgram);
+    if (!dataByProgram){
+        dataByProgram = [];
+    }
     this.autoProcIntegrationAttachmentGrid.load(dataByProgram);
 };
 
@@ -120,11 +124,20 @@ AutoProcessingFileManager.prototype.load = function(dataCollectionIds){
     var _this = this;
     var onSuccess2 = function(sender, data){      
 		var onSuccess = function(sender, dataAttachments){
+            
+            if (dataAttachments.length != _this.autoProcProgramIds.length){
+                /** Removing null */
+                debugger
+                _this.autoProcProgramIds =  _.filter(_this.autoProcProgramIds, function(b){return b != null});
+                
+            }
 			_this.attachments = dataAttachments;
 			_this.autoProcIntegrationAttachmentGrid.load(_.flatten(dataAttachments));
 			_this.autoProcIntegrationAttachmentGrid.panel.setLoading(false);
 		};
 		_this.autoProcIntegrationAttachmentGrid.panel.setLoading("Retrieving files");
+        
+        /** Some autoProcProgramIds may be null */
 		_this.autoProcProgramIds = _.map(data[0], 'v_datacollection_summary_phasing_autoProcProgramId');    
 		  
 		_this.autoProcStore.loadData(data[0]);

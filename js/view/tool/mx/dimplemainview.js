@@ -24,6 +24,7 @@ DimpleMainView.prototype.getToolDescription = function(name, description, refere
 
 DimpleMainView.prototype.getContainer = function() {
 	var _this = this;
+    
 	return Ext.create(
 					'Ext.form.Panel',
 					{
@@ -130,6 +131,7 @@ DimpleMainView.prototype.getContainer = function() {
 									var onError = function(sender, error){
 									
 									};
+                                    
 									EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getProject();
 								}
 							} }
