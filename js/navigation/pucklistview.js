@@ -1,43 +1,36 @@
+/**
+* PuckListView displays the pucks as list on the navigation panels
+*
+* @class PuckListView
+* @constructor
+*/
 function PuckListView(){
+	this.title = "Pucks";
 	this.sorters = [{property : 'sessionId', direction: 'DESC'}];
 	ListView.call(this);
 }
 
 PuckListView.prototype.getPanel = ListView.prototype.getPanel;
 PuckListView.prototype.load = ListView.prototype.load;
+PuckListView.prototype.getFilter = ListView.prototype.getFilter;
+PuckListView.prototype.getFields = ListView.prototype.getFields;
+PuckListView.prototype.getColumns = ListView.prototype.getColumns;
 
+/**
+* Calls to the dust template in order to render to puck in HTML
+*
+* @class getRow
+* @constructor
+*/
 PuckListView.prototype.getRow = function(record){
-		var html = "<table class='listView'>";
-		html = html + "<tr><td>Code:</td><td>" + record.data.Container_code + "</td></tr>";
-		html = html + "<tr><td  style='color:#207a7a;font-weight:bold;'>Status:</td><td>" + record.data.Dewar_dewarStatus+ "</td></tr>";
-		html = html + "<tr><td>Shipping:</td><td>" + record.data.Shipping_shippingName + "</td></tr>";
-		if (record.data.Shipping_bltimeStamp != null){
-			try{
-				html = html + "<tr><td>Shipping Date:</td><td>" + moment(record.data.Shipping_bltimeStamp).format("MMM Do YY") + "</td></tr>";
-			}
-			catch(e){
-				html = html + "<tr><td>Shipping Date:</td><td>Format Error</td></tr>";
-			}
-		}
-	return html + "</table>";
+	var html = "";
+	dust.render("puck.listview", record.data, function(err, out){
+        	html = out;
+     	});
+	return html;
 };
 
-PuckListView.prototype.getFilter = function(value){
-	return [{property : "creationDate", value : value, anyMatch : true}];
-};
 
-PuckListView.prototype.getColumns = function(){
-	var _this = this;
-	return  [
-		        { text: 'Pucks',  flex: 1, dataIndex: 'shippingId', 
-		        	renderer : function(list, token, record){
-		        		return _this.getRow(record);
-		        } }
-		    ];
-};
 
-PuckListView.prototype.getFields = function(){
-	return  ['Shipping_shippingName','Container_code', 'Dewar_dewarStatus', 'shippingStatus', 'shippingType'];
-};
 
 

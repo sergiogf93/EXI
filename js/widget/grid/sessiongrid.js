@@ -40,7 +40,6 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
-    debugger
 	this.store.loadData(sessions, true);
 };
 
@@ -48,7 +47,7 @@ SessionGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		fields : ['beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName'],
+		fields : ['beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],
 		emptyText : "No sessions",
 		data : []
 	});
@@ -60,8 +59,9 @@ SessionGrid.prototype.getPanel = function() {
 		icon : '../images/icon/sessions.png',
 		cls : 'border-grid',
 		height : this.height,
+       
 		margin : this.margin,
-		
+		selMode : null,
 
 		columns : [
              {
@@ -87,7 +87,13 @@ SessionGrid.prototype.getPanel = function() {
                     return record.data.Proposal_proposalCode + record.data.Proposal_ProposalNumber;
                 }
             },
-         
+       
+          {
+			    text                : 'Shifts',
+			    dataIndex           : 'nbShifts',
+                hidden              : true,
+                flex                : 1
+		    },
            {
 			    text                : 'Local Contact',
 			    dataIndex           : 'beamLineOperator',
@@ -116,10 +122,11 @@ SessionGrid.prototype.getPanel = function() {
                 hidden              : true,
                 flex               : 1
 		    },
+          
              {
 			    text                : 'Energy Scan',
 			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
+
                 flex               : 1,
                   renderer : function(grid, a, record){ 
                       if (record.data.energyScanCount != 0){                       
@@ -128,9 +135,9 @@ SessionGrid.prototype.getPanel = function() {
                  }
 		    },
             {
-			    text                : 'SRF Spectrums',
+			    text                : 'XRF Spectrum',
 			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
+			   
                 flex               : 1,
                   renderer : function(grid, a, record){   
                       if (record.data.xrfSpectrumCount != 0){                          
@@ -139,59 +146,65 @@ SessionGrid.prototype.getPanel = function() {
                     }
 		    },
             {
-			    text                : 'Characterizations',
-			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
-                flex               : 1,
-                  renderer : function(grid, a, record){   
-                         if (record.data.CharacterizationdataCollectionGroupCount != 0){                          
-                            return record.data.CharacterizationdataCollectionGroupCount;
-                        }                     
-                        
-                    }
-		    },
-             {
-			    text                : 'Hellical',
-			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
-                flex               : 1,
-                  renderer : function(grid, a, record){       
-                        if (record.data.HellicaldataCollectionGroupCount != 0){                          
-                            return record.data.HellicaldataCollectionGroupCount;
-                        }                   
-                       
-                    }
-		    },
-            {
-			    text                : 'Mesh',
-			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
-                flex               : 1,
-                  renderer : function(grid, a, record){                        
-                        
-                          if (record.data.MeshdataCollectionGroupCount != 0){                          
-                            return record.data.MeshdataCollectionGroupCount;
-                        }    
-                    }
-		    },
-            {
-			    text                : 'OSC',
-			    dataIndex           : 'xrfSpectrumCount',
-			    width               : 200,
-                flex               : 1,
-                  renderer : function(grid, a, record){       
-                          if (record.data.OSCdataCollectionGroupCount != 0){                          
-                            return record.data.OSCdataCollectionGroupCount;
-                        }                    
-                     
-                    }
-		    },
+                text: 'Data Collection',
+                columns: [
+                        {
+                            text                : 'Tests',
+                            tooltip             : 'Data Collection with less than 5 images',
+                            dataIndex           : 'testDataCollectionGroupCount',
+                           
+                            flex               : 1,
+                            renderer : function(grid, a, record){       
+                                
+                                    if (record.data.testDataCollectionGroupCount != 0){                          
+                                        return record.data.testDataCollectionGroupCount;
+                                    }                   
+                                
+                                }
+                        },
+                        {
+                            text                : 'Data Collection',
+                            dataIndex           : 'dataCollectionGroupCount',
+                             tooltip             : 'Data Collection with more than 4 images',
+                           
+                            flex               : 1,
+                            renderer : function(grid, a, record){                        
+                                    if (record.data.dataCollectionGroupCount != 0){                          
+                                        return record.data.dataCollectionGroupCount;
+                                    }    
+                                }
+                        },
+                        {
+                            text                : 'Images',
+                            dataIndex           : 'imagesCount',
+                           
+                            flex               : 1,
+                            renderer : function(grid, a, record){                        
+                                    if (record.data.imagesCount != 0){                          
+                                        return record.data.imagesCount;
+                                    }    
+                                }
+                        },
+                        {
+                            text                : 'Samples',
+                            dataIndex           : 'sampleCount',
+                          
+                            flex               : 1,
+                            renderer : function(grid, a, record){                        
+                                    if (record.data.sampleCount != 0){                          
+                                        return record.data.sampleCount;
+                                    }    
+                                }
+                        }
+                ]
+            },
          
 
             {
                 text              : 'Start',
                 dataIndex         : 'BLSession_startDate',
                 flex             : 1,
+                hidden              : true,
                 renderer          : function(grid, a, record){                    
                                         return record.data.BLSession_startDate;
                 }
@@ -199,12 +212,18 @@ SessionGrid.prototype.getPanel = function() {
             {
                 text              : 'End',
                 dataIndex         : 'BLSession_endDate',
-                  hidden              : true,
+                hidden              : true,
                 flex             : 1,                
                 renderer          : function(grid, a, record){                    
                                         return record.data.BLSession_endDate;
                 }
-		   }
+		   },
+           {
+			    text                : 'Comments',
+			    dataIndex           : 'comments',
+                hidden              : false,
+                flex                : 3
+		    },
            ], 
       	   viewConfig : {
                 stripeRows : true,
@@ -221,7 +240,20 @@ SessionGrid.prototype.getPanel = function() {
                     }
                     return "warning-grid-row";
                 }
-	    	}
+	    	},
+            listeners : {
+				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {                    
+					_this.onSelected.notify({
+                       proposalCode   : record.data.Proposal_proposalCode,
+                       proposalNumber : record.data.Proposal_ProposalNumber
+                        
+                    });
+				}
+
+				
+
+			}
+		
 		
 	});
 

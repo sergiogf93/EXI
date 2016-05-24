@@ -113,7 +113,7 @@ Exi.prototype.appendDataAdapterParameters = function(args) {
 				EXI.setError(errorCode);
 				location.hash = '/logout';
 			}
-		}
+		};
 	}
 	return args;	
 };

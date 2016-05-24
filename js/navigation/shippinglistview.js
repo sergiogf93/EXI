@@ -5,37 +5,22 @@ function ShippingListView(){
 
 ShippingListView.prototype.getPanel = ListView.prototype.getPanel;
 ShippingListView.prototype.load = ListView.prototype.load;
+ShippingListView.prototype.getFilter = ListView.prototype.getFilter;
+ShippingListView.prototype.getFields = ListView.prototype.getFields;
+ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 
-ShippingListView.prototype.getColorByStatus = function(status){
-		return "black";
-};
 
-
+/**
+* Calls to the dust template in order to render to puck in HTML
+*
+* @class getRow
+* @constructor
+*/
 ShippingListView.prototype.getRow = function(record){
-	var html = "<table class='listView'>";
-	html = html + "<tr><td>Name:</td><td>" + record.data.Shipping_shippingName+ "</td></tr>";
-	var status = record.data.Shipping_shippingStatus.toUpperCase();
-	html = html + "<tr><td>Type:</td><td>" + record.data.Shipping_shippingType+ "</td></tr>";
-	html = html + "<tr><td colspan=2; style='font-weight:bold;color:" + this.getColorByStatus(status) + ";'> " + status +"</td></tr>";
-	return html + "</table>";
+	var html = "";
+	dust.render("shipping.listview", record.data, function(err, out){
+        	html = out;
+     	});
+	return html;
 };
-
-ShippingListView.prototype.getFilter = function(value){
-	return [{property : "creationDate", value : value, anyMatch : true}];
-};
-
-ShippingListView.prototype.getColumns = function(){
-	var _this = this;
-	return  [
-		        { text: 'Shipping',  flex: 1, dataIndex: 'shippingId', 
-		        	renderer : function(list, token, record){
-		        		return _this.getRow(record);
-		        } }
-		    ];
-};
-
-ShippingListView.prototype.getFields = function(){
-	return  ['Shipping_shippingName', 'creationDate', 'Shipping_shippingStatus', 'Shipping_shippingType', 'Shipping_shippingId'];
-};
-
 

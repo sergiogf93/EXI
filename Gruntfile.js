@@ -22,31 +22,13 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				  'min/core.min.js' 		: ["js/core/**/*js"],
+				  'min/core.min.js' 		: ["js/core/**/*js","js/controller/**/*js", "js/menu/**/*js"],
+
 				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
 				                      		    "js/widget/addressform.js", 
 				                      		    "js/widget/**/*.js"],
-				  'min/navigation.min.js' 	: ["js/navigation/listview.js", 
-				                          	   "js/navigation/*.js",
-				                          	   "js/navigation/*/*js"],
-				  'min/main.min.js' 		: [
-				                    		   		"js/main/mainview.js", 
-                                                       "js/main/preparemainview.js", 
-				                    		   		"js/main/puckmainview.js", 
-				                    		   		"js/main/addressmainview.js", 
-				                    		   		"js/main/userwelcomemainview.js", 
-				                    		   		"js/main/managerwelcomemainview.js", 
-				                    		   		"js/main/shippingmainview.js", 
-				                    		   		"js/main/sessionmainview.js", 
-				                    		   		"js/main/saxs/landing/*.js", 
-				                    		   		"js/main/saxs/hplc/*.js",   
-				                    		   		"js/main/landing/*.js", 
-				                    		   		"js/main/saxs/prepare/*.js", 
-				                    		   		"js/main/saxs/*.js", 
-				                    		   		"js/main/mx/*.js", 
-				                    		   		"js/main/mx/*/*.js", 
-				                    		   		"js/main/tool/*.js", 
-				                    		   		"js/main/run/*.js"],
+				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js", "js/navigation/*/*js", "js/view/**/*js"],
+
 				 'min/bower_components.min.js' : [ 
 								
 							           "bower_components/dustjs-linkedin/dist/dust-full.min.js",
@@ -84,8 +66,7 @@ module.exports = function(grunt) {
 								   //'min/bower_components.min.js', 
 				                   		   'min/core.min.js', 
 				                   		   'min/widget.min.js', 
-				                   		   'min/navigation.min.js', 
-				                   		   'min/main.min.js',
+				                   		   'min/navigation.min.js',
 				                   		   'min/precompiled.templates.min.js'
 				                   		   ]
 			  }
@@ -118,13 +99,13 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/controller/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
 	},
 	plato: {
 		options: {
 		},
 		prod: {
-		  files : {'report' : ['js/core/**/*.js', 'js/widget/*/*.js', 'js/main/*/*.js', 'js/navigation/**/*.js']}
+		  files : {'report' : ['js/**/*.js']}
 		}
         },
 	includeSource: {
