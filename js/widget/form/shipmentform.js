@@ -178,11 +178,11 @@ ShipmentForm.prototype.getPanel = function() {
 
 	this.labContactsSendingCombo = Ext.create('Ext.form.ComboBox', {
 		id : _this.id + "shipmentform_sendingLabContactId",
-		fieldLabel : 'User contact information for shipping to beamline',
+		fieldLabel : 'Shipping Card to ESRF',
 		afterLabelTextTpl : required,
 		store : this.labContactForSendingStore,
 		queryMode : 'local',
-		labelWidth : 350,
+		labelWidth : 200,
 		width : 600,
 		margin : '10 0 0 10',
 		displayField : 'cardName',
@@ -191,19 +191,19 @@ ShipmentForm.prototype.getPanel = function() {
 
 	this.labContactsReturnCombo = Ext.create('Ext.form.ComboBox', {
 		id : _this.id + "returnLabContactId",
-		fieldLabel : 'User contact information for return to home institute',
+		fieldLabel : 'Shipping Card to HOME',
 		afterLabelTextTpl : required,
 		store : this.labContactForReturnStore,
 		queryMode : 'local',
 		margin : '10 0 0 10',
-		labelWidth : 350,
+		labelWidth : 200,
 		width : 600,
 		displayField : 'cardName',
 		valueField : 'labContactId'
 	});
 
 	
-    this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 100});
+    this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 200});
 
 	if (this.panel == null) {
 		this.panel = Ext.create('Ext.form.Panel', {
@@ -215,7 +215,7 @@ ShipmentForm.prototype.getPanel = function() {
 		      					xtype : 'requiredtextfield',
 		      					fieldLabel : 'Name',
 		      					allowBlank : false,
-		      					labelWidth : 100,
+		      					labelWidth : 200,
 		      					width : 400,
 		      					margin : "10 20 0 10",
 		      					name : 'shippingName',
@@ -229,7 +229,7 @@ ShipmentForm.prototype.getPanel = function() {
 		    					id : _this.id + 'comments',
 		    					fieldLabel : 'Comments',
 		    					value : '',
-		    					labelWidth : 100,
+		    					labelWidth : 200,
 		    					margin : "10 20 0 10",
 		    					width : 500,
 						},

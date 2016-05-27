@@ -26,16 +26,15 @@ XFEScanGrid.prototype.getPanel = function(dataCollectionGroup) {
         height : 800,
         store: this.store,
         disableSelection: true,
-        columns: this.getColumns(),
+        columns: this.getColumns(),    
         viewConfig: {
-	        			enableTextSelection: true
+	        			 enableTextSelection: true,
+                         stripeRows : true        
         },
          listeners : {
 			boxready : function(component, eOpts) {
                 
-                for (var id  in _this.plots){
-                    //document.getElementById(_this.plots[id].containerId).innerHTML = _this.plots[id]["url"]; 
-                       
+                for (var id  in _this.plots){                      
                     new Dygraph(document.getElementById(_this.plots[id].containerId),
                              _this.plots[id]["url"], {
                             legend: 'never',
@@ -58,9 +57,6 @@ XFEScanGrid.prototype.getPanel = function(dataCollectionGroup) {
                                 strokeBorderWidth: 1,
                                 highlightCircleSize: 5
                             },
-                            //showRoller: true,
-                            //rollPeriod: 14,
-                            //customBars: true,
                             ylabel: 'Count',
                     });
                 }

@@ -82,9 +82,13 @@
     
 </table>
 <br/>
- <table>
+ <table  style='width:100%;'>
      <tr style='width:100%;'>
         <td class='summary_datacollection_parameter_name'>Directory</td>
+         
+    </tr>    
+     <tr style='width:100%;'>
+        
         <td    style='width:100%;' colspan='3' style='font-size:8px;' class='summary_datacollection_parameter'><textarea class='ta2' rows="3" cols="20">{.DataCollection_imageDirectory}</textarea></td> 
     </tr>
     

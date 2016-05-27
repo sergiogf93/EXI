@@ -87,6 +87,7 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
         };
         
         for (var i = 0; i < items.length; i++) {
+            console.log(items[i]);
             if (items[i].type == "table"){
                   _this.mainPanel.insert(_this.getGrid(items[i].title,items[i].columns, items[i].data));
             }

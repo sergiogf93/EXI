@@ -24,9 +24,12 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
         store: this.store,
         disableSelection: true,
         columns: this.getColumns(),
+       
         viewConfig: {
-	        			enableTextSelection: true
+	        			 enableTextSelection: true,
+                         stripeRows : true
         }
+
     });
     return this.panel;
 };
