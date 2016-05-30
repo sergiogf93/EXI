@@ -78,7 +78,7 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 				  },
 				  onError: function(element) {
 					  _this.elements++;
-					  console.log('image  could not be loaded');
+                     
 				  },
 				  onFinishedAll: function() {
                      EXI.mainStatusBar.showReady();
@@ -102,7 +102,8 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 					  //console.log('image was loaded successfully');
 				  },
 				  onError: function(element) {
-					  _this.elements++;
+					   debugger
+					   $('#' + element[0].id).remove();
 					  console.log('image  could not be loaded');
 				  },
 				  onFinishedAll: function() {

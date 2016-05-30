@@ -121,13 +121,14 @@ AutoProcessingFileManager.prototype.reloadData = function(programId, filtered){
 * @param {[Integer]]} dataCollectionIds
 */
 AutoProcessingFileManager.prototype.load = function(dataCollectionIds){
+    
     var _this = this;
     var onSuccess2 = function(sender, data){      
 		var onSuccess = function(sender, dataAttachments){
             
             if (dataAttachments.length != _this.autoProcProgramIds.length){
                 /** Removing null */
-                debugger
+                
                 _this.autoProcProgramIds =  _.filter(_this.autoProcProgramIds, function(b){return b != null});
                 
             }
@@ -141,8 +142,16 @@ AutoProcessingFileManager.prototype.load = function(dataCollectionIds){
 		_this.autoProcProgramIds = _.map(data[0], 'v_datacollection_summary_phasing_autoProcProgramId');    
 		  
 		_this.autoProcStore.loadData(data[0]);
-		EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getAttachmentListByautoProcProgramsIdList(_this.autoProcProgramIds);
+        if (_this.autoProcProgramIds){
+            if (_this.autoProcProgramIds.length > 0){
+		        EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getAttachmentListByautoProcProgramsIdList(_this.autoProcProgramIds);
+                return;
+            }
+        }
+        /** No Attachments */
+        _this.autoProcIntegrationAttachmentGrid.panel.setLoading(false);
 	};
 	this.autoProcIntegrationAttachmentGrid.panel.setLoading();
+    
 	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionIds);
 }
