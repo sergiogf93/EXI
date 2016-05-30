@@ -40,6 +40,7 @@ function ImageResolutionViewer(){
 
 
 	this.image.onMouseOver.attach(function(sender, point){
+        _this.onMouseOver.notify(point);
 		/** Removing offset **/
 
 		/** Filling stats **/
@@ -114,6 +115,7 @@ function ImageResolutionViewer(){
 	this.zoomGrayScalePlot = new GrayScalePlot({width : this.canvasWidth});
 
 	this.onImageRendered = new Event(this);
+    this.onMouseOver = new Event(this);
 }
 
 ImageResolutionViewer.prototype.getImagePanel = function(){
