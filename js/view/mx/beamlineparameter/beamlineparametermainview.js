@@ -27,7 +27,7 @@ function BeamlineParameterMainView() {
     
     this.resolutionScatteringImageViewer.onResolutionCalculated.attach(function(sender, resolution) {
         if (document.getElementById(_this.id + 'resolution')){
-            document.getElementById(_this.id + 'resolution').innerHTML = Math.round(resolution * 100) / 100 + " Å";
+            document.getElementById(_this.id + 'resolution').innerHTML =  Math.round(resolution * 100) / 100 + " &#8491;";
         }
         else{
             document.title = resolution
@@ -55,7 +55,7 @@ BeamlineParameterMainView.prototype.getContainer = function() {
                                                     autoScroll : true
                                                 },
                                                 {
-                                                    html:  "<table style='width:400px;'><tr><td>Resolution</td><td class='datacollection_parameter_name' id='" + this.id + "resolution' >Select point on Image</td></tr></table",
+                                                    html:  "<table style='width:400px;'><tr><td style='width:30px;'>Resolution</td><td style='font-size:15px;' class='datacollection_parameter_name' id='" + this.id + "resolution' >Select point on Image</td></tr></table",
                                                     margin: '10 0 0 5',                                            
                                                     flex : 1,
                                                     height : 50,

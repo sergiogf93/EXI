@@ -36,21 +36,21 @@
 
 <tr>
     <td class='datacollection_parameter_name'>Wavelength</td> 
-    <td class='datacollection_parameter'>{.DataCollection_wavelength} Å</td>
+    <td class='datacollection_parameter'>{.DataCollection_wavelength}  &#8491;</td>
 </tr>
 
 <tr>
     <td class='datacollection_parameter_name'>{.DataCollection_rotationAxis} Start</td> 
-    <td class='datacollection_parameter'>{.DataCollection_axisStart}° </td>
+    <td class='datacollection_parameter'>{.DataCollection_axisStart} ° </td>
 
 </tr>
 <tr>
     <td class='datacollection_parameter_name'>{.DataCollection_rotationAxis} End</td>
-    <td class='datacollection_parameter'>{.DataCollection_axisEnd}° </td>
+    <td class='datacollection_parameter'>{.DataCollection_axisEnd} ° </td>
 </tr>
 <tr>
     <td class='datacollection_parameter_name'>{.DataCollection_rotationAxis} OScillation</td> 
-    <td class='datacollection_parameter'>{.DataCollection_axisRange}° </td>
+    <td class='datacollection_parameter'>{.DataCollection_axisRange} ° </td>
 
 </tr>
 
@@ -77,12 +77,12 @@
 
 <tr>
     <td class='datacollection_parameter_name'>Resolution at Edge</td> 
-    <td class='datacollection_parameter'>{.DataCollection_resolution} </td>
+    <td class='datacollection_parameter'>{.DataCollection_resolution}  &#8491; </td>
 </tr>
 
 <tr>
     <td class='datacollection_parameter_name'>Resolution at Corner</td> 
-    <td class='datacollection_parameter'>{.DataCollection_resolutionAtCorner} </td>
+    <td class='datacollection_parameter'>{.DataCollection_resolutionAtCorner}  &#8491;</td>
 </tr>
 
 

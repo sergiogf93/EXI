@@ -57,8 +57,7 @@ WorkflowStepMainView.prototype.getImagesResolution = function(imageItems) {
    
     resolution = resolution/imageItems.length;
     for (var i = 0; i < imageItems.length; i++) {
-        var imageItem = imageItems[i];
-        
+        var imageItem = imageItems[i];        
          if (imageItem.xsize){
             var ratio = resolution/imageItem.xsize;
             imageItem.xsize = imageItem.xsize*ratio;
@@ -74,7 +73,7 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
     _this.mainPanel.removeAll();
      _this.mainPanel.setLoading();
     function onSuccess(sender, data){    
-      console.log(JSON.parse(data));
+   
         var items = JSON.parse(data).items;
         _this.panel.setTitle(JSON.parse(data).title);
         

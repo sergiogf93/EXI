@@ -42,17 +42,12 @@ ScatteringImageViewer.prototype.getCoordinates = function(obj, e) {
                             y 	: y
         };
 };
-ScatteringImageViewer.prototype.load = function(imageId){    
-    var _this = this;
-    var url = EXI.getDataAdapter().mx.dataCollection.getImageById(imageId);
-   
-    console.log(this.id);
+ScatteringImageViewer.prototype.load = function(url){    
+    var _this = this;  
     /** Rendering image */
-    $('#' + _this.id).load(function() {
+    $('#' + _this.id).load(function() {        
         $('#' + _this.id).mousemove(function(e) {
            _this.onMouseOver.notify(_this.getCoordinates(this, e));
         });
     }).attr('src', url);
-
-
 };

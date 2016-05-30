@@ -1,17 +1,19 @@
 function ThumbnailSectionDatacollection(args) {
-
+    
 }
 
 
 
-ThumbnailSectionDatacollection.prototype._getHTMLZoomImage = function(url, dataCollectionId, imageId) {
+ThumbnailSectionDatacollection.prototype._getHTMLZoomImage = function(lastImageId, dataCollectionId, imageId) {
+    var urlThumbnail = EXI.getDataAdapter().mx.dataCollection.getThumbNailById(lastImageId);
+    var url = EXI.getDataAdapter().mx.dataCollection.getImageById(lastImageId);
     var ref = '#/mx/beamlineparameter/datacollection/' + dataCollectionId + '/main';
-    //var ref = '#/mx/datacollection/' + dataCollectionId + '/image/' + imageId + '/main';
-    return '<a href=' + ref + '><img class="lazy"  data-src=' + url + ' src=' + url + '></a>';
+    //return '<a href=' + ref + '><img id="' + dataCollectionId +'_thumb"; class="lazy"  data-src=' + urlThumbnail + ' src="' + urlThumbnail + '"  data-zoom-image="' + url + '"></a>';
+    return '<a href=' + ref + '><img id="' + dataCollectionId +'_thumb"; class="lazy"  data-src="' + urlThumbnail + '"  data-zoom-image="' + url + '"></a>';
 };
 
 ThumbnailSectionDatacollection.prototype.getHTML = function(data){
-	return this._getHTMLZoomImage(EXI.getDataAdapter().mx.dataCollection.getThumbNailById(data.lastImageId), data.DataCollection_dataCollectionId, data.lastImageId);
+	return this._getHTMLZoomImage(data.lastImageId, data.DataCollection_dataCollectionId, data.lastImageId);
 };
 
 

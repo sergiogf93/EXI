@@ -36,8 +36,9 @@ ResolutionScatteringImageViewer.prototype.getR = function(xbeam, ybeam, x, y){
    
 };
 
-ResolutionScatteringImageViewer.prototype.load = function(imageId, wavelength, xbeam, ybeam, detectorDistance, sensitiveArea){    
-   this.scatteringImageViewer.load(imageId);
+ResolutionScatteringImageViewer.prototype.load = function(imageId, wavelength, xbeam, ybeam, detectorDistance, sensitiveArea){
+    var url = EXI.getDataAdapter().mx.dataCollection.getImageById(imageId);    
+   this.scatteringImageViewer.load(url);
    
    this.wavelength = wavelength;
    this.xbeam = xbeam;

@@ -45,7 +45,7 @@ CustomSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 		if (mesh != null){
 			items.push({
 				img 	: EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(mesh.workflowStepId),
-				//title 	: mesh.name
+                id      : dataCollectionGroup.DataCollection_dataCollectionId				
 			});
 		}
 		
