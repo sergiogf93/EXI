@@ -19,18 +19,18 @@ MXMainMenu.prototype.getMenuItems = function() {
 		this.getHomeItem(),
 		this.getShipmentItem(),
 		{
-			text : this._convertToHTMLWhiteSpan("Proteins and Crystals"),
-			cls : 'ExiSAXSMenuToolBar',
-            disabled : false,
-			menu : this.getProteinCrystalsMenu() 
+                text : this._convertToHTMLWhiteSpan("Proteins and Crystals"),
+                cls : 'ExiSAXSMenuToolBar',
+                disabled : false,
+                menu : this.getProteinCrystalsMenu() 
 	    	},
 	    	{
-			text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
-			cls : 'ExiSAXSMenuToolBar',
-             disabled : true,
-			handler : function(){
-				location.hash = "/mx/prepare/main";
-			}
+                text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+                cls : 'ExiSAXSMenuToolBar',
+                disabled : false,
+                handler : function(){
+                    location.hash = "/mx/prepare/main";
+                }
 	    	},
         	{
 			text : this._convertToHTMLWhiteSpan("Data Explorer"),
