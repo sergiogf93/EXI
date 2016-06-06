@@ -27,13 +27,7 @@ MxPrepare.prototype.init = function() {
 		EXI.clearNavigationPanel();
 	    var mainView = new PrepareMainView();
 		EXI.addMainPanel(mainView);
-		EXI.setLoadingMainPanel();
-		var onSuccessProposal = function(sender, dewars) {
-            mainView.load(dewars);
-			EXI.setLoadingMainPanel(false);
-		
-		};
-		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByProposal();
+	    mainView.load();
 	}).enter(this.setPageBackground);
 
 	Path.map("#/mx/prepare/:dewarIds/main").to(function() {

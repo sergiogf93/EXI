@@ -4,22 +4,15 @@ function ContainerListEditor(){
 }
 
 ContainerListEditor.prototype.getStoreBeamlines = function() {
+        var beamlinesName = EXI.credentialManager.getBeamlines();
+    
+        function addName(beamline){            
+            return {name: beamline}
+        }
+        var beamlines = _.map(EXI.credentialManager.getBeamlines(), addName);
         return Ext.create('Ext.data.Store', {
-            fields: ['abbr', 'name'],
-            data : [
-                {"abbr":"AL", "name":"Alabama"},
-                {"abbr":"AK", "name":"Alaska"},
-                {"abbr":"AZ", "name":"Arizona"}
-            ]
-        });
-
-        // Create the combo box, attached to the states data store
-        return Ext.create('Ext.form.ComboBox', {
-            fieldLabel: 'Choose State',
-            store: states,
-            queryMode: 'local',
-            displayField: 'name',
-            valueField: 'abbr'
+            fields: [ 'name'],
+            data :beamlines
         });
 };
 
@@ -49,11 +42,12 @@ ContainerListEditor.prototype.getPanel = function(){
 	});
     
     this.panel = Ext.create('Ext.grid.Panel', {
-            title: 'Select dewars',
+            title: 'Loaded or to be Loaded on MxCube',
             store: this.store,
             cls : 'border-grid',
             //selModel : selModel,
             height : 600,
+            flex : 0.5,
             collapsible : true,
             plugins : [
               Ext.create('Ext.grid.plugin.RowEditing', {
@@ -126,11 +120,11 @@ ContainerListEditor.prototype.getPanel = function(){
                  {
                     text    : 'Container',
                     columns : [
-                            { text: 'containerId',  dataIndex: 'containerId', flex: 2  },
+                            { text: 'containerId',  dataIndex: 'containerId', flex: 2,   hidden : true  },
                             { text: 'containerCode',  dataIndex: 'containerCode', flex: 2  },
                             { text: 'Status',  dataIndex: 'containerStatus', flex: 2  } ,
-                            { text: 'Type',  dataIndex: 'containerType', flex: 2  },
-                            { text: 'Location',  dataIndex: 'storageLocation', flex: 2  },
+                            { text: 'Type',  dataIndex: 'containerType', flex: 2,   hidden : true },
+                            { text: 'Location',  dataIndex: 'storageLocation', flex: 2 ,  hidden : true },
                             
                             { text: '# Samples',  dataIndex: 'sampleCount', flex: 2  }                           
                     ]                                         
