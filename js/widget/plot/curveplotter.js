@@ -75,6 +75,7 @@ CurvePlotter.prototype.render = function(url) {
 			      {
 			    	  title : this.title,
 			    	  titleHeight : 20,
+                      dateWindow: this.dateWindow,
 			    	  legend: this.legend,
 			    	  labelsSeparateLines : true,
 			          errorBars: true,
@@ -119,7 +120,7 @@ CurvePlotter.prototype.load = function(selections) {
 
 function AutoProcIntegrationCurvePlotter(args) {
 	CurvePlotter.call(this, args);
-	
+	this.dateWindow = [6, 0];
 	this.margin = '10 0 0 0';
 	this.height = null;
 	this.title = "";
