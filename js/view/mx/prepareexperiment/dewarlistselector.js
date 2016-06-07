@@ -33,7 +33,10 @@ DewarListSelector.prototype.load = function(dewars){
     _(filtered).forEach(function(value) {
         data.push(value);
     });
-    this.panel.setTitle(this.dewars.length + " containers on " + data.length + " shipments");
+    
+    
+    this.panel.setTitle("Select within " + this.dewars.length + " containers from " + data.length + " shipments for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);
+    
     this.store.loadData(data);
 
 };

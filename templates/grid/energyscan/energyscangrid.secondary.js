@@ -5,59 +5,46 @@
 
   
     
-     <tr>
-        <td style='width:150px;' class='summary_datacollection_parameter_name'>element</td>
-        <td class='summary_datacollection_parameter'>{.element}</td>
-       
+    <tr>
+        <td class='summary_datacollection_parameter_name'>Peak Energy</td>
+        <td class='summary_datacollection_parameter'>{.peakEnergy} kev</td>
     </tr>
     
+    
+   
     
     <tr>
-        <td class='summary_datacollection_parameter_name'>beamSizeHorizontal</td>
-        <td class='summary_datacollection_parameter'>{.beamSizeHorizontal}</td>
-
+        <td class='summary_datacollection_parameter_name'>Pk f'</td>
+        <td class='summary_datacollection_parameter'>{.peakFPrime} e–</td>       
     </tr>
-    
     
     <tr>
-        <td class='summary_datacollection_parameter_name'>beamSizeVertical</td>
-        <td class='summary_datacollection_parameter'>{.beamSizeVertical}</td>
-      
-    </tr>
-        <tr>
-        <td class='summary_datacollection_parameter_name'>filename</td>
-        <td class='summary_datacollection_parameter'>{.filename}</td>
+        <td class='summary_datacollection_parameter_name'>Pk f''</td>
+        <td class='summary_datacollection_parameter'>{.peakFDoublePrime} e–</td>
         
 
-    </tr>
-    
-    <tr>
-        <td class='summary_datacollection_parameter_name'>startTime</td>
-        <td class='summary_datacollection_parameter'>{.startTime}</td>
-      
-        
     </tr>
     
       <tr>
-        <td class='summary_datacollection_parameter_name'>inflectionEnergy</td>
-        <td class='summary_datacollection_parameter'>{.inflectionEnergy}</td>
+        <td class='summary_datacollection_parameter_name'>Inflection Energy</td>
+        <td class='summary_datacollection_parameter'>{.inflectionEnergy} kev</td>
 
         
     </tr>
          <tr>
-        <td class='summary_datacollection_parameter_name'>inflectionFPrime</td>
-        <td class='summary_datacollection_parameter'>{.inflectionFPrime}</td>
+        <td class='summary_datacollection_parameter_name'>Ip f'</td>
+        <td class='summary_datacollection_parameter'>{.inflectionFPrime} e– </td>
      
         
     </tr>
     
-   
-    <tr>
-        <td class='summary_datacollection_parameter_name'>peakFDoublePrime</td>
-        <td class='summary_datacollection_parameter'>{.peakFDoublePrime}</td>
     
-        
+    
+    <tr>
+        <td class='summary_datacollection_parameter_name'>Ip f''</td>
+        <td class='summary_datacollection_parameter'>{.inflectionFDoublePrime} e– </td>
     </tr>
+   
 
 </table>
 

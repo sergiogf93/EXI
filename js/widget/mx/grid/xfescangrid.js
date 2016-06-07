@@ -83,7 +83,7 @@ XFEScanGrid.prototype.getColumns = function() {
     var columns = [
        
         {
-            header: 'Primary',
+            header: 'Experiment Parameters',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,
@@ -99,7 +99,7 @@ XFEScanGrid.prototype.getColumns = function() {
         },
      
         {
-            header: 'Scan',
+            header: '',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             hidden :true,
@@ -112,7 +112,7 @@ XFEScanGrid.prototype.getColumns = function() {
             }
         },
         {
-            header: 'Plot',
+             header: 'PyMca Results',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             width : 600,
