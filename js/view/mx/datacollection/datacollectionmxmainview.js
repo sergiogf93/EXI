@@ -27,20 +27,21 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                             this.genericDataCollectionPanel.getPanel()
                         ]
                 }, 
-                 {
-                        title: 'Fluorescence Spectrum',
-                        id : this.id + "_xfeTab",
-                        cls : 'border-grid',                         
-                        items:[
-                            this.xfeScanGrid.getPanel()
-                        ]
-                },
+              
                 {
                         title: 'Energy Scan',
                         cls : 'border-grid',
                         id : this.id + "_energyTab",
                         items:[
                              this.energyScanGrid.getPanel()
+                        ]
+                },
+                 {
+                        title: 'Fluorescence Spectra',
+                        id : this.id + "_xfeTab",
+                        cls : 'border-grid',                         
+                        items:[
+                            this.xfeScanGrid.getPanel()
                         ]
                 }
                ]

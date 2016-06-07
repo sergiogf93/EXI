@@ -1,6 +1,6 @@
 var ExtISPyB ={
-   version : 'v0.1.1',
-   release_date : '2016/05/13',
+   version : 'v0.1.3',
+   release_date : '2016/05/30',
    detectors : {
 
 	"Pilatus3_2M" : {
@@ -47,7 +47,7 @@ var ExtISPyB ={
 
    },
    sites:[
-      /*{
+      {
          name:'ESRF',
          url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
@@ -59,11 +59,11 @@ var ExtISPyB ={
                "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
             ]
          }
-      },*/
+      },
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
+         exiUrl:'http://lindemaria:8080/extispyb-ws/rest',
          beamlines:{
             SAXS:[
                'BM29'

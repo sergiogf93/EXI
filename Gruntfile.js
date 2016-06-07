@@ -27,32 +27,31 @@ module.exports = function(grunt) {
 				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
 				                      		    "js/widget/addressform.js", 
 				                      		    "js/widget/**/*.js"],
-				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js", "js/navigation/*/*js", "js/view/**/*js"],
+				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js", "js/navigation/*/*js","js/view/**/*js"],
 
 				 'min/bower_components.min.js' : [ 
 								
-							           "bower_components/dustjs-linkedin/dist/dust-full.min.js",
-								   "bower_components/dustjs-helpers/dist/dust-helpers.min.js",
-				                                   "bower_components/lodash/lodash.js",
-								   "bower_components/Snap.svg/dist/snap.svg-min.js",
-								   "bower_components/vis/dist/vis.min.js",		  
-				                               	   "bower_components/dygraphs/dygraph-combined.js", 
-				                               	   "bower_components/handsontable/dist/handsontable.full.js",
-				                               	   "bower_components/jquery/dist/jquery.min.js",
-								   "bower_components/jquery-lazy/jquery.lazy.js", 
-								   "bower_components/moment/min/moment.min.js",  
- 								   "bower_components/pathjs-amd/dist/path.js",
- 								   "bower_components/threejs/build/three.min.js",
-								   "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
-								   "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
-								   "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
-
+                                                    "bower_components/dustjs-linkedin/dist/dust-full.min.js",
+                                                    "bower_components/dustjs-helpers/dist/dust-helpers.min.js",
+                                                    "bower_components/lodash/lodash.js",
+                                                    "bower_components/Snap.svg/dist/snap.svg-min.js",
+                                                    "bower_components/vis/dist/vis.min.js",		  
+                                                    "bower_components/dygraphs/dygraph-combined.js", 
+                                                    "bower_components/handsontable/dist/handsontable.full.js",
+                                                    "bower_components/jquery/dist/jquery.min.js",
+                                                    "bower_components/jquery-lazy/jquery.lazy.js", 
+                                                    "bower_components/moment/min/moment.min.js",  
+                                                    "bower_components/pathjs-amd/dist/path.js",
+                                                    "bower_components/threejs/build/three.min.js",
+                                                    "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
+                                                    "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
+                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
+                                                    "bower_components/ez-plus/dist/jquery.ez-plus.js"
 								  
 								  
   								 
 								],
-				 'min/dependency.min.js' 		: [
-				                         		   "dependency/glmol.js"]
+				 'min/dependency.min.js' 		: ["dependency/glmol.js"]
 			  }
 		  }
 	  },
@@ -83,14 +82,16 @@ module.exports = function(grunt) {
 			                              	'css/templatelist.css', 
 			                              	'css/beamlinesessionbox.css', 
 			                              	'bower_components/fullcalendar/dist/fullcalendar.css', 
-			                              	'bower_components/vis/dist/vis.css', 
+			                              	'bower_components/vis/dist/vis.css',
+                                            'bower_components/handsontable/dist/handsontable.full.css', 
+                                            'bower_components/ez-plus/css/jquery.ez-plus.css',
 			                              	'css/dygraph-custom.css', 
 			                              	'css/exi.css', 
 			                              	'css/calendar.css', 
 			                              	'css/menu/mainmenu.css', 
 			                              	'css/override.css', 
-			                              	'bower_components/handsontable/dist/handsontable.full.css', 
-			                              	'js/dependency/timeline/timeline.css']
+			                              	'js/dependency/timeline/timeline.css'
+                                            ]
 			    }
 		}
 	},
@@ -148,6 +149,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-dustjs');
   grunt.loadNpmTasks('grunt-contrib-yuidoc');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  
+  /** TASKS */
   grunt.task.registerTask('doc', ['yuidoc:compile']);
   grunt.task.registerTask('report', ['plato:prod']);
   grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' ,  'concat:prod', 'uglify:prod', 'cssmin:prod', 'yuidoc:compile']);

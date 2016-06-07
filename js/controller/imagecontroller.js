@@ -20,12 +20,12 @@ ImageController.prototype.notFound = ExiGenericController.prototype.notFound;
 */
 ImageController.prototype.init = function() {
 	var _this = this;
-	var listView;	
+	/*var listView;	
 
 	Path.map("#/mx/image/:imageId/main").to(function() {
 		var mainView = new ImageMainView();
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['imageId']);
 
-	}).enter(this.setPageBackground);
+	}).enter(this.setPageBackground);*/
 };

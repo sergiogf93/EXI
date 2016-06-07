@@ -24,14 +24,29 @@
         </div>			
 	{/eq}
     
+    
+     
+    {@eq key=type value="logFile"}
+      
+        
+	    <div  style='border:1px solid gray;background-color:#FAFAFA;margin:10px;'>
+            <span  style='color: #157fcc;font-size: 17px;   font-weight: 300;'>{.title}</span>
+            <textarea style='margin:10px;' rows="10" cols="150">
+                {.logText} 
+            </textarea>
+        </div>			
+	{/eq}
+    
+    
+    
     {@eq key=type value="title"}
-	    <div align="center">
+	    <div>
             <h1 >{.value}</h1>
         </div>			
 	{/eq}
     
     {@eq key=type value="info"}
-	    <span style="display: inline; padding: .2em .6em .3em .6em;border-radius: .25em;color: #fff;font-size:100%; background-color: #5bc0de;">
+	    <span style="display: inline; padding: .2em .6em .3em .6em;border-radius: .25em;color: #5bc0de; background-color: white;">
            {.value}
         </span>			
 	{/eq}

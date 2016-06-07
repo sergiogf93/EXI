@@ -278,6 +278,39 @@ XfeViewerMainView.prototype.parseData = function() {
    
     this.renderPlot( _.concat(labelX, labelsY), data);
 };
+
+/**
+* It transposes the data in order to calculate the max value of Y for each statistic then it create the annotation by getting the index X
+*
+* 
+* @method getAnnotations
+*/
+XfeViewerMainView.prototype.getAnnotations = function(data, labels) {
+    var annotations = [];
+    if (data){
+        /**  First, we transpose the matrix **/
+        var transposed = data[0].map(function(col, i) { 
+            return data.map(function(row) { 
+                return row[i] 
+            })
+        });
+       
+        for (var i = 0; i < labels.length; i++) {
+                var max = _.max(transposed[i]);
+                var index = _.findIndex(transposed[i], function(o) { return o == max; });
+                annotations.push({
+                            x           : data[index][0],
+                            shortText   : labels[i].name,//this.data.labels[i].name,
+                            text        : labels[i].name,
+                            series      : labels[i].name,
+                            width       : 100,
+                            height      : 25
+                    }
+                );
+        }
+    }
+    return annotations;
+};
 /**
 * Render the dygraph widget on a container that should exists with id = this.id
 *
@@ -285,9 +318,10 @@ XfeViewerMainView.prototype.parseData = function() {
 * @method renderPlot
 */
 XfeViewerMainView.prototype.renderPlot = function(labels, data) {
-    
+    var _this = this;
+  
     /** Plotting */
-    new Dygraph(
+    var g = new Dygraph(
         document.getElementById("plot" + this.id),
         data,
         {
@@ -296,24 +330,20 @@ XfeViewerMainView.prototype.renderPlot = function(labels, data) {
             labels :   _.map(labels, 'name'),
             height: 600,
             width: 800,
-            sigFigs : false,
-            stackedGraph: false,
+            displayAnnotations : true,
+            //sigFigs : false,
+            //stackedGraph: false,
             labelsSeparateLines : true,
-            labelsShowZeroValues : true,
+            labelsShowZeroValues : false,
             logscale : false,
-            /*labelsDiv : document.getElementById(this.id + "_labels"),
-            labelsDivWidth : 300,
-           /* highlightCircleSize: 2,
-            strokeWidth: 1,
-            strokeBorderWidth: true ? null : 1,
-            highlightSeriesOpts: {
-                strokeWidth: 3,
-                strokeBorderWidth: 1,
-                highlightCircleSize: 5
-            },*/
             ylabel: 'Count'
         }
     );
+  
+     g.ready(function() { 
+        g.setAnnotations(_this.getAnnotations(data, labels));
+    });
+    
 };
 
 /**

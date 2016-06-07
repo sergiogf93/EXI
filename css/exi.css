@@ -6,26 +6,28 @@
 }
 
 .openGridButton:hover{
-    background-color:#BCA9F5;
+   background-color:#3892d3;
     width : 100px;
     
     
 }
 
 .openGridButton{
-    color:white;
+
     text-decoration: none;
     color:white;
     margin-top:0px;
-    border-radius: 5px;
+   
     text-align:center;
     height:20px;
-    background-color:#3892d3;
-     width : 100px;
+    background-color:#BDBDBD;
+    width : 100px;
+    border : 1px black gray;
+    
 }
 
-.showme{ 
-    display: none;
+.showme { 
+    display: block;
    
     
 }
@@ -34,17 +36,18 @@
 }
 
 .selected-region:hover{
-    cursor: pointer;
+    //cursor: pointer;
     
     overflow:auto;
-    height:190px;
+   
    
    
     
 }
 .selected-region{
-    #overflow:auto;
-    height:190px;
+    height:200px;
+    //overflow:auto;
+    
     
   
     

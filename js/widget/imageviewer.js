@@ -174,7 +174,7 @@ ImageViewer.prototype.drawPoints = function(points, color){
 					var y = points[i].y*_this.zoom;
 
 					context.beginPath();
-	      				context.arc(x, y, 1, 0, 2 * Math.PI, false);
+	      			context.arc(x, y, 1, 0, 2 * Math.PI, false);
 					context.fillStyle = color;
 					context.fill();
 					context.lineWidth = 1;

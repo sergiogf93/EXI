@@ -18,7 +18,8 @@ function ExiMX() {
 									new MxPrepare(),
 									new ImageController(),
                                     new PhasingController(),
-                                    new XfeController()
+                                    new XfeController(),
+                                    new BeamlineParameterController()
 							],
 		 					headerCssClass : 'mxTitlePanel'
 
