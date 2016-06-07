@@ -1,6 +1,6 @@
 var ExtISPyB ={
-   version : 'v0.1.4.1-test.prepareexperiment',
-   release_date : '2016/06/06',
+   version : '0.2',
+   release_date : '2016/06/07',
    detectors : {
 
 	"Pilatus3_2M" : {
