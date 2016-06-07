@@ -131,8 +131,8 @@ ManagerWelcomeMainView.prototype.getToolbar = function() {
 
    var dateMenu = Ext.create('Ext.menu.DatePicker', {
         handler: function(dp, date){
-            
-          _this.loadByDate(Ext.Date.format(date, 'Ymd'), Ext.Date.format(date, 'Ymd'));
+            location.href = "#/welcome/manager/" + _this.username +"/date/"+ Ext.Date.format(date, 'Ymd') +"/" + Ext.Date.format(date, 'Ymd') +"/main";
+          //_this.loadByDate(Ext.Date.format(date, 'Ymd'), Ext.Date.format(date, 'Ymd'));
         }
     });
 
@@ -187,10 +187,13 @@ ManagerWelcomeMainView.prototype.searchProposalByTerm = function(term) {
 *
 * @method loadProposals
 */
-ManagerWelcomeMainView.prototype.loadProposals = function() {
+ManagerWelcomeMainView.prototype.loadProposals = function(callback) {
 	var _this = this;
 	var onSuccess = function(sender, proposals){
 		_this.proposals = proposals;
+        if (callback){            
+            callback();
+        }
 	};
 	
 	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
@@ -206,5 +209,35 @@ ManagerWelcomeMainView.prototype.load = function(username) {
   //"#/welcome/manager/" + username +"/main";
   /** This is need for quick searchs on proposals **/
   this.loadProposals();
+  
+};
+
+
+ManagerWelcomeMainView.prototype.loadSessionsByDate = function(username, start, end) {
+  this.username = username;
+  var today = moment().format("YYYYMMDD");
+  this.loadByDate(start, end);
+  
+  //"#/welcome/manager/" + username +"/main";
+  /** This is need for quick searchs on proposals **/
+  this.loadProposals();
+  
+};
+
+ManagerWelcomeMainView.prototype.loadSessionsByTerm = function(username, term) {
+  this.username = username;
+  
+  
+  
+   
+  //"#/welcome/manager/" + username +"/main";
+  /** This is need for quick searchs on proposals **/
+  var _this = this;
+	var onSuccess = function(sender, proposals){
+		_this.proposals = proposals;
+       _this.searchProposalByTerm(term);
+	};
+	
+	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
   
 };
