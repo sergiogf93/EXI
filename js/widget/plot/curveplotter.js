@@ -168,7 +168,8 @@ AutoProcIntegrationCurvePlotter.prototype.toCSV = function(labels, data) {
 AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
     var _this = this;
 
-    
+   
+   
     /** Plotting */
     var g = new Dygraph(
         document.getElementById(this.targetId),
@@ -176,17 +177,21 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
         {
             title: this.title,
             titleHeight: 20,
-          
-            height: this.height,
-            legend: this.legend,
+            legend : 'always',
+            height: this.height - 100,
+            hideOverlayOnMouseOut :true,
             labelsSeparateLines: true,
+            labelsDiv :_this.targetId + "_legend",
+            labelsDivStyles : " { 'fontSize': 6 } ",
             axisLabelWidth : 20,
+           
             connectSeparatedPoints: true,
             pointClickCallback: function(e, p) {
                 _this.onPointClickCallback.notify(p.name);
             },
             axes: {
                 x: {
+                     pixelsPerXLabel : 30,
                     axisLabelFormatter: function(d, gran, opts) {
                         return _this.xLabels[d];                        
                     }
@@ -254,6 +259,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     var noError = [];
 
                     var elements = element.split(',');
+                    
                     function toNumber(el) {
                         if (el) {
                             if (el != "") {
@@ -284,7 +290,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     index = index + 1;
                     return noError;
                 }
-
+                lines = lines.reverse();
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
 
@@ -308,6 +314,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
 };
 
 AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
+    
     this.plotPanel = Ext.create('Ext.panel.Panel', {
         layout: {
             type: 'fit'
@@ -315,9 +322,16 @@ AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
         height: this.height,
         margin: this.margin,
         items: [{
-            html: '<div id="' + this.targetId + '"></div>',
-            id: this.id,
-        }]
+                    html: '<div  id="' + this.targetId + '"></div><div  style="height:20px" id="' + this.targetId + '_legend"></div>',
+                    id: this.id,
+                    style: {
+                      border: "1px solid black"  
+                    },
+                    height : this.height,
+                    border : 1
+        }
+       
+        ]
     });
 
     this.plotPanel.on("afterrender", function() {
