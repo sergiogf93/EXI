@@ -202,6 +202,8 @@ ManagerWelcomeMainView.prototype.load = function(username) {
   this.username = username;
   var today = moment().format("YYYYMMDD");
   this.loadByDate(today, today);
+  
+  //"#/welcome/manager/" + username +"/main";
   /** This is need for quick searchs on proposals **/
   this.loadProposals();
   
