@@ -10,7 +10,7 @@ function AddressWelcomeMainView() {
 }
 
 AddressWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-AddressWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+
 
 AddressWelcomeMainView.prototype.getOptions = function() {
 	var html =  "<ul><li>Define beforehand an experiment</li>";

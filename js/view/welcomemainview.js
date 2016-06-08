@@ -6,7 +6,7 @@ function WelcomeMainView() {
 }
 
 WelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-WelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+
 
 WelcomeMainView.prototype.getContainer = function() {
 	return {
@@ -15,7 +15,7 @@ WelcomeMainView.prototype.getContainer = function() {
 		    },
 		items : [
 		         	{
-		         		html : "<iframe style='width:900px;height:900px;' frameBorder='0' src='../html/saxs/welcome.html'></iframe>",
+		         		html : "<iframe style='width:900px;height:900px;' frameBorder='0' src='../html/welcome.html'></iframe>",
 		         		margin : '50 0 0 50'
 		         	}
 		]
