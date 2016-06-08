@@ -1,6 +1,6 @@
 var ExtISPyB ={
-   version : 'v0.1.3',
-   release_date : '2016/05/30',
+   version : '0.2',
+   release_date : '2016/06/07',
    detectors : {
 
 	"Pilatus3_2M" : {
@@ -56,7 +56,7 @@ var ExtISPyB ={
                'BM29'
             ],
             MX:[
-               "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
+               "ID23-1","ID23-2","ID29","ID30A-1","ID30A-2","ID30A-3","ID30B","BM14U","BM30A"
             ]
          }
       },
@@ -69,7 +69,7 @@ var ExtISPyB ={
                'BM29'
             ],
             MX:[
-               "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
+               "ID23-1","ID23-2","ID29","ID30A-1","ID30A-2","ID30A-3","ID30B","BM14U","BM30A"
             ]
          }
       }

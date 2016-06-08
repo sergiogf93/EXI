@@ -62,7 +62,7 @@ EnergyScanGrid.prototype.getColumns = function() {
             }
         },
         {
-            header: '',
+            header: 'Experiment Parameters',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,
@@ -76,7 +76,7 @@ EnergyScanGrid.prototype.getColumns = function() {
             }
         },
         {
-            header: '',
+            header: 'Results',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,
@@ -90,7 +90,7 @@ EnergyScanGrid.prototype.getColumns = function() {
             }
         },
         {
-            header: 'Chooch',
+            header: 'Chooch Output',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,

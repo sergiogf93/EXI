@@ -61,6 +61,15 @@ ExiController.prototype.init = function(){
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
+    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                    
+		var user = this.params['user'];
+		var mainView = new ManagerWelcomeMainView();
+		EXI.addMainPanel(mainView);
+		mainView.loadSessionsByDate(user,this.params['start'], this.params['end'] );
+	}).enter(setPageBackground);
+    
+   
+    
 	
 	Path.map("#/logout").to(function() {
 		EXI.credentialManager.logout();

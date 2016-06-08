@@ -20,7 +20,7 @@ DataCollectionMxMainView.prototype.getContainer = function() {
 		this.container = Ext.create('Ext.tab.Panel', {       
         padding : "5 40 0 5",
         items: [ {
-                        title: 'Data Collection',
+                        title: 'Data Collections',
                         cls : 'border-grid',
                         id : this.id + "_dataCollectionTab",
                         items:[
@@ -29,7 +29,7 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                 }, 
               
                 {
-                        title: 'Energy Scan',
+                        title: 'Energy Scans',
                         cls : 'border-grid',
                         id : this.id + "_energyTab",
                         items:[
@@ -53,7 +53,7 @@ DataCollectionMxMainView.prototype.getContainer = function() {
 DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
      if (data){
          if (data.length > 0){
-            Ext.getCmp(this.id + "_energyTab").setTitle(data.length + " Energy scan");  
+            Ext.getCmp(this.id + "_energyTab").setTitle(data.length + " Energy Scans");  
             this.energyScanGrid.load(data);
             return;
          }
@@ -65,7 +65,7 @@ DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
 DataCollectionMxMainView.prototype.loadFXEScans = function(data) {  
     if (data){
         if (data.length > 0){
-            Ext.getCmp(this.id + "_xfeTab").setTitle(data.length + " Fluorescence Spectrum");  
+            Ext.getCmp(this.id + "_xfeTab").setTitle(data.length + " Fluorescence Spectra");  
             this.xfeScanGrid.load(data);
             return;
          }
@@ -118,7 +118,8 @@ DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
                 console.log(error);
             }
         }
-        Ext.getCmp(this.id + "_dataCollectionTab").setTitle(data.length + " data Collections");
+        Ext.getCmp(this.id + "_dataCollectionTab").setTitle(data.length + " Data Collections");
+	
         this.genericDataCollectionPanel.load(data);
         return;	
     }

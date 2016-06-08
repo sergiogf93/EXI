@@ -66,7 +66,7 @@ function AutoProcIntegrationMainView() {
 	
 	/** Curve completenessPlotter * */
 	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 125,
+		height : 250,
 		title : "Completeness vs Resolution",
 		legend : 'never'
 	});
@@ -76,7 +76,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	this.rFactorPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 125,
+		height : 250,
 		title : "Rfactor vs Resolution",
 		legend : 'never'
 	});
@@ -86,7 +86,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	this.isigmaPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 125,
+		height :250,
 		title : "I/SigmaI vs Resolution",
 		legend : 'never'
 	});
@@ -96,7 +96,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	this.cc2Plotter = new AutoProcIntegrationCurvePlotter({
-		height : 125,
+		height : 250,
 		title : "CC/2 vs Resolution",
 		legend : 'never'
 	});
@@ -106,7 +106,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	this.sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
-		height :125,
+		height :250,
 		title : "SigAno vs Resolution",
 		legend : 'never'
 	});
@@ -116,7 +116,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	this.wilsonPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 125,
+		height : 250,
 		title : "Wilson Plot",
 		legend : 'never'
 	});
@@ -126,7 +126,7 @@ function AutoProcIntegrationMainView() {
 	});
 	
 	this.annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 125,
+		height : 300,
 		title : "Anom Corr vs Resolution",
 		legend : 'never'
 	});
@@ -200,7 +200,10 @@ AutoProcIntegrationMainView.prototype.getPlotContainer = function(panel) {
 
 AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 	return Ext.create('Ext.container.Container', {
-		
+		style:{
+            
+          backgroundColor : '#FAFAFA'  
+        },
 		items : [ 
 		         Ext.create('Ext.container.Container', {
 		        	 layout: 'hbox', 

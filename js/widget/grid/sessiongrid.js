@@ -64,6 +64,24 @@ SessionGrid.prototype.getPanel = function() {
 		selMode : null,
 
 		columns : [
+              {
+                            text              : 'Start',
+                            dataIndex         : 'BLSession_startDate',
+                            flex             : 1,
+                            hidden              : false,
+                            renderer          : function(grid, a, record){   
+                                                    var location = "#";
+                                                    if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "SAXS"){
+                                                        location = "#/session/nav/" + record.data.sessionId + "/session";
+                                                    }
+                                                    else{
+                                                        location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
+                                                    }
+                                                    if (record.data.BLSession_startDate){                 
+                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('MMMM Do YYYY') + "</a>"; 
+                                                    }
+                            }
+		     },
              {
                     text : 'Beamline',
                     dataIndex : 'Proposal_code',
@@ -124,7 +142,7 @@ SessionGrid.prototype.getPanel = function() {
 		    },
           
              {
-			    text                : 'Energy Scan',
+			    text                : 'En. Scan',
 			    dataIndex           : 'xrfSpectrumCount',
 
                 flex               : 1,
@@ -135,7 +153,7 @@ SessionGrid.prototype.getPanel = function() {
                  }
 		    },
             {
-			    text                : 'XRF Spectrum',
+			    text                : 'XRF',
 			    dataIndex           : 'xrfSpectrumCount',
 			   
                 flex               : 1,
@@ -148,11 +166,22 @@ SessionGrid.prototype.getPanel = function() {
             {
                 text: 'Data Collection',
                 columns: [
+                   
                         {
-                            text                : 'Tests',
+                            text                : '# Samples studied',
+                            dataIndex           : 'sampleCount',
+                          
+                            flex               : 1,
+                            renderer : function(grid, a, record){                        
+                                    if (record.data.sampleCount != 0){                          
+                                        return record.data.sampleCount;
+                                    }    
+                                }
+                        },
+                        {
+                            text                : '# Test (< 5 images)',
                             tooltip             : 'Data Collection with less than 5 images',
                             dataIndex           : 'testDataCollectionGroupCount',
-                           
                             flex               : 1,
                             renderer : function(grid, a, record){       
                                 
@@ -163,7 +192,7 @@ SessionGrid.prototype.getPanel = function() {
                                 }
                         },
                         {
-                            text                : 'Data Collection',
+                            text                : '# Collects',
                             dataIndex           : 'dataCollectionGroupCount',
                              tooltip             : 'Data Collection with more than 4 images',
                            
@@ -184,31 +213,9 @@ SessionGrid.prototype.getPanel = function() {
                                         return record.data.imagesCount;
                                     }    
                                 }
-                        },
-                        {
-                            text                : 'Samples',
-                            dataIndex           : 'sampleCount',
-                          
-                            flex               : 1,
-                            renderer : function(grid, a, record){                        
-                                    if (record.data.sampleCount != 0){                          
-                                        return record.data.sampleCount;
-                                    }    
-                                }
                         }
                 ]
             },
-         
-
-            {
-                text              : 'Start',
-                dataIndex         : 'BLSession_startDate',
-                flex             : 1,
-                hidden              : true,
-                renderer          : function(grid, a, record){                    
-                                        return record.data.BLSession_startDate;
-                }
-		   },
             {
                 text              : 'End',
                 dataIndex         : 'BLSession_endDate',

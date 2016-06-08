@@ -25,22 +25,9 @@ MxPrepare.prototype.init = function() {
 
 	Path.map("#/mx/prepare/main").to(function() {
 		EXI.clearNavigationPanel();
-		EXI.setLoadingNavigationPanel(true);
-		listView = new DewarListView();
-		listView.onSelect.attach(function(sender, selected) {
-			var selectedIds = [];
-			for (var i= 0; i < selected.length; i++){
-				selectedIds.push(selected[i].dewarId);
-			}
-			location.hash = "/mx/prepare/" + selectedIds.toString() + "/main";
-		});
-
-		EXI.addNavigationPanel(listView);
-		var onSuccessProposal = function(sender, dewars) {			
-			listView.load(dewars);
-			EXI.setLoadingNavigationPanel(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByStatus("processing");
+	    var mainView = new PrepareMainView();
+		EXI.addMainPanel(mainView);
+	    mainView.load();
 	}).enter(this.setPageBackground);
 
 	Path.map("#/mx/prepare/:dewarIds/main").to(function() {
