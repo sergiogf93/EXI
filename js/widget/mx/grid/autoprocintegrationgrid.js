@@ -61,6 +61,10 @@ function AutoProcIntegrationGrid(args) {
 	}
 	
 	this.onSelected = new Event(this);
+    
+  
+
+
 	
 };
 
