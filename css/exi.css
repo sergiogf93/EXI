@@ -230,6 +230,22 @@
 	background-color: #F7BE81;
 }
 
+.blue-grid-row{
+	background-color: #D1E2FE;
+}
+
+.blue2-grid-row{
+	background-color: #E5EFFF;
+}
+.blue3-grid-row{
+	background-color: #F8FBFF;
+}
+.white-grid-row{
+	background-color: #FFFFFF;
+}
+
+
+
 img.lazy {
         display: block;
         height : 190px;

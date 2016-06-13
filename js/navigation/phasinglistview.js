@@ -1,7 +1,7 @@
 /**
-* DewarListView displays the dewars as list on the navigation panels
+* PhasingListView displays the phasing steps as list on the navigation panels
 *
-* @class DewarListView
+* @class PhasingListView
 * @constructor
 */
 function PhasingListView(){
@@ -47,7 +47,8 @@ PhasingListView.prototype.parsePrepareNode = function(node){
                     type : "PREPARE",
                     spaceGroupShortName : node.spaceGroupShortName,
                     spaceGroup          : node.spaceGroup,
-                    status              : "Success" 
+                    status              : "Success" ,
+                    phasingStepId       : node.phasingStepId
                      
                 };
 };
@@ -101,7 +102,8 @@ PhasingListView.prototype.getPhasingSteps = function(node){
 PhasingListView.prototype.getModelSteps = function(node){
     var models = [];
    var phasingSteps = this.getPhasingSteps(node); 
-   for(var i = 0; i < phasingSteps; i++){
+  
+   for(var i = 0; i < phasingSteps.length; i++){
         if (phasingSteps[i].children){ 
             models = _.concat(models, phasingSteps[i].children);    
         }
@@ -113,20 +115,18 @@ PhasingListView.prototype.decideGoodStatus = function(metrics, stats){
     var ccPartial = false;
     var pseudo = false;
          
-    for(var i =0; i< metrics.length; i++){
-     
+    for(var i =0; i< metrics.length; i++){     
         if (metrics[i].indexOf("CC of partial") != -1){
             if (Number(stats[i]) > 24){
-                ccPartial = true;
-                
-            };
+                ccPartial = true;                
+            }
         }  
         
          if (metrics[i].indexOf("Pseudo_free_CC") != -1){
             if (Number(stats[i]) > 65){
-                debugger
+                
                 pseudo = true;
-            };
+            }
         } 
         
     }
@@ -155,13 +155,12 @@ PhasingListView.prototype.analizePhasingNodes = function(phasingNodes){
             
                 var statistics = phasingNodes[i].statisticsValue.split(",");
                 var metrics = phasingNodes[i].metric.split(",");
-                console.log(statistics);
-                console.log(metrics);
+                
                 records.successCondition = records.successCondition + this.decideGoodStatus(metrics, statistics);
              
             }
             catch(e){
-                debugger
+                
                 console.log(e);
             }
         }
@@ -199,7 +198,8 @@ PhasingListView.prototype.parsePhasingNode = function(node){
 };
 
 PhasingListView.prototype.parseModelNode = function(node){
-    var models = this.getModelSteps();   
+    
+    var models = this.getModelSteps(node);   
     
      var status = "Failure";
     if (models.length > 0){

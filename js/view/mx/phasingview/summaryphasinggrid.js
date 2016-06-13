@@ -6,148 +6,226 @@
 */
 function SummaryPhasingGrid(args) {
 	
+    this.onSelect = new Event(this);
 };
 
-/**
-* It reveices the phasing steps as tree
-*
-* @method load
-* @param {json} tree 
-{
-    acronym: "MWB"
-    anomalous: false
-    autoProcId: 909816
-    autoProcIntegrationId: 1010078
-    autoProcScalingId: 909827
-    blSampleId: 525682
-    acronym: "MWB"
-    anomalous: false
-    autoProcId: 909816
-    autoProcIntegrationId: 1010078
-    autoProcScalingId: 909827
-    blSampleId: 525682
-    children: [
-        
-                {
-                    acronym: "MWB"
-                    anomalous: false
-                    autoProcId: 909816
-                    autoProcIntegrationId: 1010078
-                    autoProcScalingId: 909827
-                    blSampleId: 525682
-                    acronym: "MWB"
-                    anomalous: false
-                    autoProcId: 909816
-                    autoProcIntegrationId: 1010078
-                    autoProcScalingId: 909827
-                    blSampleId: 525682
-                }
-        
-    ]
-}
-*/
-SummaryPhasingGrid.prototype.load = function(tree) {
-	this.store.loadData( this.parseTree(tree), false);
+SummaryPhasingGrid.prototype.load = function(data) {
+  /** Adding metrics as columns on the phasing Step */
+   for (var i = 0; i < data.length; i++) {
+       var element = data[i];
+       if (element.metric){
+           var metrics = element.metric.split(",");
+           var statisticsValues = element.statisticsValue.split(",");
+           if (metrics.length > 0){            
+               for (var j = 0; j < metrics.length; j++) {
+                   element[metrics[j]] = statisticsValues[j];
+               }
+               
+           }
+       }
+   }
+	this.store.loadData(data);
 };
 
 
-SummaryPhasingGrid.prototype.summarizeChildren = function(children) {
-    var node = {
-        children : [],
-        phasingType : [],
-        lowRes : [],
-        highRes : [],
-        method : []
-    };
-    
-    for (var i = 0; i < children.length; i++) {
-        var element = children[i];
-        if (element.children){
-              node.children = _.concat(node.children,element.children);
-        }
-        node.phasingType.push(children[i].phasingStepType);
-        node.lowRes.push(children[i].lowRes);
-        node.highRes.push(children[i].highRes);
-        node.method.push(_.sortedUniq(children[i].method));
-    }   
-    return node;    
-};
-
-
-SummaryPhasingGrid.prototype.parseTree = function(tree) {
-	var data = [];
-    
-   
-            
-    /** Merging all branches */
-    for (var i = 0; i < tree.length; i++) {
-      
-        var safeCondition = 10;
-        if (tree[i].children){
-            var steps = [];
-            
-            if (tree[i].children){
-                steps.push(tree[i]);
-                while (steps[steps.length-1].children.length > 0){
-                    if (safeCondition > 0){
-                        if (steps[steps.length-1].children.length > 0){
-                            steps.push(this.summarizeChildren(steps[steps.length-1].children));
-                        }
-                    }
-                    else{
-                        break;
-                    }
-                    safeCondition = safeCondition -1;
-                }
-                var subData = {};
-                /** Renaming Steps */
-                for (var k = 0; k < steps.length; k++) {
-                    subData["step_" + k] = steps[k];
-                    
-                }
-                data.push(subData);
-            }
-        }
-        
-    }
-    
-    return data;
-};
 
 SummaryPhasingGrid.prototype.getPanel = function() {
 	var _this = this;
 	this.store = Ext.create('Ext.data.Store', {
-		fields : [  'step_1']
+		fields : [  
+                    'phasingStepId',
+                    'previousPhasingStepId',
+                    'processingPrograms',
+                    'processingStatus',
+                    'proposalId',
+                    'sessionId',
+                    'solventContent',
+                    'spaceGroup',
+                    'spaceGroupShortName',
+                    'statisticsValue',
+                    'phasingStepType',
+                    'method',
+                    'lowRes',
+                    'highRes',
+                    'phasingPrograms',
+                    'enantiomorph',
+                    'anomalous',
+                    'Pseudo_free_CC',
+                    'CC of partial model',
+                    'anomalous',
+                    'acronym']
 	});
     
+    var selModel = Ext.create('Ext.selection.RowModel', {
+		allowDeselect : true,
+		//mode : 'multi',
+		listeners : {
+			select : function(sm, selection) {
+               _this.onSelect.notify(selection.data);
+						}
+
+		} });
+        
+    
 	this.panel = Ext.create('Ext.grid.Panel', {
-		title : 'Summary',
+		title : 'Phasing Steps',
 		store : this.store,
+        selModel : selModel,
+        height : 600,
         cls : 'border-grid',
 		layout : 'fit',
         flex : 1,
-		columns : [ 
-                        {
-                            text : 'Initial',
-                            
-                            flex : 1,
-                            renderer : function(e, sample, record){
-                                var html  = "";
-                                try{   
-                                    debugger
-                                        if (record.data.step_0){
-                                            console.log(record.data.step_0);
-                                            dust.render("summaryphasinggrid.first.step", record.data.step_0, function(err, out){
-                                                html = out;debugger
-                                            });
-                                        }
-                                }
-                                catch(e){
-                                    return "Parsing error " + e;
-                                }
-                                return html;
-			                }
+         viewConfig : {
+                    stripeRows : true,
+                    getRowClass : function(record, rowIndex, rowParams, store){
+
+                      /*  if (record.data.phasingStepType == "PREPARE"){
+                            return "blue-grid-row";
                         }
+                        if (record.data.phasingStepType == "SUBSTRUCTUREDETERMINATION"){
+                            return "blue2-grid-row";
+                        }
+                        if (record.data.phasingStepType == "PHASING"){
+                            return "blue3-grid-row";
+                        }
+                        if (record.data.phasingStepType == "MODELBUILDING"){
+                            return "white-grid-row";
+                        }
+                        return "warning-grid-row";*/
+                    }
+                },
+		columns : [ 
+                         {
+                            text : 'Space Group',
+                            flex : 1,
+                            dataIndex : 'spaceGroupShortName'
+                        },
+                        {
+                            text : 'Steps',
+                            columns : [     {
+                                                text : 'Prepare',
+                                                flex : 1,
+                                                dataIndex : 'previousPhasingStepId',
+                                                renderer : function(grid, e, record){
+                                                    
+                                                    if (record.data.phasingStepType == "PREPARE"){
+                                                        return record.data.phasingPrograms.toUpperCase();
+                                                    }
+                                                }
+                                            },
+                                             {
+                                                text : 'Subs. Deter.',
+                                                flex : 1,
+                                                dataIndex : 'previousPhasingStepId',
+                                                renderer : function(grid, e, record){
+                                                   
+                                                    if (record.data.phasingStepType == "SUBSTRUCTUREDETERMINATION"){
+                                                        return record.data.phasingPrograms.toUpperCase()
+                                                    }
+                                                }
+                                            },
+                                             {
+                                                text : 'Phasing',
+                                                flex : 1,
+                                                dataIndex : 'previousPhasingStepId',
+                                                renderer : function(grid, e, record){
+                                                   
+                                                    if (record.data.phasingStepType == "PHASING"){
+                                                         return record.data.phasingPrograms.toUpperCase()
+                                                    }
+                                                }
+                                            },
+                                             {
+                                                text : 'Model',
+                                                flex : 1,
+                                                dataIndex : 'previousPhasingStepId',
+                                                renderer : function(grid, e, record){
+                                                    if (record.data.phasingStepType == "MODELBUILDING"){
+                                                         return record.data.phasingPrograms.toUpperCase()
+                                                    }
+                                                }
+                                            },
+                            ]
+                        },
+                         {
+                            text : 'phasingStepId',
+                            flex : 1,
+                            hidden : true,
+                            dataIndex : 'phasingStepId'
+                      
+                        },
+                         {
+                            text : 'previousPhasingStepId',
+                            flex : 1,
+                            hidden : true,
+                            dataIndex : 'previousPhasingStepId'
+                        },
+                         {
+                            text : 'phasingStepId',
+                            flex : 1,
+                            hidden : true,
+                            dataIndex : 'phasingStepId'
+                        },
+                        
+                          {
+                            text : 'Protein',
+                            flex : 1,
+                            hidden : true,
+                            dataIndex : 'acronym'
+                        },
+                         {
+                            text : 'Method',
+                            flex : 1,
+                            dataIndex : 'method'
+                        },
+                         {
+                            text : 'Low Resolution',
+                            flex : 1,
+                            dataIndex : 'lowRes',
+                            renderer : function(grid, e, record){
+                                                    if (record.data.phasingStepType == "MODELBUILDING"){
+                                                         return record.data.lowRes + " - " + record.data.highRes 
+                                                    }
+                                                }
+                        },
+                         {
+                            text : 'High Resolution',
+                            flex : 1,
+                            hidden : true,
+                            dataIndex : 'highRes'
+                        },
+                         {
+                            text : 'Enantiomorph',
+                            flex : 1,
+                            dataIndex : 'enantiomorph'
+                        },
+                         {
+                            text : 'Anomalous',
+                            flex : 1,
+                            dataIndex : 'anomalous'
+                        },
+                         {
+                            text : 'Solvent',
+                            flex : 1,
+                            dataIndex : 'solventContent'
+                        },
+                         {
+                            text : ' Program',
+                            flex : 1,
+                            hidden : true,
+                            dataIndex : 'phasingPrograms'
+                        },
+                         {
+                            text : 'Pseudo Free (CC)',
+                            flex : 1,
+                            dataIndex : 'Pseudo_free_CC'
+                        },
+                         {
+                            text : 'Partial Model(CC)',
+                            flex : 1,
+                            dataIndex : 'CC of partial model'
+                        }
+                        
                 ]
 	});
 	return this.panel;

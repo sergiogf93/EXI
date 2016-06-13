@@ -22,8 +22,13 @@
     {@eq key=status value="Failure"}<div class='summary_datacollection_failed'></div>{/eq}
     {@eq key=status value="Not found"}<div class='summary_datacollection_noFound'></div>{/eq}
    
+   {@gt key=runs value=0} 
+        {.type}  <span style='color:gray;font-size:10px'>({.runs} runs)</span> 
+   {/gt}
+   {@eq key=runs value=0} 
+         <span style='color:gray;font-size:10px'> {.type} ({.runs} runs)</span> 
+   {/eq}
    
-  {.type}  <span style='color:gray;font-size:10px'>({.runs} runs)</span> 
 {/substructure}
 
 <br />
@@ -32,8 +37,12 @@
   {@eq key=status value="Failure"}<div class='summary_datacollection_failed'></div>{/eq}
   {@eq key=status value="Not found"}<div class='summary_datacollection_noFound'></div>{/eq}
    
-   {.type}  <span style='color:gray;font-size:10px'>({.runs} runs)</span> 
-   
+   {@gt key=runs value=0} 
+        {.type}  <span style='color:gray;font-size:10px'>({.runs} runs)</span> 
+   {/gt}
+   {@eq key=runs value=0} 
+         <span style='color:gray;font-size:10px'> {.type} ({.runs} runs)</span> 
+   {/eq}
    
    {@gt key=runs value=0}   
         {#stats}
@@ -51,6 +60,8 @@
                 
         {/stats}
    {/gt}
+  
+   
 {/phasing}
 
 <br />
@@ -59,7 +70,12 @@
   {@eq key=status value="Failure"}<div class='summary_datacollection_failed'></div>{/eq}
   {@eq key=status value="Not found"}<div class='summary_datacollection_noFound'></div>{/eq}
    
-    {.type}  <span style='color:gray;font-size:10px'>({.runs} runs)</span> 
+    {@gt key=runs value=0} 
+        {.type}  <span style='color:gray;font-size:10px'>({.runs} runs)</span> 
+   {/gt}
+   {@eq key=runs value=0} 
+         <span style='color:gray;font-size:10px'> {.type} ({.runs} runs)</span> 
+   {/eq}
 {/models}
 <br />
 <br />

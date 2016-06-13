@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				  'min/core.min.js' 		: ["js/core/**/*js","js/controller/**/*js", "js/menu/**/*js"],
+				  'min/core.min.js' 		: ["js/dust/**/*js", "js/core/**/*js","js/controller/**/*js", "js/menu/**/*js"],
 
 				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
 				                      		    "js/widget/addressform.js", 

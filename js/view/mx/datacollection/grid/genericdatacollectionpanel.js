@@ -101,10 +101,8 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
                       //EXI.mainStatusBar.showBusy('Loading ' +  _this.elements + ' elements');
 					  //console.log('image was loaded successfully');
 				  },
-				  onError: function(element) {
-					   debugger
+				  onError: function(element) { 
 					   $('#' + element[0].id).remove();
-					  console.log('image  could not be loaded');
 				  },
 				  onFinishedAll: function() {
                      EXI.mainStatusBar.showReady();

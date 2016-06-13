@@ -168,6 +168,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			renderer : function(e, sample, record){
 				var html  = "";
 				try{
+                               
 					dust.render("autoprocintegrationgrid_unitcell", record.data, function(err, out){
 						html = out;
 					});

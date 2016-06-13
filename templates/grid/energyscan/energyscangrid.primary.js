@@ -65,9 +65,17 @@
        <tr>
      
         <td class='summary_datacollection_parameter_name'>Exposure Time</td>
-        <td class='summary_datacollection_parameter'>To be filled (sec)</td>
+        <td class='summary_datacollection_parameter'>{.exposureTime} sec</td>
         
     </tr>
+    
+       <tr>
+     
+        <td class='summary_datacollection_parameter_name'>Filename</td>
+        <td class='summary_datacollection_parameter'>{.filename}</td>
+        
+    </tr>
+    
  
    
     
