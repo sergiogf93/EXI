@@ -8,6 +8,7 @@
                          chunk.write(Number(value).toFixed(params.decimals));
                     }
                     catch(e){
+                        
                         /** There was an error, we leave same value */
                         chunk.write(context.current()[params.key]);    
                     }

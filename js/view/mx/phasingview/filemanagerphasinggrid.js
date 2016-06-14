@@ -64,8 +64,7 @@ FileManagerPhasingGrid.prototype.getPanel = function() {
                     },
                     {
                         text : 'Viewer',
-                        flex : 1,
-                      
+                        flex : 1,                      
                         dataIndex : 'filePath',
                         renderer : function(grid, e, record){
                             if (record.data.fileName.endsWith(".map")){
@@ -76,6 +75,19 @@ FileManagerPhasingGrid.prototype.getPanel = function() {
                                     var map = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(record.data.phasingProgramAttachmentId);
                                      
                                     var href= "viewers/uglymol/1mru.html?pdb=" + pdb + "&map="+map;
+                                    return "<a target='_blank' style='showme openGridButton' href='" + href+"'><div style='text-align:center;color:white;width:60px;background-color:#3892d3;'>VIEWER</div></a>";   
+                                    
+                                }
+                            }
+                            
+                            if (record.data.fileName.endsWith(".pdb")){
+                               var pdb = _this.findPDBMatch(record.data.fileName);
+                                if (pdb != null){
+                                    
+                                    var pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
+                                    
+                                     
+                                    var href= "viewers/pv/index.html?pdb=" + pdb;
                                     return "<a target='_blank' style='showme openGridButton' href='" + href+"'><div style='text-align:center;color:white;width:60px;background-color:#3892d3;'>VIEWER</div></a>";   
                                     
                                 }

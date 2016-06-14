@@ -62,7 +62,7 @@ PhasingController.prototype.init = function() {
 	Path.map("#/phasing/autoprocintegrationId/:autoprocintegrationId/main").to(function() {
         var autoprocintegrationId = this.params['autoprocintegrationId'];
         
-        
+        EXI.clearNavigationPanel();
         /** Loading Main Panel */
 		var mainView = new PhasingViewerMainView();
         

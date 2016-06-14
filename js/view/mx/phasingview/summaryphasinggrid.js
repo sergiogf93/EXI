@@ -6,10 +6,14 @@
 */
 function SummaryPhasingGrid(args) {
 	
+    this.pseudoFreeMin = 24;
+    this.ccOfPartialModel = 60;
+    
     this.onSelect = new Event(this);
 };
 
 SummaryPhasingGrid.prototype.load = function(data) {
+   
   /** Adding metrics as columns on the phasing Step */
    for (var i = 0; i < data.length; i++) {
        var element = data[i];
@@ -24,10 +28,35 @@ SummaryPhasingGrid.prototype.load = function(data) {
            }
        }
    }
-	this.store.loadData(data);
+   this.data = data;
+   this.store.loadData(data);
 };
 
 
+SummaryPhasingGrid.prototype.filter = function(data, metric, min, max) {
+        
+        var filterFunction = function(b){ 
+            
+            if (b){
+                if(b[metric]){
+                    
+                    try{
+                        if (Number(b[metric]) > min){
+                            if (Number(b[metric]) < max){
+                                return true;
+                            }
+                        }
+                    
+                    }   
+                    catch(e){
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+        return _.filter(data, filterFunction);
+};
 
 SummaryPhasingGrid.prototype.getPanel = function() {
 	var _this = this;
@@ -66,11 +95,67 @@ SummaryPhasingGrid.prototype.getPanel = function() {
 
 		} });
         
+    this.pseudofreeCCSplitter =    Ext.create('Ext.slider.Multi', {
+            width: 300,           
+            hideLabel: false,
+            fieldLabel : 'Pseudo Free CC',
+            increment: 1,
+            minValue: 0,
+            maxValue: 120,
+            values: [0, 100]
+    });
     
+    this.ccOfPartialModel =    Ext.create('Ext.slider.Multi', {
+            width: 300,           
+            hideLabel: false,
+            fieldLabel : 'CC of Partial Model',
+            increment: 1,
+            minValue: 0,
+            maxValue: 120,
+            values: [0, 100]
+    });
+    
+        
+    this.tbar = Ext.create('Ext.toolbar.Toolbar', {
+ 
+    width   : 500,
+    items: [
+       
+         
+         this.pseudofreeCCSplitter ,
+         this.ccOfPartialModel,
+     
+        '-', // same as {xtype: 'tbseparator'} to create Ext.toolbar.Separator
+        {
+            // xtype: 'button', // default for Toolbars
+            text: 'Apply filter',
+            listeners : {
+                click : function(){
+                    var data = _this.filter(_this.data, 'Pseudo_free_CC',  _this.pseudofreeCCSplitter.getValues()[0],  _this.pseudofreeCCSplitter.getValues()[1]);
+                    _this.store.loadData(_this.filter(data, 'CC of partial model',  _this.ccOfPartialModel.getValues()[0],  _this.ccOfPartialModel.getValues()[1]));
+                }
+                
+            }
+        },
+          {
+            // xtype: 'button', // default for Toolbars
+            text: 'Clear filter',
+            listeners : {
+                click : function(){
+                  
+                    _this.store.loadData(_this.data);
+                }
+                
+            }
+        }
+    ]
+});
+
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : 'Phasing Steps',
 		store : this.store,
         selModel : selModel,
+        tbar :  this.tbar,
         height : 600,
         cls : 'border-grid',
 		layout : 'fit',
