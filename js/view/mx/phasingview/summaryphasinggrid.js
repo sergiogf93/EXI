@@ -22,6 +22,8 @@ SummaryPhasingGrid.prototype.load = function(data) {
            var statisticsValues = element.statisticsValue.split(",");
            if (metrics.length > 0){            
                for (var j = 0; j < metrics.length; j++) {
+                   console.log(metrics[j])
+                   
                    element[metrics[j]] = statisticsValues[j];
                }
                
@@ -82,7 +84,8 @@ SummaryPhasingGrid.prototype.getPanel = function() {
                     'Pseudo_free_CC',
                     'CC of partial model',
                     'anomalous',
-                    'acronym']
+                    'acronym',
+                    'Average Fragment Length']
 	});
     
     var selModel = Ext.create('Ext.selection.RowModel', {
@@ -301,15 +304,22 @@ SummaryPhasingGrid.prototype.getPanel = function() {
                             dataIndex : 'phasingPrograms'
                         },
                          {
-                            text : 'Pseudo Free (CC)',
+                            text : 'Pseudo Free <br />(CC)',
                             flex : 1,
                             dataIndex : 'Pseudo_free_CC'
                         },
                          {
-                            text : 'Partial Model(CC)',
+                            text : 'Partial Model <br />(CC)',
                             flex : 1,
                             dataIndex : 'CC of partial model'
+                        },
+                          {
+                            text : 'Avg. Fragment <br />Length',
+                            flex : 1,
+                            dataIndex : 'Average Fragment Length'
                         }
+                        
+                       
                         
                 ]
 	});
