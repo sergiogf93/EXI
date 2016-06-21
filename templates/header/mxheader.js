@@ -3,7 +3,7 @@
 
 <div id="container">
   <div style='float:left;' id="left">
-        <img class="titleImage" src="../images/logo_EXI.png" />
+        <img class="titleImage" src="../images/logo_EXI_double.jpg" />
         <span class="title">ExiMX</span>
         <span class="subtitle">Extended ISPyB for MX
             <sub style="font-size:10px;color:orange">BETA</sub>
