@@ -40,7 +40,7 @@ module.exports = function(grunt) {
                                                     "bower_components/dustjs-helpers/dist/dust-helpers.min.js",
                                                     "bower_components/lodash/lodash.js",
                                                     'bower_components/lightbox2/dist/js/lightbox.js',
-                                                    //"bower_components/Snap.svg/dist/snap.svg-min.js",
+                                                    "bower_components/Snap.svg/dist/snap.svg-min.js",
                                                     "bower_components/vis/dist/vis.min.js",		  
                                                     "bower_components/dygraphs/dygraph-combined.js", 
                                                     "bower_components/handsontable/dist/handsontable.full.min.js",

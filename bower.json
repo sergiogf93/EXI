@@ -32,7 +32,6 @@
     "dygraphs": "*",
     "qunit": "~1.22.0",
     "threejs": "*",
-    "magnificent": "~2.1.4",
     "ispyb-js-api": "*",
     "vis": "^4.15.0",
     "Snap.svg": "snap.svg#^0.4.1",

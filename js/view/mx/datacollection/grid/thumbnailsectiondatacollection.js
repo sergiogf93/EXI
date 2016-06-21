@@ -3,7 +3,7 @@ function ThumbnailSectionDatacollection(args) {
 
 ThumbnailSectionDatacollection.prototype.getHTML = function(data) {    
     var html = "";
-    console.log(data);
+    
     dust.render("thumbnailsection", 
     [{
         urlThumbnail : EXI.getDataAdapter().mx.dataCollection.getThumbNailById(data.lastImageId),
@@ -11,8 +11,7 @@ ThumbnailSectionDatacollection.prototype.getHTML = function(data) {
         ref         : '#/mx/beamlineparameter/datacollection/' + data.DataCollection_dataCollectionId + '/main',
         runNumber : data.DataCollection_dataCollectionNumber,
         prefix : data.DataCollection_imagePrefix,
-        comments : data.DataCollectionGroup_comments,
-        
+        comments : data.DataCollectionGroup_comments,        
         sample : data.BLSample_name,
         folder : data.DataCollection_imageDirectory
         
