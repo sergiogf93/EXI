@@ -27,6 +27,7 @@ module.exports = function(grunt) {
 		  prod:{
 			  files : {
 				  'min/core.min.js' 		: ["js/dust/**/*js", "js/core/**/*js","js/controller/**/*js", "js/menu/**/*js"],
+                  'min/lightbox.min.js' 		: ["bower_components/lightbox2/dist/js/lightbox.min.js"],
 
 				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
 				                      		    "js/widget/addressform.js", 
