@@ -111,8 +111,8 @@ DewarListSelector.prototype.getPanel = function(){
             cls : 'border-grid',
             //selModel : selModel,
             height : this.height, 
-            flex : 0.3,  
-            collapsible : true,           
+            flex : 0.5,  
+                
             margin : 5,
             columns: [ 
                 {

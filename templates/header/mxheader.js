@@ -3,7 +3,10 @@
 
 <div id="container">
   <div style='float:left;' id="left">
-        <img class="titleImage" src="../images/logo_EMBL.png" />
+  
+  
+        <img class="titleImage" height='60px' src="../images/esrf-logo-white.gif" />
+       
         <span class="title">ExiMX</span>
         <span class="subtitle">Extended ISPyB for MX
             <sub style="font-size:10px;color:orange">BETA</sub>

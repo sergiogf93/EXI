@@ -69,12 +69,13 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 				  },
 				  afterLoad: function(element) {
 					  _this.elements++;
-                      /** Adding zoom */
+                      /** Adding zoom 
                        $('#' + element[0].id).ezPlus({
                             tint: true,
                             tintColour: '#F90', 
                             tintOpacity: 0.5
                         });
+                        */
 				  },
 				  onError: function(element) {
 					  _this.elements++;
@@ -118,8 +119,9 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
     return this.panel;
 };
 
-GenericDataCollectionPanel.prototype._getHTMLImage = function(url) {
-    return '<img class="smalllazy" onclick="myFunction()"  data-src=' + url + '>';
+GenericDataCollectionPanel.prototype._getHTMLImage = function(data, url) {
+
+    return '<a href="' + url +'" data-lightbox="'+ data.DataCollection_dataCollectionId+'" data-title="'+ data.Protein_acronym + ": " + data.Protein_name +'"><img class="smalllazy"  data-src=' + url + '></a>';
 };
 
 
@@ -135,10 +137,8 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             renderer: function(grid, e, record) {
                 var html = "";
                 dust.render("resultsection.general", record.data, function(err, out) {
-
                     html = out;
                 });
-
                 return html;
 
             }
@@ -149,7 +149,6 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 0.75,
-
             renderer: function(grid, e, record) {
                 return new OnlineResultSectionDataCollection().getHTML(record.data);
             }
@@ -191,10 +190,10 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             hidden : false,
             renderer: function(val, y, record) {
                 var html = "<table>"
-                var img1 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
-                var img2 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2));
-                var img3 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 3));
-                var img4 = _this._getHTMLImage(EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4));
+                var img1 = _this._getHTMLImage(record.data, EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
+                var img2 = _this._getHTMLImage(record.data, EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2));
+                var img3 = _this._getHTMLImage(record.data, EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 3));
+                var img4 = _this._getHTMLImage(record.data, EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4));
 
                 html = html + "<tr><td>" + img1 + "</td><td>" + img2 + "</td><tr>";
                 html = html + "<tr><td>" + img3 + "</td><td>" + img4 + "</td><tr>";

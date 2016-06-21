@@ -24,9 +24,9 @@ function PuckForm(args) {
 	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
 	
-	this.containerSpreadSheet.onModified.attach(function(sender, puck){
-		//_this.loadPlateLayout(puck);
-	});
+	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
+		
+	});*/
 	
 	this.onSaved = new Event(this);
 }
