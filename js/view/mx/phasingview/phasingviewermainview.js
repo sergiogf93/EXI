@@ -66,21 +66,21 @@ PhasingViewerMainView.prototype.tableToTree = function(data) {
     
 };
 
-PhasingViewerMainView.prototype.load = function(autoprocintegrationId) {
+PhasingViewerMainView.prototype.load = function(data, tree) {
 	var _this = this;
 	this.panel.setTitle("Phasing Viewer");
-	this.panel.setLoading();
-	var onSuccess = function(sender, data){
+	//this.panel.setLoading();
+	//var onSuccess = function(sender, data){
 		var tree = _this.tableToTree(_.flatten(data));
       
 	    _this.phasingGrid.load(tree);
         _this.summaryPhasingGrid.load(tree);
         _this.phasingNetworkWidget.load(_.flatten(data))
        
-        _this.panel.setLoading(false);
+       // _this.panel.setLoading(false);
 	    
-	};
+	//};
     
-	EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByAutoProcIntegrationId(autoprocintegrationId);
+	//EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByAutoProcIntegrationId(autoprocintegrationId);
 	
 };

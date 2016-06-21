@@ -6,9 +6,9 @@
 	<th class='datacollection_parameter_name' style='padding-left:10px;'>c</th>
 </tr>
 <tr style='border: 1px solid gray'>	
-	<td class='datacollection_parameter' style='padding-left:10px;'>{.v_datacollection_summary_phasing_cell_a}</td>
-	<td class='datacollection_parameter' style='padding-left:10px;'>{.v_datacollection_summary_phasing_cell_b}</td>
-	<td class='datacollection_parameter' style='padding-left:10px;'>{.v_datacollection_summary_phasing_cell_c}</td>
+	<td class='datacollection_parameter' style='padding-left:10px;'>{@decimal key="v_datacollection_summary_phasing_cell_a" decimals=1}{/decimal}</td>
+    <td class='datacollection_parameter' style='padding-left:10px;'>{@decimal key="v_datacollection_summary_phasing_cell_b" decimals=1}{/decimal}</td>
+    <td class='datacollection_parameter' style='padding-left:10px;'>{@decimal key="v_datacollection_summary_phasing_cell_c" decimals=1}{/decimal}</td>
 </tr>
 
 </table>
@@ -22,8 +22,9 @@
 	<th class='datacollection_parameter_name' style='padding-left:10px;'>&#947;</th>
 </tr>
 <tr style='border: 1px solid gray'>	
-	<td class='datacollection_parameter' style='padding-left:10px;'>{.v_datacollection_summary_phasing_cell_alpha}</td>
-	<td class='datacollection_parameter' style='padding-left:10px;'>{.v_datacollection_summary_phasing_cell_beta}</td>
-	<td class='datacollection_parameter' style='padding-left:10px;'>{.v_datacollection_summary_phasing_cell_gamma}</td>
+	<td class='datacollection_parameter' style='padding-left:10px;'>{@decimal key="v_datacollection_summary_phasing_cell_alpha" decimals=1}{/decimal}</td>
+    <td class='datacollection_parameter' style='padding-left:10px;'>{@decimal key="v_datacollection_summary_phasing_cell_beta" decimals=1}{/decimal}</td>
+    <td class='datacollection_parameter' style='padding-left:10px;'>{@decimal key="v_datacollection_summary_phasing_cell_gamma" decimals=1}{/decimal}</td>
+
 </tr>
 </table>

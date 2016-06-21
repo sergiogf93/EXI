@@ -12,32 +12,37 @@
 </tr>
 {#.}
 	<tr>
-			<td class='summary_datacollection_parameter_name'>
+			<td class='summary_datacollection_parameter_name' >
 				{.type}
 			</td>
 			<td style='padding-left:10px;'>
-				{.resolutionLimitLow}-{.resolutionLimitHigh}
+                {@decimal key="resolutionLimitLow" decimals=1}{/decimal} - {@decimal key="resolutionLimitHigh" decimals=1}{/decimal}
 			</td>
 			<td style='padding-left:10px;'>
-				{.multiplicity}
+				
+                {@decimal key="multiplicity" decimals=1}{/decimal}
 			</td>
 			<td style='padding-left:10px;'> 
-				{.completeness}
+                {@decimal key="completeness" decimals=1}{/decimal}
+				
 			</td>
             <td style='padding-left:10px;'> 
-				{.meanIOverSigI}
+                {@decimal key="meanIOverSigI" decimals=1}{/decimal}
+				
 			</td>
             <td style='padding-left:10px;'> 
 				rMeasAll
 			</td>
             <td style='padding-left:10px;'> 
-				{.rMerge}
+                {@decimal key="rMerge" decimals=1}{/decimal}
+				
 			</td>
              <td style='padding-left:10px;'> 
 				rpim
 			</td>
              <td style='padding-left:10px;'> 
-				{.ccHalf}
+                {@decimal key="ccHalf" decimals=1}{/decimal}
+				
 			</td>
 			
 	</tr>	
