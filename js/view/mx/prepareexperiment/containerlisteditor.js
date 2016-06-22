@@ -54,6 +54,7 @@ ContainerListEditor.prototype.getPanel = function(){
                     clicksToEdit : 1,
                     listeners : {
                         validateedit : function(grid, e) {
+                            debugger
                             /** Setting values * */
                             for ( var key in _this.editor) {
                                 e.record.data[key] = e.newValues[key];

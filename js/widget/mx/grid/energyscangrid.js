@@ -36,7 +36,7 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
 
 EnergyScanGrid.prototype._getHTMLZoomImage = function(url, dataCollectionId, imageId) {
     
-    return '<img class="lazy"  data-src=' + url + ' src=' + url + '>';
+    return '<a href="' + url +'" data-lightbox="' + url +'" data-title="Chooch"><img class="lazy"  data-src=' + url + ' src=' + url + '></a>';
 };
 
 

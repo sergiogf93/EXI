@@ -110,43 +110,56 @@ PhasingNetworkWidget.prototype.getPanel = function(){
 
 
 PhasingNetworkWidget.prototype.getLabelByNode = function(node){
+    debugger
 	if (node.phasingStepType == "PREPARE"){
-		return "PR" +
+		return "Pepare" +
 				"\n" +
-				node.v_datacollection_summary_phasing_phasingPrograms +
+				node.phasingPrograms +
 				"\n" +
-				node.v_datacollection_summary_phasing_lowRes + " - " + node.v_datacollection_summary_phasing_highRes +
+				node.lowRes + " - " + node.highRes +
 				"\n" +
 				node.spaceGroupShortName +
 				"\n" +
-				node.v_datacollection_summary_phasing_method
+				node.method;
 				
 		
 	}
 	
 	if (node.phasingStepType == "PHASING"){
-		return "PH" +
-		"\n" +
-		node.v_datacollection_summary_phasing_phasingPrograms +
-		"\n" +
-		node.spaceGroupShortName +
-		"\n" +
-		node.v_datacollection_summary_phasing_lowRes + " - " + node.v_datacollection_summary_phasing_highRes +
-		"\n" +
-		"Enan: " + node.v_datacollection_summary_phasing_enantiomorph + 
-		"\n" +
-		"Solvent: " + node.v_datacollection_summary_phasing_solventContent;
+		return "Phasing" +
+		        "\n" +
+				node.phasingPrograms +
+				"\n" +
+				node.lowRes + " - " + node.highRes +
+				"\n" +
+				node.spaceGroupShortName +
+				"\n" +
+				node.method;
 		
 	}
 	
 	if (node.phasingStepType == "SUBSTRUCTUREDETERMINATION"){
-		return "SUB" +
-		"\n" +
-		node.v_datacollection_summary_phasing_phasingPrograms +
-		"\n" +
-		node.spaceGroupShortName +
-		"\n" +
-		node.v_datacollection_summary_phasing_lowRes + " - " + node.v_datacollection_summary_phasing_highRes; 
+		return "Substructure" +
+				"\n" +
+				node.phasingPrograms +
+				"\n" +
+				node.lowRes + " - " + node.highRes +
+				"\n" +
+				node.spaceGroupShortName +
+				"\n" +
+				node.method;
+	}
+    
+    if (node.phasingStepType == "MODELBUILDING"){
+		return "Model" +
+				"\n" +
+				node.phasingPrograms +
+				"\n" +
+				node.lowRes + " - " + node.highRes +
+				"\n" +
+				node.spaceGroupShortName +
+				"\n" +
+				node.method;
 	}
 	return node.phasingStepType;
 };
@@ -192,15 +205,18 @@ PhasingNetworkWidget.prototype._render = function(){
 				    case "SUBSTRUCTUREDETERMINATION":
 				    	color = "#FFF8A8";
 				        break;
+                    case "MODELBUILDING":
+				    	color = "#82FA58";
+				        break;
 				    default:
-				    	color = '#B7A800';
+				    	color = '#F7FE2E';
 			}
 			
 			nodes.push({
 				id 		: this.data[i].phasingStepId,
 				label 	: this.getLabelByNode(this.data[i]),// + "-- " + this.data[i].spaceGroupShortName,
 				color	: color,
-				font	: {size:8}
+				font	: {size:12}
 			});
 			
 			
@@ -252,21 +268,23 @@ PhasingNetworkWidget.prototype._render = function(){
 	  };
   
         var options = {
-        "edges": {
-            "smooth": {
-            "type": "discrete",
-            "forceDirection": "vertical",
-            "roundness": 0.25
-            }
-        },
-        "physics": {
-            "barnesHut": {
-            "gravitationalConstant": -12550,
-            "springLength": 145
+            height: '100%',
+             width: '100%',
+            "edges": {
+                "smooth": {
+                "type": "discrete",
+                "forceDirection": "vertical",
+                "roundness": 0.25
+                }
             },
-            "minVelocity": 0.75,
-            "timestep": 0.62
-        }
+            "physics": {
+                "barnesHut": {
+                "gravitationalConstant": -12550,
+                "springLength": 145
+                },
+                "minVelocity": 0.75,
+                "timestep": 0.62
+            }
         }
      
 	  this.network = new vis.Network(document.getElementById(this.id), data, options)

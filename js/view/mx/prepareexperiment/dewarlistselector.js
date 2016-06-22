@@ -12,6 +12,9 @@ function DewarListSelector(args){
             
         }
     }
+    
+    this.filterByDate = true;
+    
     this.onSelect = new Event(this);
     this.onDeselect = new Event(this);
     this.onSelectionChange = new Event(this);
@@ -26,17 +29,39 @@ function DewarListSelector(args){
 * @param {Object} dewars Array of containers
 */
 DewarListSelector.prototype.load = function(dewars){
+    var _this = this;
     this.dewars = dewars;
-    /** Filter by Dewars */       
+    /** Filter by Dewars */ 
+      
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
-        data.push(value);
+        if (_this.filterByDate){
+            if (value.shippingStatus){
+                if (value.shippingStatus.toUpperCase() == "PROCESSING"){
+                    data.push(value);
+                    return;
+                }                        
+            }       
+        
+            /** Filtering only future sessions */            
+            if (value.sessionStartDate){
+                if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
+                    data.push(value);
+                }
+            }
+            else{
+                /** No session or not parseable */
+                data.push(value);
+            }
+        }
+        else{
+                data.push(value);
+        }
+        
     });
-    
-    
-    this.panel.setTitle("Select within " + this.dewars.length + " containers from " + data.length + " shipments for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);
-    
+        
+    this.panel.setTitle(data.length + " shipments candidates for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);    
     this.store.loadData(data);
 
 };
@@ -85,34 +110,33 @@ DewarListSelector.prototype.getStore = function(){
 };
 DewarListSelector.prototype.getPanel = function(){
     var _this = this;
-   /*
-    var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect		: true,
-		mode				: 'MULTI',
-		listeners			: {
-						        selectionchange: function (sm, selections) {
-						           
-						        	_this.onSelectionChange.notify(_this.getSelectedData() );
-						        },
-						        select: function (sm, selected) {
-						        	_this.onSelect.notify(selected.data);
-                                    
-						        },
-						        deselect: function (sm, deselected) {
-						        	_this.onDeselect.notify(deselected.data);
-						        }
-		}
-	});*/
+   
+    this.tbar = Ext.create('Ext.toolbar.Toolbar', {
     
+    items: [
+       
+        {
+            xtype       : 'checkboxfield',
+            boxLabel    : 'Display only shipments scheduled for future sessions',
+            checked     : this.filterByDate,
+            listeners : {
+                change : function( cb, newValue, oldValue, eOpts ){
+                    _this.filterByDate = newValue;
+                    _this.load(_this.dewars);
+                }
+                
+            }
+        }
+    ]
+    });
 
     this.panel = Ext.create('Ext.grid.Panel', {
             title: 'Select dewars',
             store: this.getStore(),
-            cls : 'border-grid',
-            //selModel : selModel,
+            cls : 'border-grid',           
             height : this.height, 
-            flex : 0.3,  
-            collapsible : true,           
+            flex : 0.5, 
+            tbar : this.tbar,                 
             margin : 5,
             columns: [ 
                 {
@@ -120,7 +144,7 @@ DewarListSelector.prototype.getPanel = function(){
                     columns : [
                          { text: 'Name',  dataIndex: 'shippingName', width: 150 },
                          { text: 'Status',  dataIndex: 'shippingStatus', flex: 1 },
-                         { text: 'Created on',  dataIndex: 'creationDate', flex: 1,  hidden : true,
+                         { text: 'Created on',  dataIndex: 'creationDate', flex: 1,   hidden : true,
                             renderer : function(grid, a, record){
                                 if (record.data.creationDate){
                                     return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD/MM/YYYY");
@@ -145,18 +169,9 @@ DewarListSelector.prototype.getPanel = function(){
                             { text: 'beamline', dataIndex: 'beamlineName', flex: 1 },     
                             { text: 'Local contact',  dataIndex: 'beamLineOperator', flex: 2, hidden : true  }                 
                     ]                                         
-                },
-               /* {
-                    text    : 'Dewar',
-                    columns : [
-                            
-                            { text: 'Name',  dataIndex: 'dewarCode' },
-                            { text: 'Status', dataIndex: 'dewarStatus', flex: 1 },
-                            { text: 'Barcode', dataIndex: 'barCode', flex: 1 , hidden : true},               
-                    ]                                         
-                },*/
+                },              
                  {      
-                        text: '# Dewars<br /> # Containers<br /> (# Samples)',     
+                        text: '#Dewars/#Parcels (#Samples)',     
                         flex: 1,
                         renderer : function(grid, e, record){
                             var stats =  _this.getStatsByDewarId(record.data.shippingId);

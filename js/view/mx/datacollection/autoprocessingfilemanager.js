@@ -33,7 +33,6 @@ AutoProcessingFileManager.prototype.show = function(dataCollectionIds){
             displayField: 'v_datacollection_processingPrograms',
             height : 25,
             valueField: 'v_datacollection_summary_phasing_autoProcProgramId',
-            
             tpl : Ext.create('Ext.XTemplate', 
 				'<tpl for=".">',
 					'<div style="font-size:12px;" class="x-boundlist-item">{v_datacollection_processingPrograms}<span style="color:gray;font-size:10px;font-weight:bold"> {v_datacollection_summary_phasing_autoproc_space_group}</span></div>', '</tpl>'),
@@ -93,7 +92,7 @@ AutoProcessingFileManager.prototype.show = function(dataCollectionIds){
 AutoProcessingFileManager.prototype.reloadData = function(programId, filtered){
     this.programId = programId;
     this.filtered = filtered;
-    debugger
+    
     /** Get all attachments */
     var dataByProgram = _.flatten(this.attachments);
     
@@ -107,7 +106,7 @@ AutoProcessingFileManager.prototype.reloadData = function(programId, filtered){
                 return b.fileName.indexOf(".mtz") != -1;
         })
     }
-    console.log(dataByProgram);
+   
     if (!dataByProgram){
         dataByProgram = [];
     }

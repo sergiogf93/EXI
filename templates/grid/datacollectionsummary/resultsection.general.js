@@ -35,7 +35,7 @@
         <td class='summary_datacollection_parameter_name'>Prefix</td>
         <td class='summary_datacollection_parameter'>{.DataCollection_imagePrefix}</td>
         <td class='summary_datacollection_parameter_name'>{.DataCollection_rotationAxis} range</td>
-        <td class='summary_datacollection_parameter'> {.DataCollection_axisRange} °</td>
+        <td class='summary_datacollection_parameter'> {.DataCollection_axisRange} &deg;</td>
 
     </tr>
     
@@ -43,7 +43,7 @@
         <td class='summary_datacollection_parameter_name'>Run Number</td>
         <td class='summary_datacollection_parameter'>{.DataCollection_dataCollectionNumber}</td>
         <td class='summary_datacollection_parameter_name'>{.DataCollection_rotationAxis} start (total)</td>
-        <td class='summary_datacollection_parameter'>{.DataCollection_axisEnd}° ({.DataCollection_axisTotal}°)</td>
+        <td class='summary_datacollection_parameter'>{.DataCollection_axisEnd}&deg; ({.DataCollection_axisTotal}&deg;)</td>
         
     </tr>
     

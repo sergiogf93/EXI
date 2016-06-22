@@ -168,6 +168,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			renderer : function(e, sample, record){
 				var html  = "";
 				try{
+                               
 					dust.render("autoprocintegrationgrid_unitcell", record.data, function(err, out){
 						html = out;
 					});
@@ -194,7 +195,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                                 return splitted[i];
                             }
                         }
-                        return "N/A";
+                        return "";
                         
                     }
 					var parsed = [];
@@ -207,7 +208,9 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 							meanIOverSigI 			: getValue(record.data.meanIOverSigI, i),
 							completeness 			: getValue(record.data.completeness, i),
                             rMerge 			        : getValue(record.data.rMerge, i),
-                            ccHalf 			        : getValue(record.data.ccHalf, i)
+                            ccHalf 			        : getValue(record.data.ccHalf, i),
+                            rPimWithinIPlusIMinus 	: getValue(record.data.rPimWithinIPlusIMinus, i),
+                            rMeasAllIPlusIMinus 	: getValue(record.data.rMeasAllIPlusIMinus, i)
 							
 						});
 					}

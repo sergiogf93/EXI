@@ -52,7 +52,8 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 	
 };
 
-WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataCollectionGroup){
+
+WorkflowSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
 	var parsed = [];
 	var html = "";
 
@@ -64,17 +65,8 @@ WorkflowSectionDataCollection.prototype.getWorkflowStepHTML = function(dataColle
 		html = out;
      });
 	
-	/** Adding button **/
-	//html = html + "<div style='border:1px solid #3892d3;background-color:#3892d3;text-align:center;'><a style='color:white;' href='#/mx/workflow/step/"+dataCollectionGroup.WorkflowStep_workflowStepId+"/main'> See details</a></div>";
+	
 	return html;
-	
-};
-
-WorkflowSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
-	/** Results for WorkflowStep **/
-	var result = this.getWorkflowStepHTML(dataCollectionGroup);
-	return result;
-	
 };
 
 

@@ -1,3 +1,5 @@
+
+
 <table>
 <tr style='border: 1px solid gray';>
 	<th class='datacollection_parameter_name'>Data Range</th>
@@ -31,14 +33,15 @@
 				
 			</td>
             <td style='padding-left:10px;'> 
-				rMeasAll
+				{@decimal key="rMeasAllIPlusIMinus" decimals=1}{/decimal}
 			</td>
             <td style='padding-left:10px;'> 
                 {@decimal key="rMerge" decimals=1}{/decimal}
 				
 			</td>
              <td style='padding-left:10px;'> 
-				rpim
+                {@decimal key="rPimWithinIPlusIMinus" decimals=1}{/decimal}
+				
 			</td>
              <td style='padding-left:10px;'> 
                 {@decimal key="ccHalf" decimals=1}{/decimal}

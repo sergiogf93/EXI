@@ -273,7 +273,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 		      
 		},
 	    data: this.getSamplesData(puck),
-	    colWidths: 70,
+	 
 	    height : this.height,
 	    width : this.width,
 	    manualColumnResize: true,
@@ -284,16 +284,12 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  });
 
 	  
-	  this.spreadSheet.updateSettings({
-		  afterChange: function (changes, source) {
+	 /*this.spreadSheet.updateSettings({
+		  afterChange: function (changes, source) {              
 				_this.onModified.notify(_this.getPuck());
-				/*try{
-					_this.loadPlateLayout(_this.parseData(_this.spreadSheet.getData()));
-				}catch(e){
-					console.log(e);
-				}*/
+			
 		  }
-		});
+		});*/
 	
 	
 };

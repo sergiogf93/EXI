@@ -200,7 +200,7 @@ OnlineResultSectionDataCollection.prototype.parseData = function(dataCollectionG
 	var resultParsed = [];
     resultParsed.push(this.getAutoprocResults(dataCollectionGroup));
     resultParsed.push(this.getScreeningData(dataCollectionGroup));
-    resultParsed.push(this.getPhasingResults(dataCollectionGroup));
+    //resultParsed.push(this.getPhasingResults(dataCollectionGroup));
 	return resultParsed;
 };
 

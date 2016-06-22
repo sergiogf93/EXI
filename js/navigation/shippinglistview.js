@@ -18,6 +18,7 @@ ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 */
 ShippingListView.prototype.getRow = function(record){
 	var html = "";
+    
 	dust.render("shipping.listview", record.data, function(err, out){
         	html = out;
      	});

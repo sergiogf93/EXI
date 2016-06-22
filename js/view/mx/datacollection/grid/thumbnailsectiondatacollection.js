@@ -1,19 +1,23 @@
 function ThumbnailSectionDatacollection(args) {
-    
 }
 
-
-
-ThumbnailSectionDatacollection.prototype._getHTMLZoomImage = function(lastImageId, dataCollectionId, imageId) {
-    var urlThumbnail = EXI.getDataAdapter().mx.dataCollection.getThumbNailById(lastImageId);
-    var url = EXI.getDataAdapter().mx.dataCollection.getImageById(lastImageId);
-    var ref = '#/mx/beamlineparameter/datacollection/' + dataCollectionId + '/main';
-    //return '<a href=' + ref + '><img id="' + dataCollectionId +'_thumb"; class="lazy"  data-src=' + urlThumbnail + ' src="' + urlThumbnail + '"  data-zoom-image="' + url + '"></a>';
-    return '<a href=' + ref + '><img id="' + dataCollectionId +'_thumb"; class="lazy"  data-src="' + urlThumbnail + '"  data-zoom-image="' + url + '"></a>';
+ThumbnailSectionDatacollection.prototype.getHTML = function(data) {    
+    var html = "";
+    
+    dust.render("thumbnailsection", 
+    [{
+        urlThumbnail : EXI.getDataAdapter().mx.dataCollection.getThumbNailById(data.lastImageId),
+        url         :  EXI.getDataAdapter().mx.dataCollection.getImageById(data.lastImageId),
+        ref         : '#/mx/beamlineparameter/datacollection/' + data.DataCollection_dataCollectionId + '/main',
+        runNumber : data.DataCollection_dataCollectionNumber,
+        prefix : data.DataCollection_imagePrefix,
+        comments : data.DataCollectionGroup_comments,        
+        sample : data.BLSample_name,
+        folder : data.DataCollection_imageDirectory
+        
+    }], function(err, out) {        
+        html = out;
+    });
+    return html;  
 };
-
-ThumbnailSectionDatacollection.prototype.getHTML = function(data){
-	return this._getHTMLZoomImage(data.lastImageId, data.DataCollection_dataCollectionId, data.lastImageId);
-};
-
 

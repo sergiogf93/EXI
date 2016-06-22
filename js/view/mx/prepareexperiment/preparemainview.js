@@ -8,7 +8,7 @@ function PrepareMainView() {
     
     this.dewarListSelector = new DewarListSelector({height : 600});
     this.dewarListSelector.onSelect.attach(function(sender, dewar){    
-        _this.containerListEditor.store.loadData(_.filter(_this.containers, function(e){ return e.dewarId == dewar.dewarId }), true);
+            
        
             if (dewar.shippingStatus == "processing"){
                 _this.switchStatus(dewar.shippingId, "at ESRF");
@@ -33,7 +33,7 @@ function PrepareMainView() {
         });*/
     });
     
-	this.containerListEditor = new ContainerListEditor({height : 600});
+	this.containerListEditor = new ContainerPrepareSpreadSheet({height : 600});
 
 }
 
@@ -79,7 +79,7 @@ PrepareMainView.prototype.load = function() {
         
         /** Selecting containers that are processing */
         var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
-        console.log(processingContainers);
+ 
         _this.containerListEditor.load(processingContainers);
         
     };
