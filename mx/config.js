@@ -61,6 +61,19 @@ var ExtISPyB ={
          }
       },
       {
+         name:'EMBL',
+         url:'http://ispyb.embl-hamburg.de/ispyb/ispyb-ws/rest',
+         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
+         beamlines:{
+            SAXS:[
+               'P12'
+            ],
+            MX:[
+               "P13", "P14"
+            ]
+         }
+      },
+      {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
          exiUrl:'http://lindemaria:8080/extispyb-ws/rest',

@@ -131,6 +131,16 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                 return record.data.v_datacollection_summary_phasing_autoProcIntegrationId;
 			}
 		},
+            {
+			text : 'AutoProcScalingId',
+			dataIndex : 'v_datacollection_summary_phasing_autoProcScalingId',
+            flex : 1,
+            hidden : true,
+			renderer : function(e, sample, record){
+                return record.data.v_datacollection_summary_phasing_autoProcScalingId;
+			}
+		},
+        
         {
 			text : 'Autoprocessing',
 			dataIndex : 'processingPrograms',
