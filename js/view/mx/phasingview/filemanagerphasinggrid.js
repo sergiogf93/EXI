@@ -18,11 +18,11 @@ FileManagerPhasingGrid.prototype.findPDBMatch = function(mapFilePath) {
     for (var i = 0; i < this.data.length; i++) {
         var element = this.data[i];
         if (element.fileName.endsWith(".pdb")){
-            var name = element.fileName.substring(0,element.fileName.lastIndexOf("."));
+            /*var name = element.fileName.substring(0,element.fileName.lastIndexOf("."));
             var nameMap = mapFilePath.substring(0,mapFilePath.lastIndexOf("."));
-            if (name == nameMap){
+            if (name == nameMap){*/
                 return element;
-            } 
+            //} 
             
         }
     }
