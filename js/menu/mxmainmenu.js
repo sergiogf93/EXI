@@ -21,7 +21,7 @@ MXMainMenu.prototype.getMenuItems = function() {
 		{
                 text : this._convertToHTMLWhiteSpan("Proteins and Crystals"),
                 cls : 'ExiSAXSMenuToolBar',
-                disabled : false,
+                disabled : true,
                 menu : this.getProteinCrystalsMenu() 
 	    	},
 	    	{

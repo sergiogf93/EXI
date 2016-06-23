@@ -6,7 +6,7 @@
             <div>
                         {#.}
                                     
-                                   <a href="{.url}" data-lightbox='a' data-title="#{.runNumber} {.folder}"> <img  class="lazy"  data-src="{.urlThumbnail}" ></a>
+                                   <a href="{.url}" data-lightbox='{.url}' data-title="#{.runNumber} {.folder}"> <img  class="lazy"  data-src="{.urlThumbnail}" ></a>
                         {/.}
             </div>
         {/.}

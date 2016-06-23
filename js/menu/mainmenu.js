@@ -86,6 +86,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
 		cls : 'ExiSAXSMenuToolBar',
 //		hidden : this.isHidden,
+        disabled : true,
 		menu : Ext.create('Ext.menu.Menu', {
 			items : [ 
 						{
