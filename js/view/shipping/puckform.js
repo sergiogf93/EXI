@@ -41,13 +41,9 @@ PuckForm.prototype.load = function(puck, shippingId) {
 		this.capacityCombo.setValue(this.puck.capacity);
         Ext.getCmp(this.id + "puck_beamline").setValue(this.puck.beamlineLocation);
         Ext.getCmp(this.id + "puck_sampleChangerLocation").setValue(this.puck.sampleChangerLocation);
-        Ext.getCmp(this.id + "puck_status").setValue(this.puck.containerStatus);
-        
-        
-	}
-	
+        Ext.getCmp(this.id + "puck_status").setValue(this.puck.containerStatus);                
+	}	
 	this.containerSpreadSheet.load(puck);
-    //this.loadPlateLayout(puck);
 };
 
 /*
@@ -150,7 +146,7 @@ PuckForm.prototype.containerTypeChanged = function(capacity) {
 		data = data.slice(0, capacity);
 	}
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	//this.loadPlateLayout(this.puck);
+
 };
 
 PuckForm.prototype.getPanel = function() {
