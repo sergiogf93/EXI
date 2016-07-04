@@ -25,7 +25,11 @@
                 {@decimal key="multiplicity" decimals=1}{/decimal}
 			</td>
 			<td style='padding-left:10px;'> 
-                {@decimal key="completeness" decimals=1}{/decimal}
+                
+                <div style="width:100%;height:10px;position:relative;background-color:#BDBDBD;">
+                    <div style="background-color:#298A08;height:100%;position:absolute;line-height:inherit;width:{.completeness}%;"></div>
+                </div> 
+           
 				
 			</td>
             <td style='padding-left:10px;'> 

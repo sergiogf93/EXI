@@ -119,12 +119,17 @@ PuckForm.prototype.save = function() {
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getValue();
 	
+    var onError = function(sender, error){
+		_this.panel.setLoading(false);
+		EXI.setError(error.responseText);
+	};
+    
 	var onSuccess = function(sender, puck){
 		_this.panel.setLoading(false);
 		_this.load(puck);
 		_this.onSaved.notify();
 	};
-	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveContainer(this.puck.containerId, this.puck.containerId, this.puck.containerId, puck);
+	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.puck.containerId, this.puck.containerId, this.puck.containerId, puck);
 };
 
 

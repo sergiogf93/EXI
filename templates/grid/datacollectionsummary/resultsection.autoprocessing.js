@@ -23,14 +23,33 @@
                             </tr>
                         {/items}
                     {/items}
-                </table>
-                
-           
+                </table>                           
     {/.}
-   
-        
+ 
+ 
+ 
+
+        {#.[0]}
+            {@gte key=autoProcResults.length value=1}
+                {>"stats.autoprocessing.section.general"  /}
+            {/gte}
+        {/.[0]}   
+
+
+    
+    
+    
+ 
+      
+ 
+  
+
+
+
+     
+     
      </div>
-      {#.[0]}
+      {#.[0]}    
       <table>
         <tr>
             <td>

@@ -27,3 +27,7 @@
         
 };
 
+dust.helpers.sizeOf = function(chunk, context, bodies, params) {
+  var value = this.size(chunk, context, bodies, params);
+  return (bodies && bodies.block) ? chunk.render(bodies.block, context.push({ isSelect: true, isResolved: false, selectKey: value })) : value;
+};

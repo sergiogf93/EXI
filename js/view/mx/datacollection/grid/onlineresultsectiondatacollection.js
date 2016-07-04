@@ -205,15 +205,17 @@ OnlineResultSectionDataCollection.prototype.parseData = function(dataCollectionG
 };
 
 
-OnlineResultSectionDataCollection.prototype.getHTML = function(dataCollectionGroup){
+OnlineResultSectionDataCollection.prototype.getHTML = function(dataCollectionGroup, autoProcResults){
     var parseResults = this.parseData(dataCollectionGroup);
 
+    parseResults[0].autoProcResults = autoProcResults;
     var html = "";
     dust.render("resultsection.autoprocessing", parseResults, function(err, out) {
         html = out;
         
     });
-                
+       
+                                        
     return html;	
 };
 

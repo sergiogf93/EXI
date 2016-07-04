@@ -1,6 +1,6 @@
 
 <div class="showhim">
-    <div style='height: 200px';  >
+    <div style='height: 300px';  >
         
         {#.}
             <div>

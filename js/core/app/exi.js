@@ -108,12 +108,7 @@ Exi.prototype.appendDataAdapterParameters = function(args) {
 		args.token = connections[0].token;
 		args.proposal = connections[0].proposal;
 		
-		args.onError = function(sender, errorCode){
-			if (errorCode == "401 Unauthorized"){
-				EXI.setError(errorCode);
-				location.hash = '/logout';
-			}
-		};
+	
 	}
 	return args;	
 };
@@ -121,7 +116,15 @@ Exi.prototype.appendDataAdapterParameters = function(args) {
 
 
 Exi.prototype.getDataAdapter = function(args) {   
-	return new DataAdapterFactory(this.appendDataAdapterParameters(args));
+	var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));
+    /** Attaching default error handler */
+    dataAdapter.onError.attach(function(){
+        if (errorCode == "401 Unauthorized"){
+				EXI.setError(errorCode);
+				location.hash = '/logout';
+			}        
+    });      
+    return dataAdapter;  	
 };
 
 Exi.prototype.setAnonymousMenu = function() {
