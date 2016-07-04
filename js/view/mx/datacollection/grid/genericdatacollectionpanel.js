@@ -24,69 +24,44 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
                     for (var i = 0; i < _this.dataCollectionGroup.length; i++) {
                         var elementId = _this.dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
                          $('#' + elementId).Lazy();
-                        /*var elementId = _this.dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
-                        $('#' + elementId).ezPlus({
-                            tint: true,
-                            tintColour: '#F90', 
-                            tintOpacity: 0.5
-                        });
-                        var custom = _this.dataCollectionGroup[i].DataCollection_dataCollectionId + "_custom";
-                        
-                        if ($('#' + custom)){
-                             $('#' + custom).ezPlus({
-                                zoomType: 'lens',
-                                lensShape: 'round',
-                                lensSize: 200
-                             });
-                        }*/
-                       //EXI.mainStatusBar.showReady();
+                       
                     }
-                }
-                //EXI.mainStatusBar.showBusy("Loading zoom");
-                //setTimeout(loadMagnifiers, 1000)
-             
-
-
-
+                }              
             }
-
 
         }
 
     });
     
     _this.elements = 0;
-	this.panel.on('afterrender', function(){
-		//loadedElements = 0;
-		//console.log(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.id)
-		var myVar = setTimeout(function() {   //calls click event after a certain time
+	this.panel.on('afterrender', function(){    
+		var myVar = setTimeout(function() {   
+               /*
+               $('.owl-carousel').owlCarousel({
+                    loop:true,
+                    items:1,
+                    margin:10,
+                    nav:true
+                    
+                });*/
+     
 				$('.lazy').lazy({ 
 				  bind:'event',
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
 				  appendScroll:document.getElementById(document.getElementById('test').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
 				  beforeLoad: function(element){
-					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
+
 				  },
 				  afterLoad: function(element) {
-					  _this.elements++;
-                      /** Adding zoom 
-                       $('#' + element[0].id).ezPlus({
-                            tint: true,
-                            tintColour: '#F90', 
-                            tintOpacity: 0.5
-                        });
-                        */
+					                       
 				  },
 				  onError: function(element) {
-					  _this.elements++;
 				  },
 				  onFinishedAll: function() {
-                     EXI.mainStatusBar.showReady();
-					  //console.log('lazy instance is about to be destroyed')
 				  }
 			  });
 				
-			}, 1000);
+			}, 100);
 	
             var myVar = setTimeout(function() {   //calls click event after a certain time
 				$('.smalllazy').lazy({ 
@@ -94,19 +69,14 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
 				  appendScroll:document.getElementById(document.getElementById('test').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
 				  beforeLoad: function(element){
-					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
 				  },
-				  afterLoad: function(element) {
-					  _this.elements++;
-                      //EXI.mainStatusBar.showBusy('Loading ' +  _this.elements + ' elements');
-					  //console.log('image was loaded successfully');
+				  afterLoad: function(element) {					
 				  },
 				  onError: function(element) { 
 					   $('#' + element[0].id).remove();
 				  },
 				  onFinishedAll: function() {
                      EXI.mainStatusBar.showReady();
-					  //console.log('lazy instance is about to be destroyed')
 				  }
 			  });
 				
@@ -193,8 +163,13 @@ GenericDataCollectionPanel.prototype._getAutoprocessingStatistics = function(dat
         return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
     }
     
-    var sorted = result.sort(sortByBest);
-    return sorted.reverse();
+    var sorted = result.sort(sortByBest).reverse();
+    /** Add new attribute for ranking order */
+    for (var i = 0; i < sorted.length; i++){
+       sorted[i]["rank"] = i + 1;
+    }
+    
+    return sorted;
 };
 
 GenericDataCollectionPanel.prototype.getColumns = function() {
@@ -324,5 +299,4 @@ GenericDataCollectionPanel.prototype.load = function(dataCollectionGroup) {
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);
-
 };
