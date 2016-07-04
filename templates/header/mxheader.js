@@ -4,7 +4,7 @@
 <div id="container">
   <div style='float:left;' id="left">
 
-        <img class="titleImage" src="../images/logo_EXI_double.jpg" />
+        <img class="titleImage" src="../images/logo_EXI.jpg" />
 
         <span class="title">ExiMX</span>
         <span class="subtitle">Extended ISPyB for MX
