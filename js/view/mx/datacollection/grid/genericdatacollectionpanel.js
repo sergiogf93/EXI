@@ -50,18 +50,29 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
 				  appendScroll:document.getElementById(document.getElementById('test').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
 				  beforeLoad: function(element){
-
+					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
 				  },
 				  afterLoad: function(element) {
-					                       
+					  _this.elements++;
+                      /** Adding zoom 
+                       $('#' + element[0].id).ezPlus({
+                            tint: true,
+                            tintColour: '#F90', 
+                            tintOpacity: 0.5
+                        });
+                        */
 				  },
 				  onError: function(element) {
+					  _this.elements++;
+                     
 				  },
 				  onFinishedAll: function() {
+                     EXI.mainStatusBar.showReady();
+					  //console.log('lazy instance is about to be destroyed')
 				  }
 			  });
 				
-			}, 100);
+			}, 1000);
 	
             var myVar = setTimeout(function() {   //calls click event after a certain time
 				$('.smalllazy').lazy({ 
@@ -69,14 +80,19 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
 				  appendScroll:document.getElementById(document.getElementById('test').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
 				  beforeLoad: function(element){
+					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
 				  },
-				  afterLoad: function(element) {					
+				  afterLoad: function(element) {
+					  _this.elements++;
+                      //EXI.mainStatusBar.showBusy('Loading ' +  _this.elements + ' elements');
+					  //console.log('image was loaded successfully');
 				  },
 				  onError: function(element) { 
 					   $('#' + element[0].id).remove();
 				  },
 				  onFinishedAll: function() {
                      EXI.mainStatusBar.showReady();
+					  //console.log('lazy instance is about to be destroyed')
 				  }
 			  });
 				
