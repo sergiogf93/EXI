@@ -192,18 +192,31 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
     var _this = this;
     var columns = [
           {
-            header: 'AutoProc',
+           
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1.5,
-            hidden : true,
+            hidden : false,
             renderer: function(grid, e, record) {
           
                var data = _this._getAutoprocessingStatistics(record.data);                               
                 var html = "";
-                dust.render("stats.autoprocessing.section.general", data, function(err, out) {
-                    html = out;
+                dust.render("header.section.general", data, function(err, out) {
+                    html = html + out;
                 });
+                
+                dust.render("body.section.general", data, function(err, out) {
+                    html = html + out;
+                });
+                
+                dust.render("workflow.section.general", data, function(err, out) {
+                    html = html + out;
+                });
+                dust.render("online.section.general", data, function(err, out) {
+                     html = html + out;
+                });
+                
+                
                 return html;
 
             }
@@ -228,6 +241,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1.5,
+             hidden : true,
             renderer: function(grid, e, record) {
                 var html = "";
                 dust.render("resultsection.general", record.data, function(err, out) {
@@ -243,6 +257,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 0.75,
+             hidden : true,
             renderer: function(grid, e, record) {
                 return  new OnlineResultSectionDataCollection().getHTML(record.data, _this._getAutoprocessingStatistics(record.data));                                              
             }
@@ -251,6 +266,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             header: 'Thumbnails',
             dataIndex: 'DataCollection_imagePrefix',
             width: 200,
+             hidden : true,
             renderer: function(val, y, record) {
                 return new ThumbnailSectionDatacollection().getHTML(record.data);
             }
@@ -260,6 +276,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 0.75,
+             hidden : true,
             renderer: function(grid, e, record) {
                 return new WorkflowSectionDataCollection().getHTML(record.data);
 
@@ -270,7 +287,8 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             width: 200,
-            hidden : false,
+            
+           hidden : true,
             renderer: function(grid, e, record) {
                 return new CustomSectionDataCollection().getHTML(record.data);
 
@@ -281,7 +299,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             header: 'Crystal Snapshots',
             dataIndex: 'DataCollection_imagePrefix',
             width: 200,
-            hidden : false,
+            hidden : true,
             renderer: function(val, y, record) {
                 var html = "<table>"
                 var img1 = _this._getHTMLImage(record.data, EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1));
@@ -299,6 +317,7 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             width: 200,
+             hidden : true,
             renderer: function(grid, e, record) {
                 return "<textarea class='ta2-comment'  rows='15' cols='26' >" + record.data.DataCollectionGroup_comments + "</textarea>";
 

@@ -79,10 +79,12 @@ function Exi(args) {
 			else{
 				//location.hash = "/welcome/user/" + data.user + "/main";
                 BUI.showError("Only local contacts are managers are allowed");
+                location.hash = "#/logout";
 			}
 			
 			/** Authenticating EXI **/
-			//_this.getDataAdapter().exi.offline.authenticate();
+            debugger
+			_this.getDataAdapter().exi.offline.authenticate();
 			
 		});
 		authenticationManager.onError.attach(function(sender, data){

@@ -4,7 +4,7 @@ function AuthenticationManager(){
 }
 
 /**
- * url to an ISPyB instance http://pc593.embl.fr:8080/ispyb-ws/rest
+ * url to an ISPyB for instance http://ispyb.esrf.fr/ispyb-ws/rest
  * @param user
  * @param password
  * @param url
@@ -17,7 +17,7 @@ AuthenticationManager.prototype.login = function(user, password, url){
 			roles : data.roles,
 			token : data.token,
 			url : url
-	});
+	    });
 	};
 		
 	var err = function(sender, data) {

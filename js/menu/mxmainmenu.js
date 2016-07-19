@@ -40,7 +40,7 @@ MXMainMenu.prototype.getMenuItems = function() {
 		{
 			text : this._convertToHTMLWhiteSpan("Offline Data Analysis"),
 			cls : 'ExiSAXSMenuToolBar',
-            disabled : true,
+            disabled : false,
 			menu : this.getOnlineDataAnalisysMenu() 
 		}, 
 		{
