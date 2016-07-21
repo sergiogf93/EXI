@@ -26,6 +26,19 @@ OfflineExiController.prototype.init = function() {
 			EXI.addMainPanel(mainView);
 			mainView.load();
 		}).enter(this.setPageBackground);
+        
+          Path.map("#/tool/dimple/datacollection/:dataCollectionId/main").to(function() {
+			var mainView = new DimpleDCMainView();
+			EXI.addMainPanel(mainView);
+			mainView.load(this.params['dataCollectionId']);
+		}).enter(this.setPageBackground);
+        
+        Path.map("#/tool/reprocess/datacollection/:dataCollectionId/main").to(function() {
+			var mainView = new ReprocessMainView();
+			EXI.addMainPanel(mainView);
+			mainView.load(this.params['dataCollectionId']);
+		}).enter(this.setPageBackground);
+        
 		
 		
 		Path.map("#/tool/crysol/main").to(function() {

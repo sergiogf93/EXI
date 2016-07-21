@@ -44,23 +44,17 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
                     nav:true
                     
                 });*/
-     
-				$('.lazy').lazy({ 
+        
+				$('.img-responsive').lazy({ 
 				  bind:'event',
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
-				  appendScroll:document.getElementById(document.getElementById('test').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
+				  appendScroll: document.getElementById(document.getElementById('test').parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
 				  beforeLoad: function(element){
-					  //console.log('image "' + (element.data('src')) + '" is about to be loaded');
+					  console.log('image "' + (element.data('src')) + '" is about to be loaded');
 				  },
 				  afterLoad: function(element) {
 					  _this.elements++;
-                      /** Adding zoom 
-                       $('#' + element[0].id).ezPlus({
-                            tint: true,
-                            tintColour: '#F90', 
-                            tintOpacity: 0.5
-                        });
-                        */
+                    
 				  },
 				  onError: function(element) {
 					  _this.elements++;
@@ -75,6 +69,7 @@ GenericDataCollectionPanel.prototype.getPanel = function(dataCollectionGroup) {
 			}, 1000);
 	
             var myVar = setTimeout(function() {   //calls click event after a certain time
+              
 				$('.smalllazy').lazy({ 
 				  bind:'event',
 				  /** !!IMPORTANT this is the id of the parent node which contains the scroll **/	
@@ -158,10 +153,10 @@ GenericDataCollectionPanel.prototype._getAutoprocessingStatistics = function(dat
         data[autoProcIds[i]][scalingStatisticsTypes[i]] = ({
             autoProcId               :  autoProcIds[i],
             scalingStatisticsType    :  scalingStatisticsTypes[i],
-            completeness             :  completenessList[i],
-            resolutionsLimitHigh     :  resolutionsLimitHigh[i],
-            resolutionsLimitLow      :  resolutionsLimitLow[i],
-            rMerge                   :  rMerges[i],
+            completeness             :  Number(completenessList[i]).toFixed(0),
+            resolutionsLimitHigh     :  Number(resolutionsLimitHigh[i]).toFixed(1),
+            resolutionsLimitLow      :  Number(resolutionsLimitLow[i]).toFixed(1),
+            rMerge                   :  Number(rMerges[i]).toFixed(1),
             spaceGroup               :  autoProc_spaceGroups[i]
         });
     }
@@ -199,11 +194,47 @@ GenericDataCollectionPanel.prototype.getColumns = function() {
             hidden : false,
             renderer: function(grid, e, record) {
           
-               var data = _this._getAutoprocessingStatistics(record.data);                               
+                var data = record.data;// _this._getAutoprocessingStatistics(record.data);                               
                 var html = "";
+              
                 dust.render("header.section.general", data, function(err, out) {
                     html = html + out;
                 });
+                
+                /** For thumbnail */                
+                data.urlThumbnail = EXI.getDataAdapter().mx.dataCollection.getThumbNailById(data.lastImageId);
+                data.url          =  EXI.getDataAdapter().mx.dataCollection.getImageById(data.lastImageId);
+                data.ref          = '#/mx/beamlineparameter/datacollection/' + data.DataCollection_dataCollectionId + '/main';
+                data.runNumber    = data.DataCollection_dataCollectionNumber;
+                data.prefix       = data.DataCollection_imagePrefix;
+                data.comments     = data.DataCollectionGroup_comments;        
+                data.sample       = data.BLSample_name;
+                data.folder       = data.DataCollection_imageDirectory;
+        
+                /** For crystal */
+                data.xtal1 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1);
+                data.xtal2 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2);
+                data.xtal3 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 3);
+                data.xtal4 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4);
+
+                /** Image quality indicator **/
+                data.indicator =  EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);
+                
+                /** For online data analysis */
+                var online = (new OnlineResultSectionDataCollection().parseData(record.data));  
+                data.autoprocessing = _.filter(online, function(b){return b.name=="Autoprocessing";});
+             
+                data.screening = _.filter(online, function(b){return b.name=="Screening";});
+                data.onlineresults  = _this._getAutoprocessingStatistics(record.data);
+                
+                /** For the workflows */
+                if (record.data.WorkflowStep_workflowStepType){
+		            data.workflows = new WorkflowSectionDataCollection().parseWorkflow(record.data);
+	            }
+                if (data.workflows == null){
+                    data.workflows = [];
+                }
+                
                 
                 dust.render("body.section.general", data, function(err, out) {
                     html = html + out;

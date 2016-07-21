@@ -96,6 +96,7 @@ module.exports = function(grunt) {
 			                              	'css/calendar.css', 
 			                              	'css/menu/mainmenu.css', 
 			                              	'css/override.css', 
+                                              'css/grid.css', 
                                             'bower_components/lightbox2/dist/css/lightbox.css'
                                             
 			                              	//'js/dependency/timeline/timeline.css'

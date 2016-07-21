@@ -83,7 +83,7 @@ function Exi(args) {
 			}
 			
 			/** Authenticating EXI **/
-            debugger
+            
 			_this.getDataAdapter().exi.offline.authenticate();
 			
 		});

@@ -35,14 +35,14 @@ OnlineResultSectionDataCollection.prototype.getScreeningData = function(dataColl
             });
 		}
     }
-    else{
+   /* else{
         items.push({
                 name   : "No indexing",
                 datacollectionId    : dataCollectionGroup.DataCollection_dataCollectionId,
                 status : "Not found",
                 items  : []
             });
-    }
+    }*/
     
     if (dataCollectionGroup.ScreeningOutput_strategySuccess){
            var subItems = [ {
@@ -77,32 +77,29 @@ OnlineResultSectionDataCollection.prototype.getScreeningData = function(dataColl
                 items  : subItems 
          });	
     }
-    else{
+   /* else{
         items.push({
             name   : "No strategy",
             status : "Not found",
             datacollectionId    : dataCollectionGroup.DataCollection_dataCollectionId,
             items  : []
         });
-    }
+    }*/
         
     
     /** No autprocessing */
-    if (items.length == 0){
+   if (items.length == 0){
         return {
-          name : "Screening",
-          items : [{
-                    name      : "No Indexing",
-                    status    : "Not found",
-                    items     : []
-            }
-          ]
+          name               :"Screening",
+          status             : "Not found",
+          items : []
             
     };
         
     }
     return {
           name : "Screening",
+          status : "Success",
           items : items  
     }           
 };
@@ -114,19 +111,24 @@ OnlineResultSectionDataCollection.prototype.getAutoprocResults = function(dataCo
     var autoprocessing = [];    
     var programs = dataCollectionGroup.processingPrograms; 
     var results = dataCollectionGroup.processingStatus;
+    var spaceGroups = dataCollectionGroup.AutoProc_spaceGroups;
     
 	if (programs != null){
 		programs = programs.split(",");
 		results = results.split(",");
+        spaceGroups = spaceGroups.split(",");
 		
         var aux = {};
 		for (var i= 0; i < programs.length; i++){
 			var name = programs[i].trim();
+          
 			if (aux[name] == null){
 				aux[name] = {};
+                aux[name]["spaceGroup"] = [];
 				aux[name]["run"] = 0;
-				aux[name]["success"] = 0;
+				aux[name]["success"] = 0;    
 			}
+            aux[name]["spaceGroup"].push(spaceGroups[i]);
 			aux[name]["run"] =  aux[name]["run"] + 1;
 			aux[name]["success"] =  aux[name]["success"]  + 1;
 		}
@@ -141,8 +143,10 @@ OnlineResultSectionDataCollection.prototype.getAutoprocResults = function(dataCo
             
             autoprocessing.push({
                name     : key,
+               dataCollectionId     : dataCollectionGroup.DataCollection_dataCollectionId,
                run      :  aux[key].run,
                success  :  aux[key].success,
+               spaceGroup  :  aux[key].spaceGroup,
                status   : status,
                items   : [] 
             });
@@ -154,6 +158,7 @@ OnlineResultSectionDataCollection.prototype.getAutoprocResults = function(dataCo
        return {
                                 name                : "Autoprocessing",
                                 items               : autoprocessing,
+                                status              : "Success",
                                 datacollectionId    : dataCollectionGroup.DataCollection_dataCollectionId
         };
     }
@@ -161,11 +166,14 @@ OnlineResultSectionDataCollection.prototype.getAutoprocResults = function(dataCo
         return {
                                 name                : "Autoprocessing",
                                 datacollectionId    : dataCollectionGroup.DataCollection_dataCollectionId,
-                                items : [{
+                                 status             : "Not found",
+                                items : [
+                                    /*{
                                        name     : "No autoprocessing",
                                        status   : "Not found",
                                        items    : []
-                                }]
+                                }*/
+                                ]
         };
     }
 };
