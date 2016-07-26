@@ -33,10 +33,10 @@ OfflineExiController.prototype.init = function() {
 			mainView.load(this.params['dataCollectionId']);
 		}).enter(this.setPageBackground);
         
-        Path.map("#/tool/reprocess/datacollection/:dataCollectionId/main").to(function() {
+        Path.map("#/tool/reprocess/datacollection/:dataCollectionId/:startImage/:endImage/main").to(function() {
 			var mainView = new ReprocessMainView();
 			EXI.addMainPanel(mainView);
-			mainView.load(this.params['dataCollectionId']);
+			mainView.load(this.params['dataCollectionId'],this.params['startImage'],this.params['endImage']);
 		}).enter(this.setPageBackground);
         
 		

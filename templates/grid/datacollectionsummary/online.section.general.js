@@ -1,8 +1,9 @@
 
         
 <br />
-<div class="container-fluid well well-sm ">
-    <div class="row">                
+<div class="container-fluid">
+    <div class="row">     
+        <div class="col-sm-2 col-md-4 " style='margin: 0 10px 10px 0;'>    </div>        
         {! AUTOPROCESSING !}
             {#.autoprocessing}
                 <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>                                  
@@ -16,19 +17,16 @@
                                             {#.}
                                                 {#.items}
                                                     <li> 
-                                                    {@eq key=status value="Success"}  <div class='summary_datacollection_success'></div>{.name} {/eq}
-                                                    {@ne key=status value="Success"}  <div class='summary_datacollection_failed'></div>{.name} {/ne}
+                                                        {@eq key=status value="Success"}  <div class='summary_datacollection_success'></div>{.name} {/eq}
+                                                        {@ne key=status value="Success"}  <div class='summary_datacollection_failed'></div>{.name} {/ne}
                                                     </li> 
                                                 {/.items}
                                             {/.} 
                                              {#.}
                                                 {#.items[0]}
                                                     <li class="divider"></li>
-                                                        <li >
-                                                        
-                                          
-                                                            <div class="btn-group btn-group-xs" style='margin:0 0 0 30px;'>
-                                                                
+                                                        <li >                                                                                                  
+                                                            <div class="btn-group btn-group-xs" style='margin:0 0 0 30px;'>                                                                
                                                                     <a href="#/autoprocintegration/datacollection/{.dataCollectionId}/main" class="btn btn-default" role="button"> <span class="glyphicon glyphicon-eye-open"></span> Open</a>
                                                                     <a href="#/autoprocintegration/datacollection/{.dataCollectionId}/files" style='margin:0 0 0 10px;' class="btn btn-default" role="button"> <span class="glyphicon glyphicon-file">Files</span></a>
                                                             </div>
@@ -51,7 +49,12 @@
                                     <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                 {/eq}                        
                                 {@gt key=items.length value=0}  
-                                    <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>  
+                                    {@eq key=status value="Success"}
+                                        <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                    {/eq} 
+                                    {@ne key=status value="Success"}
+                                        <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                    {/ne}  
                                     <ul class="dropdown-menu">
                                             {#.}
                                                 {#.items}
@@ -66,12 +69,9 @@
                                                                 <td>{.value}</td>
                                                             </tr>    
                                                          {/.items}
-                                                     </table> 
-                                                        
-                                                        
+                                                     </table>                                                                                                                 
                                                     </li> 
-                                                {/.items}
-                                                
+                                                {/.items}                                                
                                             {/.}    
                                         </ul>
                                 {/gt}
@@ -124,7 +124,7 @@
             </div>
             
             
-            
+               
             
               {! OFFLINE !}
             <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>                                
@@ -134,16 +134,24 @@
                         
                       
                                 <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-triangle-right"></span>Run <span class="caret"></span></button>
-                                <ul class="dropdown-menu">
-                               
-                                            <li style='margin:0 0 0 10px;'> <a class="brand" href='#/tool/reprocess/datacollection/{.DataCollection_dataCollectionId}/main'><span class="glyphicon glyphicon-refresh"></span><span  style='margin:0 0 0 10px;'>Reprocess: It reprocess the images based in a defined range</span></a></li>                                                               
+                                <ul class="dropdown-menu">                               
+                                            <li style='margin:0 0 0 10px;'> <a class="brand" href='#/tool/reprocess/datacollection/{.DataCollection_dataCollectionId}/{.DataCollection_startImageNumber}/{.DataCollection_numberOfImages}/main'><span class="glyphicon glyphicon-refresh"></span><span  style='margin:0 0 0 10px;'>Reprocess: It reprocess the images based in a defined range</span></a></li>                                                               
                                             <li style='margin:0 0 0 10px;'> <a class="brand" href='#/tool/dimple/datacollection/{.DataCollection_dataCollectionId}/main'><span class="glyphicon glyphicon-certificate"></span><span  style='margin:0 0 0 10px;'>Dimple: DIMPLE is an automated software pipeline for rapidly processing crystals that contain a known protein and possibly a ligand bound to this protein</span></a></li>                        
                                         
                                 </ul>
                       
-                                              
+                      </div>                         
             </div>
             
+             <div class="col-sm-2 col-md-2 " style='margin: 0 10px 10px 0;'> 
+                {@gt key=phasingStepLength value=0}
+                       
+                {/gt}
+            </div>
+              
+              
+            
+             
             
     </div>   
 </div>                                                                                                                             

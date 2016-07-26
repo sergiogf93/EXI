@@ -89,17 +89,24 @@ OnlineResultSectionDataCollection.prototype.getScreeningData = function(dataColl
     
     /** No autprocessing */
    if (items.length == 0){
-        return {
-          name               :"Screening",
-          status             : "Not found",
-          items : []
-            
-    };
+            return {
+            name               :"Screening",
+            status             : "Not found",
+            items : []
+                
+        };
+    }
+
+    var status = "Failure";
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].status == "Success"){
+            status = "Success";
+        }
         
     }
     return {
           name : "Screening",
-          status : "Success",
+          status :status,
           items : items  
     }           
 };

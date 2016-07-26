@@ -96,12 +96,14 @@ ReprocessMainView.prototype.getContainer = function() {
 									    xtype: 'textfield',
 									    name: 'start',
 									    fieldLabel: 'start',
+                                        id :  _this.id + 'start',
 									    margin : 30,
 									    allowBlank: false  
 									},
                                     {
 									    xtype: 'textfield',
 									    name: 'end',
+                                        id : _this.id + 'end',
 									    fieldLabel: 'end',
 									    margin : 30,
 									    allowBlank: false  
@@ -181,7 +183,10 @@ ReprocessMainView.prototype.getContainer = function() {
 ReprocessMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
-ReprocessMainView.prototype.load = function(dataCollectionId) {
+ReprocessMainView.prototype.load = function(dataCollectionId, start, end) {
 	this.panel.setTitle("Reprocess");
     Ext.getCmp("dataCollectionId").setValue(dataCollectionId);
+    
+    Ext.getCmp(this.id + 'start').setValue(start);
+    Ext.getCmp(this.id + 'end').setValue(Number(start)+Number(end) -1);
 };

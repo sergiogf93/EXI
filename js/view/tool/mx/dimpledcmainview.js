@@ -48,7 +48,21 @@ DimpleDCMainView.prototype.getContainer = function() {
 									id : _this.id + 'pdbFileName',
 									name : 'pdbFileName',
 									value : '' },
-									
+								{
+									xtype : 'hiddenfield',
+									id : _this.id + 'autoprocintegrationURL',
+									name : 'autoprocintegrationURL',
+									value : '' },
+                                {
+									xtype : 'hiddenfield',
+									id : _this.id + 'autoProcAttachmentURL',
+									name : 'autoProcAttachmentURL',
+									value : '' },	
+                                 {
+									xtype : 'hiddenfield',
+									id : _this.id + 'downloadAutoProcProgramAttachementURL',
+									name : 'downloadAutoProcProgramAttachementURL',
+									value : '' },	
 								this.getToolDescription(
 												"DIMPLE (DIfference Map PipeLinE) : ",
 												"DIMPLE is an automated software pipeline for rapidly processing crystals that contain a known protein and possibly a ligand bound to this protein. The main goal is to present a user with a quick answer to the question of whether or not they have a bound ligand or drug candidate in their crystal. The software is developed primarily for use at synchrotron beamlines, but can be used also for in-house automation. DIMPLE takes the already known \"apo\" structure for the target protein and compares it with the electron density map for the same, crystallised structure (and possibly bound ligand) interpreted from the X-ray diffraction images. It then presents the user with a set of snapshot images illustrating the regions where there are large areas of electron density unaccounted for by the protein structure model. Within a few seconds, an experienced user can decipher from these images if any of this unaccounted for density indicates a bound ligand. A positive result can mean that the rest of the batch of crystals for this particular ligand can be discarded allowing for a more efficient use of the beam time and saving the user from lots of potentially unnecessary processing.",
@@ -111,8 +125,13 @@ DimpleDCMainView.prototype.getContainer = function() {
 										
 										var fileUploadFilePath = Ext.getCmp(_this.id + 'fileupload').value;
 										Ext.getCmp(_this.id + "pdbFileName").setValue(fileUploadFilePath.split("\\")[fileUploadFilePath.split("\\").length - 1]);
-										
-										
+                                        Ext.getCmp(_this.id + "autoprocintegrationURL").setValue( EXI.getDataAdapter().mx.autoproc.getViewByDataCollectionURL(Ext.getCmp("dataCollectionId").getValue()));
+                                        
+                                        Ext.getCmp(_this.id + "autoProcAttachmentURL").setValue(EXI.getDataAdapter().mx.autoproc.getAttachmentListByautoProcProgramsIdListURL("%autoprocprogramIds%"));
+                                        Ext.getCmp(_this.id + "downloadAutoProcProgramAttachementURL").setValue(EXI.getDataAdapter().mx.autoproc.getDownloadAttachmentUrl("%autoProcAttachmentId%"));
+                                        
+                                       
+										debugger
 										
 										function onSubmitted(){
 											location.hash = "/tool/list";
@@ -143,6 +162,6 @@ DimpleDCMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 DimpleDCMainView.prototype.load = function(dataCollectionId) {
 	this.panel.setTitle("Dimple");
-    debugger
+    
     Ext.getCmp("dataCollectionId").setValue(dataCollectionId);
 };
