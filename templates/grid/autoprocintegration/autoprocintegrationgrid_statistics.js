@@ -1,57 +1,69 @@
 
 
-<table>
-<tr style='border: 1px solid gray';>
-	<th class='datacollection_parameter_name'>Data Range</th>
-	<th class='datacollection_parameter_name' style='padding-left:10px;'>Resolution</th>
-	<th class='datacollection_parameter_name' style='padding-left:10px;'>Multiplicity</th>
-	<th class='datacollection_parameter_name' style='padding-left:10px;'>Completeness</th>
-    <th class='datacollection_parameter_name' style='padding-left:10px;'>I/Sigmal</th>
-    <th class='datacollection_parameter_name' style='padding-left:10px;'>Rmeas</th>
-    <th class='datacollection_parameter_name' style='padding-left:10px;'>Rmerge</th>
-    <th class='datacollection_parameter_name' style='padding-left:10px;'>Rpim</th>
-     <th class='datacollection_parameter_name' style='padding-left:10px;'>cc(1/2)</th>
-</tr>
-{#.}
+<table class='table-sm table table-striped'>
+    <thead>
+        <tr>
+        <th style='padding:0 15px 0 15px;'>Data Range</th>
+        <th style='padding:0 15px 0 15px;'>Resolution</th>
+        <th style='padding:0 15px 0 15px;'>Multiplicity</th>
+        <th style='padding:0 15px 0 15px;'>Completeness</th>
+        <th  style='padding:0 15px 0 15px;'>I/Sigmal</th>
+        <th style='padding:0 15px 0 15px;'>Rmeas</th>
+        <th style='padding:0 15px 0 15px;'>Rmerge</th>
+        <th style='padding:0 15px 0 15px;'>Rpim</th>
+        <th style='padding:0 15px 0 15px;'>cc(1/2)</th>
+        </tr>
+    </thead>
+<tbody>
+{#.statistics}
 	<tr>
-			<td class='summary_datacollection_parameter_name' >
+			<td>
 				{.type}
 			</td>
-			<td style='padding-left:10px;'>
+			<td >
                 {@decimal key="resolutionLimitLow" decimals=1}{/decimal} - {@decimal key="resolutionLimitHigh" decimals=1}{/decimal}
 			</td>
-			<td style='padding-left:10px;'>
+			<td >
 				
                 {@decimal key="multiplicity" decimals=1}{/decimal}
 			</td>
-			<td style='padding-left:10px;'> 
+			<td > 
                 
-                <div style="width:100%;height:10px;position:relative;background-color:#BDBDBD;">
-                    <div style="background-color:#298A08;height:100%;position:absolute;line-height:inherit;width:{.completeness}%;"></div>
-                </div> 
+                {@gt key=completeness value=20}
+                    {@gt key=completeness value=70}
+                        <div  style="background-repeat: repeat-x;border:1px solid gray;color:#fff;background-image:linear-gradient(to bottom,#337ab7 0,#286090 100%);width:{.completeness}%">{.completeness}%</div>
+                    {:else}
+                        <div  style="background-repeat: repeat-x;border:1px solid #f0ad4e;color:#fff;background-color:#f0ad4e;width:{.completeness}%">{.completeness}%</div>
+                    {/gt}
+                {/gt}
+                {@lte key=completeness value=20}
+                    <div  style="background-repeat: repeat-x;border:1px solid #d9534f;color:#fff;background-color:#d9534f;width:{.completeness}%">{.completeness}%</div>
+                
+                {/lte}
            
 				
 			</td>
-            <td style='padding-left:10px;'> 
+            <td > 
                 {@decimal key="meanIOverSigI" decimals=1}{/decimal}
 				
 			</td>
-            <td style='padding-left:10px;'> 
+            <td > 
 				{@decimal key="rMeasAllIPlusIMinus" decimals=1}{/decimal}
 			</td>
-            <td style='padding-left:10px;'> 
+            <td > 
                 {@decimal key="rMerge" decimals=1}{/decimal}
 				
 			</td>
-             <td style='padding-left:10px;'> 
+             <td > 
                 {@decimal key="rPimWithinIPlusIMinus" decimals=1}{/decimal}
 				
 			</td>
-             <td style='padding-left:10px;'> 
+             <td > 
                 {@decimal key="ccHalf" decimals=1}{/decimal}
 				
 			</td>
 			
 	</tr>	
-{/.}
+{/.statistics}
+<tbody>
 </table>

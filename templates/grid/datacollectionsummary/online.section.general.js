@@ -9,10 +9,10 @@
                 <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>                                  
                             <div class="dropup">
                                 {@eq key=items.length value=0}
-                                    <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>  Processing <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                    <button class="btn btn-xs btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>  Processing <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                 {/eq}                        
                                 {@gt key=items.length value=0}  
-                                    <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>  Processing <span class="badge">{@size key=items /}</span><span class="caret"></span></button>  
+                                    <button class="btn btn-xs btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>  Processing <span class="badge">{@size key=items /}</span><span class="caret"></span></button>  
                                     <ul class="dropdown-menu">
                                             {#.}
                                                 {#.items}
@@ -46,14 +46,14 @@
                 <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>                                  
                             <div class="dropup">
                                 {@eq key=items.length value=0}
-                                    <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                    <button class="btn btn-xs btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                 {/eq}                        
                                 {@gt key=items.length value=0}  
                                     {@eq key=status value="Success"}
-                                        <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                        <button class="btn btn-xs btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                     {/eq} 
                                     {@ne key=status value="Success"}
-                                        <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                        <button class="btn btn-xs btn-danger dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                     {/ne}  
                                     <ul class="dropdown-menu">
                                             {#.}
@@ -85,11 +85,11 @@
                             
                     <div class="dropup">
                         {@eq key=workflows.length value=0}
-                            <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-sort-by-attributes"></span>Workflow <span class="badge">{@size key=workflows /}</span><span class="caret"></span></button>
+                            <button class="btn btn-xs btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-sort-by-attributes"></span>Workflow <span class="badge">{@size key=workflows /}</span><span class="caret"></span></button>
                         {/eq}
                         
                         {@gt key=workflows.length value=0}
-                                <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-sort-by-attributes"></span>Workflow <span class="badge">{@size key=workflows /}</span><span class="caret"></span></button>
+                                <button class="btn btn-xs btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-sort-by-attributes"></span>Workflow <span class="badge">{@size key=workflows /}</span><span class="caret"></span></button>
                                 <ul class="dropdown-menu">
                                 {#.workflows} 
                                     {#.}
@@ -133,7 +133,7 @@
                        
                         
                       
-                                <button class="btn btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-triangle-right"></span>Run <span class="caret"></span></button>
+                                <button class="btn btn-xs btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-triangle-right"></span>Run <span class="caret"></span></button>
                                 <ul class="dropdown-menu">                               
                                             <li style='margin:0 0 0 10px;'> <a class="brand" href='#/tool/reprocess/datacollection/{.DataCollection_dataCollectionId}/{.DataCollection_startImageNumber}/{.DataCollection_numberOfImages}/main'><span class="glyphicon glyphicon-refresh"></span><span  style='margin:0 0 0 10px;'>Reprocess: It reprocess the images based in a defined range</span></a></li>                                                               
                                             <li style='margin:0 0 0 10px;'> <a class="brand" href='#/tool/dimple/datacollection/{.DataCollection_dataCollectionId}/main'><span class="glyphicon glyphicon-certificate"></span><span  style='margin:0 0 0 10px;'>Dimple: DIMPLE is an automated software pipeline for rapidly processing crystals that contain a known protein and possibly a ligand bound to this protein</span></a></li>                        

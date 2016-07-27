@@ -1,6 +1,6 @@
 
 
-   <table class='table table-striped'>
+   <table class='table-sm table table-striped'>
                 <thead>   
                 <tr>
                     <th  style='padding:0 15px 0 15px;'>cell A</th>
@@ -17,18 +17,14 @@
                     <td style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_c" decimals=1}{/decimal}</td>
                     
                 </tr>
-                  </tbody>
-          </table>
-           <table class='table table-striped'>
-            <thead>   
+         
                 <tr>
                     <th  style='padding:0 15px 0 15px;'>Alpha</th>
                     <th style='padding:0 15px 0 15px;'>Beta</th>
                     <th style='padding:0 15px 0 15px;'>Gamma</th>
                     
                 </tr>
-                </thead>
-                <tbody>
+               
                 <tr>
                     <td  style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_alpha" decimals=1}{/decimal}</td>
                     <td style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_beta" decimals=1}{/decimal}</td>
