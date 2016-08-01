@@ -8,7 +8,7 @@
     </tr>
     <tr>
         <td>Detector Model</td>
-        <td>{.detectorModel} mm</td>
+        <td>{.detectorModel}</td>
     </tr>
     <tr>
         <td>Manufacturer</td>

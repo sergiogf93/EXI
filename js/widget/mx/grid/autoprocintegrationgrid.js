@@ -77,6 +77,62 @@ AutoProcIntegrationGrid.prototype.selectRowByAutoProcIntegrationId = function(au
 	this.panel.getSelectionModel().select(this.store.find("v_datacollection_summary_phasing_autoProcIntegrationId", autoProcIntegrationId));
 };
 
+AutoProcIntegrationGrid.prototype.getPhasing = function(data) {      
+    var phasing = [];
+    
+    if (data.spaceGroupShortName){
+        
+        var spaceGroups = data.spaceGroupShortName.split(',');
+        var steps = data.phasingStepType.split('PREPARE');
+        
+        for(var i = 0; i < spaceGroups.length; i++){
+            
+            phasing.push({
+                spaceGroup              : spaceGroups[i],
+                prepare                 : true,
+                sub                     : steps[i+1].indexOf("SUBSTRUCTUREDETERMINATION") != -1,
+                phasing                 : steps[i+1].indexOf("PHASING") != -1,
+                model                   : steps[i+1].indexOf("MODEL") != -1,
+                autoProcIntegrationId   : data.v_datacollection_summary_phasing_autoProcIntegrationId
+            });
+        }
+        
+        
+    }
+    return phasing;
+};                 
+
+AutoProcIntegrationGrid.prototype.getStatistics = function(data) {	                    
+    var type = data.scalingStatisticsType.split(",");
+    function getValue(attribute, i){
+        if (attribute){
+            var splitted = attribute.split(",");
+            if (splitted[i]){
+                return splitted[i];
+            }
+        }
+        return "";
+        
+    }
+    var parsed = [];
+    for (var i = 0; i < type.length; i++) {
+        parsed.push({
+            type 					: type[i],
+            resolutionLimitLow 		: getValue(data.resolutionLimitLow, i),
+            resolutionLimitHigh 	: getValue(data.resolutionLimitHigh, i),
+            multiplicity 			: getValue(data.multiplicity, i),
+            meanIOverSigI 			: getValue(data.meanIOverSigI, i),
+            completeness 			: getValue(data.completeness, i),
+            rMerge 			        : getValue(data.rMerge, i),
+            ccHalf 			        : getValue(data.ccHalf, i),
+            rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i),
+            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i)
+            
+        });
+    }
+    return parsed;    				
+};
+
 AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
@@ -131,6 +187,31 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                 return record.data.v_datacollection_summary_phasing_autoProcIntegrationId;
 			}
 		},
+        
+         {
+
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            flex: 1.5,
+            hidden: false,
+            renderer: function(grid, e, record) {
+
+                var data = record.data;// _this._getAutoprocessingStatistics(record.data);                               
+                var html = "";
+                
+                // Getting statistics
+                
+                data.statistics = _this.getStatistics(record.data);
+                data.phasing = _this.getPhasing(record.data);
+                
+                dust.render("autoprocintegration_body", data, function(err, out) {
+                    html = html + out;
+                    
+                });
+               return html;
+            }
+         },
+                
             {
 			text : 'AutoProcScalingId',
 			dataIndex : 'v_datacollection_summary_phasing_autoProcScalingId',
@@ -145,6 +226,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Autoprocessing',
 			dataIndex : 'processingPrograms',
             flex : 1,
+            hidden : true,
 			renderer : function(e, sample, record){
 				
                 var html  = "";
@@ -163,7 +245,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
         {
 			text : 'Space Group',
             flex : 0.75,
-            hidden : this.spaceGroupColumnHidden,
+           hidden : true,
 			dataIndex : 'v_datacollection_summary_phasing_autoproc_space_group',
 			renderer : function(e, sample, record){
                 
@@ -174,7 +256,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Unit cell',
 			dataIndex : 'processingPrograms',
 			width : 150,
-            hidden : this.unitCellColumnHidden,
+            hidden : true,
 			renderer : function(e, sample, record){
 				var html  = "";
 				try{
@@ -193,7 +275,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Statistics',
 			dataIndex : 'processingPrograms',
 			flex : 4,
-            hidden : this.statisticsColumnHidden,
+           hidden : true,
 			renderer : function(e, sample, record){
 				try{
                     
@@ -240,7 +322,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 			text : 'Phasing',
 			dataIndex : 'processingPrograms',
 			flex : 1.5,
-            hidden : this.phasingColumnHidden,
+            hidden : true,
 			renderer : function(e, sample, record){
 				var html  = "";           
 				if (record.data.phasingStepType){			
