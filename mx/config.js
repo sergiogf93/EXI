@@ -57,7 +57,7 @@ var ExtISPyB ={
       {
          name:'ESRF',
          url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
+         exiUrl:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
                'BM29'
@@ -83,7 +83,21 @@ var ExtISPyB ={
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
-         exiUrl:'http://lindemaria:8080/extispyb-ws/rest',
+         // exiUrl:'http://lindemaria:8080/extispyb-ws/rest',
+		 exiUrl:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
+         beamlines:{
+            SAXS:[
+               'BM29'
+            ],
+            MX:[
+               "ID23-1","ID23-2","ID29","ID30A-1","ID30A-2","ID30A-3","ID30B","BM14U","BM30A"
+            ]
+         }
+      },
+	  {
+         name:'LOCAL (only for developers)',
+         url:'http://localhost:8080/ispyb/ispyb-ws/rest',
+         exiUrl:'http://localhost:8080/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
                'BM29'
