@@ -5,7 +5,7 @@
 * @constructor
 */
 function DataCollectionMxMainView() {
-	this.icon = 'images/icon/ic_satellite_black_18dp.png';
+	this.icon = '../images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
 	var _this = this;
 	

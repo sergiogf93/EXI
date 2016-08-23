@@ -12,20 +12,14 @@ SessionListView.prototype.getFilter = function(value){
 
 SessionListView.prototype.formatData = function(data){
 	for (var i = 0; i < data.length; i++) {
-		data[i]["date"] =  moment(data[i].startDate).format("MMM Do YY");
+		data[i]["day"] =  moment(data[i].BLSession_startDate).format("Do");
+        data[i]["year"] =  moment(data[i].BLSession_startDate).format("YYYY");
+        data[i]["month"] =  moment(data[i].BLSession_startDate).format("MMM");
 	}
+    
 	return data;
 };
 
-SessionListView.prototype.getValue = function(value){
-	if (value != null){
-		return "<tr><td style='max-width: 175px;\n" + 
-				"    overflow: hidden;\n" + 
-				"    text-overflow: ellipsis;\n" + 
-				"    white-space: nowrap;'>" + value +"</td></tr>";
-	}
-	return "";
-};
 
 SessionListView.prototype.getRow = function(record){
 

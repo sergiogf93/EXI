@@ -30,17 +30,22 @@ SessionController.prototype.init = function() {
 			listView.onSelect.attach(function(sender, selected) {
 				location.hash = "/mx/datacollection/session/" + selected[0].sessionId + "/main";
 			});
-			EXI.addNavigationPanel(listView);			
-			//listView.load(EXI.proposalManager.getSessions().slice(0, 100));
-			listView.load(EXI.proposalManager.getSessions().slice(0, 100));
-			EXI.setLoadingNavigationPanel(false);
+			EXI.addNavigationPanel(listView);		
+            
+            var onSuccess = function(sender, data){
+                listView.load(EXI.proposalManager.getSessions());
+                EXI.setLoadingNavigationPanel(false);    
+            };
+            
+            EXI.getDataAdapter({
+                onSuccess : onSuccess                
+            }).proposal.session.getSessions();         	
+
 	}).enter(this.setPageBackground);
 
 	/** Loading a single session on the navigation panel * */
-	Path.map("#/session/nav/:sessionId/session").to(function() {
-		
-		var listView = new ExperimentListView();
-		
+	Path.map("#/session/nav/:sessionId/session").to(function() {	
+		var listView = new ExperimentListView();		
 		/** When selected move to hash * */
 		listView.onSelect.attach(function(sender, selected) {
 			if (selected[0].experimentType == "HPLC"){
@@ -56,8 +61,6 @@ SessionController.prototype.init = function() {
 		loadNavigationPanel(listView).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']);
 
 	}).enter(this.setPageBackground);
-
-
 
 	Path.rescue(this.notFound);
 };

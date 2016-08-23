@@ -23,8 +23,7 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
         padding : 5,
         store: this.store,
         disableSelection: true,
-        columns: this.getColumns(),
-       
+        columns: this.getColumns(),       
         viewConfig: {
 	        			 enableTextSelection: true,
                          stripeRows : true
@@ -33,12 +32,12 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
     });
     return this.panel;
 };
-
+/*
 EnergyScanGrid.prototype._getHTMLZoomImage = function(url, dataCollectionId, imageId) {
     
     return '<a href="' + url +'" data-lightbox="' + url +'" data-title="Chooch"><img class="lazy"  data-src=' + url + ' src=' + url + '></a>';
 };
-
+*/
 
 /**
 * @method defines the columns of the grid and associates the data
@@ -46,12 +45,28 @@ EnergyScanGrid.prototype._getHTMLZoomImage = function(url, dataCollectionId, ima
 EnergyScanGrid.prototype.getColumns = function() {
     var _this = this;
     var columns = [
-        {
-            header: 'Element',
-            
+         {
+            header: '',
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 0.2,
+            renderer: function(grid, e, record) {
+                var html = "";                
+                record.data.choochURL = EXI.getDataAdapter().mx.energyscan.getChoochJpegByEnergyScanId(record.data.energyScanId);
+                dust.render("energyscan.grid", record.data, function(err, out) {  
+                    html = out;
+                });
+                return html;
+
+            }
+        }
+        /*,
+        {
+            header: 'Element',  
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            flex: 0.2,
+            hidden : true,
             renderer: function(grid, e, record) {
                 var html = "";
                 dust.render("energyscangrid.element", record.data, function(err, out) {  
@@ -66,6 +81,7 @@ EnergyScanGrid.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,
+            hidden : true,
             renderer: function(grid, e, record) {
                 var html = "";
                 dust.render("energyscangrid.primary", record.data, function(err, out) {  
@@ -80,6 +96,7 @@ EnergyScanGrid.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,
+            hidden : true,
             renderer: function(grid, e, record) {
                 var html = "";
                 dust.render("energyscangrid.secondary", record.data, function(err, out) {  
@@ -94,12 +111,13 @@ EnergyScanGrid.prototype.getColumns = function() {
             dataIndex: 'dataCollectionGroup',
             name: 'dataCollectionGroup',
             flex: 1,
+            hidden : true,
             renderer: function(grid, e, record) {
                   return _this._getHTMLZoomImage(EXI.getDataAdapter().mx.energyscan.getChoochJpegByEnergyScanId(record.data.energyScanId));
          
 
             }
-        }
+        }*/
 
     ];
     return columns;

@@ -5,11 +5,10 @@
   <div style='float:left;' id="left">
 
         <img class="titleImage" src="../images/logo_EXI.jpg" />
-
-        <span class="title">ExiMX</span>
+        <span class="title">ExiMX
         <span class="subtitle">Extended ISPyB for MX
             <sub style="font-size:10px;color:orange">BETA</sub>
-        </span>
+        </span></span>
   </div>
   <div id="center"></div>
   <div style='float:right;width:120px;' id="logos">

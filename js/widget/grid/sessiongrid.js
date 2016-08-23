@@ -58,18 +58,38 @@ SessionGrid.prototype.getPanel = function() {
 		layout : 'fit',
 		icon : '../images/icon/sessions.png',
 		cls : 'border-grid',
-		height : this.height,
+		minHeight: 300,
        
-		margin : this.margin,
+		margin : 10,
 		selMode : null,
 
 		columns : [
+              {
+                    text              : '',
+                    dataIndex         : 'BLSession_startDate',
+                    flex             : 1,
+                    hidden              : true,
+                    renderer          : function(grid, a, record){                                    
+                                               var html = "";
+                                               if (record.data.BLSession_startDate){
+                                                    record.data.start =  moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('MMMM Do YYYY');
+                                                    record.data.day =  moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('Do');
+                                                    record.data.month =  moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('MMMM');
+                                                    record.data.year =  moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('YYYY');
+                                               }
+                                               dust.render("session.grid", record.data, function(err, out){
+                                                    html = html + out;
+                                               });
+                                               return html;
+                    }
+              },
               {
                             text              : 'Start',
                             dataIndex         : 'BLSession_startDate',
                             flex             : 1,
                             hidden              : false,
-                            renderer          : function(grid, a, record){   
+                            renderer          : function(grid, a, record){                                 
+                                                     
                                                     var location = "#";
                                                     if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "SAXS"){
                                                         location = "#/session/nav/" + record.data.sessionId + "/session";
@@ -86,6 +106,7 @@ SessionGrid.prototype.getPanel = function() {
                     text : 'Beamline',
                     dataIndex : 'Proposal_code',
                     width : 125,
+                    hidden : false,
                     renderer : function(grid, a, record){
                             var location = "#";
                             if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "SAXS"){
@@ -101,6 +122,7 @@ SessionGrid.prototype.getPanel = function() {
                 text : 'Proposal',
                 dataIndex : 'beamlineName',
                 flex : 1,
+                hidden : false,
                 renderer : function(grid, a, record){
                     return record.data.Proposal_proposalCode + record.data.Proposal_ProposalNumber;
                 }
@@ -116,18 +138,21 @@ SessionGrid.prototype.getPanel = function() {
 			    text                : 'Local Contact',
 			    dataIndex           : 'beamLineOperator',
 			    width               : 200,
+                hidden              : false,
                 flex                : 1
 		    },
             {
 			    text                : 'Title',
 			    dataIndex           : 'Proposal_title',
 			    width               : 200,
+                hidden              : false,
                 flex               : 4
 		    },
             {
 			    text                : 'PI',
 			    dataIndex           : 'Proposal_title',
 			    width               : 200,
+              
                  hidden              : true,
                 renderer : function(grid, a, record){                        
                         return record.data.Person_familyName + ", " + record.data.Person_givenName;
@@ -144,7 +169,7 @@ SessionGrid.prototype.getPanel = function() {
              {
 			    text                : 'En. Scan',
 			    dataIndex           : 'xrfSpectrumCount',
-
+                    hidden              : false,
                 flex               : 1,
                   renderer : function(grid, a, record){ 
                       if (record.data.energyScanCount != 0){                       
@@ -155,7 +180,7 @@ SessionGrid.prototype.getPanel = function() {
             {
 			    text                : 'XRF',
 			    dataIndex           : 'xrfSpectrumCount',
-			   
+			    hidden              : false,
                 flex               : 1,
                   renderer : function(grid, a, record){   
                       if (record.data.xrfSpectrumCount != 0){                          
@@ -165,6 +190,7 @@ SessionGrid.prototype.getPanel = function() {
 		    },
             {
                 text: 'Data Collection',
+                hidden              : false,
                 columns: [
                    
                         {
@@ -235,7 +261,7 @@ SessionGrid.prototype.getPanel = function() {
       	   viewConfig : {
                 stripeRows : true,
                 getRowClass : function(record, rowIndex, rowParams, store){
-
+                    /*
                     if (record.data.beamLineName != null){
                         
                         if (EXI.credentialManager.getTechniqueByBeamline(record.data.beamLineName) == "SAXS"){
@@ -245,7 +271,7 @@ SessionGrid.prototype.getPanel = function() {
                             return ((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
                         }
                     }
-                    return "warning-grid-row";
+                    return "mx-grid-row-dark";*/
                 }
 	    	},
             listeners : {

@@ -44,12 +44,11 @@ ManagerWelcomeMainView.prototype.activeProposal = function(proposalCode, proposa
 ManagerWelcomeMainView.prototype.getContainer = function() {
 	this.container = Ext.create('Ext.panel.Panel', {
 		autoScroll : true,
-    cls : 'border-grid',
-    tbar : this.getToolbar(),
-		bodyStyle: this.bodyStyle,
-		items :[
-
-    ]
+        margin : 20,
+        cls : 'border-grid',
+        tbar : this.getToolbar(),
+            items :[
+        ]
 	});
 	return this.container;
 };
@@ -61,30 +60,30 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 * @method displayProposals
 */
 ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
-          var _this = this;
-          this.container.removeAll();
-          var proposalGrid = new ProposalGrid({
-									        	  width: 900,
-									              height:600,
-									              margin : '10 10 10 10'
+    var _this = this;
+    this.container.removeAll();
+    var proposalGrid = new ProposalGrid({
+                                            width: 900,
+                                            height:600,
+                                            margin : '10 10 10 10'
 
-                                            });
-          proposalGrid.onSelected.attach(function(sender, proposal){
-	             _this.panel.setLoading(true);
-	             var proposalCode = proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber;
-	             function onSuccess(sender, sessions){
-		           	  _this.displaySessions(sessions, sessions.length + " sessions for proposal " + proposalCode);
-		           	  _this.panel.setLoading(false);
-	             }
-	             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
-                                  
-                 /** Loading Proposal info */                 
-                 _this.activeProposal( proposal.Proposal_proposalCode, proposal.Proposal_proposalNumber);
-                
-          });
-          
-          this.container.insert(proposalGrid.getPanel());
-          proposalGrid.load(proposals);
+                                    });
+    proposalGrid.onSelected.attach(function(sender, proposal){
+            _this.panel.setLoading(true);
+            var proposalCode = proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber;
+            function onSuccess(sender, sessions){
+                _this.displaySessions(sessions, sessions.length + " sessions for proposal " + proposalCode);
+                _this.panel.setLoading(false);
+            }
+            EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
+                            
+            /** Loading Proposal info */                 
+            _this.activeProposal( proposal.Proposal_proposalCode, proposal.Proposal_proposalNumber);
+        
+    });
+    
+    this.container.insert(proposalGrid.getPanel());
+    proposalGrid.load(proposals);
 };
 
 /**
@@ -122,13 +121,12 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
          EXI.proposalManager.clear();
          _this.activeProposal(args.proposalCode, args.proposalNumber);
      });
-     console.log(sessions);
 	 sessionGrid.load(sessions);
 	 sessionGrid.panel.setTitle(title);
 };
-ManagerWelcomeMainView.prototype.getToolbar = function() {
-  var _this = this;
 
+ManagerWelcomeMainView.prototype.getToolbar = function() {
+   var _this = this;
    var dateMenu = Ext.create('Ext.menu.DatePicker', {
         handler: function(dp, date){
             location.href = "#/welcome/manager/" + _this.username +"/date/"+ Ext.Date.format(date, 'Ymd') +"/" + Ext.Date.format(date, 'Ymd') +"/main";
@@ -140,12 +138,11 @@ ManagerWelcomeMainView.prototype.getToolbar = function() {
         width   : 500,
         cls 	: 'exi-top-bar',
         items: [
-          {
+            {
                text: 'Choose a Date',
                icon : '../images/icon/sessions.png',
                menu: dateMenu 
-           },
-
+            },
             {
                 xtype    : 'textfield',
                 name     : 'field1',
@@ -194,50 +191,67 @@ ManagerWelcomeMainView.prototype.loadProposals = function(callback) {
         if (callback){            
             callback();
         }
-	};
-	
+	};	
 	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
 };
 
+ManagerWelcomeMainView.prototype.isUser = function(username) {
+       return (!EXI.credentialManager.getCredentialByUserName(username).isManager() && (!EXI.credentialManager.getCredentialByUserName(username).isLocalContact()));
+};
 
-
-ManagerWelcomeMainView.prototype.load = function(username) {
-  this.username = username;
+ManagerWelcomeMainView.prototype.load = function(username) {      
   var today = moment().format("YYYYMMDD");
-  this.loadByDate(today, today);
-  
-  //"#/welcome/manager/" + username +"/main";
-  /** This is need for quick searchs on proposals **/
-  this.loadProposals();
-  
+  this.username = username;  
+  if (this.isUser(this.username)){
+      this.loadSessionsByProposal(this.username);
+  }
+  else{
+      this.loadSessionsByDate(username, today, today);    
+  }
+};
+
+/**
+* Retrieves all sessions for the proposal
+*
+* @method loadSessions
+*/
+ManagerWelcomeMainView.prototype.loadSessionsByProposal = function(username) {
+    var _this = this;
+    this.panel.setLoading(true);
+    function onSuccess(sender, data){
+        var realLength = data.length;
+        data = _.slice(data, 0, 500);
+        // Sorting by start date because sessionId does not sort by date
+        _(data).forEach(function(value) {
+                value['ms'] = moment(value.BLSession_startDate, 'MMM DD, YYYY h:mm:ss a').format('x');
+        });
+        data = _.orderBy(data, ['ms'], ['desc']);
+        if (data.length == realLength){
+            _this.displaySessions(data, data.length + " sessions");
+        }
+        else{
+            _this.displaySessions(data, data.length + " sessions (omitting " + (realLength - data.length) + " old sessions)");
+        }
+        _this.panel.setLoading(false);
+    }
+    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(username);
 };
 
 
 ManagerWelcomeMainView.prototype.loadSessionsByDate = function(username, start, end) {
   this.username = username;
-  var today = moment().format("YYYYMMDD");
-  this.loadByDate(start, end);
-  
-  //"#/welcome/manager/" + username +"/main";
-  /** This is need for quick searchs on proposals **/
-  this.loadProposals();
-  
+  this.loadByDate(start, end);  
+   /** This is need for quick searchs on proposals **/
+  this.loadProposals(); 
 };
 
 ManagerWelcomeMainView.prototype.loadSessionsByTerm = function(username, term) {
-  this.username = username;
-  
-  
-  
-   
-  //"#/welcome/manager/" + username +"/main";
+  this.username = username;     
   /** This is need for quick searchs on proposals **/
   var _this = this;
-	var onSuccess = function(sender, proposals){
+  var onSuccess = function(sender, proposals){
 		_this.proposals = proposals;
        _this.searchProposalByTerm(term);
-	};
-	
-	EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
-  
+  };
+  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.proposal.getProposals();
 };
