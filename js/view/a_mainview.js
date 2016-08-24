@@ -1,5 +1,5 @@
 
-function MainView() {
+function MainView(args) {
 	this.id = BUI.id();
 	this.title = "New Tab";
 	this.closable = true; 
@@ -7,8 +7,14 @@ function MainView() {
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
 	
-	this.bodyStyle = {"background-color":"#FAFAFA"};
-//	this.bodyStyle = {"background-color":"rgb(255,253,236)"};
+	//this.bodyStyle = {"background-color":"#FAFAFA"};
+    
+    if (args != null){
+        if (args.title != null){
+            this.title = args.title;
+        }
+    }
+
 }
 
 MainView.prototype.getContainer = function() {

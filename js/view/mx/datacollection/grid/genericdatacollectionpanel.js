@@ -213,7 +213,7 @@ GenericDataCollectionPanel.prototype.getToolBar = function() {
         items: [
             {
                 xtype: 'checkboxfield',
-                boxLabel: 'Collapse',
+                boxLabel: 'Summary',
                 id: this.id + "_collapse",
                 listeners: {
                     change: function(field, e) {

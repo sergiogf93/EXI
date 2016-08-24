@@ -2,30 +2,30 @@
 <table class="table">                    
     <tr>
         <td>Detector Type</td>
-        <td> 
+        <td  class='column_parameter_value'> 
             {.detectorType}
         </td>
     </tr>
     <tr>
         <td>Detector Model</td>
-        <td>{.detectorModel}</td>
+        <td  class='column_parameter_value'>{.detectorModel}</td>
     </tr>
     <tr>
         <td>Manufacturer</td>
-        <td>{.detectorManufacturer}</td>
+        <td  class='column_parameter_value'>{.detectorManufacturer}</td>
     </tr>
     <tr>
         <td>Hor. Pixel Size</td>
-        <td>{.detectorPixelSizeHorizontal}</td>
+        <td  class='column_parameter_value'>{.detectorPixelSizeHorizontal}</td>
     </tr>
     
     <tr>
         <td>Ver. Pixel Size</td>
-        <td>{.detectorPixelSizeVertical}</td>
+        <td  class='column_parameter_value'>{.detectorPixelSizeVertical}</td>
     </tr>
     <tr>
         <td>Mode</td>
-        <td>{.detectorMode}</td>
+        <td  class='column_parameter_value'>{.detectorMode}</td>
     </tr>
     
    

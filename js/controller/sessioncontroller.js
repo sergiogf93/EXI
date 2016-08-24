@@ -25,18 +25,28 @@ SessionController.prototype.init = function() {
 
 	Path.map("#/session/nav").to(function() {
 			EXI.clearNavigationPanel();
-			EXI.setLoadingNavigationPanel(true);
+            EXI.hideNavigationPanel();	
+			/*EXI.setLoadingNavigationPanel(true);
 			listView = new SessionListView();
 			listView.onSelect.attach(function(sender, selected) {
 				location.hash = "/mx/datacollection/session/" + selected[0].sessionId + "/main";
 			});
-			EXI.addNavigationPanel(listView);		
+			EXI.addNavigationPanel(listView);
+            */
+            var mainView = new SessionMainView({
+                title : "Sessions"
+            });
+           
+            EXI.addMainPanel(mainView);
             
             var onSuccess = function(sender, data){
-                listView.load(EXI.proposalManager.getSessions());
-                EXI.setLoadingNavigationPanel(false);    
+            //    listView.load(EXI.proposalManager.getSessions().slice(0, 50));
+                 mainView.load(EXI.proposalManager.getSessions());
+            //    EXI.hideNavigationPanel();		
+            //    EXI.setLoadingNavigationPanel(false);
+                 EXI.setLoadingMainPanel(false);    
             };
-            
+            EXI.setLoadingMainPanel();
             EXI.getDataAdapter({
                 onSuccess : onSuccess                
             }).proposal.session.getSessions();         	

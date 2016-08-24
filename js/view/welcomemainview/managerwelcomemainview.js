@@ -12,11 +12,24 @@ function ManagerWelcomeMainView() {
 	this.title = "Home";
 	this.closable = false;
 
+    this.sessionGrid = new SessionGrid({
+                    width : null,
+                    height:600,
+                    isHiddenTitle : false,
+                    isHiddenNumberOfShifts : false,
+                    isHiddenLocalContact : false,                                        
+                    margin : '10 10 10 10'
+    });
+    
+    this.proposalGrid = new ProposalGrid({
+                                            width: 900,
+                                            height:600,
+                                            margin : '10 10 10 10'
+
+                                    });
 }
 
-
 ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-
 
 /**
 * This sets an active proposal into the credential Manager. It also retrieve all the information about the proposal: shipments, macromolecules, crystals, buffers, etc.. and store 
@@ -25,11 +38,11 @@ ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 * @method activeProposal
 * @param {Object} proposal Proposal object that should container at least: [code, number]
 */
-ManagerWelcomeMainView.prototype.activeProposal = function(proposalCode, proposalNumber) {
+ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
     
-    EXI.mainStatusBar.showBusy("Loading proposal " + proposalCode +  proposalNumber); 
+    EXI.mainStatusBar.showBusy("Loading proposal " +proposal); 
     
-	EXI.credentialManager.setActiveProposal(this.username, proposalCode + proposalNumber);
+	EXI.credentialManager.setActiveProposal(this.username, proposal);
     EXI.proposalManager.clear();
 	/** I don't need this to be synchronous **/	
     EXI.proposalManager.onActiveProposalChanged = new Event();
@@ -48,6 +61,7 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
         cls : 'border-grid',
         tbar : this.getToolbar(),
             items :[
+                this.sessionGrid.getPanel()
         ]
 	});
 	return this.container;
@@ -62,13 +76,8 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
 ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
     var _this = this;
     this.container.removeAll();
-    var proposalGrid = new ProposalGrid({
-                                            width: 900,
-                                            height:600,
-                                            margin : '10 10 10 10'
-
-                                    });
-    proposalGrid.onSelected.attach(function(sender, proposal){
+   
+    this.proposalGrid.onSelected.attach(function(sender, proposal){
             _this.panel.setLoading(true);
             var proposalCode = proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber;
             function onSuccess(sender, sessions){
@@ -78,12 +87,12 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
                             
             /** Loading Proposal info */                 
-            _this.activeProposal( proposal.Proposal_proposalCode, proposal.Proposal_proposalNumber);
+            _this.activeProposal( proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber);
         
     });
     
-    this.container.insert(proposalGrid.getPanel());
-    proposalGrid.load(proposals);
+    this.container.insert(this.proposalGrid.getPanel());
+    this.proposalGrid.load(proposals);
 };
 
 /**
@@ -93,44 +102,63 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
 * @param {String} end Date should be in the format of YYYYMMDD
 * @method loadByDate
 */
-ManagerWelcomeMainView.prototype.loadByDate = function(start, end) {
+ManagerWelcomeMainView.prototype.loadByDate = function(username, start, end) {
           var _this = this;
           this.panel.setLoading(true);
-          function onSuccess(sender, data){
-              
+          function onSuccess(sender, data){              
         	  _this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
         	  _this.panel.setLoading(false);
           }
           /** Increasing one day */
-          end = moment(end, "YYYYMMDD").add(1, 'days').format("YYYYMMDD");
-		  EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
+          end = moment(end, "YYYYMMDD").add(1, 'days').format("YYYYMMDD");                    
+          if (this.isUser(username)){
+		        EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposalAndDate(start, end, username);
+          }
+          else{
+                EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByDate(start, end);
+          }
 };
 
+/**
+* Removes oldest sessions up to get only 500
+*
+* @param {String} sessions List of sessions
+* @method filterSessions
+*/
+ManagerWelcomeMainView.prototype.filterSessions = function(sessions) {    
+        var realLength = sessions.length;
+        data = _.slice(sessions, 0, 500);
+        // Sorting by start date because sessionId does not sort by date
+        _(sessions).forEach(function(value) {
+                value['ms'] = moment(value.BLSession_startDate, 'MMM DD, YYYY h:mm:ss a').format('x');
+        });
+        sessions = _.orderBy(sessions, ['ms'], ['desc']);
+        return sessions.slice(0, 300);
+        
+};
+        
 ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
-	var _this = this;
-	 this.container.removeAll();
-	 var sessionGrid = new SessionGrid({
-						 width: 900,
-						 height:600,
-						 margin : '10 10 10 10'
-    	 });
-	 this.container.insert(sessionGrid.getPanel());
-	 
-	  /** Handling onSelected **/
-     sessionGrid.onSelected.attach(function(sender, args){
-         EXI.proposalManager.clear();
-         _this.activeProposal(args.proposalCode, args.proposalNumber);
-     });
-	 sessionGrid.load(sessions);
-	 sessionGrid.panel.setTitle(title);
+    var _this = this;
+    
+    /** it loads the session panel */
+    this.container.removeAll();   
+    this.container.insert(this.sessionGrid.getPanel());
+
+    /** Handling onSelected **/
+    this.sessionGrid.onSelected.attach(function(sender, args){
+        EXI.proposalManager.clear();
+        _this.activeProposal(args.proposalCode + args.proposalNumber);
+    });
+    
+    this.sessionGrid.load(this.filterSessions(sessions));
+    this.sessionGrid.panel.setTitle(title);
 };
 
 ManagerWelcomeMainView.prototype.getToolbar = function() {
    var _this = this;
    var dateMenu = Ext.create('Ext.menu.DatePicker', {
-        handler: function(dp, date){
-            location.href = "#/welcome/manager/" + _this.username +"/date/"+ Ext.Date.format(date, 'Ymd') +"/" + Ext.Date.format(date, 'Ymd') +"/main";
-          //_this.loadByDate(Ext.Date.format(date, 'Ymd'), Ext.Date.format(date, 'Ymd'));
+        handler: function(dp, date){            
+            location.href = "#/welcome/manager/" + _this.username +"/date/"+ Ext.Date.format(date, 'Ymd') +"/" + Ext.Date.format(date, 'Ymd') +"/main";          
         }
     });
 
@@ -200,14 +228,17 @@ ManagerWelcomeMainView.prototype.isUser = function(username) {
 };
 
 ManagerWelcomeMainView.prototype.load = function(username) {      
-  var today = moment().format("YYYYMMDD");
   this.username = username;  
-  if (this.isUser(this.username)){
-      this.loadSessionsByProposal(this.username);
+  /** By default for users we load all the sessions and managers only sessions that occurs today */
+  if (this.isUser(username)){
+    this.loadSessionsByProposal(username);  
+    /** set active proposal */
+    this.activeProposal(username);
   }
   else{
-      this.loadSessionsByDate(username, today, today);    
-  }
+    var today = moment().format("YYYYMMDD");
+    this.loadSessionsByDate(username, today, today);
+  }    
 };
 
 /**
@@ -216,37 +247,26 @@ ManagerWelcomeMainView.prototype.load = function(username) {
 * @method loadSessions
 */
 ManagerWelcomeMainView.prototype.loadSessionsByProposal = function(username) {
+    this.username = username;
     var _this = this;
     this.panel.setLoading(true);
     function onSuccess(sender, data){
-        var realLength = data.length;
-        data = _.slice(data, 0, 500);
-        // Sorting by start date because sessionId does not sort by date
-        _(data).forEach(function(value) {
-                value['ms'] = moment(value.BLSession_startDate, 'MMM DD, YYYY h:mm:ss a').format('x');
-        });
-        data = _.orderBy(data, ['ms'], ['desc']);
-        if (data.length == realLength){
-            _this.displaySessions(data, data.length + " sessions");
-        }
-        else{
-            _this.displaySessions(data, data.length + " sessions (omitting " + (realLength - data.length) + " old sessions)");
-        }
-        _this.panel.setLoading(false);
+       _this.displaySessions(data, "Sessions for proposal " + username);
+       _this.panel.setLoading(false);
     }
     EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(username);
 };
 
 
-ManagerWelcomeMainView.prototype.loadSessionsByDate = function(username, start, end) {
+ManagerWelcomeMainView.prototype.loadSessionsByDate = function(username, start, end) { 
   this.username = username;
-  this.loadByDate(start, end);  
+  this.loadByDate(username, start, end);  
    /** This is need for quick searchs on proposals **/
   this.loadProposals(); 
 };
 
 ManagerWelcomeMainView.prototype.loadSessionsByTerm = function(username, term) {
-  this.username = username;     
+  this.username = username;    
   /** This is need for quick searchs on proposals **/
   var _this = this;
   var onSuccess = function(sender, proposals){

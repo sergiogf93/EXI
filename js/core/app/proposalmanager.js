@@ -58,8 +58,8 @@ ProposalManager.prototype.getFutureSessions = function() {
 	var sessions = this.getSessions();
 	var today = moment();
 	var futureSessions = [];
-	for (var i = 0; i < sessions.length; i++) {
-		if (today.diff(sessions[i].startDate) < 0){
+	for (var i = 0; i < sessions.length; i++) {        
+		if (today.diff(sessions[i].BLSession_startDate) < 0){
 			futureSessions.push(sessions[i]);
 		}
 	}

@@ -2,43 +2,43 @@
 <table class="table">  
   <tr>
         <td>Positions</td>
-        <td>{.numberOfPositions}</td>
+        <td class='column_parameter_value'_value>{.numberOfPositions}</td>
     </tr>
                       
     <tr>
         <td>Observed Res.</td>
-        <td> 
+        <td class='column_parameter_value'_value> 
             {.observedResolution} &#8491;
         </td>
     </tr>
     <tr>
         <td>Min. Resolution </td>
-        <td>{.minimalResolution} &#8491;</td>
+        <td class='column_parameter_value'_value>{.minimalResolution} &#8491;</td>
     </tr>
     <tr>
         <td>Max. Resolution</td>
-        <td>{.maximalResolution} &#8491;</td>
+        <td class='column_parameter_value'_value>{.maximalResolution} &#8491;</td>
     </tr>
     <tr>
         <td>Screening Resolution</td>
-        <td>{.screeningResolution} &#8491;</td>
+        <td class='column_parameter_value'_value>{.screeningResolution} &#8491;</td>
     </tr>
     
     <tr>
         <td>Radiation Sensitivity</td>
-        <td>{.radiationSensitivity}</td>
+        <td class='column_parameter_value'_value>{.radiationSensitivity}</td>
     </tr>
     <tr>
         <td>Anomalous Scatterer</td>
-        <td>{.anomalousScatterer}</td>
+        <td class='column_parameter_value'_value>{.anomalousScatterer}</td>
     </tr>
     <tr>
         <td>Preferred BeamSizeX</td>
-        <td>{.preferredBeamSizeX}</td>
+        <td class='column_parameter_value'_value>{.preferredBeamSizeX}</td>
     </tr>
       <tr>
         <td>preferredBeamSizeY</td>
-        <td>{.preferredBeamSizeY}</td>
+        <td class='column_parameter_value'_value>{.preferredBeamSizeY}</td>
     </tr>
   
    

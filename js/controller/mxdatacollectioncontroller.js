@@ -23,13 +23,10 @@ MxDataCollectionController.prototype.init = function() {
 	var _this = this;
 	var listView;	
 
-	
-
-
-    
 	Path.map("#/mx/datacollection/protein_acronym/:acronmys/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
+        EXI.hideNavigationPanel();
 		var onSuccess = function(sender, data){
 			mainView.loadCollections(data);
 		};
@@ -39,9 +36,10 @@ MxDataCollectionController.prototype.init = function() {
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
+        EXI.hideNavigationPanel();
 		EXI.setLoadingMainPanel(true);
 		var onSuccess = function(sender, data){
-		mainView.loadCollections(data);
+		    mainView.loadCollections(data);
 			EXI.setLoadingMainPanel(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getDataCollectionViewBySessionId(this.params['sessionId']);
@@ -49,14 +47,14 @@ MxDataCollectionController.prototype.init = function() {
 
 		var onSuccessEnergy = function(sender, data){
 			mainView.loadEnergyScans(data);
-			EXI.setLoadingMainPanel(false);
+			
 		};
 		/** retrieving energy scans */
 		EXI.getDataAdapter({onSuccess : onSuccessEnergy}).mx.energyscan.getEnergyScanListBySessionId(this.params['sessionId']);
 
 		var onSuccessXFE = function(sender, data){
 			mainView.loadFXEScans(data);
-			EXI.setLoadingMainPanel(false);
+			
 		};
 		/** retrieving XFE scans */
 		EXI.getDataAdapter({onSuccess : onSuccessXFE}).mx.xfescan.getXFEScanListBySessionId(this.params['sessionId']);
@@ -65,6 +63,7 @@ MxDataCollectionController.prototype.init = function() {
 	
 	Path.map("#/mx/datacollection/:dataCollectionId/image/:imageId/main").to(function() {
 		var mainView = new ImageMainView();
+        EXI.hideNavigationPanel();
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['imageId'], this.params['dataCollectionId']);
 	}).enter(this.setPageBackground);

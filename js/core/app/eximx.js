@@ -40,7 +40,9 @@ ExiMX.prototype.show = Exi.prototype.show;
 ExiMX.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiMX.prototype.setUserMenu = Exi.prototype.setUserMenu;
 ExiMX.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
-
+ExiMX.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
+ExiMX.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ 
 
 
 ExiMX.prototype.getHeader = function(){

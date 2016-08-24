@@ -1,7 +1,7 @@
 <table class="table">
    <tr>
-      <td>Worflow</td>
-      <td>
+      <td  >Worflow</td>
+      <td class='column_parameter_value'>
          {@eq key=Workflow_status value="Success"}
          <div class='summary_datacollection_success'></div>
          {/eq}
@@ -13,26 +13,26 @@
    </tr>
    <tr>
       <td>Protein</td>
-      <td>{.Protein_acronym}</td>
+      <td class='column_parameter_value'>{.Protein_acronym}</td>
    </tr>
    <tr>
       <td>Sample</td>
-      <td>{.BLSample_name}</td>
+      <td class='column_parameter_value'>{.BLSample_name}</td>
    </tr>
    <tr>
       <td>Prefix</td>
-      <td>{.DataCollection_imagePrefix}</td>
+      <td class='column_parameter_value'>{.DataCollection_imagePrefix}</td>
    </tr>
    <tr>
       <td>Images</td>
-      <td>{.totalNumberOfImages}</td>
+      <td class='column_parameter_value'>{.totalNumberOfImages}</td>
    </tr>
    <tr>
       <td>Transmission</td>
-      <td>{.transmission}</td>
+      <td class='column_parameter_value'>{.transmission}</td>
    </tr>
    <tr>
       <td>Flux start</td>
-      <td>{.DataCollection_flux} ph/sec</td>
+      <td class='column_parameter_value'>{.DataCollection_flux} ph/sec</td>
    </tr>
 </table>

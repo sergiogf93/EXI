@@ -45,7 +45,7 @@ module.exports = function(grunt) {
                                                     "bower_components/vis/dist/vis.min.js",		  
                                                     "bower_components/dygraphs/dygraph-combined.js", 
                                                     "bower_components/handsontable/dist/handsontable.full.min.js",
-                                                  
+                                                    "bower_components/bootstrap-year-calendar/js/bootstrap-year-calendar.min.js",
                                                     "bower_components/moment/min/moment.min.js",  
                                                     "bower_components/pathjs-amd/dist/path.min.js",
                                                     //"bower_components/threejs/build/three.min.js",
@@ -97,8 +97,8 @@ module.exports = function(grunt) {
 			                              	'css/menu/mainmenu.css', 
 			                              	'css/override.css', 
                                               'css/grid.css', 
-                                            'bower_components/lightbox2/dist/css/lightbox.css'
-                                            
+                                            'bower_components/lightbox2/dist/css/lightbox.css',
+                                            'bower_components/bootstrap-year-calendar/css/bootstrap-year-calendar.min.css'
 			                              	//'js/dependency/timeline/timeline.css'
                                             ]
 			    }

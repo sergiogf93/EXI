@@ -171,8 +171,22 @@ Exi.prototype.addNavigationPanel = function(listView) {
 	Ext.getCmp('navigation').add(listView.getPanel());
 	if (Ext.getCmp("navigation") != null){
 		Ext.getCmp("navigation").expand();
+        this.showNavigationPanel();
 	}
 };
+
+Exi.prototype.hideNavigationPanel = function(listView) {
+	if (Ext.getCmp("navigation") != null){
+		Ext.getCmp('navigation').hide();
+	}
+};
+
+Exi.prototype.showNavigationPanel = function(listView) {
+	if (Ext.getCmp("navigation") != null){
+		Ext.getCmp('navigation').show();
+	}
+};
+
 
 Exi.prototype.clearNavigationPanel = function() {
 	Ext.getCmp('navigation').removeAll();

@@ -7,48 +7,25 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
 
-    <!-- 
-      Automatically include Bower components. Use the "sources" object in your bower.json
-      to specify which source files are which.
-    -->
-
-    <!--
-      Include CSS files from a "tmp" directory, put there by another task.
-      This shows how to override the default "basePath" set in the options.
-    -->
-    
-
-
-
-    <!-- JS -->
-	<!--<script type="text/javascript" src="../dependency/ext/build/ext-all.js"></script> -->
+  
     <script type="text/javascript" src="../dependency/ext/build/bootstrap.js"></script>
 	<script type="text/javascript" src="../dependency/ext/build/packages/ext-theme-crisp/build/ext-theme-crisp.js"></script>
 
 
-	<!-- These dependencies should be updated -->
-	
-
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-	<script type="text/javascript" src="../dependency/jssurfaceplot/SurfacePlot.js"></script>
-	<script type="text/javascript" src="../dependency/jssurfaceplot/ColourGradient.js"></script>
-    
-    
+
     
    
-
     
 	<!-- CSS-->
 	<link rel="stylesheet" type="text/css" href="../dependency/ext/build/packages/ext-theme-crisp/build/resources/ext-theme-crisp-all.css">
 	<link rel="stylesheet" type="text/css" href="../min/exi.min.css">
-
-   <!-- Owl Stylesheets -->
-    <link rel="stylesheet" href="https://owlcarousel2.github.io/OwlCarousel2/assets/owlcarousel/assets/owl.carousel.min.css">
-    <link rel="stylesheet" href="../assets/owlcarousel/assets/owl.theme.default.min.css">
+ 
     
     
     <script src="../bower_components/lodash/lodash.js"></script>
-    
+  
+ 
 	<!-- BOWER -->
 	<script src="../bower_components/jquery/dist/jquery.js"></script>
 	<script src="../bower_components/zeroclipboard/dist/ZeroClipboard.js"></script>
@@ -64,7 +41,6 @@
 	<script src="../bower_components/pathjs-amd/dist/path.js"></script>
 	<script src="../bower_components/dustjs-linkedin/dist/dust-full.min.js"></script>
 	<script src="../bower_components/dustjs-helpers/dist/dust-helpers.min.js"></script>
-	<script src="../bower_components/owl.carousel/dist/owl.carousel.js"></script>
 	<!-- endbower -->
 
 	
@@ -119,7 +95,7 @@
 		<script src="../bower_components/ispyb-js-api/js/saxs/subtractionsaxsdataadapter.js"></script>
 		<script src="../bower_components/ispyb-js-api/js/saxs/templatesaxsdataadapter.js"></script>
 		  
-		   <script src="../js/dust/helpers.js"></script>
+		<script src="../js/dust/helpers.js"></script>
 	    <script src="../js/core/app/appcontroller.js"></script>
 	    <script src="../js/core/app/authenticationcontroller.js"></script>
 	    <script src="../js/core/app/exi.js"></script>
@@ -157,10 +133,11 @@
 	    <script src="../js/view/run/runmainview.js"></script>
 	    <script src="../js/view/a_mainview.js"></script>
 	    <script src="../js/view/addressmainview.js"></script>
+	    <script src="../js/view/grid/proposalgrid.js"></script>
+	    <script src="../js/view/grid/sessiongrid.js"></script>
 	    <script src="../js/view/imagemainview.js"></script>
 	    <script src="../js/view/landing/addresswelcomemainview.js"></script>
 	    <script src="../js/view/landing/puckwelcomemainview.js"></script>
-	    <script src="../js/view/managerwelcomemainview.js"></script>
 	    <script src="../js/view/mx/autoprocintegrationmainview.js"></script>
 	    <script src="../js/view/mx/beamlineparameter/beamlineparametermainview.js"></script>
 	    <script src="../js/view/mx/beamlineparameter/imagemainview.js"></script>
@@ -205,6 +182,7 @@
 	    <script src="../js/view/saxs/prepare/stocksolutionmainview.js"></script>
 	    <script src="../js/view/saxs/prepare/templatemainview.js"></script>
 	    <script src="../js/view/saxs/primarydatamainview.js"></script>
+	    <script src="../js/view/sessionmainview.js"></script>
 	    <script src="../js/view/shipping/caseform.js"></script>
 	    <script src="../js/view/shipping/containerspreadsheet.js"></script>
 	    <script src="../js/view/shipping/parcelgrid.js"></script>
@@ -216,8 +194,8 @@
 	    <script src="../js/view/tool/mx/reprocessmainview.js"></script>
 	    <script src="../js/view/tool/saxs/crysolmainview.js"></script>
 	    <script src="../js/view/tool/subtractionmainview.js"></script>
-	    <script src="../js/view/userwelcomemainview.js"></script>
 	    <script src="../js/view/welcomemainview.js"></script>
+	    <script src="../js/view/welcomemainview/managerwelcomemainview.js"></script>
 	    <script src="../js/navigation/listview.js"></script>
 	    <script src="../js/navigation/addresslistview.js"></script>
 	    <script src="../js/navigation/bufferlistview.js"></script>
@@ -261,12 +239,10 @@
 	    <script src="../js/widget/grid/macromoleculegrid.js"></script>
 	    <script src="../js/widget/grid/measurementgrid.js"></script>
 	    <script src="../js/widget/grid/molaritygrid.js"></script>
-	    <script src="../js/widget/grid/proposalgrid.js"></script>
 	    <script src="../js/widget/grid/queuegrid.js"></script>
 	    <script src="../js/widget/grid/rigidbodygrid.js"></script>
 	    <script src="../js/widget/grid/rigidmodelgrid.js"></script>
 	    <script src="../js/widget/grid/samplesgrid.js"></script>
-	    <script src="../js/widget/grid/sessiongrid.js"></script>
 	    <script src="../js/widget/grid/specimengrid.js"></script>
 	    <script src="../js/widget/grid/stocksolutiongrid.js"></script>
 	    <script src="../js/widget/grid/templategrid.js"></script>
@@ -391,4 +367,7 @@
   </body>
   
   <script type="text/javascript" src="../bower_components/lightbox2/dist/js/lightbox.js"></script>
+    <script src="../bower_components/bootstrap-year-calendar/js/bootstrap-year-calendar.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../bower_components/bootstrap-year-calendar/css/bootstrap-year-calendar.min.css">
+ 
 </html>

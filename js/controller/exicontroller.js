@@ -47,10 +47,10 @@ ExiController.prototype.init = function(){
 	}).enter(setPageBackground);
 	
 	Path.map("#/welcome/user/:user/main").to(function() {
-		var user = this.params['user'];
-		//var mainView = new UserWelcomeMainView();
+		var user = this.params['user'];		
         var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
+         EXI.hideNavigationPanel();
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
@@ -59,6 +59,8 @@ ExiController.prototype.init = function(){
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
+        
+        EXI.hideNavigationPanel();
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
@@ -66,6 +68,7 @@ ExiController.prototype.init = function(){
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
+        EXI.hideNavigationPanel();
 		mainView.loadSessionsByDate(user,this.params['start'], this.params['end'] );
 	}).enter(setPageBackground);
     
@@ -74,6 +77,7 @@ ExiController.prototype.init = function(){
 	
 	Path.map("#/logout").to(function() {
 		EXI.credentialManager.logout();
+         EXI.hideNavigationPanel();
 		EXI.proposalManager.clear();
 		
 	}).enter(setPageBackground);

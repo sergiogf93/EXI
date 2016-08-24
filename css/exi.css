@@ -1,3 +1,8 @@
+.column_parameter_value{
+    font-weight:700;
+    font-size: 1.1em;
+    
+}
 .selectable_row:hover {
     background-color:#3892d3;
     font-weight : bold;
