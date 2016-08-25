@@ -29,8 +29,9 @@ AutoprocIntegrationController.prototype.openFiles = function(dataCollectionIds) 
 AutoprocIntegrationController.prototype.init = function() {
 	var _this = this;
 	var listView;	
-
+    
 	Path.map("#/autoprocintegration/datacollection/:datacollectionId/main").to(function() {
+        EXI.hideNavigationPanel();
 		var mainView = new AutoProcIntegrationMainView();
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['datacollectionId']);
@@ -41,11 +42,9 @@ AutoprocIntegrationController.prototype.init = function() {
 	}).enter(this.setPageBackground);
 
 	Path.map("#/autoprocintegration/datacollection/:datacollectionId/phasingviewer/main").to(function() {
-		var mainView = new PhasingViewerMainView();
-		
+		var mainView = new PhasingViewerMainView();		
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['datacollectionId']);
-
 	}).enter(this.setPageBackground);
 
 };

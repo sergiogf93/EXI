@@ -27,53 +27,53 @@
 
                                 <tr>      
                                     <td >Start Time</td>
-                                    <td >{.startTime}</td>        
+                                    <td class='column_parameter_value'>{.startTime}</td>        
                                 </tr>
                                 
                                 
                                 <tr>
                                     <td >Filename</td>
-                                    <td >{.filename}</td>
+                                    <td class='column_parameter_value'>{.filename}</td>
                                 </tr>
                                 
                                 
                                 <tr>
                                     <td >Fluorescence Detector</td>
-                                    <td >To be added to DB</td>
+                                    <td class='column_parameter_value'>To be added to DB</td>
                                 </tr>
                                 <tr>
                                     <td >Energy</td>
-                                    <td > {.energy} kev</td>
+                                    <td class='column_parameter_value'> {.energy} kev</td>
 
                                 </tr>
                                 
                                 <tr>
                                     <td >Flux @100%</td>
-                                    <td >{.flux} ph/s</td>    
+                                    <td class='column_parameter_value'>{.flux} ph/s</td>    
                                 </tr>
                                 
                                 <tr>      
                                     <td >Transmission</td>
-                                    <td >{.beamTransmission}%</td>
+                                    <td class='column_parameter_value'>{.beamTransmission}%</td>
                                 </tr>
                                 
                                 <tr>       
                                     <td style='width:150px;' >Beam Size Hor</td>
-                                    <td >{.beamSizeHorizontal} micrometer</td>
+                                    <td class='column_parameter_value'>{.beamSizeHorizontal} micrometer</td>
                                 </tr>
                                                                
                                 <tr>                            
                                     <td >Beam Size Vert</td>
-                                    <td >{.beamSizeVertical} micrometer</td>
+                                    <td class='column_parameter_value'>{.beamSizeVertical} micrometer</td>
                                 </tr>
 
                                 <tr>                                
                                     <td >Exposure Time</td>
-                                    <td >{.exposureTime} s</td>                                    
+                                    <td class='column_parameter_value'>{.exposureTime} s</td>                                    
                                 </tr>
                                  <tr>                                
                                     <td >Directory</td>
-                                    <td >{.workingDirectory}</td>                                    
+                                    <td class='column_parameter_value'>{.workingDirectory}</td>                                    
                                 </tr>
                             </table>
                             

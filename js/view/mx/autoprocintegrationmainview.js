@@ -18,29 +18,25 @@ function AutoProcIntegrationMainView() {
 	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid();
 	
 	this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
-		var ids = [];
-        
+		var ids = [];        
 		for (var i = 0; i < records.length; i++) {
 			ids.push(records[i].v_datacollection_summary_phasing_autoProcIntegrationId);
-		}
-		
+		}		
 		/** Loading plots **/
 		try{
 			_this.loadPlots(ids);
 		}
-		catch(e){}
-		
+		catch(e){
+            console.log("Error loading plots");    
+        }	
+        	
 		/** Loading attachments **/
-		if (records.length == 1){    
-          
-        
-                                                               
+		if (records.length == 1){                                                                                     
 			var record = _this.getByAutoProcId(records[0].v_datacollection_summary_phasing_autoproc_autoprocId);
 			if (record != null){
 				_this.autoProcIntegrationAttachmentGrid.load(_this.programAttachments[_.findIndex(_this.programAttachmentsAutoProcProgramIds, function(o) { return o == records[0].v_datacollection_summary_phasing_autoProcProgramId; })]);
 			}
-		}
-		
+		}		
 		
 		/** Loading phasing network **/
 		var tmp = [].concat.apply([], _this.autoProcIntegrationPhasingViewList);
@@ -49,10 +45,7 @@ function AutoProcIntegrationMainView() {
 			if ( tmp[i].v_datacollection_summary_phasing_autoProcIntegrationId == records[0].v_datacollection_summary_phasing_autoProcIntegrationId){
 				filtered.push( tmp[i]);
 			}
-		}
-		
-		//_this.phasingNetworkWidget.load(tmp);
-		
+		}		
 	});
 	
 	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({
@@ -135,14 +128,9 @@ function AutoProcIntegrationMainView() {
 		_this.onPlotClicked(id);
 	});
 	
-}
+};
 
 AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
-
-
-
-
-
 
 AutoProcIntegrationMainView.prototype.getByAutoProcId = function(autoProcId) {
 	for (var i = 0; i < this.data.length; i++) {
@@ -174,8 +162,7 @@ AutoProcIntegrationMainView.prototype.getAutoprocIntegrationIdByautoProcProgramA
 * It selects the row on the grid which autprocProgramAttachmedId is given
 * @method onPlotClicked
 */
-AutoProcIntegrationMainView.prototype.onPlotClicked = function(autoProcProgramAttachmentId) {
-    
+AutoProcIntegrationMainView.prototype.onPlotClicked = function(autoProcProgramAttachmentId) {    
    var autoProcIntegration = this.getAutoprocIntegrationIdByautoProcProgramAttachmentId(autoProcProgramAttachmentId);
    if (autoProcIntegration){
         this.autoProcIntegrationGrid.selectRowByAutoProcIntegrationId(autoProcIntegration.v_datacollection_summary_phasing_autoProcIntegrationId);
@@ -184,76 +171,35 @@ AutoProcIntegrationMainView.prototype.onPlotClicked = function(autoProcProgramAt
 
 AutoProcIntegrationMainView.prototype.getPlotContainer = function(panel) {
 	return {
-  	  xtype : 'container',
-	  margin : 5,
-	  layout: {
-	        	type: 'fit'
-        },
-        flex :1,
-        items : [ 
-                    panel
-        ]
-	  
-  };
+            xtype : 'container',
+            margin : 5,
+            layout: 'fit',
+            flex :1,
+            items : [panel]	  
+    };
 };
 
+AutoProcIntegrationMainView.prototype.createContainer = function(item) {
+    return  Ext.create('Ext.container.Container', {
+		        	 layout: 'hbox', 
+		        	 margin : '0 50 0 0',
+		        	 items : [
+		        	          this.getPlotContainer(item)
+		        	         
+		        	 ]
+    });
+};
 
 AutoProcIntegrationMainView.prototype.getAutoProcPanel = function() {
 	return Ext.create('Ext.container.Container', {
-		style:{
-            
-          backgroundColor : '#FAFAFA'  
-        },
-		items : [ 
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox', 
-		        	 margin : '0 50 0 0',
-		        	 items : [
-		        	          this.getPlotContainer( this.rFactorPlotter.getPanel())
-		        	         
-		        	 ]
-		         }),
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox', 
-		        	 margin : '0 50 0 0',
-		        	 items : [
-		        	          this.getPlotContainer( this.isigmaPlotter.getPanel())
-		        	         
-		        	 ]
-		         }),
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox', 
-		        	 margin : '0 50 0 0',
-		        	 items : [
-		        	          this.getPlotContainer( this.sigmaAnnoPlotter.getPanel()),
-		        	         
-		        	 ]
-		         }),
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox', 
-		        	 margin : '0 50 0 0',
-		        	 items : [
-		        	         
-		        	          this.getPlotContainer( this.completenessPlotter.getPanel())
-		        	          
-		        	 ]
-		         }),
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox', 
-		        	 margin : '0 50 0 0',
-		        	 items : [
-		        	          this.getPlotContainer(this.annoCorrPlotter.getPanel())
-		        	          
-		        	 ]
-		         }),
-		         Ext.create('Ext.container.Container', {
-		        	 layout: 'hbox', 
-		        	 margin : '0 50 0 0',
-		        	 items : [
-		        	          this.getPlotContainer( this.cc2Plotter.getPanel()),
-		        	          
-		        	 ]
-		         })
+		style:{ backgroundColor : '#FAFAFA'},
+		items : [
+                 this.createContainer(this.rFactorPlotter.getPanel()),
+                 this.createContainer(this.isigmaPlotter.getPanel()),
+                 this.createContainer(this.sigmaAnnoPlotter.getPanel()),
+                 this.createContainer(this.completenessPlotter.getPanel()),
+                 this.createContainer(this.annoCorrPlotter.getPanel()),
+                 this.createContainer(this.cc2Plotter.getPanel())                  
 		    ]
 	});
 };
@@ -262,22 +208,15 @@ AutoProcIntegrationMainView.prototype.getSlaveTabPanel = function() {
 	return Ext.create('Ext.tab.Panel', {
 		margin : '0 5 5 5',
 		cls : 'border-grid',
-		width : this.slaveWidth,
-      
+		width : this.slaveWidth,      
 	    items: [{
 	        title: 'Autoprocessing Plots',
 	        items :  this.getAutoProcPanel()
-	    }, 
-        /*{
-	        title: 'Phasing',
-	        items : this.phasingNetworkWidget.getPanel()
-	    },*/
+	     },       
          {
 	        title: 'Files',
 	        items : this.autoProcIntegrationAttachmentGrid.getPanel()
-	    }
-	    
-	    
+	    }	    	    
 	    ]
 	}); 
 };
@@ -341,9 +280,6 @@ AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
         _this.loadAttachments(_this.data);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionId);
-    
-    
-     
 };
 
 

@@ -161,7 +161,7 @@ MXMainMenu.prototype.getProteinCrystalsMenu = function() {
 
 MXMainMenu.prototype.getDataExplorerMenu = function() {
 	function onItemCheck(item, checked) {
-		if (item.text == "Sessions") {
+		if (item.text == "Calendar") {
 			location.hash = "/session/nav";
 		}
 		if (item.text == "Experiments") {
@@ -171,7 +171,7 @@ MXMainMenu.prototype.getDataExplorerMenu = function() {
 	return Ext.create('Ext.menu.Menu', {
 		items : [ 
 			{
-				text : 'Sessions',
+				text : 'Calendar',
 				icon : '../images/icon/sessions.png',
 				handler : onItemCheck 
 			}

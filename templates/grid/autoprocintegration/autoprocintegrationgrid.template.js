@@ -25,14 +25,14 @@
                <div class="row">
                   <div class="col-xs-6 col-md-2">
                      <br />
-                     {>"autoprocintegrationgrid_unitcell"  /}                             
+                     {>"unitcell.autoprocintegrationgrid.template"  /}                             
                   </div>
                   <div class="col-xs-6 col-md-7">
                      <br />
-                     {>"autoprocintegrationgrid_statistics"  /}                         
+                     {>"statistics.autoprocintegrationgrid.template"  /}                         
                   </div>
                    <div class="col-xs-6 col-md-1">
-                     {>"autoprocintegrationgrid_phasing"  /}                         
+                     {>"phasing.autoprocintegrationgrid.template"  /}                         
                   </div>
                </div>
             </div>

@@ -26,52 +26,52 @@
                             <table class="table table-condensed">
                                 <tr>
                                     <td>Start Time</td>
-                                    <td>{.startTime}</td>
+                                    <td class='column_parameter_value'>{.startTime}</td>
                                 </tr>
                                 <tr>
                                     <td>Protein</td>
-                                    <td>{.acronym}</td>
+                                    <td class='column_parameter_value'>{.acronym}</td>
                                 </tr>
                                 <tr>
                                     <td>Sample</td>
-                                    <td>{.name}</td>
+                                    <td class='column_parameter_value'>{.name}</td>
                                 </tr>
                                 <tr>
                                     <td>Fluorescence Detector</td>
-                                    <td>{.fluorescenceDetector}</td>
+                                    <td class='column_parameter_value'>{.fluorescenceDetector}</td>
                                 </tr>
                                 <tr>
                                     <td style='width:150px;'>Energy Scan Range</td>
-                                    <td>{.startEnergy} kev - {.endEnergy} kev</td>
+                                    <td class='column_parameter_value'>{.startEnergy} kev - {.endEnergy} kev</td>
                                 </tr>
                                 <tr>
                                     <td>Edge Energy (theoretical)</td>
-                                    <td>{.edgeEnergy} kev</td>
+                                    <td class='column_parameter_value'>{.edgeEnergy} kev</td>
                                 </tr>
                                 <tr>
                                     <td>Flux @100%</td>
-                                    <td>{.flux} ph/sec</td>
+                                    <td class='column_parameter_value'>{.flux} ph/sec</td>
                                 </tr>
                                 <tr>
                                     <td>Transmission</td>
-                                    <td>{.transmissionFactor} %</td>
+                                    <td class='column_parameter_value'>{.transmissionFactor} %</td>
                                 </tr>
 
                                 <tr>
                                     <td style='width:150px;'>Beam Size Hor</td>
-                                    <td>{.beamSizeHorizontal} micrometer</td>
+                                    <td class='column_parameter_value'>{.beamSizeHorizontal} micrometer</td>
                                 </tr>
                                 <tr>
                                     <td>Beam Size Vert</td>
-                                    <td>{.beamSizeVertical} micrometer</td>
+                                    <td class='column_parameter_value'>{.beamSizeVertical} micrometer</td>
                                 </tr>
                                 <tr>
                                     <td>Exposure Time</td>
-                                    <td>{.exposureTime} sec</td>
+                                    <td class='column_parameter_value'>{.exposureTime} sec</td>
                                 </tr>
                                 <tr>
                                     <td>Filename</td>
-                                    <td>{.filename}</td>
+                                    <td class='column_parameter_value'>{.filename}</td>
                                 </tr>
                             </table>
                         </div>
@@ -81,25 +81,25 @@
                             <table class="table table-condensed">
                                 <tr>
                                     <td >Peak Energy</td>
-                                    <td >{.peakEnergy} kev</td>
+                                    <td class='column_parameter_value'>{.peakEnergy} kev</td>
                                 </tr>
                                 <tr>
                                     <td >Pk f'</td>
-                                    <td >{.peakFPrime} e–</td>
+                                    <td class='column_parameter_value'>{.peakFPrime} e–</td>
                                 </tr>
 
                                 <tr>
                                     <td >Pk f''</td>
-                                    <td >{.peakFDoublePrime} e–</td>
+                                    <td class='column_parameter_value'>{.peakFDoublePrime} e–</td>
                                 </tr>
 
                                 <tr>
                                     <td >Inflection Energy</td>
-                                    <td >{.inflectionEnergy} kev</td>
+                                    <td class='column_parameter_value'>{.inflectionEnergy} kev</td>
                                 </tr>
                                 <tr>
                                     <td >Ip f'</td>
-                                    <td >{.inflectionFPrime} e– </td>
+                                    <td class='column_parameter_value'>{.inflectionFPrime} e– </td>
 
 
                                 </tr>
@@ -108,7 +108,7 @@
 
                                 <tr>
                                     <td >Ip f''</td>
-                                    <td >{.inflectionFDoublePrime} e– </td>
+                                    <td class='column_parameter_value'>{.inflectionFDoublePrime} e– </td>
                                 </tr>
 
 

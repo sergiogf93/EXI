@@ -1,10 +1,10 @@
 /**
 * This class renders a grid that allows user to select the dewars from a list.
 *
-* @class DewarListSelector
+* @class DewarListSelectorGrid
 * @constructor
 */
-function DewarListSelector(args){
+function DewarListSelectorGrid(args){
     this.height = 600;
     if (args != null){
         if (args.height  != null){
@@ -28,7 +28,7 @@ function DewarListSelector(args){
 * @method load
 * @param {Object} dewars Array of containers
 */
-DewarListSelector.prototype.load = function(dewars){
+DewarListSelectorGrid.prototype.load = function(dewars){
     var _this = this;
     this.dewars = dewars;
     /** Filter by Dewars */ 
@@ -72,19 +72,13 @@ DewarListSelector.prototype.load = function(dewars){
 * @method getStatsByDewarId
 * @param {Integer} dewarId DewarId
 */
-DewarListSelector.prototype.getStatsByDewarId = function(shippingId){ 
+DewarListSelectorGrid.prototype.getStatsByDewarId = function(shippingId){ 
     var _this = this;
     var containers = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
     var sampleCount = 0;
-   
-    
-  
-    
     _(containers).forEach(function(value) {
         sampleCount = sampleCount + value.sampleCount;
-    });
-  
-    
+    });      
     return {
                 samples     : sampleCount,
                 dewars      : Object.keys(_.groupBy(containers, "dewarId")).length,
@@ -93,7 +87,7 @@ DewarListSelector.prototype.getStatsByDewarId = function(shippingId){
     };
 };
 
-DewarListSelector.prototype.getSelectedData = function() {
+DewarListSelectorGrid.prototype.getSelectedData = function() {
 	var elements = this.panel.getSelectionModel().selected.items;
 	var data = [];
 	for (var i = 0; i < elements.length; i++) {
@@ -102,13 +96,13 @@ DewarListSelector.prototype.getSelectedData = function() {
 	return data;
 };
 
-DewarListSelector.prototype.getStore = function(){
+DewarListSelectorGrid.prototype.getStore = function(){
     this.store = Ext.create('Ext.data.Store', {
         fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type']
     });
     return this.store;
 };
-DewarListSelector.prototype.getPanel = function(){
+DewarListSelectorGrid.prototype.getPanel = function(){
     var _this = this;
    
     this.tbar = Ext.create('Ext.toolbar.Toolbar', {

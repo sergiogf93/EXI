@@ -102,7 +102,7 @@ XFEScanGrid.prototype.getColumns = function() {
                 record.data["containerId"] = containerId;
 
 
-                dust.render("xfescangrid.primary", record.data, function(err, out) {
+                dust.render("xfescangrid.template", record.data, function(err, out) {
                     html = out;
                 });
                 return html;

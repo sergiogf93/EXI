@@ -13,11 +13,7 @@ function AutoProcIntegrationGrid(args) {
 	this.maxHeight = 500;
 	this.minHeight = 500;
     this.minHeight = 500;
-    
-    this.spaceGroupColumnHidden = true;
-    this.unitCellColumnHidden = false;
-    this.statisticsColumnHidden = false;
-    this.phasingColumnHidden = false;
+      
     
 	if (args != null) {
 		if (args.height != null) {
@@ -41,31 +37,9 @@ function AutoProcIntegrationGrid(args) {
 
 		if (args.width != null) {
 			this.width = args.width;
-		}
-        
-        if (args.spaceGroupColumnHidden != null) {
-			this.spaceGroupColumnHidden = args.spaceGroupColumnHidden;
-		}
-        
-        if (args.unitCellColumnHidden != null) {
-			this.unitCellColumnHidden = args.unitCellColumnHidden;
-		}
-        
-        if (args.statisticsColumnHidden != null) {
-			this.statisticsColumnHidden = args.statisticsColumnHidden;
-		}
-        
-        if (args.phasingColumnHidden != null) {
-			this.phasingColumnHidden = args.phasingColumnHidden;
-		}
-	}
-	
+		}              
+	}	
 	this.onSelected = new Event(this);
-    
-  
-
-
-	
 };
 
 AutoProcIntegrationGrid.prototype.load = function(data) {
@@ -167,203 +141,47 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 					}
 				}
 			}
-
-		} });
+		} 
+    });
 	
-	this.panel = Ext.create('Ext.grid.Panel', {
-		
+	this.panel = Ext.create('Ext.grid.Panel', {		
 		store : this.store,
 		selModel : selModel,
 		cls : 'border-grid',
         layout : 'fit',
-		columns : [ 
-            
-            {
-			text : 'autoProcIntegrationId',
-			dataIndex : 'processingPrograms',
-            flex : 1,
-            hidden : true,
-			renderer : function(e, sample, record){
-                return record.data.v_datacollection_summary_phasing_autoProcIntegrationId;
-			}
-		},
-        
-         {
-
-            dataIndex: 'dataCollectionGroup',
-            name: 'dataCollectionGroup',
-            flex: 1.5,
-            hidden: false,
-            renderer: function(grid, e, record) {
-
-                var data = record.data;// _this._getAutoprocessingStatistics(record.data);                               
-                var html = "";
-                
-                // Getting statistics
-                
-                data.statistics = _this.getStatistics(record.data);
-                data.phasing = _this.getPhasing(record.data);
-                
-                dust.render("autoprocintegration_body", data, function(err, out) {
-                    html = html + out;
-                    
-                });
-               return html;
-            }
-         },
-                
-            {
-			text : 'AutoProcScalingId',
-			dataIndex : 'v_datacollection_summary_phasing_autoProcScalingId',
-            flex : 1,
-            hidden : true,
-			renderer : function(e, sample, record){
-                return record.data.v_datacollection_summary_phasing_autoProcScalingId;
-			}
-		},
-        
-        {
-			text : 'Autoprocessing',
-			dataIndex : 'processingPrograms',
-            flex : 1,
-            hidden : true,
-			renderer : function(e, sample, record){
-				
-                var html  = "";
-				try{
-					dust.render("autoprocintegrationgrid_tool", record.data, function(err, out){
-						html = out;
-					});
-				}
-				catch(e){
-					return "Parsing error";
-				}
-				return html;
-                
-			}
-		},
-        {
-			text : 'Space Group',
-            flex : 0.75,
-           hidden : true,
-			dataIndex : 'v_datacollection_summary_phasing_autoproc_space_group',
-			renderer : function(e, sample, record){
-                
-				return record.data.v_datacollection_summary_phasing_autoproc_space_group;
-			}
-		},
-		{
-			text : 'Unit cell',
-			dataIndex : 'processingPrograms',
-			width : 150,
-            hidden : true,
-			renderer : function(e, sample, record){
-				var html  = "";
-				try{
-                               
-					dust.render("autoprocintegrationgrid_unitcell", record.data, function(err, out){
-						html = out;
-					});
-				}
-				catch(e){
-					return "Parsing error";
-				}
-				return html;
-			}
-		},
-		{
-			text : 'Statistics',
-			dataIndex : 'processingPrograms',
-			flex : 4,
-           hidden : true,
-			renderer : function(e, sample, record){
-				try{
-                    
-					var type = record.data.scalingStatisticsType.split(",");
-                    function getValue(attribute, i){
-                        if (attribute){
-                            var splitted = attribute.split(",");
-                            if (splitted[i]){
-                                return splitted[i];
-                            }
+		columns : [             
+                    {
+                        text : 'autoProcIntegrationId',
+                        dataIndex : 'processingPrograms',
+                        flex : 1,
+                        hidden : true,
+                        renderer : function(e, sample, record){
+                            return record.data.v_datacollection_summary_phasing_autoProcIntegrationId;
                         }
-                        return "";
-                        
-                    }
-					var parsed = [];
-					for (var i = 0; i < type.length; i++) {
-						parsed.push({
-							type 					: type[i],
-							resolutionLimitLow 		: getValue(record.data.resolutionLimitLow, i),
-							resolutionLimitHigh 	: getValue(record.data.resolutionLimitHigh, i),
-							multiplicity 			: getValue(record.data.multiplicity, i),
-							meanIOverSigI 			: getValue(record.data.meanIOverSigI, i),
-							completeness 			: getValue(record.data.completeness, i),
-                            rMerge 			        : getValue(record.data.rMerge, i),
-                            ccHalf 			        : getValue(record.data.ccHalf, i),
-                            rPimWithinIPlusIMinus 	: getValue(record.data.rPimWithinIPlusIMinus, i),
-                            rMeasAllIPlusIMinus 	: getValue(record.data.rMeasAllIPlusIMinus, i)
-							
-						});
-					}
-					var html  = "";
-					dust.render("autoprocintegrationgrid_statistics", parsed, function(err, out){
-						html = out;
-					});
-				}
-				catch(e){
-                    
-					return "<span class='summary_datacollection_parameter_name'>Not found " + e +"</span>";
-				}
-				return html;
-			}
-		},
-		{
-			text : 'Phasing',
-			dataIndex : 'processingPrograms',
-			flex : 1.5,
-            hidden : true,
-			renderer : function(e, sample, record){
-				var html  = "";           
-				if (record.data.phasingStepType){			
-					try{
-                        var spaceGroups = record.data.spaceGroupShortName.split(',');
-                        var dataForDust = [];
-                        for(var i = 0; i < spaceGroups.length; i++){
-                            dataForDust.push({
-                                spaceGroup : spaceGroups[i],
-                                autoProcIntegrationId : record.data.v_datacollection_summary_phasing_autoProcIntegrationId
+                    },        
+                    {
+                        dataIndex: 'dataCollectionGroup',
+                        name: 'dataCollectionGroup',
+                        flex: 1.5,
+                        hidden: false,
+                        renderer: function(grid, e, record) {
+                            var data = record.data;// _this._getAutoprocessingStatistics(record.data);                               
+                            var html = "";                
+                            // Getting statistics                
+                            data.statistics = _this.getStatistics(record.data);
+                            data.phasing = _this.getPhasing(record.data);                
+                            dust.render("autoprocintegrationgrid.template", data, function(err, out) {
+                                html = html + out;
+                                
                             });
+                        return html;
                         }
-                        
-						dust.render("autoprocintegrationgrid_phasing", dataForDust, function(err, out){
-							html = out;
-						});
-					}
-					catch(e){
-						return "Parsing error";
-					}
-				}
-				return html;
-			}
-		}
-		
+                    }                        		
 		],
 		flex : 1,
           viewConfig : {
                 preserveScrollOnRefresh: true,
-                stripeRows : true,
-                getRowClass : function(record, rowIndex, rowParams, store){
-
-                    if (record.data.v_datacollection_summary_phasing_anomalous != null){
-                         if (record.data.v_datacollection_summary_phasing_anomalous == true){
-                            return;//((rowIndex % 2) == 0) ? "mx-grid-row-light" : "mx-grid-row-dark";
-                        
-                        }
-                        
-                    }
-                    //return "warning-grid-row";
-                }
+                stripeRows : true,                
 	    	}
 	});
 

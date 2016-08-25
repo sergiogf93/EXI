@@ -53,12 +53,12 @@
       </div>
       <div class="col-xs-6 col-md-2">
          {#.onlineresults[0]}       
-         {>"autoproc_main_results.completeness-sm"  /}
+            {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
          {/.onlineresults[0]}                           
       </div>
       <div class="col-xs-12 col-md-2">
          {#.onlineresults[0]}       
-         {>"autoproc_main_results.unitcell"  /}       
+         {>"unitcell.autoproc.mxdatacollectiongrid.template"  /}       
          {/.onlineresults[0]}                           
       </div>
       <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>

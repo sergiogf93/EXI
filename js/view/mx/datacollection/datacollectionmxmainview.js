@@ -9,7 +9,7 @@ function DataCollectionMxMainView() {
 	MainView.call(this);
 	var _this = this;
 	
-	this.genericDataCollectionPanel = new GenericDataCollectionPanel();
+	this.genericDataCollectionPanel = new MXDataCollectionGrid();
     this.energyScanGrid = new EnergyScanGrid();
     this.xfeScanGrid = new XFEScanGrid();
 }

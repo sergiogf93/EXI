@@ -6,38 +6,23 @@ function PrepareMainView() {
 
     var _this = this;
     
-    this.dewarListSelector = new DewarListSelector({height : 600});
-    this.dewarListSelector.onSelect.attach(function(sender, dewar){    
-            
-       
+    this.dewarListSelector = new DewarListSelectorGrid({height : 600});
+    this.dewarListSelector.onSelect.attach(function(sender, dewar){                       
             if (dewar.shippingStatus == "processing"){
-                _this.switchStatus(dewar.shippingId, "at ESRF");
+                _this.updateStatus(dewar.shippingId, "at ESRF");
             } 
             if (dewar.shippingStatus != "processing"){
-                _this.switchStatus(dewar.shippingId, "processing");
+                _this.updateStatus(dewar.shippingId, "processing");
             }      
      });
      
-     
-     /* this.dewarListSelector.onDeselect.attach(function(sender, dewar){    
-        if (dewar.shippingStatus == "processing"){
-            _this.switchStatus(dewar.shippingId, "processing");
-        }  
-              
-     });*/
-     
-     
-     this.dewarListSelector.onSelectionChange.attach(function(sender, dewars){
-        /*_(dewars).forEach(function(dewar) {
-            _this.containerListEditor.store.loadData(_.filter(_this.containers, function(e){ return e.dewarId == dewar.dewarId }), true);
-        });*/
+    this.dewarListSelector.onSelectionChange.attach(function(sender, dewars){
     });
     
 	this.containerListEditor = new ContainerPrepareSpreadSheet({height : 600});
+};
 
-}
-
-PrepareMainView.prototype.switchStatus = function(shippingId, status) {
+PrepareMainView.prototype.updateStatus = function(shippingId, status) {
     var _this = this;
     _this.dewarListSelector.panel.setLoading("Updating shipment Status");
     var onStatusSuccess = function(sender, dewar) {     
@@ -59,13 +44,9 @@ PrepareMainView.prototype.getPanel = function() {
                         this.dewarListSelector.getPanel(), 
                         this.containerListEditor.getPanel()        
             ]
-	});
-    
+	});    
     return this.panel;
 };
-
-
-
 
 PrepareMainView.prototype.load = function() {
     var _this = this;

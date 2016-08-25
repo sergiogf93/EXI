@@ -20,14 +20,9 @@
          <div id="datacollection_{DataCollection_dataCollectionId}" class="tab-pane fade in active">
             <div class="container-fluid">
                <div class="row">
-                  <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters"  /}                             
-                  </div>
-                  <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters_second"  /}                             
-                  </div>
+                   {>"general.mxdatacollectiongrid.template"  /}
                   <div class="col-xs-12 col-md-2">        
-                     {>"autoproc_main_results"  /}       
+                     {>"autoproc.mxdatacollectiongrid.template"  /}       
                   </div>
                   <div class="col-xs-12 col-md-2">
                      <a href="{.url}" data-lightbox='{.url}' data-title="#{.runNumber} {.folder}"> 
@@ -43,23 +38,24 @@
                   <div class="col-xs-6 col-md-2">
                      <a href="{.indicator}" data-lightbox='{.indicator}' data-title="#{.runNumber} {.folder}"> <img  alt="Image not found" class="img-responsive lazy"  data-src="{.indicator}" /></a> 
                   </div>
+                
+               </div>
+               <div class="container-fluid">
+                   <div class="col-xs-6 col-md-2">
+                                {.DataCollectionGroup_comments}
+                    </div>
                </div>
             </div>
          </div>
          <div id="experimentparameters_{DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
+                  {>"general.mxdatacollectiongrid.template"  /}
                   <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters"  /}                             
+                     {>"beamline.mxdatacollectiongrid.template"  /}                             
                   </div>
                   <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters_second"  /}                             
-                  </div>
-                  <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters.beamlineparameters"  /}                             
-                  </div>
-                  <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters.detector"  /}                             
+                     {>"detector.mxdatacollectiongrid.template"  /}                             
                   </div>
                </div>
             </div>
@@ -68,7 +64,7 @@
             <div class="container-fluid">
                <div class="row">
                   <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters.sample"  /}                             
+                     {>"sample.mxdatacollectiongrid.template"  /}                             
                   </div>
                </div>
             </div>
@@ -78,10 +74,10 @@
             <div class="container-fluid">
                <div class="row">
                 <div class="col-xs-6 col-md-2">
-                     {>"section.general.parameters.sample"  /}                             
+                     {>"sample.mxdatacollectiongrid.template"  /}                            
                   </div>
                   <div class="col-xs-6 col-md-2">
-                     {>"section.general.diffraction"  /}                             
+                     {>"diffraction.mxdatacollectiongrid.template"  /}                            
                   </div>
                </div>
             </div>
