@@ -30,7 +30,7 @@
         * unitcell.autoproc.mxdatacollectiongrid.template
         * completeness.autoproc.mxdatacollectiongrid.template
         * sm.completeness.autoproc.mxdatacollectiongrid.template
-    * EnergyScanGrid 
+    * EnergyScanGrid      
       * Templates
         * energyscangrid.template
     * XFEScanGrid
@@ -52,3 +52,5 @@
   * Widgets
     * DewarListSelector 
     * ContainerPrepareSpreadSheet
+
+* WorkflowMainView
