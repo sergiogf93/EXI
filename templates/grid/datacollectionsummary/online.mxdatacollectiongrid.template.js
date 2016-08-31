@@ -126,7 +126,7 @@
             
                
             
-              {! OFFLINE !}
+              {! OFFLINE 
             <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>                                
                             
                     <div class="dropup">
@@ -142,7 +142,7 @@
                       
                       </div>                         
             </div>
-            
+            !}
              <div class="col-sm-2 col-md-2 " style='margin: 0 10px 10px 0;'> 
                 {@gt key=phasingStepLength value=0}
                        

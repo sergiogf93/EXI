@@ -26,16 +26,15 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				  'min/core.min.js' 		: ["js/dust/**/*js", "js/core/**/*js","js/controller/**/*js", "js/menu/**/*js"],
-                  'min/lightbox.min.js' 		: ["bower_components/lightbox2/dist/js/lightbox.min.js"],
-
-				  'min/widget.min.js' 		: [ "js/widget/timeline/timelinewidget.js", 
-				                      		    "js/widget/addressform.js", 
-				                      		    "js/widget/**/*.js"],
-				  'min/navigation.min.js' 	: ["js/navigation/listview.js", "js/navigation/*.js", "js/navigation/*/*js","js/view/**/*js"],
-
+				  'min/exi.js' 		    : [
+                                                    "js/dust/**/*js", 
+                                                    "js/core/**/*js",
+                                                    "js/saxs/**/*js", 
+                                                    "js/mx/**/*js"
+                                                 ],          				
 				 'min/bower_components.min.js' : [ 
-								                      "bower_components/jquery/dist/jquery.min.js",
+								                    "bower_components/jquery/dist/jquery.min.js",
+                                                    "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
                                                     "bower_components/dustjs-linkedin/dist/dust-full.min.js",
                                                     "bower_components/dustjs-helpers/dist/dust-helpers.min.js",
@@ -45,36 +44,24 @@ module.exports = function(grunt) {
                                                     "bower_components/vis/dist/vis.min.js",		  
                                                     "bower_components/dygraphs/dygraph-combined.js", 
                                                     "bower_components/handsontable/dist/handsontable.full.min.js",
+                                                    "bower_components/bootstrap/dist/js/bootstrap.js",
                                                     "bower_components/bootstrap-year-calendar/js/bootstrap-year-calendar.min.js",
                                                     "bower_components/moment/min/moment.min.js",  
-                                                    "bower_components/pathjs-amd/dist/path.min.js",
-                                                    //"bower_components/threejs/build/three.min.js",
+                                                    "bower_components/pathjs-amd/dist/path.min.js",                                                    
                                                     "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
                                                     "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
-                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js"
-                                                    //"bower_components/ez-plus/dist/jquery.ez-plus.js"
-								  
-								  
-  								 
-								],
-				 'min/dependency.min.js' 		: [
-                                                    //"dependency/glmol.js"
-                                                    ]
+                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js"                                                    								  								    								 
+                ]
 			  }
 		  }
 	  },
 	  uglify : {
-		  prod:{
-				
-			  options: {
-			  },
+		  prod:{				
+			  options: {},
 			  files : {
-				  'min/exi.min.js' 		: [
-								   //'min/bower_components.min.js', 
-				                   		   'min/core.min.js', 
-				                   		   'min/widget.min.js', 
-				                   		   'min/navigation.min.js',
-				                   		   'min/precompiled.templates.min.js'
+				  'min/exi.min.js' 		: [				 
+				                   		    'min/exi.js', 
+				                   		    'min/precompiled.templates.min.js'
 				                   		   ]
 			  }
 		  }
@@ -82,11 +69,11 @@ module.exports = function(grunt) {
 	  cssmin: {
 		 prod:{
 			  options: {
-			      shorthandCompacting: false,
+			      shorthandCompacting: true,
 			      roundingPrecision: -1
 			  },
 			    files: {
-			          'min/exi.min.css': [  
+			          'min/exi.min.css': [                                              
 			                              	'css/templatelist.css', 
 			                              	'css/beamlinesessionbox.css', 			                              	
 			                              	'bower_components/vis/dist/vis.css',
@@ -96,10 +83,9 @@ module.exports = function(grunt) {
 			                              	'css/calendar.css', 
 			                              	'css/menu/mainmenu.css', 
 			                              	'css/override.css', 
-                                              'css/grid.css', 
+                                            'css/grid.css', 
                                             'bower_components/lightbox2/dist/css/lightbox.css',
                                             'bower_components/bootstrap-year-calendar/css/bootstrap-year-calendar.min.css'
-			                              	//'js/dependency/timeline/timeline.css'
                                             ]
 			    }
 		}
@@ -111,13 +97,61 @@ module.exports = function(grunt) {
 		 },
 		 prod: [ 'js/core/**/*.js', 'js/controller/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
 	},
-	plato: {
-		options: {
-		},
-		prod: {
-		  files : {'report' : ['js/**/*.js']}
-		}
-        },
+    plato: {
+                  all : {
+                    options : {
+                    complexity : {
+                        logicalor : true,
+                        switchcase : true,
+                        forin : true,
+                        trycatch : true
+                    }
+                    },
+                    files: {
+                            'report': ['js/**/*.js'],                           
+                    }
+                },
+                mx: {
+                    options : {
+                    complexity : {
+                        logicalor : true,
+                        switchcase : true,
+                        forin : true,
+                        trycatch : true
+                    }
+                    },
+                    files: {
+                            'reports/mx': ['js/mx/**/*.js'],                           
+                    }
+                },
+                saxs: {
+                    options : {
+                    complexity : {
+                        logicalor : true,
+                        switchcase : true,
+                        forin : true,
+                        trycatch : true
+                    }
+                    },
+                    files: {
+                            'reports/saxs': ['js/saxs/**/*.js'],                           
+                    }
+                },
+                core: {
+                    options : {
+                    complexity : {
+                        logicalor : true,
+                        switchcase : true,
+                        forin : true,
+                        trycatch : true
+                    }
+                    },
+                    files: {
+                            'reports/core': ['js/core/**/*.js'],                           
+                    }
+                }
+    },
+
 	includeSource: {
 	    	options: {
 		      basePath: '',

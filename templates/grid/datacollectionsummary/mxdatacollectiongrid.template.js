@@ -2,22 +2,32 @@
    <div class="panel with-nav-tabs panel-default">
       <div class="panel-heading clearfix">
          <div class="pull-left">
-            <h1 class="panel-title" style='color:#337ab7;'><kbd style='background-color:gray;'> Run #{.DataCollection_dataCollectionNumber} {.DataCollectionGroup_experimentType}</kbd>
-               <span style='font-size:12px;'>   {.DataCollectionGroup_startTime}</span>
-            </h1>
+              <span style='font-size:12px;color:blue;' >
+                     <kbd style='background-color:#CCCCCC;color:blue;'>
+                     Run #{.DataCollection_dataCollectionNumber} {.DataCollectionGroup_experimentType}
+                     </kbd> 
+                      <span style='color:blue;'>
+                     {.DataCollectionGroup_startTime}
+                     </span>
+                    
+               
+                </span>
+             <p>{.DataCollection_imageDirectory}</p>      
+            
          </div>
          <div class="pull-right">
-            <ul class="nav nav-tabs">
-               <li class="active"><a data-toggle="tab" href="#datacollection_{DataCollection_dataCollectionId}"> Data Collection </a></li>
-               <li><a data-toggle="tab" href="#experimentparameters_{DataCollection_dataCollectionId}">Beamline Parameters</a></li>
-               <li><a data-toggle="tab" href="#sample_{DataCollection_dataCollectionId}">Sample</a></li>
-               <li><a data-toggle="tab" href="#df_{DataCollection_dataCollectionId}">Diffraction Plan</a></li>
+            <ul class="nav nav-tabs" id="myTabs">
+               <li class="active"><a data-toggle="tab" href="#datacollection_{.DataCollection_dataCollectionId}"> Data Collection Group</a></li>
+               <li><a data-toggle="tab" href="#experimentparameters_{.DataCollection_dataCollectionId}">Beamline Parameters</a></li>
+               <li><a data-toggle="tab" href="#sample_{.DataCollection_dataCollectionId}">Sample</a></li>
+               <li><a data-toggle="tab" href="#df_{.DataCollection_dataCollectionId}">Diffraction Plan</a></li>
+               <li><a data-toggle="tab" href="#dc_{.DataCollectionGroup_dataCollectionGroupId}">Data Collections</a></li>
             </ul>
          </div>
       </div>
       <br />
       <div class="tab-content">
-         <div id="datacollection_{DataCollection_dataCollectionId}" class="tab-pane fade in active">
+         <div id="datacollection_{.DataCollection_dataCollectionId}" class="tab-pane fade in active">
             <div class="container-fluid">
                <div class="row">
                    {>"general.mxdatacollectiongrid.template"  /}
@@ -40,14 +50,17 @@
                   </div>
                 
                </div>
+               
+              
                <div class="container-fluid">
-                   <div class="col-xs-6 col-md-2">
-                                {.DataCollectionGroup_comments}
+                   <div class="col-xs-12 col-md-12">
+                               {.DataCollectionGroup_comments}
                     </div>
                </div>
+               
             </div>
          </div>
-         <div id="experimentparameters_{DataCollection_dataCollectionId}" class="tab-pane fade">
+         <div id="experimentparameters_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
                   {>"general.mxdatacollectiongrid.template"  /}
@@ -60,7 +73,7 @@
                </div>
             </div>
          </div>
-         <div id="sample_{DataCollection_dataCollectionId}" class="tab-pane fade">
+         <div id="sample_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
                   <div class="col-xs-6 col-md-2">
@@ -70,7 +83,7 @@
             </div>
          </div>
          
-          <div id="df_{DataCollection_dataCollectionId}" class="tab-pane fade">
+          <div id="df_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
                 <div class="col-xs-6 col-md-2">
@@ -79,6 +92,15 @@
                   <div class="col-xs-6 col-md-2">
                      {>"diffraction.mxdatacollectiongrid.template"  /}                            
                   </div>
+               </div>
+            </div>
+         </div>
+         
+         <div id="dc_{.DataCollectionGroup_dataCollectionGroupId}" class="tab-pane fade">
+            <div class="container-fluid">
+               <div class="row">
+                <div class="col-xs-12 col-md-12" id="dc_{.DataCollectionGroup_dataCollectionGroupId}">
+                     LOADING....                                            
                </div>
             </div>
          </div>

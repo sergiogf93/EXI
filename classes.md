@@ -30,6 +30,7 @@
         * unitcell.autoproc.mxdatacollectiongrid.template
         * completeness.autoproc.mxdatacollectiongrid.template
         * sm.completeness.autoproc.mxdatacollectiongrid.template
+        * datacollections.mxdatacollectiongrid.template
     * EnergyScanGrid      
       * Templates
         * energyscangrid.template

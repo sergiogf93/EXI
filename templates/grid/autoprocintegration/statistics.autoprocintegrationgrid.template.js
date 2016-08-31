@@ -30,14 +30,20 @@
 			<td > 
                 
                 {@gt key=completeness value=20}
-                    {@gt key=completeness value=70}
-                        <div  style="background-repeat: repeat-x;border:1px solid gray;color:#fff;background-image:linear-gradient(to bottom,#337ab7 0,#286090 100%);width:{.completeness}%">{.completeness}%</div>
+                    {@gt key=completeness value=60}
+                        <div  style="background-repeat: repeat-x;border:1px solid gray;color:#fff;background-image:linear-gradient(to bottom,#337ab7 0,#286090 100%);width:{.completeness}%">
+                        {@decimal key="completeness" decimals=0}{/decimal}%
+                        </div>
                     {:else}
-                        <div  style="background-repeat: repeat-x;border:1px solid #f0ad4e;color:#fff;background-color:#f0ad4e;width:{.completeness}%">{.completeness}%</div>
+                        <div  style="background-repeat: repeat-x;border:1px solid #f0ad4e;color:#fff;background-color:#f0ad4e;width:{.completeness}%">                        
+                        {@decimal key="completeness" decimals=0}{/decimal}%
+                        </div>
                     {/gt}
                 {/gt}
                 {@lte key=completeness value=20}
-                    <div  style="background-repeat: repeat-x;border:1px solid #d9534f;color:#fff;background-color:#d9534f;width:{.completeness}%">{.completeness}%</div>
+                    <div  style="background-repeat: repeat-x;border:1px solid #d9534f;color:#fff;background-color:#d9534f;width:{.completeness}%">
+                    {@decimal key="completeness" decimals=0}{/decimal}%
+                    </div>
                 
                 {/lte}
            

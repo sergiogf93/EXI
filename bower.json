@@ -31,7 +31,6 @@
     "jquery-lazy": "~0.6.1",
     "dygraphs": "*",
     "qunit": "~1.22.0",
-    "threejs": "*",
     "ispyb-js-api": "*",
     "vis": "^4.15.0",
     "Snap.svg": "snap.svg#^0.4.1",
@@ -39,7 +38,8 @@
     "grunt": "^0.4.5",
     "dustjs-linkedin": "^2.7.2",
     "dustjs-helpers": "^1.7.3",
-    "lightbox2": "^2.8.2"
+    "lightbox2": "^2.8.2",
+    "bootstrap": "^3.3.7"
   },
   "devDependencies": {
     "uglymol": "^0.1.0"

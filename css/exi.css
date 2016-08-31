@@ -514,7 +514,7 @@ img.smalllazy {
 }
 
 .border-grid{
-	border : 1;
+	
 	border-color:#666666;
 	border-style: solid;
     border-width: 1px;
@@ -640,7 +640,7 @@ img.smalllazy {
 .listView {
 	font-size: 11px;
 }
-
+/*
 .progress {
 	height: 10px;
 	width: 100px; #
@@ -666,7 +666,7 @@ img.smalllazy {
 	-o-transition: width .6s ease;
 	transition: width .6s ease;
 }
-
+*/
 .rotate {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0.083);
 	/* IE6,IE7 */
