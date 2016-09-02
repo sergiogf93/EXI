@@ -1,4 +1,4 @@
-function AutoProcIntegrationAttachmentGrid(args) {
+/*function AutoProcIntegrationAttachmentGrid(args) {
 	this.id = BUI.id();	
 	this.maxHeight = 300;
 };
@@ -39,4 +39,4 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		}
 	});
 	return this.panel;
-};
+};*/

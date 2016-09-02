@@ -61,6 +61,25 @@ MxDataCollectionController.prototype.init = function() {
         
 	}).enter(this.setPageBackground);
 	
+    
+    	Path.map("#/mx/datacollection/datacollectionid/:datacollectionid/main").to(function() {
+            //1507842
+		var mainView = new DataCollectionMxMainView();
+		EXI.addMainPanel(mainView);
+        EXI.hideNavigationPanel();
+		EXI.setLoadingMainPanel(true);
+		var onSuccess = function(sender, data){
+		    mainView.loadCollections(data);
+			EXI.setLoadingMainPanel(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByDataCollectionId(this.params['datacollectionid']);
+
+
+		
+        
+	}).enter(this.setPageBackground);
+    
+    
 	Path.map("#/mx/datacollection/:dataCollectionId/image/:imageId/main").to(function() {
 		var mainView = new ImageMainView();
         EXI.hideNavigationPanel();

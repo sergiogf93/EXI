@@ -43,6 +43,8 @@ function AutoProcIntegrationGrid(args) {
 };
 
 AutoProcIntegrationGrid.prototype.load = function(data) {
+    /** Adding stats */
+    this.data = data;
 	this.store.loadData(data, false);
 };
 
@@ -54,13 +56,10 @@ AutoProcIntegrationGrid.prototype.selectRowByAutoProcIntegrationId = function(au
 AutoProcIntegrationGrid.prototype.getPhasing = function(data) {      
     var phasing = [];
     
-    if (data.spaceGroupShortName){
-        
+    if (data.spaceGroupShortName){        
         var spaceGroups = data.spaceGroupShortName.split(',');
-        var steps = data.phasingStepType.split('PREPARE');
-        
-        for(var i = 0; i < spaceGroups.length; i++){
-            
+        var steps = data.phasingStepType.split('PREPARE');        
+        for(var i = 0; i < spaceGroups.length; i++){            
             phasing.push({
                 spaceGroup              : spaceGroups[i],
                 prepare                 : true,
@@ -169,7 +168,8 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                             var html = "";                
                             // Getting statistics                
                             data.statistics = _this.getStatistics(record.data);
-                            data.phasing = _this.getPhasing(record.data);                
+                            data.phasing = _this.getPhasing(record.data);  
+                                          
                             dust.render("autoprocintegrationgrid.template", data, function(err, out) {
                                 html = html + out;
                                 
@@ -185,9 +185,113 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	    	}
 	});
 
+    this.panel.on('boxready', function() {
+        _this.attachCallBackAfterRender();
+    });
 	return this.panel;
 };
 
 
 
+/**
+* Attaches the events to lazy load to the images. Images concerned are with the class img-responsive and smalllazy
+*
+* @method attachCallBackAfterRender
+*/
+AutoProcIntegrationGrid.prototype.attachCallBackAfterRender = function() {
+    var _this = this;    
+    var timer3 = setTimeout(function() {
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var target = $(e.target).attr("href"); // activated tab                
+                /** Activate tab of data collections */
+                if (target.startsWith("#tab_files_")){
+                    var onSuccess = function(sender, data){
+                        var html = "";                                                
+                        if (data){
+                            for (var i = 0; i < data[0].length; i++) {
+                                var element = data[0][i];    
+                                                            
+                                element.url =  EXI.getDataAdapter().mx.autoproc.getDownloadAttachmentUrl(data[0][i].autoProcProgramAttachmentId); 
+                            }
+                            dust.render("files.autoprocintegrationgrid.template", data[0], function(err, out) {                                                                                               
+                                html = html + out;
+                            });
+                            $(target).html(html);
+                        }
+                    };
+                    var onError = function(sender, data){
+                        $(target).html("Error retrieving data");
+                    };
+                     /** Retrieve data collections */
+                    var autoprocProgramId = target.slice(11);
+                    EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.autoproc.getAttachmentListByautoProcProgramsIdList(autoprocProgramId);
+                }
+                
+                
+                 if (target.startsWith("#plots")){
+                        /** Get autoprocIntegrationId */
+                        var autoprocProgramId = target.slice(6);
+                        /** Rfactor */
+                        var rFactorPlotter = new AutoProcIntegrationCurvePlotter({
+		                    height : 250,
+		                    title : "Rfactor vs Resolution",
+		                    legend : 'never',
+                            targetId : "rFactor_" + autoprocProgramId + "_plot"
+	                    });                             
+                        $("#rFactor_" + autoprocProgramId).html(rFactorPlotter.getHTML());                         
+                        rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoprocProgramId));
+                        
+                           /** Rfactor */
+                        var completenessPlotter = new AutoProcIntegrationCurvePlotter({
+		                    height : 250,
+		                    title : "Completeness vs Resolution",
+		                    legend : 'never',
+                            targetId : " completeness_" + autoprocProgramId + "_plot"
+	                    });                             
+                        $("#completeness_" + autoprocProgramId).html(completenessPlotter.getHTML());                         
+                        completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoprocProgramId));
+	                  
+                      	var isigmaPlotter = new AutoProcIntegrationCurvePlotter({
+                            height :250,
+                            title : "I/SigmaI vs Resolution",
+                            legend : 'never',
+                            targetId : " sigmaI_" + autoprocProgramId + "_plot"
+                        });
+                        $("#sigmaI_" + autoprocProgramId).html(isigmaPlotter.getHTML());                         
+                        isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoprocProgramId));
+	                  
+                      
+                       var cc2Plotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "CC/2 vs Resolution",
+                            legend : 'never',
+                            targetId : "cc2_" + autoprocProgramId + "_plot"
+                        });
+                         $("#cc2_" + autoprocProgramId).html(cc2Plotter.getHTML());                         
+                        cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoprocProgramId));
+	                  
+                       var sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "SigAno vs Resolution",
+                            legend : 'never',
+                            targetId : "sigmaAnno_" + autoprocProgramId + "_plot"
+                        });
+                         $("#sigmaAnno_" + autoprocProgramId).html(sigmaAnnoPlotter.getHTML());                         
+                        sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoprocProgramId));
+                        
+                          var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "Anom Corr vs Resolution",
+                            legend : 'never',
+                            targetId : "anno_" + autoprocProgramId + "_plot"
+                        });
+                         $("#anno_" + autoprocProgramId).html(annoCorrPlotter.getHTML());                         
+                        annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoprocProgramId));
+	                  
+                 }
+                
+                
+            });
+    }, 1000);
+};
 

@@ -169,11 +169,11 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
 
     function sortByBest(a, b) {
         var spaceGroupA = a.spaceGroup.replace(/\s/g, "");
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");
-        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
+        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");        
+        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) < _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
     }
 
-    var sorted = result.sort(sortByBest).reverse();
+    var sorted = result.sort(sortByBest).reverse();    
     /** Add new attribute for ranking order */
     for (var i = 0; i < sorted.length; i++) {
         sorted[i]["rank"] = i + 1;
@@ -283,7 +283,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                         html = html + out;
                     });
 
-                 
+                    
                     dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
                     });
@@ -329,8 +329,7 @@ MXDataCollectionGrid.prototype.reloadData = function(dataCollections) {
 * @method filterBy
 * @return {String} searchTerm prefix, protein acronym or sample to be searched
 */
-MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
-    console.log(this.dataCollectionGroup);
+MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {  
     var filtered = _.filter(this.dataCollectionGroup, function(dataCollection) {
         var params = ["DataCollection_imagePrefix", "Protein_acronym", "BLSample_name"];
         for (var i = 0; i < params.length; i++) {

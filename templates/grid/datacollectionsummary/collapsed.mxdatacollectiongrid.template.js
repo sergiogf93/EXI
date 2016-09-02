@@ -19,7 +19,7 @@
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Prefix</td>
-                  <td  style='padding:0 15px 0 15px;'>{.DataCollection_imagePrefix}</td>
+                  <td  style='padding:0 15px 0 15px;'><a href='#/mx/datacollection/datacollectionid/{.DataCollection_dataCollectionId}/main'>{.DataCollection_imagePrefix}</a></td>
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Images</td>

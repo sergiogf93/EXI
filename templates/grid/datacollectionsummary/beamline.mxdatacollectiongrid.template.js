@@ -19,7 +19,13 @@
         <td>Y Beam</td>
         <td  class='column_parameter_value'>{.DataCollection_yBeam}</td>
     </tr>
-    
-   
+     <tr>
+        <td>Kappa Start</td>
+        <td  class='column_parameter_value'>{.DataCollection_kappaStart}</td>
+    </tr>
+     <tr>
+        <td>Phi Start</td>
+        <td  class='column_parameter_value'>{.DataCollection_phiStart}</td>
+    </tr>
 </table>       
               

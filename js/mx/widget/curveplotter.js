@@ -15,6 +15,9 @@ function CurvePlotter(args) {
         if (args.legend != null) {
             this.legend = args.legend;
         }
+        if (args.targetId != null) {
+            this.targetId = args.targetId;
+        }
     }
 
     this.onRendered = new Event(this);
@@ -111,11 +114,6 @@ CurvePlotter.prototype.loadUrl = function(url) {
 CurvePlotter.prototype.load = function(selections) {
     this.render(EXI.getDataAdapter().saxs.frame.getFramesURL(selections.frame, selections.average, selections.subtracted, selections.sampleaverage, selections.bufferaverage));
 };
-
-
-
-
-
 
 
 function AutoProcIntegrationCurvePlotter(args) {
@@ -313,6 +311,9 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
 
 };
 
+AutoProcIntegrationCurvePlotter.prototype.getHTML = function() {
+    return '<div  id="' + this.targetId + '"></div><div  style="height:20px" id="' + this.targetId + '_legend"></div>';
+};
 AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
     
     this.plotPanel = Ext.create('Ext.panel.Panel', {
@@ -322,7 +323,7 @@ AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
         height: this.height,
         margin: this.margin,
         items: [{
-                    html: '<div  id="' + this.targetId + '"></div><div  style="height:20px" id="' + this.targetId + '_legend"></div>',
+                    html: this.getHTML(),
                     id: this.id,
                     style: {
                       border: "1px solid black"  
@@ -332,12 +333,6 @@ AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
         }
        
         ]
-    });
-
-    this.plotPanel.on("afterrender", function() {
-    });
-
-    this.plotPanel.on("resize", function() {
-    });
+    });   
     return this.plotPanel;
 };

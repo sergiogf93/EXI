@@ -46,6 +46,9 @@
         * unitcell.autoprocintegrationgrid.template
         * statistics.autoprocintegrat iongrid.template	
         * phasing.autoprocintegrationgrid.template		
+        * files.autoprocintegrationgrid.template
+        * plots.autoprocintegrationgrid.template
+        * unitcell.screening.mxdatacollectiongrid.template
     * AutoProcIntegrationAttachmentGrid
     * AutoProcIntegrationCurvePlotter
 
