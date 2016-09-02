@@ -62,7 +62,12 @@ module.exports = function(grunt) {
 				  'min/exi.min.js' 		: [				 
 				                   		    'min/exi.js', 
 				                   		    'min/precompiled.templates.min.js'
-				                   		   ]
+				                   		   ],
+                                              
+                  'min/lightbox.js' 		: [				 
+				                   		    'bower_components/lightbox2/dist/js/lightbox.js'
+				                   		    
+				                   		   ],                            
 			  }
 		  }
 	  },
@@ -73,7 +78,8 @@ module.exports = function(grunt) {
 			      roundingPrecision: -1
 			  },
 			    files: {
-			          'min/exi.min.css': [                                              
+			          'min/exi.min.css': [                
+                                            'bower_components/bootstrap/dist/css/bootstrap.min.css',                              
 			                              	'css/templatelist.css', 
 			                              	'css/beamlinesessionbox.css', 			                              	
 			                              	'bower_components/vis/dist/vis.css',

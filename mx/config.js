@@ -1,5 +1,5 @@
 var ExtISPyB ={
-   version : '0.7',
+   version : '0.7.1',
    release_date : '2016/09/02',
    
    spaceGroups : ["P1","P2","P21","C2","P21212","P212121","P222","P2221","C222",
