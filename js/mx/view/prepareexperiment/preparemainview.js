@@ -20,7 +20,7 @@ function PrepareMainView() {
     });
     
 	this.containerListEditor = new ContainerPrepareSpreadSheet({height : 600});
-};
+}
 
 PrepareMainView.prototype.updateStatus = function(shippingId, status) {
     var _this = this;
@@ -29,10 +29,10 @@ PrepareMainView.prototype.updateStatus = function(shippingId, status) {
         EXI.mainStatusBar.showReady("Processing update successfully");
         _this.dewarListSelector.panel.setLoading(false);
         _this.load();
-    }
+    };
     var onError = function(data){
             EXI.setError(data);
-    }
+    };
     
     EXI.getDataAdapter({onSuccess : onStatusSuccess, onError : onError}).proposal.shipping.updateStatus(shippingId,status);
 };

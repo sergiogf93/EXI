@@ -26,13 +26,10 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				  'min/exi.js' 		    : [
-                                                    "js/dust/**/*js", 
-                                                    "js/core/**/*js",
-                                                    "js/saxs/**/*js", 
-                                                    "js/mx/**/*js"
-                                                 ],          				
-				 'min/bower_components.min.js' : [ 
+				 'min/exi.js' 		            : [ "js/dust/**/*js", "js/core/**/*js"],  
+                 'min/exi.mx.js' 		        : ["js/mx/**/*js"], 
+                 'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],           				
+				 'min/bower_components.min.js'  : [ 
 								                    "bower_components/jquery/dist/jquery.min.js",
                                                     "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
@@ -59,8 +56,9 @@ module.exports = function(grunt) {
 		  prod:{				
 			  options: {},
 			  files : {
-				  'min/exi.min.js' 		: [				 
+				   'min/exi.min.js' 		: [				 
 				                   		    'min/exi.js', 
+                                            'min/exi.mx.js',
 				                   		    'min/precompiled.templates.min.js'
 				                   		   ],
                                               
@@ -101,7 +99,7 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/controller/**/*.js', 'js/main/**/*.js', 'js/navigation/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js']
 	},
     plato: {
                   all : {
@@ -157,7 +155,6 @@ module.exports = function(grunt) {
                     }
                 }
     },
-
 	includeSource: {
 	    	options: {
 		      basePath: '',
@@ -173,18 +170,16 @@ module.exports = function(grunt) {
 	},
 	 wiredep: {
 	      target: {
-	        src: 'mx/dev.html' // point to your HTML file.
+	                    src: 'mx/dev.html' // point to your HTML file.
 	      }
 	},
 	dustjs: {
 	    compile: {
 	      files: {
-	        'min/precompiled.templates.min.js': ['templates/**/*js']
+	                    'min/precompiled.templates.min.js': ['templates/**/*js']
 	      }
 	    }
 	  }
-
-
   });
 
   grunt.loadNpmTasks('grunt-wiredep');

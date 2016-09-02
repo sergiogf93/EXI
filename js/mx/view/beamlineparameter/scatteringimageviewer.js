@@ -1,4 +1,4 @@
-function ScatteringImageViewer(args){
+/*function ScatteringImageViewer(args){
     this.width = 100;
     this.height = 100;
     this.id = BUI.id();
@@ -44,10 +44,10 @@ ScatteringImageViewer.prototype.getCoordinates = function(obj, e) {
 };
 ScatteringImageViewer.prototype.load = function(url){    
     var _this = this;  
-    /** Rendering image */
+    
     $('#' + _this.id).load(function() {        
         $('#' + _this.id).mousemove(function(e) {
            _this.onMouseOver.notify(_this.getCoordinates(this, e));
         });
     }).attr('src', url);
-};
+};*/

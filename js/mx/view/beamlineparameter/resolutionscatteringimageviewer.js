@@ -1,4 +1,4 @@
-function ResolutionScatteringImageViewer(args){
+/*function ResolutionScatteringImageViewer(args){
 
     this.id = BUI.id();
    
@@ -12,7 +12,7 @@ function ResolutionScatteringImageViewer(args){
             _this.onResolutionCalculated.notify(resolution);
       }
       catch(e){
-          /** Catch error */
+  
           console.log(e);
       }
    });
@@ -26,7 +26,7 @@ ResolutionScatteringImageViewer.prototype.getPanel = function(){
 };
 
 ResolutionScatteringImageViewer.prototype.getR = function(xbeam, ybeam, x, y){
-   /** Scaling based on sensitive Area */
+  
    x = (x*this.sensitiveArea.x)/this.scatteringImageViewer.width;
    y = (y*this.sensitiveArea.y)/this.scatteringImageViewer.height; 
     
@@ -46,4 +46,4 @@ ResolutionScatteringImageViewer.prototype.load = function(imageId, wavelength, x
    this.detectorDistance = detectorDistance;
    this.sensitiveArea = sensitiveArea;
 
-};
+};*/

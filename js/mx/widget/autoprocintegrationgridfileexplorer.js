@@ -4,6 +4,7 @@
 * @class AutoProcIntegrationFileExplorerGrid
 * @constructor
 */
+/*
 function AutoProcIntegrationFileExplorerGrid(args) {
 	this.height = 500;
 	this.tbar = false;
@@ -74,7 +75,7 @@ AutoProcIntegrationFileExplorerGrid.prototype.getPanel = function() {
 						records.push(selections[i].data);
 					}
 
-					/** Event is only triggered if node is a leaf **/
+				
 					if (!_this.preventSelection){
 						_this.onSelected.notify(records);
 					}
@@ -209,5 +210,5 @@ AutoProcIntegrationFileExplorerGrid.prototype.getPanel = function() {
 };
 
 
-
+*/
 

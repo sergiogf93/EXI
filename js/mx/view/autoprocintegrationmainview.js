@@ -129,7 +129,7 @@ function AutoProcIntegrationMainView() {
 		_this.onPlotClicked(id);
 	});
 	
-};
+}
 
 AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
 

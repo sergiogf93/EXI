@@ -126,7 +126,7 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     var cell_gamma = getArrayValues(data.Autoprocessing_cell_gamma);
 
 
-    var data = {};
+    data = {};
     /** Returning if no autoprocs */
     if (autoProcIds) {
         if (autoProcIds[0] == "") {
@@ -163,7 +163,7 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     /** Convert from map to array */
     var ids = _.map(data, 'autoProcId');
     var result = [];
-    for (var i = 0; i < ids.length; i++) {
+    for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
 
@@ -175,7 +175,7 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
 
     var sorted = result.sort(sortByBest).reverse();    
     /** Add new attribute for ranking order */
-    for (var i = 0; i < sorted.length; i++) {
+    for ( i = 0; i < sorted.length; i++) {
         sorted[i]["rank"] = i + 1;
     }
 

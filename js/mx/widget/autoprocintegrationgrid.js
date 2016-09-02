@@ -40,7 +40,7 @@ function AutoProcIntegrationGrid(args) {
 		}              
 	}	
 	this.onSelected = new Event(this);
-};
+}
 
 AutoProcIntegrationGrid.prototype.load = function(data) {
     /** Adding stats */
@@ -202,7 +202,8 @@ AutoProcIntegrationGrid.prototype.attachCallBackAfterRender = function() {
     var _this = this;    
     var timer3 = setTimeout(function() {
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-                var target = $(e.target).attr("href"); // activated tab                
+                var target = $(e.target).attr("href"); // activated tab  
+                var autoprocProgramId = null;              
                 /** Activate tab of data collections */
                 if (target.startsWith("#tab_files_")){
                     var onSuccess = function(sender, data){
@@ -223,14 +224,14 @@ AutoProcIntegrationGrid.prototype.attachCallBackAfterRender = function() {
                         $(target).html("Error retrieving data");
                     };
                      /** Retrieve data collections */
-                    var autoprocProgramId = target.slice(11);
+                    autoprocProgramId = target.slice(11);
                     EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.autoproc.getAttachmentListByautoProcProgramsIdList(autoprocProgramId);
                 }
                 
                 
                  if (target.startsWith("#plots")){
                         /** Get autoprocIntegrationId */
-                        var autoprocProgramId = target.slice(6);
+                        autoprocProgramId = target.slice(6);
                         /** Rfactor */
                         var rFactorPlotter = new AutoProcIntegrationCurvePlotter({
 		                    height : 250,

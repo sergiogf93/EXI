@@ -22,6 +22,7 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 	var steps = [];
 	var status = [];
 	var ids = [];
+    var cleaned = [];
 	if ( dataCollectionGroup.WorkflowStep_workflowStepType != null){
 		steps = dataCollectionGroup.WorkflowStep_workflowStepType.split(",");
 		status = dataCollectionGroup.WorkflowStep_status.split(",");
@@ -29,7 +30,6 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 		
 		
 		var previous = null;
-		var cleaned = [];
 		for (var i = 0; i < steps.length; i++){
 			var step = {
 					status : status[i],

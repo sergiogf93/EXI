@@ -231,4 +231,4 @@ DewarListSelectorGrid.prototype.getPanel = function(){
     });
     return this.panel;
     
-}
+};

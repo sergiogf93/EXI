@@ -2,10 +2,8 @@ function ExiMX() {
 	 Exi.call(this, {
 		 					menu: new MXMainMenu(),
 		 					anonymousMenu: new MainMenu(),
-		 					controllers : [
-									
-									new SessionController(), 
-									new SAXSExiController(), 
+		 					controllers : [									
+									new SessionController(), 									
 									new OfflineExiController(), 
 									new ProposalExiController(), 
 									new LabContactExiController(),
@@ -44,7 +42,6 @@ ExiMX.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiMX.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
  
 
-
 ExiMX.prototype.getHeader = function(){
     var html = "";
     var data = {
@@ -56,11 +53,9 @@ ExiMX.prototype.getHeader = function(){
     dust.render("mxheader", data, function(err, out){
 		html = out;
      });
-    return html;
-	
+    return html;	
 };
 
 ExiMX.prototype.getDataAdapter = function(args){
 	return  new MxDataAdapterFactory(this.appendDataAdapterParameters(args));
 };
-

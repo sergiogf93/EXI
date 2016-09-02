@@ -4,10 +4,9 @@
 * @class FileManagerPhasingGrid
 * @constructor
 */
-function FileManagerPhasingGrid(args) {
-	
+function FileManagerPhasingGrid(args) {	
     this.onSelect = new Event(this);
-};
+}
 
 FileManagerPhasingGrid.prototype.load = function(data) {
     this.data = data;
@@ -67,27 +66,25 @@ FileManagerPhasingGrid.prototype.getPanel = function() {
                         flex : 1,                      
                         dataIndex : 'filePath',
                         renderer : function(grid, e, record){
+                            var pdb = null;
+                            var href= null;
                             if (record.data.fileName.endsWith(".map")){
-                               var pdb = _this.findPDBMatch(record.data.fileName);
+                                pdb = _this.findPDBMatch(record.data.fileName);
                                 if (pdb != null){
                                     
-                                    var pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
-                                    var map = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(record.data.phasingProgramAttachmentId);
-                                     
-                                    var href= "viewers/uglymol/1mru.html?pdb=" + pdb + "&map="+map;
+                                    pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
+                                    var map = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(record.data.phasingProgramAttachmentId);                                     
+                                    href= "viewers/uglymol/1mru.html?pdb=" + pdb + "&map="+map;
                                     return "<a target='_blank' style='showme openGridButton' href='" + href+"'><div style='text-align:center;color:white;width:60px;background-color:#3892d3;'>VIEWER</div></a>";   
                                     
                                 }
                             }
                             
                             if (record.data.fileName.endsWith(".pdb")){
-                               var pdb = _this.findPDBMatch(record.data.fileName);
-                                if (pdb != null){
-                                    
-                                    var pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
-                                    
-                                     
-                                    var href= "viewers/pv/index.html?pdb=" + pdb;
+                                pdb = _this.findPDBMatch(record.data.fileName);
+                                if (pdb != null){                                    
+                                    pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);                                                                         
+                                    href= "viewers/pv/index.html?pdb=" + pdb;
                                     return "<a target='_blank' style='showme openGridButton' href='" + href+"'><div style='text-align:center;color:white;width:60px;background-color:#3892d3;'>VIEWER</div></a>";   
                                     
                                 }

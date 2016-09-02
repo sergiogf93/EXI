@@ -108,7 +108,7 @@ OnlineResultSectionDataCollection.prototype.getScreeningData = function(dataColl
           name : "Screening",
           status :status,
           items : items  
-    }           
+    };           
 };
 
 
