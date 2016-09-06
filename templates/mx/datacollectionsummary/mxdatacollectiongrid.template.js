@@ -124,7 +124,7 @@
                   <div class="col-xs-6 col-md-2">
                      {>"sample.mxdatacollectiongrid.template"  /}                             
                   </div>
-                  {!
+                  
                     <div class="col-xs-12 col-md-2">
                         <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
                         <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" />
@@ -146,7 +146,7 @@
                         </a>                           
                     </div>
                 </div>
-               !}
+               
             </div>
          </div>
          
