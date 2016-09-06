@@ -72,6 +72,7 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
     this.panel.setTitle("Workflow");
     _this.mainPanel.removeAll();
      _this.mainPanel.setLoading();
+     debugger
     function onSuccess(sender, data){    
    
         var items = JSON.parse(data).items;
@@ -92,10 +93,12 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
             }
             else{
                 if (items[i].type == "image"){
+                    debugger
                     items[i] = _this.getImageResolution(items[i]);
                 }
                 
                  if (items[i].type == "images"){
+                     debugger
                     items[i].items = _this.getImagesResolution(items[i].items);
                    
                 }
