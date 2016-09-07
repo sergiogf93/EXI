@@ -25,9 +25,7 @@ function SessionGrid(args) {
 			this.isHiddenLocalContact = args.isHiddenLocalContact;
 		}
         
-        if (args.isHiddenTitle != null) {
-			this.isHiddenTitle = args.isHiddenTitle;
-		}
+
         if (args.isHiddenNumberOfShifts != null) {
 			this.isHiddenNumberOfShifts = args.isHiddenNumberOfShifts;
 		}
