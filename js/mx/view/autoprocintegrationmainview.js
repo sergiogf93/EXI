@@ -58,7 +58,7 @@ function AutoProcIntegrationMainView() {
 	/** Netowkrwidget for phasing **/
 	//this.phasingNetworkWidget = new PhasingNetworkWidget({tbar : "OPEN_VIEWER"});
 	
-	/** Curve completenessPlotter * */
+	/** Curve completenessPlotter 
 	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({
 		height : 250,
 		title : "Completeness vs Resolution",
@@ -127,7 +127,7 @@ function AutoProcIntegrationMainView() {
 
 	this.annoCorrPlotter.onPointClickCallback.attach(function(sender, id){
 		_this.onPlotClicked(id);
-	});
+	});* */
 	
 }
 

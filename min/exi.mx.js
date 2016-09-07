@@ -1326,7 +1326,7 @@ function AutoProcIntegrationMainView() {
 	/** Netowkrwidget for phasing **/
 	//this.phasingNetworkWidget = new PhasingNetworkWidget({tbar : "OPEN_VIEWER"});
 	
-	/** Curve completenessPlotter * */
+	/** Curve completenessPlotter 
 	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({
 		height : 250,
 		title : "Completeness vs Resolution",
@@ -1395,7 +1395,7 @@ function AutoProcIntegrationMainView() {
 
 	this.annoCorrPlotter.onPointClickCallback.attach(function(sender, id){
 		_this.onPlotClicked(id);
-	});
+	});* */
 	
 }
 
@@ -4886,7 +4886,7 @@ function AutoProcIntegrationGrid(args) {
 	this.minHeight = 500;
     this.minHeight = 500;
       
-    
+    this.collapsed = false;
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -4991,33 +4991,13 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		           'v_datacollection_summary_phasing_processingPrograms',
 		           'v_datacollection_summary_phasing_autoproc_space_group']
 	});
-    
-	var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect : true,
-		mode : 'multi',
-		listeners : {
-			selectionchange : function(sm, selections) {
-				var records = [];
-				if (selections != null) {
-					for (var i = 0; i < selections.length; i++) {
-						records.push(selections[i].data);
-					}
-
-					/** Event is only triggered if node is a leaf **/
-					if (!_this.preventSelection){
-						_this.onSelected.notify(records);
-					}
-					else{
-						_this.preventSelection = false;
-					}
-				}
-			}
-		} 
-    });
+  
 	
 	this.panel = Ext.create('Ext.grid.Panel', {		
 		store : this.store,
-		selModel : selModel,
+		
+        tbar: this.getToolBar(),
+        margin : 10,
 		cls : 'border-grid',
         layout : 'fit',
 		columns : [             
@@ -5041,12 +5021,20 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                             // Getting statistics                
                             data.statistics = _this.getStatistics(record.data);
                             data.phasing = _this.getPhasing(record.data);  
-                                          
-                            dust.render("autoprocintegrationgrid.template", data, function(err, out) {
-                                html = html + out;
+                            if (_this.collapsed){              
+                                dust.render("collapsed.autoprocintegrationgrid.template", data, function(err, out) {
+                                    html = html + out;
                                 
-                            });
-                        return html;
+                                });
+                            }
+                            else{
+                                dust.render("autoprocintegrationgrid.template", data, function(err, out) {
+                                    html = html + out;
+                                
+                                });
+                                
+                            }
+                            return html;
                         }
                     }                        		
 		],
@@ -5064,6 +5052,47 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 };
 
 
+
+AutoProcIntegrationGrid.prototype.getToolBar = function() {
+    var _this = this;
+    return Ext.create('Ext.toolbar.Toolbar', {
+        width: 500,
+        items: [
+            {
+                xtype: 'checkboxfield',
+                boxLabel: 'Summary',
+                id: this.id + "_collapse",
+                listeners: {
+                    change: function(field, e) {
+                        _this.collapsed = e;
+                         _this.load(_this.data);
+                        /*if (Ext.getCmp(_this.id + "_search").getValue() != "") {
+                            _this.filterBy(Ext.getCmp(_this.id + "_search").getValue());
+                        }
+                        else {
+                            _this.reloadData(_this.dataCollectionGroup);
+                        }*/
+                    }
+                }
+            },
+           /* '->', 
+            {
+                xtype: 'textfield',
+                id: this.id + "_search",
+                width: 400,
+                emptyText: 'enter search prefix, sample or protein',
+                listeners: {
+                    specialkey: function(field, e) {
+                        if (e.getKey() == e.ENTER) {
+                            _this.filterBy(field.getValue());
+                        }
+                    }
+                }
+            },
+            { xtype: 'tbtext', text: '', id: this.id + "_found" }*/
+        ]
+    });
+};
 
 /**
 * Attaches the events to lazy load to the images. Images concerned are with the class img-responsive and smalllazy

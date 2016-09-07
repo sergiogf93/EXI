@@ -1,3 +1,21 @@
+.innershell{
+    color : #8A0886;
+    margin : 5px;
+    width : 40px;
+}
+
+.overallshell{
+    color : blue;
+    margin : 5px;
+    width : 40px;
+}
+
+.outershell{
+    color : green;
+    margin : 5px;
+    width : 40px;
+}
+
 .column_parameter_value{
     font-weight:700;
     font-size: 1.1em;
