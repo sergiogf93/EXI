@@ -2704,7 +2704,8 @@ function ManagerWelcomeMainView() {
     this.sessionGrid = new SessionGrid({
                     width : null,
                     height:600,
-                    isHiddenTitle : false,
+                    isHiddenTitle : true,
+                    isHiddenPI : false,
                     isHiddenNumberOfShifts : false,
                     isHiddenLocalContact : false,                                        
                     margin : '10 10 10 10'
@@ -4926,9 +4927,7 @@ function SessionGrid(args) {
 			this.isHiddenLocalContact = args.isHiddenLocalContact;
 		}
         
-        if (args.isHiddenTitle != null) {
-			this.isHiddenTitle = args.isHiddenTitle;
-		}
+
         if (args.isHiddenNumberOfShifts != null) {
 			this.isHiddenNumberOfShifts = args.isHiddenNumberOfShifts;
 		}
