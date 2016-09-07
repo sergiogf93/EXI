@@ -164,13 +164,13 @@ module.exports = function(grunt) {
 		      files: [{
 		    	  		'saxs/dev.html': 'saxs/index.tpl.html'
 		      },{
-		    	  		'mx/dev.html'  : 'saxs/index.tpl.html'
+		    	  		'mx/dev.html'  : 'mx/index.tpl.html'
 		      }]
 		}
 	},
 	 wiredep: {
 	      target: {
-	                    src: 'mx/dev.html' // point to your HTML file.
+	                    src: ['mx/dev.html', 'saxs/dev.html'], // point to your HTML file.
 	      }
 	},
 	dustjs: {
