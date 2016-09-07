@@ -11,7 +11,7 @@
         <td  class='column_parameter_value'>{.DataCollection_resolution} &#8491; ({.DataCollection_resolutionAtCorner} &#8491;)</td>
     </tr>
     <tr>
-        <td>Wavelenth</td>
+        <td>Wavelength</td>
         <td  class='column_parameter_value'>{.DataCollection_wavelength} &#8491;</td>
     </tr>
     <tr>

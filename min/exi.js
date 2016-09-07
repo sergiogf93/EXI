@@ -4918,6 +4918,9 @@ function SessionGrid(args) {
     
     this.layout = 'fit';
     
+    /** Array with the beamline selected to make the filter */
+    this.beamlineFilter = [];
+    
 	if (args != null) {
          if (args.isHiddenLocalContact != null) {
 			this.isHiddenLocalContact = args.isHiddenLocalContact;
@@ -4965,35 +4968,71 @@ function SessionGrid(args) {
 
 	this.onSelected = new Event(this);
 
-}
+};
 
 
 SessionGrid.prototype.load = function(sessions) {
+    this.sessions = sessions;
 	this.store.loadData(sessions, false);
 };
+
+
+SessionGrid.prototype.filterByBeamline = function(beamlines) {
+    if (beamlines){
+        if (beamlines.length > 0){
+            var filtered = [];
+            for(var i = 0; i < beamlines.length; i++){
+                filtered = _.concat(filtered, (_.filter(this.sessions, {'beamLineName': beamlines[i]})));
+            }
+            this.store.loadData(filtered, false);
+        }
+        else{
+            this.store.loadData(this.sessions, false);
+        }
+    }
+};
+
+
+SessionGrid.prototype.getToolbar = function(sessions) {
+    var _this = this;
+    var items = [];
+    for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
+        items.push({           
+                xtype: 'checkbox',
+                boxLabel : EXI.credentialManager.getBeamlines()[i],
+                name : EXI.credentialManager.getBeamlines()[i],
+                handler : function(a,selected,c){                    
+                    if (selected){
+                        _this.beamlineFilter.push(a.boxLabel);
+                    }
+                    else{                        
+                        _this.beamlineFilter =_.remove(_this.beamlineFilter,a.boxLabel );
+                    }
+                    _this.filterByBeamline(_this.beamlineFilter);
+                }         
+            
+        });
+    }
+	 return Ext.create('Ext.toolbar.Toolbar', {  
+        items: items
+    });
+};
+
 
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
    
     this.store = Ext.create('Ext.data.Store', {
-		fields : ['beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],
+		fields : ['Proposal_ProposalNumber', 'beamLineName', 'beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],
 		emptyText : "No sessions",
 		data : []
-	});
-    
+	});    
 
-
-
-
-	this.store = Ext.create('Ext.data.Store', {
-		fields : ['beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],
-		emptyText : "No sessions",
-		data : []
-	});
 
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : this.title,
-		store : this.store,		
+		store : this.store,
+        tbar : this.getToolbar(),		
 		icon : '../images/icon/sessions.png',
 		cls : 'border-grid',
 		minHeight: 300,
@@ -5042,7 +5081,7 @@ SessionGrid.prototype.getPanel = function() {
 		     },
              {
                     text : 'Beamline',
-                    dataIndex : 'Proposal_code',
+                    dataIndex : 'beamLineName',
                     width : 125,
                     hidden : false,
                     renderer : function(grid, a, record){
@@ -5058,7 +5097,7 @@ SessionGrid.prototype.getPanel = function() {
 		    }, 
             {
                 text : 'Proposal',
-                dataIndex : 'beamlineName',
+                dataIndex : 'Proposal_ProposalNumber',
                 flex : 1,
                 hidden : false,
                 renderer : function(grid, a, record){
@@ -5115,7 +5154,7 @@ SessionGrid.prototype.getPanel = function() {
                             }
                         }
                         return "";
-                    }
+                    };
                     function getTable(record){
                         var html = "<table>";
                         html =   html = html + getBadge("Energy", record.data.energyScanCount);

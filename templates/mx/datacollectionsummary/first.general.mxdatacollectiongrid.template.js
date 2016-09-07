@@ -1,6 +1,6 @@
 <table class="table">
    <tr>
-      <td  >Worflow</td>
+      <td  >Workflow</td>
       <td class='column_parameter_value'>
          {@eq key=Workflow_status value="Success"}
          <div class='summary_datacollection_success'></div>
