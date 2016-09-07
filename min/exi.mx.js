@@ -4886,7 +4886,7 @@ function AutoProcIntegrationGrid(args) {
 	this.minHeight = 500;
     this.minHeight = 500;
       
-    this.collapsed = false;
+    this.collapsed = true;
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -4914,10 +4914,34 @@ function AutoProcIntegrationGrid(args) {
 	this.onSelected = new Event(this);
 }
 
-AutoProcIntegrationGrid.prototype.load = function(data) {
-    /** Adding stats */
-    this.data = data;
-	this.store.loadData(data, false);
+AutoProcIntegrationGrid.prototype.parseData = function(data) {
+     /** Adding stats */
+    for(var i = 0; i < data.length; i++){
+         try{             
+            data[i].statistics = this.getStatistics(data[i]);
+            data[i].collapsed = this.getCollapseStatistics(data[i]);
+            data[i].phasing = this.getPhasing(data[i]);                        
+         }
+         catch(e){
+             
+         }  
+    }
+    return data;
+};
+
+AutoProcIntegrationGrid.prototype.load = function(data) {  
+    this.data =this.parseData(data);
+    if (this.collapsed){        
+        this.loadCollapsed(this.data);
+    }
+    else{
+       
+	    this.store.loadData(this.data, false);
+    }
+};
+
+AutoProcIntegrationGrid.prototype.loadCollapsed = function(data) {
+	this.store.loadData([{ collapsed : true, items : data}], false);
 };
 
 AutoProcIntegrationGrid.prototype.selectRowByAutoProcIntegrationId = function(autoProcIntegrationId) {
@@ -4947,12 +4971,65 @@ AutoProcIntegrationGrid.prototype.getPhasing = function(data) {
     return phasing;
 };                 
 
-AutoProcIntegrationGrid.prototype.getStatistics = function(data) {	                    
+AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	                    
     var type = data.scalingStatisticsType.split(",");
-    function getValue(attribute, i){
+    function getValue(attribute, i, decimals){
+        
         if (attribute){
             var splitted = attribute.split(",");
             if (splitted[i]){
+                if (decimals){
+                    try{ 
+                        return Number( splitted[i]).toFixed(decimals)
+                    }
+                    catch(e){
+                        return "NaN";
+                    }
+                }
+                return splitted[i];
+            }
+        }
+        return "";
+        
+    }
+      
+    
+     for (var i = 0; i < type.length; i++) {
+        if (type[i]){           
+                data[type[i]] = {
+                                            type 					: type[i],
+                                            resolutionLimitLow 		: getValue(data.resolutionLimitLow, i,1),
+                                            resolutionLimitHigh 	: getValue(data.resolutionLimitHigh, i,1),
+                                            multiplicity 			: getValue(data.multiplicity, i, 1),
+                                            meanIOverSigI 			: getValue(data.meanIOverSigI, i, 1),
+                                            completeness 			: getValue(data.completeness, i, 1),
+                                            rMerge 			        : getValue(data.rMerge, i, 1),
+                                            ccHalf 			        : getValue(data.ccHalf, i,1),
+                                            rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i,1),
+                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1)
+                                            
+               };            
+        }       
+    }        
+    return data;    				
+};
+
+
+AutoProcIntegrationGrid.prototype.getStatistics = function(data) {	                    
+    var type = data.scalingStatisticsType.split(",");
+    function getValue(attribute, i, decimals){
+        
+        if (attribute){
+            var splitted = attribute.split(",");
+            if (splitted[i]){
+                if (decimals){
+                    try{ 
+                        return Number( splitted[i]).toFixed(decimals)
+                    }
+                    catch(e){
+                        return "NaN";
+                    }
+                }
                 return splitted[i];
             }
         }
@@ -4960,7 +5037,7 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
         
     }
     var parsed = [];
-    for (var i = 0; i < type.length; i++) {
+    for (var i = 0; i < type.length; i++) {       
         parsed.push({
             type 					: type[i],
             resolutionLimitLow 		: getValue(data.resolutionLimitLow, i),
@@ -4975,6 +5052,7 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
             
         });
     }
+            
     return parsed;    				
 };
 
@@ -5016,13 +5094,13 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                         flex: 1.5,
                         hidden: false,
                         renderer: function(grid, e, record) {
+                            
                             var data = record.data;// _this._getAutoprocessingStatistics(record.data);                               
                             var html = "";                
-                            // Getting statistics                
-                            data.statistics = _this.getStatistics(record.data);
-                            data.phasing = _this.getPhasing(record.data);  
+                          
+                            
                             if (_this.collapsed){              
-                                dust.render("collapsed.autoprocintegrationgrid.template", data, function(err, out) {
+                                dust.render("collapsed.autoprocintegrationgrid.template", data.items, function(err, out) {
                                     html = html + out;
                                 
                                 });
@@ -5041,7 +5119,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		flex : 1,
           viewConfig : {
                 preserveScrollOnRefresh: true,
-                stripeRows : true,                
+                stripeRows : false,                
 	    	}
 	});
 
@@ -5061,35 +5139,18 @@ AutoProcIntegrationGrid.prototype.getToolBar = function() {
             {
                 xtype: 'checkboxfield',
                 boxLabel: 'Summary',
+                checked : true,
                 id: this.id + "_collapse",
                 listeners: {
                     change: function(field, e) {
                         _this.collapsed = e;
-                         _this.load(_this.data);
-                        /*if (Ext.getCmp(_this.id + "_search").getValue() != "") {
-                            _this.filterBy(Ext.getCmp(_this.id + "_search").getValue());
-                        }
-                        else {
-                            _this.reloadData(_this.dataCollectionGroup);
-                        }*/
+                        _this.load(_this.data);
+                        _this.attachCallBackAfterRender();
+                     
                     }
                 }
-            },
-           /* '->', 
-            {
-                xtype: 'textfield',
-                id: this.id + "_search",
-                width: 400,
-                emptyText: 'enter search prefix, sample or protein',
-                listeners: {
-                    specialkey: function(field, e) {
-                        if (e.getKey() == e.ENTER) {
-                            _this.filterBy(field.getValue());
-                        }
-                    }
-                }
-            },
-            { xtype: 'tbtext', text: '', id: this.id + "_found" }*/
+            }
+          
         ]
     });
 };

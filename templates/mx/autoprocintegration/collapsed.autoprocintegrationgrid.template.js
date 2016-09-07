@@ -29,7 +29,14 @@
                     <tr>
                         <td  style='padding:0 15px 0 15px;'>{.v_datacollection_processingPrograms}</td>
                         <td  style='padding:0 15px 0 15px;'>{.v_datacollection_summary_phasing_autoproc_space_group}</td>
-                        <td  style='padding:0 15px 0 15px;'>{.v_datacollection_summary_phasing_anomalous}</td>                                
+                        <td  style='padding:0 15px 0 15px;'>
+                            {@eq key=v_datacollection_summary_phasing_anomalous type="boolean" value="true"}
+                                <span style='color:green;' class="glyphicon glyphicon-ok"></span>
+                            {:else}
+                               
+                            {/eq}
+                        </td>
+                                               
                         <td  style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_a" decimals=1}{/decimal}</td>
                         <td style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_b" decimals=1}{/decimal}</td>
                         <td style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_c" decimals=1}{/decimal}</td>
@@ -37,7 +44,7 @@
                         <td style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_beta" decimals=1}{/decimal}</td>
                         <td style='padding:0 15px 0 15px;'>{@decimal key="v_datacollection_summary_phasing_cell_gamma" decimals=1}{/decimal}</td>
                         
- <td style='padding:0 15px 0 15px;'><span class='innershell'>{.innerShell.resolutionLimitLow}-{.innerShell.resolutionLimitHigh} </span><span class='overallshell'>{.overall.resolutionLimitLow}-{.overall.resolutionLimitHigh} </span> <span class='outershell'>{.outerShell.resolutionLimitLow}-{.outerShell.resolutionLimitHigh}</span></td>
+                        <td style='padding:0 15px 0 15px;'><span class='innershell'>{.innerShell.resolutionLimitLow}-{.innerShell.resolutionLimitHigh} </span><span class='overallshell'>{.overall.resolutionLimitLow}-{.overall.resolutionLimitHigh} </span> <span class='outershell'>{.outerShell.resolutionLimitLow}-{.outerShell.resolutionLimitHigh}</span></td>
  
                           
                          <td style='padding:0 15px 0 15px;'><span class='innershell'>{.innerShell.multiplicity} </span><span class='overallshell'>{.overall.multiplicity}</span> <span class='outershell'>{.outerShell.multiplicity}</span></td>
