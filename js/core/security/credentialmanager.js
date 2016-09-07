@@ -5,7 +5,9 @@ function CredentialManager(){
 }
 
 CredentialManager.prototype.addCredential = function(username, roles, token, url, exiUrl, properties){
-	var credential = new Credential(username, roles, token, url, exiUrl, [], properties);
+    
+    var tokenExpires =  moment().add(3, 'hour');
+	var credential = new Credential(username, roles, token, url, exiUrl, [], tokenExpires, properties);
 	/** Writing to ExtLocalStorage * */
 	if (localStorage.getItem("credentials") == null) {
 		localStorage.setItem("credentials", "[]");
@@ -16,11 +18,18 @@ CredentialManager.prototype.addCredential = function(username, roles, token, url
 	this.onLogin.notify(credential);
 };
 
+CredentialManager.prototype.credentialToObject = function(json){
+    return new Credential(json.username,json.roles,	json.token,json.url,json.exiUrl,json.activeProposals,json.tokenExpires,json.properties);
+};
+
 CredentialManager.prototype.getCredentials = function(){
 	var credentials = [];
 	if (JSON.parse(localStorage.getItem("credentials")) != null){
 		credentials = JSON.parse(localStorage.getItem("credentials"));
 	}
+    for (var i=0; i < credentials.length; i++){
+        credentials[i] = this.credentialToObject(credentials[i]);
+    }
 	return credentials;
 };
 
@@ -80,18 +89,12 @@ CredentialManager.prototype.getConnections = function(){
 	return connectors;
 };
 
-CredentialManager.prototype.getCredentialByUserName = function(username, roles, token, url){
-	var credentials = this.getCredentials();
-	for (var i = 0; i < credentials.length; i++) {
-		if (credentials[i].username == username) {
-			return new Credential(
-					credentials[i].username,
-					credentials[i].roles,
-					credentials[i].token,
-					credentials[i].url,
-					credentials[i].activeProposals);
-		}
-	}
+CredentialManager.prototype.getCredentialByUserName = function(username){
+    var found =  _.filter(this.getCredentials(), {username : username});
+    if (found.length > 0){
+        return found[0];
+    }
+	
 };
 
 CredentialManager.prototype.logout = function(username, roles, token, url){

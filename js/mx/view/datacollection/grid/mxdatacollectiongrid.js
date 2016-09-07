@@ -231,6 +231,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
             flex: 1.5,
             hidden: false,
             renderer: function(grid, e, record) {
+                
                 var data = record.data;                              
                 var html = "";                               
                 /** For thumbnail */

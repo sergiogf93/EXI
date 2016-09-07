@@ -489,20 +489,19 @@ function Exi(args) {
         
 		authenticationManager.onSuccess.attach(function(sender, data){
             
-			/** This user has been authenticated **/
+			/** This user has been authenticated **/           
 			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl, args.properties);
-			_this.authenticationForm.window.close();
-			
+			_this.authenticationForm.window.close();			
 			var credential = EXI.credentialManager.getCredentialByUserName(data.user);
+          
 			if (credential.isManager()||credential.isLocalContact()){
 				location.hash = "/welcome/manager/" + data.user + "/main";
 			}
 			else{
-				location.hash = "/welcome/user/" + data.user + "/main";
-                /*BUI.showError("Only local contacts are managers are allowed");
-                location.hash = "#/logout";*/
+				location.hash = "/welcome/user/" + data.user + "/main";        
 			}
 			
+            
 			/** Authenticating EXI in the offline system**/            
 			_this.getDataAdapter().exi.offline.authenticate();
 			
@@ -520,32 +519,33 @@ function Exi(args) {
  * This method append to args the values of the active connection: url, token and proposal
  */
 Exi.prototype.appendDataAdapterParameters = function(args) {
-	if (args == null){ args = {};}
-	
-	/** Getting credentials **/
-	var connections = EXI.credentialManager.getConnections();
-	/** Authentication data adapter does not need any token **/
-	if (connections.length > 0){
-		args.url = connections[0].url;
-		args.token = connections[0].token;
-		args.proposal = connections[0].proposal;
-		
-	
-	}
-	return args;	
+    if (!args){ args = {};}
+    
+     /** Is your token still valid */     
+     
+    if (EXI.credentialManager.getCredentials()[0]){
+        console.log(EXI.credentialManager.getCredentials()[0].timeToExpire());
+        if (!EXI.credentialManager.getCredentials()[0].isValid()){
+                        
+           location.hash = '/welcome';
+           return;
+        }        
+    }	
+            
+    var connections = EXI.credentialManager.getConnections();
+    /** Authentication data adapter does not need any token **/
+    if (connections.length > 0){
+        args.url = connections[0].url;
+        args.token = connections[0].token;
+        args.proposal = connections[0].proposal;			
+    }
+    return args;
+        	
 };
 
 
-
 Exi.prototype.getDataAdapter = function(args) {   
-	var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));
-    /** Attaching default error handler */
-    dataAdapter.onError.attach(function(){
-        if (errorCode == "401 Unauthorized"){
-				EXI.setError(errorCode);
-				location.hash = '/logout';
-			}        
-    });      
+    var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));       
     return dataAdapter;  	
 };
 
@@ -1155,29 +1155,34 @@ ExiController.prototype.init = function(){
 	}
 
 	/** Welcome Page **/
-	Path.map("#/").to(function() {
+	Path.map("#/").to(function() {       
 		location.hash = '/welcome';
 	}).enter(setPageBackground);
 	
 	Path.map("#/login").to(function() {
+        EXI.credentialManager.logout();
 		EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	
 	Path.map("#/welcome").to(function() {
-		EXI.addMainPanel(new WelcomeMainView());
+		//EXI.addMainPanel(new WelcomeMainView());
+        //location.hash = '/login';
+         EXI.credentialManager.logout();
+        EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	Path.map("#/welcome/user/:user/main").to(function() {
 		var user = this.params['user'];		
         var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
-         EXI.hideNavigationPanel();
+        EXI.hideNavigationPanel();
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
 
 	Path.map("#/welcome/manager/:user/main").to(function() {
+        
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -2468,14 +2473,16 @@ WorkSpaceListView.prototype.getPanel = function(){
 	return this.panel; 
 };
 
-function Credential(username, roles, token, url, exiUrl,activeProposals, properties) {
+function Credential(username, roles, token, url, exiUrl,activeProposals, tokenExpires, properties) {
 	this.username = username.toLowerCase();
 	this.roles = roles;
 	this.url = url;
 	this.exiUrl = exiUrl;
 	this.token = token;
 	this.activeProposals = activeProposals;
+    this.tokenExpires = tokenExpires;
 	this.properties = properties;
+   
 }
 
 Credential.prototype.isManager = function() {
@@ -2490,6 +2497,20 @@ Credential.prototype._checkRole = function(role) {
 	return JSON.stringify(this.roles).toLowerCase().indexOf(role) != -1;
 };
 
+/**
+ * Checks if it has not expired yet
+ */
+Credential.prototype.isValid = function() {
+    return  this.timeToExpire() > 0;
+};
+
+/**
+ * Checks if it has not expired yet
+ */
+Credential.prototype.timeToExpire = function() {
+    return  moment.duration(moment(this.tokenExpires).diff(moment())).asHours();
+};
+
 function CredentialManager(){
 	this.onLogin = new Event(this);
 	this.onLogout = new Event(this);
@@ -2497,7 +2518,9 @@ function CredentialManager(){
 }
 
 CredentialManager.prototype.addCredential = function(username, roles, token, url, exiUrl, properties){
-	var credential = new Credential(username, roles, token, url, exiUrl, [], properties);
+    
+    var tokenExpires =  moment().add(3, 'hour');
+	var credential = new Credential(username, roles, token, url, exiUrl, [], tokenExpires, properties);
 	/** Writing to ExtLocalStorage * */
 	if (localStorage.getItem("credentials") == null) {
 		localStorage.setItem("credentials", "[]");
@@ -2508,11 +2531,18 @@ CredentialManager.prototype.addCredential = function(username, roles, token, url
 	this.onLogin.notify(credential);
 };
 
+CredentialManager.prototype.credentialToObject = function(json){
+    return new Credential(json.username,json.roles,	json.token,json.url,json.exiUrl,json.activeProposals,json.tokenExpires,json.properties);
+};
+
 CredentialManager.prototype.getCredentials = function(){
 	var credentials = [];
 	if (JSON.parse(localStorage.getItem("credentials")) != null){
 		credentials = JSON.parse(localStorage.getItem("credentials"));
 	}
+    for (var i=0; i < credentials.length; i++){
+        credentials[i] = this.credentialToObject(credentials[i]);
+    }
 	return credentials;
 };
 
@@ -2572,18 +2602,12 @@ CredentialManager.prototype.getConnections = function(){
 	return connectors;
 };
 
-CredentialManager.prototype.getCredentialByUserName = function(username, roles, token, url){
-	var credentials = this.getCredentials();
-	for (var i = 0; i < credentials.length; i++) {
-		if (credentials[i].username == username) {
-			return new Credential(
-					credentials[i].username,
-					credentials[i].roles,
-					credentials[i].token,
-					credentials[i].url,
-					credentials[i].activeProposals);
-		}
-	}
+CredentialManager.prototype.getCredentialByUserName = function(username){
+    var found =  _.filter(this.getCredentials(), {username : username});
+    if (found.length > 0){
+        return found[0];
+    }
+	
 };
 
 CredentialManager.prototype.logout = function(username, roles, token, url){
@@ -2929,6 +2953,7 @@ ManagerWelcomeMainView.prototype.load = function(username) {
     var today = moment().format("YYYYMMDD");
     this.loadSessionsByDate(username, today, today);
   }    
+  EXI.setLoadingMainPanel(false);
 };
 
 /**
@@ -4676,7 +4701,7 @@ AuthenticationForm.prototype.show = function(){
 	this.window = Ext.create('Ext.window.Window', {
 	    title: 'Authentication <span style="FONT-SIZE:9PX;color:red;">[INTRANET ONLY]</span>',
 	    height: 250,
-//	    closable :  EXI.localExtorage.tokenManager.getTokens().length > 0,
+	    closable :  false,
 	    width: 400,
 	    modal : true,
 	    layout: 'fit',
@@ -4698,6 +4723,7 @@ AuthenticationForm.prototype.getPanel = function(){
 	    bodyPadding: 5,
 	    width: 350,
 	    layout: 'anchor',
+       
 	    defaults: {
 	        anchor: '90%'
 	    },

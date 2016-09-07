@@ -212,7 +212,7 @@ MxDataCollectionController.prototype.init = function() {
 		EXI.addMainPanel(mainView);
         EXI.hideNavigationPanel();
 		EXI.setLoadingMainPanel(true);
-		var onSuccess = function(sender, data){
+		var onSuccess = function(sender, data){            
 		    mainView.loadCollections(data);
 			EXI.setLoadingMainPanel(false);
 		};
@@ -2628,6 +2628,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
             flex: 1.5,
             hidden: false,
             renderer: function(grid, e, record) {
+                
                 var data = record.data;                              
                 var html = "";                               
                 /** For thumbnail */
@@ -4204,7 +4205,7 @@ function PrepareMainView() {
     this.dewarListSelector = new DewarListSelectorGrid({height : 600});
     this.dewarListSelector.onSelect.attach(function(sender, dewar){                       
             if (dewar.shippingStatus == "processing"){
-                _this.updateStatus(dewar.shippingId, "at ESRF");
+                _this.updateStatus(dewar.shippingId, "at_ESRF");
             } 
             if (dewar.shippingStatus != "processing"){
                 _this.updateStatus(dewar.shippingId, "processing");
@@ -4254,9 +4255,7 @@ PrepareMainView.prototype.load = function() {
         _this.dewarListSelector.panel.setLoading(false);
         
         /** Selecting containers that are processing */
-        var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
- 
-        _this.containerListEditor.load(processingContainers);
+        _this.containerListEditor.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
         
     };
      var onError = function(sender, error) {        

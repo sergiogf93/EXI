@@ -240,6 +240,7 @@ ManagerWelcomeMainView.prototype.load = function(username) {
     var today = moment().format("YYYYMMDD");
     this.loadSessionsByDate(username, today, today);
   }    
+  EXI.setLoadingMainPanel(false);
 };
 
 /**

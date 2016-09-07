@@ -68,20 +68,19 @@ function Exi(args) {
         
 		authenticationManager.onSuccess.attach(function(sender, data){
             
-			/** This user has been authenticated **/
+			/** This user has been authenticated **/           
 			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl, args.properties);
-			_this.authenticationForm.window.close();
-			
+			_this.authenticationForm.window.close();			
 			var credential = EXI.credentialManager.getCredentialByUserName(data.user);
+          
 			if (credential.isManager()||credential.isLocalContact()){
 				location.hash = "/welcome/manager/" + data.user + "/main";
 			}
 			else{
-				location.hash = "/welcome/user/" + data.user + "/main";
-                /*BUI.showError("Only local contacts are managers are allowed");
-                location.hash = "#/logout";*/
+				location.hash = "/welcome/user/" + data.user + "/main";        
 			}
 			
+            
 			/** Authenticating EXI in the offline system**/            
 			_this.getDataAdapter().exi.offline.authenticate();
 			
@@ -99,32 +98,33 @@ function Exi(args) {
  * This method append to args the values of the active connection: url, token and proposal
  */
 Exi.prototype.appendDataAdapterParameters = function(args) {
-	if (args == null){ args = {};}
-	
-	/** Getting credentials **/
-	var connections = EXI.credentialManager.getConnections();
-	/** Authentication data adapter does not need any token **/
-	if (connections.length > 0){
-		args.url = connections[0].url;
-		args.token = connections[0].token;
-		args.proposal = connections[0].proposal;
-		
-	
-	}
-	return args;	
+    if (!args){ args = {};}
+    
+     /** Is your token still valid */     
+     
+    if (EXI.credentialManager.getCredentials()[0]){
+        console.log(EXI.credentialManager.getCredentials()[0].timeToExpire());
+        if (!EXI.credentialManager.getCredentials()[0].isValid()){
+                        
+           location.hash = '/welcome';
+           return;
+        }        
+    }	
+            
+    var connections = EXI.credentialManager.getConnections();
+    /** Authentication data adapter does not need any token **/
+    if (connections.length > 0){
+        args.url = connections[0].url;
+        args.token = connections[0].token;
+        args.proposal = connections[0].proposal;			
+    }
+    return args;
+        	
 };
 
 
-
 Exi.prototype.getDataAdapter = function(args) {   
-	var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));
-    /** Attaching default error handler */
-    dataAdapter.onError.attach(function(){
-        if (errorCode == "401 Unauthorized"){
-				EXI.setError(errorCode);
-				location.hash = '/logout';
-			}        
-    });      
+    var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));       
     return dataAdapter;  	
 };
 
