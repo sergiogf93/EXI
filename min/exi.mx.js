@@ -2566,8 +2566,8 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
 
     function sortByBest(a, b) {
         var spaceGroupA = a.spaceGroup.replace(/\s/g, "");
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");        
-        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) < _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
+        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");              
+        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
     }
 
     var sorted = result.sort(sortByBest).reverse();    
