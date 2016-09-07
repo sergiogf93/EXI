@@ -147,8 +147,7 @@ StockSolutionGrid.prototype._getColumns = function() {
 	}, {
 			header : 'Concentration (mg/ml)',
 			dataIndex : 'concentration',
-			name : 'concentration',
-			name : 'concentration',
+			name : 'concentration',			
 			flex : 1
 	}, 
 	{

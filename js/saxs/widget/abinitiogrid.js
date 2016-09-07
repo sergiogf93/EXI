@@ -16,7 +16,7 @@ function AbinitioGrid(args) {
 	}
 	
 	this.onSelected = new Event(this);
-};
+}
 
 
 AbinitioGrid.prototype.refresh = function(subtractions){

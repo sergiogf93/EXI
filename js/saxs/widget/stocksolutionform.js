@@ -24,10 +24,10 @@ StockSolutionForm.prototype._getButtons = function() {
 	return [ {
 		text : 'Save',
 		handler : function() {
-			var onSuccess = (function(sender, stockSolution){
+			var onSuccess = function(sender, stockSolution){
 					_this.panel.setLoading(false);
 					_this.onSaved.notify();
-			});
+			};
 			if (_this.getStockSolution().bufferId == null){
 				BUI.showError("Buffer field is mandatory");
 				return;

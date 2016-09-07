@@ -71,7 +71,7 @@ function SamplesGrid(args) {
 				}],
 			idProperty : 'blSampleId'
 		});
-};
+}
 
 SamplesGrid.prototype.load = function(crystal) {
 	try{
@@ -79,7 +79,7 @@ SamplesGrid.prototype.load = function(crystal) {
 		this.loadSampleList();
 	}
 	catch(e){
-		EXI.setError(e)
+		EXI.setError(e);
 	}
 		
 };

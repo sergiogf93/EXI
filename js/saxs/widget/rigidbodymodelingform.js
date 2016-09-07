@@ -104,13 +104,13 @@ RigidBodyModelingForm.prototype._getItems = function() {
 						EXI.proposalManager.get(true);
 						_this.load(EXI.proposalManager.getMacromoleculeById(_this.macromolecule.macromoleculeId));
 						_this.panel.setLoading(false);
-					}
+					};
 					
 					
 					
 					EXI.getDataAdapter({
 						onSuccess : onSuccess,
-					}).saxs.macromolecule.removeContactDescriptionFile(_this.macromolecule.macromoleculeId)
+					}).saxs.macromolecule.removeContactDescriptionFile(_this.macromolecule.macromoleculeId);
 				}
 			} ]
 		} ]

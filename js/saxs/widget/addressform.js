@@ -193,7 +193,6 @@ AddressForm.prototype.getPersonPanel = function() {
 						xtype : 'textfield',
 						fieldLabel : 'Billing Reference',
 						margin : "0 0 0 30",
-						xtype : 'textfield',
 						labelWidth : 150,
 						width : 300 
 					} ] }
@@ -243,10 +242,10 @@ AddressForm.prototype.save = function() {
 	var _this = this;
 
 	_this.panel.setLoading();
-	var onSuccess = (function(sender) {
+	var onSuccess = function(sender) {
 		_this.panel.setLoading(false);
 		EXI.getDataAdapter().proposal.proposal.update();
-	});
+	};
 	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
 };
 

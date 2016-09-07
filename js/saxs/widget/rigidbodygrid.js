@@ -22,10 +22,10 @@ RigidModelGrid.prototype.refresh = function(subtractions) {
 	var data  = [];
 	if (subtractions != null){
 		if (subtractions.length > 0){
-			for (j in subtractions){
+			for (var j in subtractions){
 				var subtraction = subtractions[j];
 				if (subtraction.rigidBodyModeling3VOs != null){
-					for (i in subtraction.rigidBodyModeling3VOs){
+					for (var i in subtraction.rigidBodyModeling3VOs){
 						data.push(subtraction.rigidBodyModeling3VOs[i]);
 					}
 				}
