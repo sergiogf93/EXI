@@ -4828,7 +4828,7 @@ XfeViewerMainView.prototype.load = function(xfeFluorescenceSpectrumId) {
 
 };
 
-/*function AutoProcIntegrationAttachmentGrid(args) {
+function AutoProcIntegrationAttachmentGrid(args) {
 	this.id = BUI.id();	
 	this.maxHeight = 300;
 };
@@ -4869,7 +4869,7 @@ AutoProcIntegrationAttachmentGrid.prototype.getPanel = function() {
 		}
 	});
 	return this.panel;
-};*/
+};
 
 /**
 * It shows information from the autoprocessing like cells (a,b,c,alpha,beta,gamma) and also about phasing
