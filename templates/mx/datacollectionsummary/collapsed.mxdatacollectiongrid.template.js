@@ -15,7 +15,7 @@
             <tbody>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Protein</td>
-                  <td  style='padding:0 15px 0 15px;'>{.Protein_acronym}</td>
+                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.Protein_acronym}</td>
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Prefix</td>
@@ -23,7 +23,7 @@
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Images</td>
-                  <td  style='padding:0 15px 0 15px;'>{.totalNumberOfImages}</td>
+                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.totalNumberOfImages}</td>
                </tr>
             </tbody>
          </table>
@@ -38,15 +38,15 @@
             <tbody>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Type</td>
-                  <td  style='padding:0 15px 0 15px;'>{.DataCollectionGroup_experimentType}</td>
+                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.DataCollectionGroup_experimentType}</td>
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Res. (corner)</td>
-                  <td  style='padding:0 15px 0 15px;'>{.DataCollection_resolution} &#8491; ({.DataCollection_resolutionAtCorner} &#8491;)</td>
+                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.DataCollection_resolution} &#8491; ({.DataCollection_resolutionAtCorner} &#8491;)</td>
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Wavelenth</td>
-                  <td  style='padding:0 15px 0 15px;'>{.DataCollection_wavelength} &#8491;</td>
+                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.DataCollection_wavelength} &#8491;</td>
                </tr>
             </tbody>
          </table>

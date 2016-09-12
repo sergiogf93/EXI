@@ -46,14 +46,14 @@
                 <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>                                  
                             <div class="dropup">
                                 {@eq key=items.length value=0}
-                                    <button class="btn btn-xs btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                    <button class="btn btn-xs btn-warning dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Characterization <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                 {/eq}                        
                                 {@gt key=items.length value=0}  
                                     {@eq key=status value="Success"}
-                                        <button class="btn btn-xs btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                        <button class="btn btn-xs btn-success dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Characterization <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                     {/eq} 
                                     {@ne key=status value="Success"}
-                                        <button class="btn btn-xs btn-danger dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Screening <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
+                                        <button class="btn btn-xs btn-danger dropdown-toggle" type="button" data-toggle="dropdown"><span class="glyphicon glyphicon-screenshot"></span> Characterization <span class="badge">{@size key=items /}</span><span class="caret"></span></button>
                                     {/ne}  
                                     <ul class="dropdown-menu">
                                             {#.}
