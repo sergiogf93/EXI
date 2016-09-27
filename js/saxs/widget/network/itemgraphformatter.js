@@ -106,7 +106,7 @@ function ItemFormat(args){
 	this.args.opacity = 1;
 	this.args.fontSize = "8";
 	this.args.fontColor = "#000000";
-	
+	this.args.display = "block";
 	/** For directed edge with arrow **/ 
 	//this.args.arrowSize = 1;
 	

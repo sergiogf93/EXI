@@ -2746,6 +2746,7 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
 };
 
 MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
+    
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);

@@ -34,6 +34,7 @@ ProposalExiController.prototype.init = function() {
 			listView = new SessionListView();
 			/** When selected move to hash * */
 			listView.onSelect.attach(function(sender, selected) {
+                
 				if (EXI.credentialManager.getTechniqueByBeamline(selected[0].beamlineName) == "SAXS"){
 					location.hash = "/session/nav/" + selected[0].sessionId + "/session";
 				}
@@ -42,10 +43,10 @@ ProposalExiController.prototype.init = function() {
 				}
 				
 			});
+            
 			adapter = loadNavigationPanel(listView);
 			adapter.proposal.session.getSessions();
-			
-			
+						
 		}).enter(this.setPageBackground);
 	
 

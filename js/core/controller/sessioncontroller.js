@@ -55,6 +55,7 @@ SessionController.prototype.init = function() {
 
 	/** Loading a single session on the navigation panel * */
 	Path.map("#/session/nav/:sessionId/session").to(function() {	
+        EXI.clearNavigationPanel();
 		var listView = new ExperimentListView();		
 		/** When selected move to hash * */
 		listView.onSelect.attach(function(sender, selected) {
@@ -68,7 +69,16 @@ SessionController.prototype.init = function() {
 				location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
 			}
 		});
-		loadNavigationPanel(listView).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']);
+         var onSuccess = function(sender, data){            
+		    EXI.addNavigationPanel(listView);
+            listView.load(data);            
+            EXI.setLoadingMainPanel(false);    
+          };
+            
+         EXI.getDataAdapter({
+                onSuccess : onSuccess                
+            }).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']); 
+            
 
 	}).enter(this.setPageBackground);
 
