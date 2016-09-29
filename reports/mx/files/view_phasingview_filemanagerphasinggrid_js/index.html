@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">107.73</p>
+      <p class="stat">107.05</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">114</p>
+      <p class="stat">111</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,7 +62,7 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">19.24</p>
+      <p class="stat">19.60</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
@@ -95,10 +95,9 @@
 * @class FileManagerPhasingGrid
 * @constructor
 */
-function FileManagerPhasingGrid(args) {
-	
+function FileManagerPhasingGrid(args) {	
     this.onSelect = new Event(this);
-};
+}
 
 FileManagerPhasingGrid.prototype.load = function(data) {
     this.data = data;
@@ -158,27 +157,25 @@ FileManagerPhasingGrid.prototype.getPanel = function() {
                         flex : 1,                      
                         dataIndex : &#039;filePath&#039;,
                         renderer : function(grid, e, record){
+                            var pdb = null;
+                            var href= null;
                             if (record.data.fileName.endsWith(&quot;.map&quot;)){
-                               var pdb = _this.findPDBMatch(record.data.fileName);
+                                pdb = _this.findPDBMatch(record.data.fileName);
                                 if (pdb != null){
                                     
-                                    var pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
-                                    var map = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(record.data.phasingProgramAttachmentId);
-                                     
-                                    var href= &quot;viewers/uglymol/1mru.html?pdb=&quot; + pdb + &quot;&amp;map=&quot;+map;
+                                    pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
+                                    var map = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(record.data.phasingProgramAttachmentId);                                     
+                                    href= &quot;viewers/uglymol/1mru.html?pdb=&quot; + pdb + &quot;&amp;map=&quot;+map;
                                     return &quot;&lt;a target=&#039;_blank&#039; style=&#039;showme openGridButton&#039; href=&#039;&quot; + href+&quot;&#039;&gt;&lt;div style=&#039;text-align:center;color:white;width:60px;background-color:#3892d3;&#039;&gt;VIEWER&lt;/div&gt;&lt;/a&gt;&quot;;   
                                     
                                 }
                             }
                             
                             if (record.data.fileName.endsWith(&quot;.pdb&quot;)){
-                               var pdb = _this.findPDBMatch(record.data.fileName);
-                                if (pdb != null){
-                                    
-                                    var pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);
-                                    
-                                     
-                                    var href= &quot;viewers/pv/index.html?pdb=&quot; + pdb;
+                                pdb = _this.findPDBMatch(record.data.fileName);
+                                if (pdb != null){                                    
+                                    pdb = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId(pdb.phasingProgramAttachmentId);                                                                         
+                                    href= &quot;viewers/pv/index.html?pdb=&quot; + pdb;
                                     return &quot;&lt;a target=&#039;_blank&#039; style=&#039;showme openGridButton&#039; href=&#039;&quot; + href+&quot;&#039;&gt;&lt;div style=&#039;text-align:center;color:white;width:60px;background-color:#3892d3;&#039;&gt;VIEWER&lt;/div&gt;&lt;/a&gt;&quot;;   
                                     
                                 }

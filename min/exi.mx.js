@@ -4422,7 +4422,7 @@ XfeViewerMainView.prototype.getGrid = function() {
         fields: ['name', 'value', 'x', 'y'],
         sorters: [{ property: 'value', direction: 'DESC' }]
     });
-    return this.grid = Ext.create('Ext.grid.Panel', {
+    this.grid = Ext.create('Ext.grid.Panel', {
         title: 'Labels',
         store: this.store,
         cls: 'border-grid',        
@@ -4487,6 +4487,7 @@ XfeViewerMainView.prototype.getGrid = function() {
             
         }
     });
+    return this.grid;
 };
 
 /**
@@ -4831,7 +4832,7 @@ XfeViewerMainView.prototype.load = function(xfeFluorescenceSpectrumId) {
 function AutoProcIntegrationAttachmentGrid(args) {
 	this.id = BUI.id();	
 	this.maxHeight = 300;
-};
+}
 
 AutoProcIntegrationAttachmentGrid.prototype.load = function(data) {
     if (data){

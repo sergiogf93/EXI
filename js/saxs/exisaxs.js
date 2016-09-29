@@ -24,7 +24,17 @@ ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
 
 ExiSAXS.prototype.getHeader = function(){
-	return '<img class="titleImage" src="../images/logo_EMBL.png"><span class="title">ExiSAXS</span><span class="subtitle">Extended ISPyB for SAXS<sub style="font-size:10px;color:orange">BETA</sub></span>';
+    var html = "";
+    var data = {
+        version         : ExtISPyB.version,
+        release_date    : ExtISPyB.release_date
+       
+        
+    };
+    dust.render("saxsheader", data, function(err, out){
+		html = out;
+     });
+    return html;	
 };
 
 ExiSAXS.prototype.getDataAdapter = function(args){

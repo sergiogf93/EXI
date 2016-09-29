@@ -37,7 +37,7 @@ function BufferGrid(args) {
 	}
 	
 	this.onUpdated = new Event(this);
-};
+}
 
 BufferGrid.prototype._edit = function(bufferId) {
 	var _this = this;
@@ -45,7 +45,7 @@ BufferGrid.prototype._edit = function(bufferId) {
 				return [ {
 					text : 'Save',
 					handler : function() {
-						var onSuccess = (function(sender) {
+						var onSuccess = function(sender) {
 							var onSuccess2 = function(sender, proposals){
 								_this.window.close();
 								_this.onUpdated.notify();
@@ -54,7 +54,7 @@ BufferGrid.prototype._edit = function(bufferId) {
 							_this.panel.setLoading("Updading proposal information");
 							EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
 							
-						});
+						};
 						/** Checking mandatory fields **/
 						if (_this.bufferForm.getBuffer().name == ""){
 							BUI.showWarning("Name field is mandatory");
@@ -75,8 +75,8 @@ BufferGrid.prototype._edit = function(bufferId) {
 					handler : function() {
 						_this.window.close();
 					}
-				} ];
-	};
+				}];
+	}
 
 	this.bufferForm = new BufferForm({height : 400, width : 700});
 	

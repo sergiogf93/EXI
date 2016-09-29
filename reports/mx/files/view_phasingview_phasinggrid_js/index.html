@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">112.42</p>
+      <p class="stat">111.63</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">218</p>
+      <p class="stat">171</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">22.91</p>
+      <p class="stat">20.63</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.09</p>
+      <p class="stat">0.99</p>
     </div>
   </div>
 </div>
@@ -98,8 +98,7 @@
  * @width
  */
 function PhasingGrid(args) {
-	
-};
+}
 
 /**
  * {&quot;processingPrograms&quot;:&quot;grenades_parallelproc&quot;,
@@ -221,16 +220,18 @@ PhasingGrid.prototype.getPanel = function() {
 			flex : 1,
             renderer : function(e, sample, record){
 				var html  = &quot;&quot;;
+                var output = function(err, out){
+                            html = html + &quot;&lt;br /&gt;&quot; + out;
+                };
+                                       
 				try{   
                     var subs =  record.data.children;                    
                     for (var i = 0 ;i &lt; subs.length; i++){ 
                         for (var j = 0 ;j &lt; subs[i].children.length; j++){
                             var child =   subs[i].children[j];
-                            if (child.metric){    
-                                                                                          
+                            if (child.metric){                                                                                              
                                   if (child.statisticsValue){                                       
-                                        child.statistics = [];
-                                       
+                                        child.statistics = [];                                       
                                         for(k=0; k &lt; child.metric.split(&quot;,&quot;).length; k++){
                                             child.statistics.push({
                                                 name : child.metric.split(&quot;,&quot;)[k],
@@ -241,10 +242,7 @@ PhasingGrid.prototype.getPanel = function() {
                                 }
                             }
                         }         
-                        dust.render(&quot;phasinggrid.stats&quot;, subs[i].children, function(err, out){
-                            html = html + &quot;&lt;br /&gt;&quot; + out;
-                        });
-                       
+                        dust.render(&quot;phasinggrid.stats&quot;, subs[i].children, output);
                     }
 				}
 				catch(e){
@@ -252,53 +250,8 @@ PhasingGrid.prototype.getPanel = function() {
 				}
 				return html;
 			}
-		},             
-        {
-			text : &#039;Metrics and Statistics&#039;,
-			dataIndex : &#039;phasingStepType&#039;,
-			flex : 1,
-            hidden : true,
-            renderer : function(e, sample, record){
-				var html  = &quot;&quot;;
-                return html;
-				try{
-                   // if (record.data.metric){
-                    //    if (record.data.statisticsValue){
-                            /*var metricsList = record.data.metric.split(&quot;,&quot;);
-                            var statsList = record.data.statisticsValue.split(&quot;,&quot;);
-                            var data = [];
-                            for(var i =0; i&lt; metricsList.length; i++){
-                                data.push({
-                                   name :  metricsList[i],
-                                   value :  statsList[i],
-                                   
-                                });
-                            }
-                            data.push({
-                                name :  &quot;Low Resolution&quot;,
-                                value :  record.data.lowRes,
-                            });
-                               data.push({
-                                name :  &quot;High Resolution&quot;,
-                                value :  record.data.highRes,
-                            });
-                            */        
-                            
-                            dust.render(&quot;phasinggrid.stats&quot;, record.data, function(err, out){
-                                html = out;
-                            });
-                    //    }
-                        
-                  //  }
-                    
-				
-				}
-				catch(e){
-					return &quot;Parsing error&quot;;
-				}
-				return html;
-			}
-		}
+		}            
+      
 
 		],
 		flex : 1

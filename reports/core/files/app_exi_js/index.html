@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">120.02</p>
+      <p class="stat">119.18</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">310</p>
+      <p class="stat">308</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">37.46</p>
+      <p class="stat">37.85</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.73</p>
+      <p class="stat">2.74</p>
     </div>
   </div>
 </div>
@@ -159,20 +159,19 @@
         
 		authenticationManager.onSuccess.attach(function(sender, data){
             
-			/** This user has been authenticated **/
+			/** This user has been authenticated **/           
 			_this.credentialManager.addCredential(data.user, data.roles, data.token, args.site, args.exiUrl, args.properties);
-			_this.authenticationForm.window.close();
-			
+			_this.authenticationForm.window.close();			
 			var credential = EXI.credentialManager.getCredentialByUserName(data.user);
+          
 			if (credential.isManager()||credential.isLocalContact()){
 				location.hash = &quot;/welcome/manager/&quot; + data.user + &quot;/main&quot;;
 			}
 			else{
-				location.hash = &quot;/welcome/user/&quot; + data.user + &quot;/main&quot;;
-                /*BUI.showError(&quot;Only local contacts are managers are allowed&quot;);
-                location.hash = &quot;#/logout&quot;;*/
+				location.hash = &quot;/welcome/user/&quot; + data.user + &quot;/main&quot;;        
 			}
 			
+            
 			/** Authenticating EXI in the offline system**/            
 			_this.getDataAdapter().exi.offline.authenticate();
 			
@@ -190,32 +189,31 @@
  * This method append to args the values of the active connection: url, token and proposal
  */
 Exi.prototype.appendDataAdapterParameters = function(args) {
-	if (args == null){ args = {};}
-	
-	/** Getting credentials **/
-	var connections = EXI.credentialManager.getConnections();
-	/** Authentication data adapter does not need any token **/
-	if (connections.length &gt; 0){
-		args.url = connections[0].url;
-		args.token = connections[0].token;
-		args.proposal = connections[0].proposal;
-		
-	
-	}
-	return args;	
+    if (!args){ args = {};}
+    
+     /** Is your token still valid */     
+     
+    if (EXI.credentialManager.getCredentials()[0]){        
+        if (!EXI.credentialManager.getCredentials()[0].isValid()){                        
+           location.hash = &#039;/welcome&#039;;
+           return;
+        }        
+    }	
+            
+    var connections = EXI.credentialManager.getConnections();
+    /** Authentication data adapter does not need any token **/
+    if (connections.length &gt; 0){
+        args.url = connections[0].url;
+        args.token = connections[0].token;
+        args.proposal = connections[0].proposal;			
+    }
+    return args;
+        	
 };
 
 
-
 Exi.prototype.getDataAdapter = function(args) {   
-	var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));
-    /** Attaching default error handler */
-    dataAdapter.onError.attach(function(){
-        if (errorCode == &quot;401 Unauthorized&quot;){
-				EXI.setError(errorCode);
-				location.hash = &#039;/logout&#039;;
-			}        
-    });      
+    var dataAdapter =  new DataAdapterFactory(this.appendDataAdapterParameters(args));       
     return dataAdapter;  	
 };
 

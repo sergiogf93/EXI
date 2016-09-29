@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">109.67</p>
+      <p class="stat">110.88</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">112</p>
+      <p class="stat">115</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">51.04</p>
+      <p class="stat">46.54</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.25</p>
+      <p class="stat">1.36</p>
     </div>
   </div>
 </div>
@@ -96,7 +96,9 @@
 }
 
 CredentialManager.prototype.addCredential = function(username, roles, token, url, exiUrl, properties){
-	var credential = new Credential(username, roles, token, url, exiUrl, [], properties);
+    
+    var tokenExpires =  moment().add(3, &#039;hour&#039;);
+	var credential = new Credential(username, roles, token, url, exiUrl, [], tokenExpires, properties);
 	/** Writing to ExtLocalStorage * */
 	if (localStorage.getItem(&quot;credentials&quot;) == null) {
 		localStorage.setItem(&quot;credentials&quot;, &quot;[]&quot;);
@@ -107,11 +109,18 @@ CredentialManager.prototype.addCredential = function(username, roles, token, url
 	this.onLogin.notify(credential);
 };
 
+CredentialManager.prototype.credentialToObject = function(json){
+    return new Credential(json.username,json.roles,	json.token,json.url,json.exiUrl,json.activeProposals,json.tokenExpires,json.properties);
+};
+
 CredentialManager.prototype.getCredentials = function(){
 	var credentials = [];
 	if (JSON.parse(localStorage.getItem(&quot;credentials&quot;)) != null){
 		credentials = JSON.parse(localStorage.getItem(&quot;credentials&quot;));
 	}
+    for (var i=0; i &lt; credentials.length; i++){
+        credentials[i] = this.credentialToObject(credentials[i]);
+    }
 	return credentials;
 };
 
@@ -171,18 +180,12 @@ CredentialManager.prototype.getConnections = function(){
 	return connectors;
 };
 
-CredentialManager.prototype.getCredentialByUserName = function(username, roles, token, url){
-	var credentials = this.getCredentials();
-	for (var i = 0; i &lt; credentials.length; i++) {
-		if (credentials[i].username == username) {
-			return new Credential(
-					credentials[i].username,
-					credentials[i].roles,
-					credentials[i].token,
-					credentials[i].url,
-					credentials[i].activeProposals);
-		}
-	}
+CredentialManager.prototype.getCredentialByUserName = function(username){
+    var found =  _.filter(this.getCredentials(), {username : username});
+    if (found.length &gt; 0){
+        return found[0];
+    }
+	
 };
 
 CredentialManager.prototype.logout = function(username, roles, token, url){

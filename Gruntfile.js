@@ -61,7 +61,11 @@ module.exports = function(grunt) {
                                             'min/exi.mx.js',
 				                   		    'min/precompiled.templates.min.js'
 				                   		   ],
-                                              
+                   'min/exi.saxs.min.js' 		: [				 
+				                   		    'min/exi.js', 
+                                            'min/exi.saxs.js',
+				                   		    'min/precompiled.templates.min.js'
+				                   		   ],                           
                   'min/lightbox.js' 		: [				 
 				                   		    'bower_components/lightbox2/dist/js/lightbox.js'
 				                   		    
@@ -112,7 +116,7 @@ module.exports = function(grunt) {
                     }
                     },
                     files: {
-                            'report': ['js/**/*.js'],                           
+                            'reports/all': ['js/**/*.js'],                           
                     }
                 },
                 mx: {

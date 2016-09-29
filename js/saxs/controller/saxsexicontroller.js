@@ -346,6 +346,37 @@ SAXSExiController.prototype.init = function() {
 
 	
 
+    /** Loading a single session on the navigation panel * */
+	Path.map("#/session/nav/:sessionId/session").to(function() {
+       
+        EXI.clearNavigationPanel();
+		var listView = new SessionSaxsListView();		
+		/** When selected move to hash * */
+		listView.onSelect.attach(function(sender, selected) {
+			if (selected[0].experimentType == "HPLC"){
+				location.hash = "/experiment/hplc/" + selected[0].experimentId + "/main";
+			}
+			if ((selected[0].experimentType == "STATIC")||(selected[0].experimentType == "CALIBRATION")){
+				location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
+			}
+			if (selected[0].experimentType == "TEMPLATE"){
+				location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
+			}
+		});
+         var onSuccess = function(sender, data){            
+		    EXI.addNavigationPanel(listView);
+            listView.load(data);            
+            EXI.setLoadingMainPanel(false);    
+          };
+            
+         EXI.getDataAdapter({
+                onSuccess : onSuccess                
+            }).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']); 
+            
+
+	}).enter(this.setPageBackground);
+    
+    
 	Path.map("#/project/:projectId/run/:runId/main").to(function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];

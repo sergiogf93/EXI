@@ -53,9 +53,7 @@ var ExtISPyB ={
             SAXS:[
                'BM29'
             ],
-            MX:[
-               "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
-            ]
+            MX:[ ]
          }
       },
       {
@@ -67,7 +65,7 @@ var ExtISPyB ={
                'BM29'
             ],
             MX:[
-               "ID23-1","ID29","ID30B","ID23-2","ID30A-3","ID30A-1","ID30A-2","BM14U","BM30A","ID14-1","ID14-2","ID14-3","ID14-4"
+               
             ]
          }
       },

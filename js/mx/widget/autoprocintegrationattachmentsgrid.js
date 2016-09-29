@@ -1,7 +1,7 @@
 function AutoProcIntegrationAttachmentGrid(args) {
 	this.id = BUI.id();	
 	this.maxHeight = 300;
-};
+}
 
 AutoProcIntegrationAttachmentGrid.prototype.load = function(data) {
     if (data){

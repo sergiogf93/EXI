@@ -65,7 +65,7 @@ function SessionGrid(args) {
 
 	this.onSelected = new Event(this);
 
-};
+}
 
 
 SessionGrid.prototype.load = function(sessions) {
@@ -93,12 +93,8 @@ SessionGrid.prototype.filterByBeamline = function(beamlines) {
 SessionGrid.prototype.getToolbar = function(sessions) {
     var _this = this;
     var items = [];
-    for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
-        items.push({           
-                xtype: 'checkbox',
-                boxLabel : EXI.credentialManager.getBeamlines()[i],
-                name : EXI.credentialManager.getBeamlines()[i],
-                handler : function(a,selected,c){                    
+    
+    var myHandler = function(a,selected,c){                    
                     if (selected){
                         _this.beamlineFilter.push(a.boxLabel);
                     }
@@ -106,7 +102,14 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                         _this.beamlineFilter =_.remove(_this.beamlineFilter,a.boxLabel );
                     }
                     _this.filterByBeamline(_this.beamlineFilter);
-                }         
+    };
+            
+    for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
+        items.push({           
+                xtype: 'checkbox',
+                boxLabel : EXI.credentialManager.getBeamlines()[i],
+                name : EXI.credentialManager.getBeamlines()[i],
+                handler : myHandler 
             
         });
     }
@@ -247,11 +250,11 @@ SessionGrid.prototype.getPanel = function() {
                     function getBadge(title, count) {
                         if (count){
                             if (count != 0){
-                                return '<tr><td style="width:50px;">' + title + '</td><td> <span style="margin-left:10px;margin-top:2px;background-color:#207a7a;" class="badge">' + count +'</span></td></tr>';
+                                return '<tr><td><span style="margin-left:10px;margin-top:2px;background-color:#207a7a;" class="badge">' + count +'</span></td><td style="padding-left:10px;">' + title + '</td></tr>';
                             }
                         }
                         return "";
-                    };
+                    }
                     function getTable(record){
                         var html = "<table>";
                         html =   html = html + getBadge("Energy", record.data.energyScanCount);
@@ -259,6 +262,9 @@ SessionGrid.prototype.getPanel = function() {
                         html = html + getBadge("Samples", record.data.sampleCount);
                         html = html + getBadge("Test", record.data.testDataCollectionGroupCount);
                         html = html + getBadge("Collects", record.data.dataCollectionGroupCount);
+                        html = html + getBadge("Calibration", record.data.calibrationCount);
+                        html = html + getBadge("Sample Changer", record.data.sampleChangerCount);
+                        html = html + getBadge("HPLC", record.data.hplcCount);
                         return html + "</table>";  
                     }                                                          
                     return getTable(record);

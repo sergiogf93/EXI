@@ -1,5 +1,5 @@
 function SAXSExiController() {
-    debugger
+    
 	this.init();
 }
 
@@ -320,48 +320,12 @@ SAXSExiController.prototype.routePrepare = function() {
 	
 	
 	
-//	Path.map("#/prepare/shipment").to(function() {
-//		var _this = this;
-//		var shipmentForm = new ShipmentForm({
-//			creationMode : true,
-//			showTitle : false
-//		});
-//		shipmentForm.onSaved.attach(function(sender, shipment) {
-//			location.hash = "/shipping/" + shipment.shippingId + "/main";
-//			window.close();
-//		});
-//		var window = Ext.create('Ext.window.Window', {
-//			title : 'New Shipment',
-//			height : 600,
-//			width : 800,
-//			modal : true,
-//			layout : 'fit',
-//			items : [ shipmentForm.getPanel() ]
-//		}).show();
-//	}).enter(this.setPageBackground);
 	
 
 	Path.map("#/prepare/designer").to(function() {
 			var mainView = new DesignerMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();
-//			function() {
-//				var wizardWidget = new WizardWidget({
-//					windowMode : true,
-//					width : 1200 });
-//
-//				wizardWidget.onFinished.attach(function(sender, result) {
-//					wizardWidget.window.close();
-//					EXI.setLoading();
-//					var onSuccess = (function(sender, experiment) {
-//						location.hash = "/experiment/templateId/" + experiment.experimentId + "/main";
-//					});
-//					wizardWidget.current.setLoading("ISPyB: Creating experiment");
-//					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data);
-//				});
-//
-//				wizardWidget.draw(this.targetId, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers()));
-
 			}).enter(this.setPageBackground);
 };
 
@@ -382,6 +346,37 @@ SAXSExiController.prototype.init = function() {
 
 	
 
+    /** Loading a single session on the navigation panel * */
+	Path.map("#/session/nav/:sessionId/session").to(function() {
+       
+        EXI.clearNavigationPanel();
+		var listView = new SessionSaxsListView();		
+		/** When selected move to hash * */
+		listView.onSelect.attach(function(sender, selected) {
+			if (selected[0].experimentType == "HPLC"){
+				location.hash = "/experiment/hplc/" + selected[0].experimentId + "/main";
+			}
+			if ((selected[0].experimentType == "STATIC")||(selected[0].experimentType == "CALIBRATION")){
+				location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
+			}
+			if (selected[0].experimentType == "TEMPLATE"){
+				location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
+			}
+		});
+         var onSuccess = function(sender, data){            
+		    EXI.addNavigationPanel(listView);
+            listView.load(data);            
+            EXI.setLoadingMainPanel(false);    
+          };
+            
+         EXI.getDataAdapter({
+                onSuccess : onSuccess                
+            }).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']); 
+            
+
+	}).enter(this.setPageBackground);
+    
+    
 	Path.map("#/project/:projectId/run/:runId/main").to(function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];
@@ -435,7 +430,17 @@ ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
 
 ExiSAXS.prototype.getHeader = function(){
-	return '<img class="titleImage" src="../images/logo_EMBL.png"><span class="title">ExiSAXS</span><span class="subtitle">Extended ISPyB for SAXS<sub style="font-size:10px;color:orange">BETA</sub></span>';
+    var html = "";
+    var data = {
+        version         : ExtISPyB.version,
+        release_date    : ExtISPyB.release_date
+       
+        
+    };
+    dust.render("saxsheader", data, function(err, out){
+		html = out;
+     });
+    return html;	
 };
 
 ExiSAXS.prototype.getDataAdapter = function(args){
@@ -561,25 +566,6 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 		] });
 };
 
-SAXSMainMenu.prototype.getDataExplorerMenu = function() {
-	function onItemCheck(item, checked) {
-		if (item.text == "Sessions") {
-			location.hash = "/proposal/session/nav";
-		}
-		if (item.text == "Experiments") {
-			location.hash = "/experiment/nav";
-		}
-	}
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-			{
-				text : 'Sessions',
-				icon : '../images/icon/sessions.png',
-				handler : onItemCheck 
-			}
-		] 
-	});
-};
 
 SAXSMainMenu.prototype.getDataReductionMenu = function() {
 	var _this = this;
@@ -612,6 +598,26 @@ SAXSMainMenu.prototype.getDataReductionMenu = function() {
 };
 
 
+
+SAXSMainMenu.prototype.getDataExplorerMenu = function() {
+	function onItemCheck(item, checked) {
+		if (item.text == "Calendar") {
+			location.hash = "/session/nav";
+		}
+		if (item.text == "Experiments") {
+			location.hash = "/experiment/nav";
+		}
+	}
+	return Ext.create('Ext.menu.Menu', {
+		items : [ 
+			{
+				text : 'Calendar',
+				icon : '../images/icon/sessions.png',
+				handler : onItemCheck 
+			}
+		] 
+	});
+};
 
 SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 	var _this = this;
@@ -784,57 +790,6 @@ DataCollectionListView.prototype.formatData = function(data){
 
 
 
-function ExperimentListView(){
-	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
-	ListView.call(this);
-}
-
-ExperimentListView.prototype.getPanel = ListView.prototype.getPanel;
-ExperimentListView.prototype.load = ListView.prototype.load;
-
-ExperimentListView.prototype.getRow = function(record){
-	var color = "black";
-	/** If experiment is empty then color is gray **/
-		if ((record.data.experimentType != 'HPLC')&&(record.data.measurementDoneCount == 0)&&(record.data.measurementAveragedCount == 0)&&(record.data.dataCollectionDoneCount == 0)){
-			color = '#DEDEDE';
-		}
-		var html = "<table class='listView' style='color:" + color +";'>";
-			html = html + "<tr><td colspan='4'>" + record.data.creationDate+ "</td></tr>";
-			html = html + "<tr><td colspan='4'>" + record.data.name+ "</td></tr>";
-			html = html + "<tr><td style='font-weight:bold;' colspan='4'>" + record.data.experimentType+ "</td></tr>";
-			if ((record.data.experimentType == 'STATIC')||(record.data.experimentType == 'CALIBRATION')){
-				if ((record.data.measurementDoneCount == 0)&&(record.data.measurementAveragedCount == 0)&&(record.data.dataCollectionDoneCount == 0)){
-					html = html + "<tr ><td  style='width:180px;border:1px solid gray;text-align:center;color:" + color +";font-weight:bold;' colspan='4'>EMPTY</td></tr>";
-					
-				}
-				else{
-					html = html + "<tr style='margin-left:5px;'><td style='width:10px;'></td><td>Collected:</td><td>"+ record.data.measurementDoneCount +"/" + record.data.measurementCount + "</td><td>" + new ProgressBar().getPanel(record.data.measurementDoneCount, record.data.measurementCount) + "</td></tr>";
-					html = html + "<tr><td style='width:10px;'></td><td>Averaged:</td><td>"+ record.data.measurementAveragedCount +"/" + record.data.measurementCount + "</td><td>" + new ProgressBar().getPanel(record.data.measurementAveragedCount, record.data.measurementCount) + "</td></tr>";
-					html = html + "<tr><td style='width:10px;'></td><td>Subtracted:</td><td>"+ record.data.dataCollectionDoneCount +"/" + record.data.dataCollectionCount + "</td><td>" + new ProgressBar().getPanel(record.data.dataCollectionDoneCount, record.data.dataCollectionCount) + "</td></tr>";
-				}
-			}
-	return html + "</table>";
-};
-
-ExperimentListView.prototype.getFilter = function(value){
-	return [{property : "name", value : value, anyMacth : true}];
-};
-
-ExperimentListView.prototype.getColumns = function(){
-	var _this = this;
-	return  [
-		        { text: 'Experiment',  flex: 1, dataIndex: 'sessionId', 
-		        	renderer : function(list, token, record){
-		        		return _this.getRow(record);
-		        } }
-		    ];
-};
-
-ExperimentListView.prototype.getFields = function(){
-	return  ['creationDate', 'name', 'experimentType'];
-};
-
-
 function MacromoleculeListView(){
 	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
 	ListView.call(this);
@@ -866,6 +821,82 @@ MacromoleculeListView.prototype.getColumns = function(){
 
 MacromoleculeListView.prototype.getFields = function(){
 	return  ['acronym', 'name', 'comments'];
+};
+
+
+function SessionSaxsListView(){
+	this.sorters = [{property : 'experimentId', direction: 'DESC'}];
+	ListView.call(this);
+}
+
+SessionSaxsListView.prototype.getPanel = ListView.prototype.getPanel;
+SessionSaxsListView.prototype.load = ListView.prototype.load;
+
+SessionSaxsListView.prototype.parseStatistics = function(done, total){
+    if (total){
+        if (done){
+            try{
+                return (done/total)*100;
+            }   
+            catch(err){
+                return 0;
+            }
+            
+        }        
+    }
+    return 0;
+};
+SessionSaxsListView.prototype.getRow = function(record){
+    var html = '';
+   
+    record.data.measured = this.parseStatistics(record.data.measurementDoneCount, record.data.measurementCount);
+    record.data.averaged = this.parseStatistics(record.data.measurementAveragedCount, record.data.measurementCount);
+    record.data.subtracted = this.parseStatistics(record.data.dataCollectionDoneCount, record.data.dataCollectionCount);
+    
+    dust.render("sessionsaxslistview.template", record.data, function(err, out){
+        	html = out;
+     	});
+	return html;
+	/**
+     * var color = "black";
+	 If experiment is empty then color is gray
+		if ((record.data.experimentType != 'HPLC')&&(record.data.measurementDoneCount == 0)&&(record.data.measurementAveragedCount == 0)&&(record.data.dataCollectionDoneCount == 0)){
+			color = '#DEDEDE';
+		}
+		var html = "<table class='listView' style='color:" + color +";'>";
+			html = html + "<tr><td colspan='4'>" + record.data.creationDate+ "</td></tr>";
+			html = html + "<tr><td colspan='4'>" + record.data.name+ "</td></tr>";
+			html = html + "<tr><td style='font-weight:bold;' colspan='4'>" + record.data.experimentType+ "</td></tr>";
+			if ((record.data.experimentType == 'STATIC')||(record.data.experimentType == 'CALIBRATION')){
+				if ((record.data.measurementDoneCount == 0)&&(record.data.measurementAveragedCount == 0)&&(record.data.dataCollectionDoneCount == 0)){
+					html = html + "<tr ><td  style='width:180px;border:1px solid gray;text-align:center;color:" + color +";font-weight:bold;' colspan='4'>EMPTY</td></tr>";
+					
+				}
+				else{
+					html = html + "<tr style='margin-left:5px;'><td style='width:10px;'></td><td>Collected:</td><td>"+ record.data.measurementDoneCount +"/" + record.data.measurementCount + "</td><td>" + new ProgressBar().getPanel(record.data.measurementDoneCount, record.data.measurementCount) + "</td></tr>";
+					html = html + "<tr><td style='width:10px;'></td><td>Averaged:</td><td>"+ record.data.measurementAveragedCount +"/" + record.data.measurementCount + "</td><td>" + new ProgressBar().getPanel(record.data.measurementAveragedCount, record.data.measurementCount) + "</td></tr>";
+					html = html + "<tr><td style='width:10px;'></td><td>Subtracted:</td><td>"+ record.data.dataCollectionDoneCount +"/" + record.data.dataCollectionCount + "</td><td>" + new ProgressBar().getPanel(record.data.dataCollectionDoneCount, record.data.dataCollectionCount) + "</td></tr>";
+				}
+			}
+	return html + "</table>"; **/
+};
+
+SessionSaxsListView.prototype.getFilter = function(value){
+	return [{property : "name", value : value, anyMacth : true}];
+};
+
+SessionSaxsListView.prototype.getColumns = function(){
+	var _this = this;
+	return  [
+		        { text: 'Experiment',  flex: 1, dataIndex: 'sessionId', 
+		        	renderer : function(list, token, record){
+		        		return _this.getRow(record);
+		        } }
+		    ];
+};
+
+SessionSaxsListView.prototype.getFields = function(){
+	return  ['creationDate', 'name', 'experimentType'];
 };
 
 
@@ -2451,49 +2482,88 @@ PrimaryDataMainView.prototype.load = function(selected) {
 };
 
 
-function ShipmentPreparationMainView() {
-	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
-	MainView.call(this);
-	this.title = "How to prepare a Shipment?";
-	this.closable = false;
+
+function ShippingMainView() {
 	
+	MainView.call(this);
+	
+	var _this = this;
+	this.shipmentForm = new ShipmentForm();
+
+	this.shipmentForm.onSaved.attach(function(sender, shipment){
+		location.hash = "#/proposal/shipping/nav?nomain";
+		//_this.tabPanel.setActiveTab(1);
+		
+	});
+	this.caseGrid = new CaseGrid({
+		height : 300
+	});
+	
+	this.caseGrid.onRemove.attach(function(sender, dewar){
+		var onSuccess = function(sender){
+			_this.load(_this.shippingId);
+			_this.panel.setLoading(false);
+		};
+		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.removeDewar(_this.shippingId, dewar.dewarId );
+	});
 }
 
-ShipmentPreparationMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShipmentPreparationMainView.prototype.getContainer = MainView.prototype.getContainer;
+ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
 
-ShipmentPreparationMainView.prototype.getContainer = function() {
-	var text= "The aim of a BioSAXS experiment is to determine the low resolution shape of a macromolecule in solution \n" + 
-			"under physiological conditions. In order to define an experiment or create a shipment ISPyB needs to know the macromolecules and buffers that compose your samples";
-	
-	return {
-		    cls : 'border-grid',
-		    margin : 10,
-			items : [
-						{
-							 html : '<div class="welcome-title"><h2>How to define my samples on ISPyB?</h2> </div>'
+
+ShippingMainView.prototype.getContainer = function() {
+	this.tabPanel =  Ext.createWidget('tabpanel',
+			{
+				margin : 10,
+				defaults : {
+						anchor : '100%'
+				},
+				items : [
+				     	{
+							tabConfig : {
+								title : 'Delivery Details'
+							},
+							items : [ 
+							         	this.shipmentForm.getPanel()
+							]
 						},
 						{
-							 html : '<div class="help-text"> ' + text +'</div>'
-						},
-						{
-							 html :'<div class="welcome-title"><h4>What is a macromolecule and how can I define it on ISPyB?</h4> </div>'
-						},
-						{
-							 html : '<div class="help-text">A macromolecule is a biological construct in solution for investigation</div>'
-						},
-						
-			]
-	};
+							tabConfig : {
+								id : this.id + "grid",
+								title : 'Parcels',
+								icon : '../images/icon/shipping.png'
+							},
+							items : [ 
+							         	this.caseGrid.getPanel()
+							]
+						}
+					]
+			});
+
+	return this.tabPanel;
+
 };
 
 
-
-ShipmentPreparationMainView.prototype.load = function(username) {
+ShippingMainView.prototype.load = function(shippingId) {
+	this.shippingId = shippingId;
 	
+	if (shippingId == null){
+		Ext.getCmp(this.id + "grid").disable(true);
+	}
+	this.panel.setTitle("Shipment");
+	var _this = this;
+	if (shippingId != null){
+		this.panel.setLoading();
+		var onSuccess = function(sender, shipment){
+			_this.shipmentForm.load(shipment);
+			_this.caseGrid.load(shipment);
+			_this.panel.setLoading(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	}
 };
-
 function ShippingWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
@@ -4141,7 +4211,7 @@ function BufferGrid(args) {
 	}
 	
 	this.onUpdated = new Event(this);
-};
+}
 
 BufferGrid.prototype._edit = function(bufferId) {
 	var _this = this;
@@ -4149,7 +4219,7 @@ BufferGrid.prototype._edit = function(bufferId) {
 				return [ {
 					text : 'Save',
 					handler : function() {
-						var onSuccess = (function(sender) {
+						var onSuccess = function(sender) {
 							var onSuccess2 = function(sender, proposals){
 								_this.window.close();
 								_this.onUpdated.notify();
@@ -4158,7 +4228,7 @@ BufferGrid.prototype._edit = function(bufferId) {
 							_this.panel.setLoading("Updading proposal information");
 							EXI.getDataAdapter({onSuccess : onSuccess2}).proposal.proposal.update();
 							
-						});
+						};
 						/** Checking mandatory fields **/
 						if (_this.bufferForm.getBuffer().name == ""){
 							BUI.showWarning("Name field is mandatory");
@@ -4179,8 +4249,8 @@ BufferGrid.prototype._edit = function(bufferId) {
 					handler : function() {
 						_this.window.close();
 					}
-				} ];
-	};
+				}];
+	}
 
 	this.bufferForm = new BufferForm({height : 400, width : 700});
 	
@@ -4355,10 +4425,11 @@ BufferGrid.prototype.test = function(targetId) {
  * #onDuplicateButtonClicked
  */
 function CaseGrid(args) {
+
 	this.height = 100;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
-	
+
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
@@ -4427,11 +4498,17 @@ CaseGrid.prototype._getRemoveParcelButton = function(dewarId, value) {
 CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, id) {
 	var html = "";
 	html = html + "<tr  class='tr-component'>";
+	
 
 	html = html + "<td>";
 	html = html +  this._getEditPuckButton(type, Number(id), "Edit");
 	html = html + "</td>";
 
+	/*
+	html = html + "<td>";
+	html = html + "<img style='cursor:pointer;' name='edit' id='" + type +"_" + id +"' src=\'" + icon + "' />";
+	html = html + "</td>";
+	*/
 	html = html + "<td>";
 	html = html +  type;
 	html = html + "</td>";
@@ -4439,10 +4516,14 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 	html = html + "<td>";
 	html = html +  code;
 	html = html + "</td>";
+
 	
 	html = html + "<td>";
 	html = html +  capacity;
 	html = html + "</td>";
+
+	
+
 
 	if (type == "Stock Solution"){
 		html = html + "<td>";
@@ -4455,6 +4536,8 @@ CaseGrid.prototype._getComponentRowHTML = function(icon, type, code, capacity, i
 		html = html +  this._getRemoveContainerButton(Number(id), "Remove");
 		html = html + "</td>";
 	}
+
+	
 	
 	html = html + "</tr>";
 	return html;
@@ -4536,6 +4619,7 @@ CaseGrid.prototype._getParcelHTML = function(dewar) {
 CaseGrid.prototype._getColumns = function() {
 	var _this = this;
 
+
 	var columns = [
 		{
 			header : 'General',
@@ -4557,7 +4641,7 @@ CaseGrid.prototype._getColumns = function() {
 			flex : 0.5,
 			renderer : function(grid, opts, record){
 				var deserialized = JSON.parse(record.data.serialized);
-				
+				debugger
 				var dewarId = deserialized[0].Dewar_dewarId;
 				var items = [];
 				
@@ -4571,11 +4655,11 @@ CaseGrid.prototype._getColumns = function() {
 								}
 
 								items.push({
-								    type 		: deserialized[i].Container_containerType,
-								    code 		: code,
+								    type 	: deserialized[i].Container_containerType,
+								    code 	: code,
 								    capacity 	: deserialized[i].Container_capacity,
 								    sampleCount : deserialized[i].sampleCount,
-								    id 			: deserialized[i].Container_containerId,
+								    id 		: deserialized[i].Container_containerId,
 								 
 								});
 								
@@ -4586,29 +4670,42 @@ CaseGrid.prototype._getColumns = function() {
 				
 				/** Stock Solutions **/
 				var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewarId);
-				for (var i = 0; i < stockSolutions.length; i++) {
-						items.push({
-										type 		: "Stock Solution",
-	         					    	code 		: stockSolutions[i].name,
-	         					    	capacity 	:	stockSolutions[i].volume + "ml",
-	         					    	sampleCount :	"",
-	         					    	id 			: 	stockSolutions[i].stockSolutionId
-						 
-						});
-						
-				}
+                if(stockSolutions){
+                    for (var i = 0; i < stockSolutions.length; i++) {                        
+                            items.push({
+                                    type 	: "Stock Solution",
+                                            code 	: stockSolutions[i].name,
+                                        capacity :	stockSolutions[i].volume + "ml",
+                                        sampleCount :	"",
+                                        id : 	stockSolutions[i].stockSolutionId                            
+                            });                            
+                    }
+                }
 				/** Rendering on HTML **/
 				return _this._getComponentHTML(dewarId, items);
 			}
 		}
+		/*{
+			header : 'Comments',
+			dataIndex : 'Dewar_comments',
+			name : 'type',
+			type : 'string',
+			flex : 1,
+			renderer : function(grid, opts, record){
+				var deserialized = JSON.parse(record.data.serialized);
+				return deserialized[0].Dewar_comments;
+			}
+		},*/
 	];
 	return columns;
 };
 
 CaseGrid.prototype._getTopButtons = function() {
 	var _this = this;
+	/** Actions buttons **/
 	var actions = [];
 
+	/** ADD BUTTON **/
 	actions.push(Ext.create('Ext.Action', {
 		icon : '../images/icon/add.png',
 		text : 'Add',
@@ -4869,7 +4966,6 @@ CaseGrid.prototype.getPanel = function() {
 									if (containerId != null){
 										var onSuccess = function(sender, puck){
 											puckForm.load(puck);
-										
 										};
 										EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(containerId,containerId,containerId);
 									}
@@ -4933,20 +5029,6 @@ CaseGrid.prototype.getPanel = function() {
 	return this.panel;
 };
 
-/*
-var canvas = SVG.createSVGCanvas(document.getElementById("testXVG"), [["width", 1000], ["height", 1000]])
-
-var steps = 10;
-var centerX = 500;
-var centerY = 500;
-var radius = 400;
-var xValues = []
-var yValues = []
-for (var i = 0; i < steps; i++) {
-    xValues[i] = (centerX + radius * Math.cos(2 * Math.PI * i / steps));
-    yValues[i] = (centerY + radius * Math.sin(2 * Math.PI * i / steps));
-    SVG.drawCircle(xValues[i], yValues[i], 100, canvas, [["fill", "green"]]);
-}*/
 /**
  * Example form
  * 
@@ -6421,6 +6503,556 @@ FrameSelectorGrid.prototype.getPanel = function() {
 };
 
 /**
+ * Class for managing wizards
+ * 
+ * @title
+ * @description
+ * @data
+ * @onNextFn
+ * @onBackFn
+ **/ 
+function GenericStepWizardForm(title, description, data, onNextFn, onBackFn){
+	this.id = BUI.id();
+	this.title = title;
+	this.description = description;
+	this.data = data;
+	this.onNext = onNextFn;
+	this.onBack = onBackFn;
+}
+
+GenericStepWizardForm.prototype.getForm = function(){
+	alert("[getForm] Not implemented");
+
+};
+
+GenericStepWizardForm.prototype.getNextForm = function(){
+	alert("[getNextForm] Not implemented");
+};
+
+/** When coming back to the same form **/
+GenericStepWizardForm.prototype.reload = function(){
+	alert("[getNextForm] Not implemented");
+};
+
+
+
+
+function HPLCGraph(args) {
+	this.width = 600;
+	this.height = 600;
+	this.title = '';
+	this.bbar = false;
+	this.plotInnerPanelPadding = 10;
+	this.plotPanelPadding = 10;
+	this.id = BUI.id();
+
+	this.hidePlots = null;
+	this.xlabel = "";
+	this.scaled = false;
+	this.xParam = null;
+	this.showRangeSelector = true;
+	this.interactionModel = null;
+
+	/** for each stat the max and minimum value when it is scaled in order to show correctly in the legend **/
+	this.ranges = {};
+	if (args != null) {
+		if (args.interactionModel != null) {
+			this.interactionModel = args.interactionModel;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.bbar != null) {
+			this.bbar = args.bbar;
+		}
+		if (args.title != null) {
+			this.title = args.title;
+		}
+		if (args.plots != null) {
+			this.plots = args.plots;
+		}
+
+		if (args.scaled != null) {
+			this.scaled = args.scaled;
+		}
+		if (args.xlabel != null) {
+			this.xlabel = args.xlabel;
+		}
+		if (args.xParam != null) {
+			this.xParam = args.xParam;
+		}
+		if (args.showRangeSelector != null) {
+			this.showRangeSelector = args.showRangeSelector;
+		}
+	}
+
+	this.onZoomX = new Event(this);
+	this.onResetZoom = new Event(this);
+	this.dblclick = new Event(this);
+	this.onClearSelection = new Event(this);
+}
+
+HPLCGraph.prototype.getMenu = function() {
+	var _this = this;
+	/** Actions buttons **/
+	var actions = [];
+
+	function toggle(item, pressed) {
+		if (pressed) {
+			_this.plots[item.param] = true;
+		} else {
+			delete _this.plots[item.param];
+		}
+		_this.reloadData(this.hplcData);
+	}
+
+	for (var i = 0; i < this.hplcData.length; i++) {
+		if (this.hplcData[i].showOnMenu != false) {
+			var param = this.hplcData[i].param;
+			var style = "style='padding:0 0px 0 5px;'";
+			actions.push({
+				text : "<table><tr><td>" + BUI.getRectangleColorDIV(this.hplcData[i].color, 10, 10) + "</td><td " + style + "> "
+						+ this.hplcData[i].label + "</td></tr></table>",
+				id : _this.id + param,
+				param : param,
+				enableToggle : true,
+				scope : this,
+				toggleHandler : toggle,
+				pressed : (_this.plots[param] != null) });
+		}
+	}
+	actions.push("-");
+
+	actions.push({
+		text : "Scale",
+		enableToggle : true,
+		scope : this,
+		pressed : this.scaled,
+		icon : '../images/icon_graph.png',
+		toggleHandler : function(item, pressed) {
+			_this.scaled = pressed;
+			_this.reloadData(this.hplcData);
+		} });
+
+	actions.push("->");
+	actions.push({
+		text : "Save",
+		scope : this,
+		icon : 'images/icon/ic_get_app_black_24dp.png',
+		handler : function(item, pressed) {
+			var largeImage = document.createElement("img");
+			largeImage.style.display = 'block';
+			largeImage.style.width = 200 + "px";
+			largeImage.style.height = 200 + "px";
+			largeImage.setAttribute('src', Dygraph.Export.asCanvas(this.dygraphObject.dygraph).toDataURL());
+			window.open(Dygraph.Export.asCanvas(this.dygraphObject.dygraph).toDataURL(), 'Image', '');
+		} });
+
+	return actions;
+};
+
+/** Looks for the maximum value and then divide everything but that value **/
+HPLCGraph.prototype.scaledData = function(data) {
+	for (var i = 0; i < data.length; i++) {
+		var values = this.getMaxAndMinValue(data[i]);
+		data[i] = this.divideValuesByMax(data[i], values.max);
+		this.ranges[data[i].label] = values;
+	}
+	return data;
+};
+
+/** Given a stat float[] and a max number it will divide each value by max **/
+HPLCGraph.prototype.divideValuesByMax = function(stat, max) {
+	for (var j = 0; j < stat.data.length; j++) {
+		if (max != 0) {
+			stat.data[j] = Number(stat.data[j]) / max;
+			stat.std[j] = Number(stat.std[j]) / max;
+		}
+	}
+	return stat;
+};
+
+/** returns max value of a stat **/
+HPLCGraph.prototype.getMaxAndMinValue = function(stat) {
+	var max = 0;
+	var min = stat.data[0];
+	for (var j = 0; j < stat.data.length; j++) {
+		if (Number(stat.data[j]) > max) {
+			max = Number(stat.data[j]);
+		}
+		if (Number(stat.std[j]) > max) {
+			max = Number(stat.std[j]);
+		}
+		if (Number(stat.data[j]) < min) {
+			min = Number(stat.data[j]);
+		}
+	}
+	return {
+		max : Number(max),
+		min : Number(min) };
+};
+
+HPLCGraph.prototype.getPoint = function(data, i) {
+	var point = [ 10, 10, 10 ];
+	var y = parseFloat(data.data[i]);
+	var error = parseFloat(data.std[i]);
+	if (data.fdata == null) {
+		return [ y - error, y, y + error ];
+	} else {
+		if (data.fstd != null) {
+			return [ data.fstd(y - error), data.fdata(y), data.fstd(y + error) ];
+		}
+		return [ data.fdata(y) - error, data.fdata(y), data.fdata(y) + error ];
+	}
+	return point;
+};
+
+HPLCGraph.prototype.reloadData = function(hplcData) {
+	this.panel.setLoading(false);
+	this.hplcData = hplcData;
+
+	var data = hplcData;
+
+
+	if (this.scaled) {
+		data = this.scaledData(JSON.parse(JSON.stringify(hplcData)));
+	}
+	var paramIndex = {};
+	var parsed = [];
+	var j = 0;
+	for (var i = 0; i < data[0].data.length - 1; i++) {
+		var aux = [];
+		for (j = 0; j < data.length; j++) {
+			if (this.plots != null) {
+				if (this.plots[data[j].param] != null) {
+					aux.push(this.getPoint(data[j], i));
+					paramIndex[data[j].param] = aux.length - 1;
+				}
+			} else {
+				aux.push([ data[j].data[i] - data[j].std[i], data[j].data[i], data[j].data[i] + data[j].std[i] ]);
+			}
+		}
+		parsed.push([]);
+
+		var index = i;
+		if (this.xParam != null) {
+			index = parseFloat(data[this.xParam].data[i]);
+		}
+
+		parsed[parsed.length - 1].push(index);
+
+		for (j = 0; j < data.length; j++) {
+			if (this.plots != null) {
+				if (this.plots[data[j].param] != null) {
+					parsed[parsed.length - 1].push(aux[paramIndex[data[j].param]]);
+				}
+			} else {
+				parsed[parsed.length - 1].push(aux[j]);
+			}
+		}
+	}
+
+	var colors = [];
+	var labels = [ "" ];
+	for (j = 0; j < data.length; j++) {
+		if (this.plots != null) {
+			if (this.plots[data[j].param] != null) {
+				colors.push(data[j].color);
+				labels.push(data[j].label);
+			}
+		} else {
+			parsed[parsed.length - 1].push(aux[j]);
+		}
+	}
+
+	this._renderDygraph(parsed, colors, labels);
+};
+
+HPLCGraph.prototype._renderDygraph = function(parsed, colors, labels) {
+	var _this = this;
+	Ext.getCmp(this.id).setWidth(this.panel.getWidth());
+	this.dygraphObject = new StdDevDyGraph(this.id, {
+		width : this.panel.getWidth() - 20,
+		height : this.height - 10,
+		xlabel : this.xlabel,
+		showRangeSelector : this.showRangeSelector,
+		interactionModel : this.interactionModel,
+		scaled : this.scaled
+//		ranges : this.ranges 
+	});
+	this.dygraphObject.draw(parsed, colors, labels);
+
+	var _this = this;
+	this.dygraphObject.onZoomX.attach(function(sender, args) {
+		try {
+			_this.onZoomX.notify(args);
+		} catch (e) {}
+	});
+
+	this.dygraphObject.onResetZoom.attach(function(sender, args) {
+		try {
+			_this.onResetZoom.notify(args);
+		} catch (e) {}
+	});
+
+	this.dygraphObject.dblclick.attach(function(sender, args) {
+		try {
+			_this.dblclick.notify(args);
+		} catch (e) {}
+	});
+
+};
+
+HPLCGraph.prototype.loadData = function(data) {
+	var _this = this;
+	this.reloadData(data);
+	this.panel.addDocked({
+		cls : 'hplcMenu',
+		xtype : 'toolbar',
+		items : this.getMenu() });
+
+	if (this.bbar == true) {
+		this.panel.addDocked({
+			border : 1,
+			xtype : 'toolbar',
+			dock : 'bottom',
+			cls : 'hplcMenu',
+			items : [ {
+				xtype : 'numberfield',
+				id : 'main_field_start',
+				fieldLabel : 'Range from',
+				width : 200,
+				labelWidth : 100,
+				value : 0,
+				minValue : 0 }, {
+				xtype : 'numberfield',
+				id : 'main_field_end',
+				fieldLabel : 'to',
+				width : 130,
+				labelWidth : 30,
+				value : 0,
+				minValue : 0 }, {
+				xtype : 'button',
+				text : 'Go',
+				handler : function() {
+					var start = parseFloat(Ext.getCmp("main_field_start").getValue());
+					var end = parseFloat(Ext.getCmp("main_field_end").getValue());
+
+					if (start < 0) {
+						start = 0;
+					}
+					if (end < 0) {
+						end = 0;
+					}
+					if (start > end) {
+						var aux = end;
+						end = start;
+						start = aux;
+					}
+
+					_this.dygraphObject.dygraph.updateOptions({
+						isZoomedIgnoreProgrammaticZoom : true,
+						dateWindow : [ start, end ] });
+				} },
+				"->",
+				 {
+					xtype : 'button',
+					text : 'Clear Selection',
+					handler : function() {
+						_this.onClearSelection.notify();
+					} }
+					] });
+	}
+};
+
+HPLCGraph.prototype.getPanel = function() {
+	var _this = this;
+	this.panel = Ext.create('Ext.panel.Panel', {
+		padding : this.plotPanelPadding,
+		//		width : this.width + 4 * this.plotInnerPanelPadding,
+		//		height : this.height + 4 * this.plotInnerPanelPadding - 100,
+		items : [ {
+			html : "",
+			id : this.id,
+			flex : 1,
+			height : this.height } ] });
+
+	this.panel.on("afterrender", function(panel) {
+		document.getElementById(this.id).setAttribute("style",
+				"border: 1px solid #000000; height:" + (panel.getHeight() - 1) + "px;width:" + (panel.getWidth() - 50) + "px;");
+
+	});
+
+	return this.panel;
+};
+
+HPLCGraph.prototype.input = function() {
+	return DATADOC.getHPLCData();
+};
+
+HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
+	var data = {};
+	data.frameNumber = frameNumber;
+	for ( var key in this.hplcData) {
+		data[this.hplcData[key].label] = this.hplcData[key].data[frameNumber];
+	}
+	return data;
+};
+
+HPLCGraph.prototype.test = function(targetId) {
+	var mainPlotPanel = new HPLCGraph({
+		title : 'I0',
+		width : 800,
+		height : 400,
+		plots : {
+			"I0" : true,
+			"Rg" : true,
+			"Mass" : true },
+		xlabel : "HPLC Frames",
+		scaled : this.scaled,
+		interactionModel : {
+			'dblclick' : function(event, g, context) {} } });
+	mainPlotPanel.getPanel().render(targetId);
+	mainPlotPanel.loadData(mainPlotPanel.input());
+
+};
+
+function MergesHPLCGraph(args) {
+	HPLCGraph.prototype.constructor.call(this, args);
+
+	//	this.peakColors = ["#00FB42", "#00BA31", "#007C21", "#003E10"];
+	this.peakColors = [ "#DEBD00", "#6D9100", "#872900", "#0092CC" ];
+}
+
+MergesHPLCGraph.prototype.scaledData = HPLCGraph.prototype.scaledData;
+MergesHPLCGraph.prototype.divideValuesByMax = HPLCGraph.prototype.divideValuesByMax;
+MergesHPLCGraph.prototype.getMaxAndMinValue = HPLCGraph.prototype.getMaxAndMinValue;
+MergesHPLCGraph.prototype.getPoint = HPLCGraph.prototype.getPoint;
+MergesHPLCGraph.prototype.reloadData = HPLCGraph.prototype.reloadData;
+MergesHPLCGraph.prototype._renderDygraph = HPLCGraph.prototype._renderDygraph;
+MergesHPLCGraph.prototype.loadData = HPLCGraph.prototype.loadData;
+MergesHPLCGraph.prototype.getPanel = HPLCGraph.prototype.getPanel;
+MergesHPLCGraph.prototype.getDataByFrameNumber = HPLCGraph.prototype.getDataByFrameNumber;
+
+MergesHPLCGraph.prototype.setPeaks = function(data) {
+	this.peaks = data;
+	/** get size of peaks **/
+	this.peakKeys = [];
+	this.colorPeak = {};
+	var colorCount = 1;
+	for ( var key in this.peaks) {
+		if (this.peaks.hasOwnProperty(key)) {
+			var color = this.peakColors[colorCount % this.peakColors.length];
+			colorCount = colorCount + 1;
+			this.peakKeys.push(key);
+			this.colorPeak[key] = color;
+		}
+	}
+	this.peakKeys.sort();
+};
+
+MergesHPLCGraph.prototype.getMenu = function() {
+	var _this = this;
+	/** Actions buttons **/
+	var actions = [];
+
+	function toggle(item, pressed) {
+		if (pressed) {
+			_this.plots[item.param] = true;
+		} else {
+			delete _this.plots[item.param];
+		}
+		_this.reloadData(_this.hplcData);
+	}
+
+	/** Toolbar for peaks  Average **/
+	if (this.peaks != null) {
+		var items = [];
+		for (var i = 0; i < this.peakKeys.length; i++) {
+			var color = this.colorPeak[this.peakKeys[i]];
+			items.push({
+				text : "<span style='color:" + color + "; font-weight:bold;'>Peak #" + i + " "
+						+ this.peakKeys[i].replace("- ", " to #").replace(".0", "").replace(".0", "") + "</span>",
+				peakid : this.peakKeys[i],
+				checked : false,
+				checkHandler : function(sender, pressed) {
+					var item = new Object();
+					item.param = sender.peakid;
+					toggle(item, pressed);
+				} });
+		}
+
+		var menu = Ext.create('Ext.menu.Menu', {
+			id : 'mainMenu',
+
+			style : {
+				overflow : 'visible' },
+			items : items });
+		var tb = Ext.create('Ext.toolbar.Toolbar');
+		tb.add({
+			text : 'Peaks Avg.',
+			menu : menu });
+		actions.push(tb);
+	}
+
+	for (var i = 0; i < this.hplcData.length; i++) {
+		if (this.hplcData[i].showOnMenu != false) {
+			var param = this.hplcData[i].param;
+			var style = "style='padding:0 0px 0 5px;'";
+			actions.push({
+				text : "<table><tr><td>" + BUI.getRectangleColorDIV(this.hplcData[i].color, 10, 10) + "</td><td " + style + "> "
+						+ this.hplcData[i].label + "</td></tr></table>",
+				id : _this.id + param,
+				param : param,
+				enableToggle : true,
+				scope : this,
+				margin : 5,
+				toggleHandler : toggle,
+				pressed : (_this.plots[param] != null) });
+		}
+	}
+
+	actions.push("->");
+	actions.push({
+		text : "Save",
+		scope : this,
+		icon : 'images/icon/ic_get_app_black_24dp.png',
+		handler : function(item, pressed) {
+			var largeImage = document.createElement("img");
+			largeImage.style.display = 'block';
+			largeImage.style.width = 200 + "px";
+			largeImage.style.height = 200 + "px";
+			largeImage.setAttribute('src', Dygraph.Export.asCanvas(this.dygraphObject.dygraph).toDataURL());
+			window.open(Dygraph.Export.asCanvas(this.dygraphObject.dygraph).toDataURL(), 'Image', '');
+		} });
+
+	return actions;
+};
+
+MergesHPLCGraph.prototype.input = function() {
+	return DATADOC.getScatteringHPLCFrameData();
+};
+
+MergesHPLCGraph.prototype.test = function(targetId) {
+	var mainPlotPanel = new MergesHPLCGraph({
+		title : 'Scattering',
+		width : this.plotWidth,
+		height : 500,
+		showRangeSelector : false,
+		xParam : 0,
+		xlabel : "scattering_I",
+		plots : {
+			"scattering_I" : true,
+			"subtracted_I" : true,
+			"buffer_I" : true } });
+	mainPlotPanel.getPanel().render(targetId);
+	mainPlotPanel.loadData(mainPlotPanel.input());
+};
+
+/**
  * Macromolecule form with the general parameters of a macromolecule
  * 
  * @witdh
@@ -7064,6 +7696,837 @@ MacromoleculeGrid.prototype.test = function(targetId) {
 	var panel = macromoleculeGrid.getPanel(BIOSAXS.proposal.macromolecules);
 	panel.render(targetId);
 };
+
+/** MEASUREMENTS SELECTOR **/
+function MeasurementCreatorStepWizardForm(macromolecules, buffers,args) {
+	var _this = this;
+
+	this.height = 700;
+	this.noNext = false;
+
+	this.macromolecules = macromolecules;
+	this.buffers= buffers;
+	
+	GenericStepWizardForm.call(this, "Define Measurements", {
+		margin : "0 0 0 0",
+		width : 800,
+		border : 0,
+		html : "Define only the macromolecule's measurement you want to make. This wizard will add <span style='font-weight:bold;'> buffers' measurement needed for substraction automatically. </span>"
+	}, {
+		measurementsSelected : null
+	},
+	/** Fuction next **/
+	function() {
+//		if (_this.noNext) {
+			var result = {
+				name : Ext.getCmp(_this.id + "name").getValue(),
+				comments :Ext.getCmp(_this.id + "comments").getValue(),
+				data : JSON.stringify(_this.parseMeasurements(_this.data.measurementsSelected))
+			};
+			_this.onWizardFinished.notify(result);
+//		}
+	}, function() {
+	});
+
+	if (args != null) {
+		if (args.noNext != null) {
+			this.noNext = args.noNext;
+		}
+	}
+
+	if (this.noNext) {
+		this.onWizardFinished = new Event(this);
+	}
+	
+	this.onWizardFinished = new Event(this);
+}
+
+MeasurementCreatorStepWizardForm.prototype.setData = function(data) {
+	this.data.measurementsSelected = data;
+	var buffers = {};
+	var macromolecules = {};
+	for ( var i = 0; i < this.data.measurementsSelected.length; i++) {
+		var record = this.data.measurementsSelected[i];
+		if (buffers[record.bufferId] == null) {
+			buffers[record.bufferId] = {
+				buffer : record.buffer_acronym,
+				bufferId : record.bufferId,
+				volume : 0,
+				concentration : 0
+			};
+		}
+
+		var macromoleculeId = record.macromoleculeId + "_" + record.bufferId + "_" + record.concentration;
+		if (macromolecules[macromoleculeId] == null) {
+			macromolecules[macromoleculeId] = {
+				macromolecule : record.acronym,
+				macromoleculeId : record.macromoleculeId,
+				buffer : record.buffer_acronym,
+				bufferId : record.bufferId,
+				volume : 0,
+				concentration : record.concentration
+			};
+		}
+
+		buffers[record.bufferId].volume = Number(buffers[record.bufferId].volume) + (2 * record.volumeToLoad);
+		macromolecules[macromoleculeId].volume = Number(macromolecules[macromoleculeId].volume) + (record.volumeToLoad);
+	}
+
+};
+
+MeasurementCreatorStepWizardForm.prototype.getSingleMeasurementForm = function() {
+	var macromoleculesComboManager = BIOSAXS_COMBOMANAGER.getComboMacromoleculeByMacromolecules(this.macromolecules, {
+		width : 250,
+		labelWidth : 100
+	});
+	var buffersCombo = BIOSAXS_COMBOMANAGER.getComboBuffers(this.buffers, {
+		margin : "0 0 0 50",
+		width : 250,
+		labelWidth : 100
+	});
+
+	var addButton = Ext.create('Ext.Button', {
+		width : 200,
+		height : 25,
+		margin : "0 0 20 300",
+		text : 'Add',
+		scope : this,
+		handler : function() {
+			var quantity = Ext.getCmp(this.id + "quantity").getValue();
+			var measurements = [];
+			for (var i = 0; i < quantity; i++) {
+				measurements.push(
+						{
+//							acronym : BIOSAXS.proposal.getMacromoleculeById(macromoleculesComboManager.getValue()).acronym,
+							acronym : EXI.proposalManager.getMacromoleculeById(macromoleculesComboManager.getValue()).acronym,
+							
+							macromoleculeId : macromoleculesComboManager.getValue(),
+							bufferId : buffersCombo.getValue(),
+							buffer_acronym :EXI.proposalManager.getBufferById(buffersCombo.getValue()).acronym,
+							concentration : Ext.getCmp(this.id + "conc").getValue(),
+							volumeToLoad : Ext.getCmp(this.id + "volume").getValue(),
+							exposureTemperature : Ext.getCmp(this.id + "seu").getValue(),
+							transmission : Ext.getCmp(this.id + "transmission").getValue(),
+							waitTime : Ext.getCmp(this.id + "waitTime").getValue(),
+							viscosity : Ext.getCmp(this.id + "viscosity").getValue(),
+							flow : Ext.getCmp(this.id + "flow").getValue()
+						});
+			}
+//			this.measurementGrid.load(measurements);
+			this.measurementGrid.store.loadData(measurements, true);
+
+			this.setData(JSON.parse(Ext.encode(Ext.pluck(this.measurementGrid.grid.getStore().data.items, 'data'))));
+		}
+	});
+
+	return Ext.create('Ext.panel.Panel', {
+		padding : "0 0 0 0",
+		margin : "0 10 0 0",
+		height : 240,
+		width : 1150,
+		cls : 'border-grid',
+		items : [ {
+			xtype : 'container',
+			layout : 'hbox',
+			margin : "10 10 0 10",
+			items : [ 
+			    macromoleculesComboManager, 
+			    buffersCombo,  
+			    {
+				xtype : 'numberfield',
+				id : this.id + "quantity",
+				fieldLabel : 'Repeat',
+				labelWidth : 100,
+				width : 220,
+				margin : "5 0 0 120",
+				minValue : 0,
+				maxValue : 300,
+				value : 1
+			} ]
+		}, {
+			xtype : 'container',
+			layout : 'hbox',
+			margin : "10 10 0 10",
+			items : [ {
+				xtype : 'numberfield',
+				id : this.id + "conc",
+				fieldLabel : 'Conc. (mg/ml)',
+				labelWidth : 100,
+				width : 220,
+				margin : "5 0 0 0",
+				minValue : 0,
+				maxValue : 300,
+				value : 1
+			}, {
+				xtype : 'numberfield',
+				id : this.id + "seu",
+				fieldLabel : 'Exposure. Temp.',
+				labelWidth : 100,
+				width : 220,
+				margin : "5 0 0 80",
+				value : 4,
+				minValue : 4,
+				maxValue : 60
+			} ]
+		}, {
+			xtype : 'container',
+			margin : "10 10 0 10",
+			layout : 'hbox',
+			items : [ {
+				xtype : 'numberfield',
+				id : this.id + "volume",
+				fieldLabel : 'Vol. To Load (&#181l)',
+				labelWidth : 100,
+				width : 220,
+				value : 40,
+				margin : "5 0 0 0",
+				minValue : 10,
+				maxValue : 300
+			},
+
+			{
+				xtype : 'numberfield',
+				id : this.id + "transmission",
+				fieldLabel : 'Transmission (%)',
+				labelWidth : 100,
+				width : 220,
+				margin : "5 0 0 80",
+				value : 100,
+				minValue : 0,
+				maxValue : 100
+			}
+
+			]
+		}, {
+			xtype : 'container',
+			layout : 'hbox',
+			margin : "10 10 0 10",
+			items : [ {
+				xtype : 'numberfield',
+				id : this.id + "waitTime",
+				fieldLabel : 'Wait Time',
+				labelWidth : 100,
+				width : 220,
+				value : 0,
+				minValue : 0,
+				maxValue : 100
+			}, {
+				xtype : 'combo',
+				id : this.id + "viscosity",
+				store : [ "low", "medium", "high" ],
+				fieldLabel : 'SC Viscosity',
+				value : "low",
+				labelWidth : 100,
+				width : 220,
+				margin : "0 0 0 80"
+			}, {
+				xtype : 'checkbox',
+				id : this.id + "flow",
+				checked : true,
+				fieldLabel : 'Flow',
+				labelWidth : 100,
+				width : 250,
+				margin : "0 0 0 80"
+			} ]
+		}, {
+			xtype : 'container',
+			layout : 'hbox',
+			margin : "10 0 0 0",
+			items : [ addButton ]
+		} ]
+	});
+};
+
+
+MeasurementCreatorStepWizardForm.prototype.getConcentrationMeasurementForm = function() {
+	
+	var macromoleculesComboManager = BIOSAXS_COMBOMANAGER.getComboMacromoleculeByMacromolecules(this.macromolecules, {
+		width : 300,
+		labelWidth : 100
+	});
+	var buffersCombo = BIOSAXS_COMBOMANAGER.getComboBuffers(this.buffers, {
+//		margin : "0 0 0 80",
+		width : 300,
+		labelWidth : 100
+	});
+
+	var addButton = Ext.create('Ext.Button', {
+		width : 200,
+		height : 25,
+		margin : "0 0 20 300",
+		text : 'Add',
+		scope : this,
+		handler : function() {
+			var macromoleculeId = macromoleculesComboManager.getValue();
+			var bufferId = buffersCombo.getValue();
+			var concentrationCount = Ext.getCmp(this.id + "_cs_conc").getValue();
+			var volume = Ext.getCmp(this.id + "_cs_volume").getValue();
+
+			var transmission = Ext.getCmp(this.id + "_cs_transmission").getValue();
+			var seu = Ext.getCmp(this.id + "_cs_seu").getValue();
+			var waitTime = Ext.getCmp(this.id + "_cs_waitTime").getValue();
+			var viscosity = Ext.getCmp(this.id + "_cs_viscosity").getValue();
+			var flow = Ext.getCmp(this.id + "_cs_flow").getValue();
+
+			var dataToBeLoaded = [];
+			for ( var i = 1; i <= concentrationCount; i++) {
+				dataToBeLoaded.push({
+					acronym : EXI.proposalManager.getMacromoleculeById(macromoleculeId).acronym,
+					macromoleculeId : macromoleculeId,
+					bufferId : bufferId,
+					buffer_acronym : EXI.proposalManager.getBufferById(bufferId).acronym,
+					concentration : i,
+					volumeToLoad : volume,
+					exposureTemperature : seu,
+					transmission : transmission,
+					waitTime : waitTime,
+					viscosity : viscosity,
+					flow : flow
+
+				});
+			}
+			this.measurementGrid.store.loadData(dataToBeLoaded, true);
+			this.setData(JSON.parse(Ext.encode(Ext.pluck(this.measurementGrid.store.data.items, 'data'))));
+		}
+	});
+
+	return Ext.create('Ext.panel.Panel', {
+//		padding : "0 0 0 0",
+		margin : "0 10 0 0",
+		height : 200,
+		width : 1150,
+		cls : 'border-grid',
+		items : [
+		 {
+			xtype : 'container',
+			layout : 'hbox',
+			items : [ 
+			          {
+				xtype : 'numberfield',
+				id : this.id + "_cs_conc",
+				fieldLabel : 'How many unknow concentrations do you have?',
+				labelWidth : 300,
+				width : 500,
+				margin : "5 0 0 10",
+				minValue : 1,
+				maxValue : 20,
+				value : 1
+			} ]
+		}, {
+			xtype : 'container',
+			margin : "10 0 0 10",
+			layout : 'hbox',
+			items : [macromoleculesComboManager ,{
+				xtype : 'numberfield',
+				id : this.id + "_cs_seu",
+				fieldLabel : 'Exposure. Temp.',
+				labelWidth : 100,
+				width : 220,
+				margin : "5 0 0 20",
+				value : 4,
+				minValue : 4,
+				maxValue : 60
+			}, {
+				xtype : 'numberfield',
+				margin : "5 0 0 50",
+				id : this.id + "_cs_volume",
+				fieldLabel : 'Vol. To Load (&#181l)',
+				labelWidth : 100,
+				width : 220,
+				value : 40,
+				minValue : 10,
+				maxValue : 300
+			},
+
+			{
+				xtype : 'numberfield',
+				id : this.id + "_cs_transmission",
+				fieldLabel : 'Transmission (%)',
+				labelWidth : 100,
+				width : 220,
+				margin : "5 0 0 50",
+				value : 100,
+				minValue : 0,
+				maxValue : 100
+			}
+
+			]
+		}, {
+			xtype : 'container',
+			layout : 'hbox',
+			margin : "5 0 0 10",
+			items : [ buffersCombo, {
+				xtype : 'numberfield',
+				id : this.id + "_cs_waitTime",
+				fieldLabel : 'Wait Time',
+				labelWidth : 100,
+				width : 220,
+				value : 0,
+				minValue : 0,
+				maxValue : 100,
+				margin : "5 0 0 20"
+			}, {
+				xtype : 'combo',
+				id : this.id + "_cs_viscosity",
+				store : [ "low", "medium", "high" ],
+				fieldLabel : 'SC Viscosity',
+				value : "low",
+				margin : "5 0 0 50",
+				labelWidth : 100,
+				width : 220
+			}, {
+				xtype : 'checkbox',
+				id : this.id + "_cs_flow",
+				fieldLabel : 'Flow',
+				checked : true,
+				labelWidth : 100,
+				width : 250,
+				margin : "0 0 0 80"
+			} ]
+		}, {
+			xtype : 'container',
+			layout : 'hbox',
+			margin : "20 0 0 0",
+			items : [ addButton ]
+		} ]
+	}
+	);
+};
+
+MeasurementCreatorStepWizardForm.prototype.getHeaderForm = function() {
+	this.panel = Ext.create('Ext.panel.Panel', {
+		layout : 'hbox',
+		height : 100,
+		items : [ {
+			xtype : 'textfield',
+			name : 'Name',
+			id : this.id + "name",
+			width : 400,
+			labelWidth : 50,
+			fieldLabel : 'Name',
+			margin : '20 20 20 20',
+			value : ''
+		}, {
+			id : this.id + "comments",
+			xtype : 'textareafield',
+			name : 'comments',
+			fieldLabel : 'Comments',
+			height : 75,
+			labelWidth : 100,
+			margin : '20 20 20 50',
+			width : 600
+		} ]
+	});
+	return this.panel;
+};
+
+
+MeasurementCreatorStepWizardForm.prototype.getForm = function() {
+	var _this = this;
+
+	this.formPanel = Ext.create('Ext.tab.Panel', {
+		padding : "0 0 0 0",
+		plain : true,
+		margin : "20 5 20 10",
+		height : 290,
+		items : [ 
+      {
+			tabConfig : {
+				title : 'Concentration Series'
+			},
+			items : this.getConcentrationMeasurementForm()
+		},{
+			tabConfig : {
+				title : 'Individual Measurement'
+			},
+			items : [ this.getSingleMeasurementForm() ]
+		} ]
+
+
+	});
+	this.measurementGrid = new MeasurementGrid({
+		height : 250,
+		maxHeight : 250,
+		minHeight : 250,
+		width : 1150,
+		tbar : false,
+		maxWidth : 870,
+		resizable : false,
+		margin : "0 10 10 10",
+		isStatusColumnHidden : true,
+		isTimeColumnHidden : true,
+		removeBtnEnabled : true,
+		isPriorityColumnHidden : true
+	});
+
+	this.measurementGrid.onRemoved.attach(function(sender, data) {
+		_this.setData(JSON.parse(Ext.encode(Ext.pluck(_this.measurementGrid.grid.getStore().data.items, 'data'))));
+	});
+
+	this.panel = Ext.create('Ext.panel.Panel', {
+		plain : true,
+		frame : false,
+		border : 0,
+		items : [ this.getHeaderForm(), this.formPanel, this.addButton, this.measurementGrid.getPanel([]) ]
+	});
+
+	if (this.data.measurementsSelected != null) {
+		/** Recover Data **/
+		this.measurementGrid.grid.getStore().loadData(this.data.measurementsSelected, false);
+		this.setData(JSON.parse(Ext.encode(Ext.pluck(this.measurementGrid.grid.getStore().data.items, 'data'))));
+	}
+	return this.panel;
+};
+
+MeasurementCreatorStepWizardForm.prototype.getBuffers = function(measurements) {
+	var buffers = {};
+	var macromolecules = {};
+	var record = null;
+	for ( var i = 0; i < measurements.length; i++) {
+		record = measurements[i];
+		if (buffers[record.bufferId] == null) {
+			buffers[record.bufferId] = {
+				buffer : record.buffer_acronym,
+				bufferId : record.bufferId,
+				volumeToLoad : record.volumeToLoad,
+				volume : 0,
+				concentration : 0,
+				transmission : record.transmission,
+				flow : record.flow,
+				viscosity : record.viscosity,
+			};
+		}
+
+		buffers[record.bufferId].volume = Number(buffers[record.bufferId].volume) + (2 * record.volumeToLoad);
+	}
+
+	/** Removing all **/
+	var bufferSpecimens = [];
+	for ( var buffer in buffers) {
+		if (buffers.hasOwnProperty(buffer)) {
+			record = buffers[buffer];
+			bufferSpecimens.push({
+				bufferId : record.bufferId,
+				buffer : EXI.proposalManager.getBufferById(record.bufferId).acronym,
+				concentration : record.concentration,
+				volume : record.volume,
+				volumeToLoad : record.volumeToLoad,
+				transmission : record.transmission,
+				flow : record.flow,
+				viscosity : record.viscosity
+	
+			});
+		}
+	}
+	return bufferSpecimens;
+};
+
+MeasurementCreatorStepWizardForm.prototype.parseMeasurements = function(measurements) {
+	var _this = this;
+	var parsed = [];
+	var measurement = null;
+	var i = null;
+	/** For buffers **/
+	var specimenBuffers = this.getBuffers(measurements);
+	for (  i = 0; i < specimenBuffers.length; i++) {
+		measurement = specimenBuffers[i];
+		parsed.push({
+			SEUtemperature 	: "",
+			buffer 			: measurement.buffer,
+			buffername 		: measurement.buffer,
+			code 			: measurement.buffer,
+			comments 		: "",
+			concentration 	: 0,
+			enable 			: true,
+			flow 			: measurement.flow,
+			recuperate 		: false,
+			title 			: "",
+			transmission 	: measurement.transmission,
+			macromolecule 	: measurement.buffer,
+			type 			: "Buffer",
+			typen 			: 1,
+			viscosity 		: measurement.viscosity,
+			volume 			: measurement.volume,
+			volumeToLoad 	: measurement.volumeToLoad,
+			waittime 		: 0,
+			plate 			: null,
+			row 			: null,
+			well 			: null
+		});
+	}
+
+	for ( i = 0; i < measurements.length; i++) {
+		measurement = measurements[i];
+		var type = "Buffer";
+		var macromolecule = "";
+		if (measurement.macromoleculeId != null) {
+			type = "Sample";
+			macromolecule = EXI.proposalManager.getMacromoleculeById(measurement.macromoleculeId).acronym;
+		}
+
+		parsed.push({
+			SEUtemperature : measurement.exposureTemperature,
+			buffer : measurement.buffer_acronym,
+			buffername : measurement.buffer_acronym,
+			code : macromolecule,
+			comments : "",
+			concentration : measurement.concentration,
+			enable : true,
+			flow : measurement.flow,
+			recuperate : false,
+			title : "",
+			transmission : measurement.transmission,
+			macromolecule : macromolecule,
+			type : type,
+			typen : 1,
+			viscosity : measurement.viscosity,
+			volume : measurement.volumeToLoad,
+			volumeToLoad : measurement.volumeToLoad,
+			waittime : measurement.waitTime,
+			plate : null,
+			row : null,
+			well : null
+		});
+	}
+	
+	var automatic = new SampleAutomaticPositionFactory(parsed);
+	return automatic.setPosition();
+};
+
+MeasurementCreatorStepWizardForm.prototype.getNextForm = function() {
+	return new FinalStepWizardForm(JSON.stringify(this.parseMeasurements(this.data.measurementsSelected)));
+//	return null;
+//	var measurements = JSON.stringify(this.parseMeasurements(this.data.measurementsSelected));
+//	debugger
+};
+
+
+
+/**
+ * Given a set of measurements this class will set the a priori right position for each specimen
+ * @sampleParsed Array of:{"SEUtemperature":"","buffer":"CaCl2","buffername":"CaCl2","code":"CaCl2","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"CaCl2","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":null,"row":null,"well":null}
+ */
+function SampleAutomaticPositionFactory(sampleParsed){
+	this.samples = sampleParsed;
+//	this.samples  = JSON.parse('[{"SEUtemperature":"","buffer":"CaCl2","buffername":"CaCl2","code":"CaCl2","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"CaCl2","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":9},{"SEUtemperature":"","buffer":"B2dtt","buffername":"B2dtt","code":"B2dtt","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"B2dtt","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":10},{"SEUtemperature":"","buffer":"BSA","buffername":"BSA","code":"BSA","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"BSA","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":11},{"SEUtemperature":"","buffer":"AE","buffername":"AE","code":"AE","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"AE","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":9},{"SEUtemperature":"","buffer":"ATP","buffername":"ATP","code":"ATP","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"ATP","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":10},{"SEUtemperature":"","buffer":"B1","buffername":"B1","code":"B1","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"B1","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":11},{"SEUtemperature":"","buffer":"B2","buffername":"B2","code":"B2","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"B2","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":9},{"SEUtemperature":"","buffer":"CB-RE","buffername":"CB-RE","code":"CB-RE","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"CB-RE","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":10},{"SEUtemperature":"","buffer":"HEPES7","buffername":"HEPES7","code":"HEPES7","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"HEPES7","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":11},{"SEUtemperature":"","buffer":"FUR","buffername":"FUR","code":"FUR","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"FUR","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":9},{"SEUtemperature":"","buffer":"BTris","buffername":"BTris","code":"BTris","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"BTris","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":10},{"SEUtemperature":"","buffer":"AA","buffername":"AA","code":"AA","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"AA","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":11},{"SEUtemperature":"","buffer":"CVCBuf","buffername":"CVCBuf","code":"CVCBuf","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"CVCBuf","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":9},{"SEUtemperature":"","buffer":"BufferMax","buffername":"BufferMax","code":"BufferMax","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"BufferMax","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":10},{"SEUtemperature":"","buffer":"BufferCicine","buffername":"BufferCicine","code":"BufferCicine","comments":"","concentration":0,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"BufferCicine","type":"Buffer","typen":1,"viscosity":"low","volume":800,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":11},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":1},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":2},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":3},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":4},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":5},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":6},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":7},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":1,"well":8},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":1},{"SEUtemperature":4,"buffer":"AA","buffername":"AA","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":2},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":3},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":4},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":5},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":6},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":7},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":2,"well":8},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":1},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":2},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":3},{"SEUtemperature":4,"buffer":"AE","buffername":"AE","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":4},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":5},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":6},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":7},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":3,"well":8},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":1},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":2},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":3},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":4},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":5},{"SEUtemperature":4,"buffer":"ATP","buffername":"ATP","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":6},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":7},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":4,"well":8},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":1},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":2},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":3},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":4},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":5},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":6},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":7},{"SEUtemperature":4,"buffer":"B1","buffername":"B1","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":5,"well":8},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":1},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":2},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":3},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":4},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":5},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":6},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":7},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":6,"well":8},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":1},{"SEUtemperature":4,"buffer":"B2","buffername":"B2","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":2},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":3},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":4},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":5},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":6},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":7},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":7,"well":8},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":1},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":2},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":3},{"SEUtemperature":4,"buffer":"B2dtt","buffername":"B2dtt","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":4},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":5},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":6},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":7},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":8,"well":8},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":1},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":2},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":3},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":4},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":5},{"SEUtemperature":4,"buffer":"BSA","buffername":"BSA","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":6},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":7},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":9,"well":8},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":1},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":2},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":3},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":4},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":5},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":6},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":7},{"SEUtemperature":4,"buffer":"BTris","buffername":"BTris","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":10,"well":8},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":1},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":2},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":3},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":4},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":5},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":6},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":7},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":11,"well":8},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":1},{"SEUtemperature":4,"buffer":"BufferCicine","buffername":"BufferCicine","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":2},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":3},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":4},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":5},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":6},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":7},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":12,"well":8},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":1},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":2},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":3},{"SEUtemperature":4,"buffer":"BufferMax","buffername":"BufferMax","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":4},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":5},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":6},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":7},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":13,"well":8},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":1},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":2},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":3},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":4},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":5},{"SEUtemperature":4,"buffer":"CB-RE","buffername":"CB-RE","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":6},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":7},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":14,"well":8},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":1},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":2},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":3},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":4},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":5},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":6},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":7},{"SEUtemperature":4,"buffer":"CVCBuf","buffername":"CVCBuf","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":15,"well":8},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":1},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":2},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":3},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":4},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":5},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":6},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":7},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":16,"well":8},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":1},{"SEUtemperature":4,"buffer":"CaCl2","buffername":"CaCl2","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":2},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":3},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":4},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":5},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":6},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":7},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":17,"well":8},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":1},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":2},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":3},{"SEUtemperature":4,"buffer":"FUR","buffername":"FUR","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":4},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":1,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":5},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":2,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":6},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":3,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":7},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":4,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":18,"well":8},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":5,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":19,"well":1},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":6,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":19,"well":2},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":7,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":19,"well":3},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":8,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":19,"well":4},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":9,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":19,"well":5},{"SEUtemperature":4,"buffer":"HEPES7","buffername":"HEPES7","code":"A","comments":"","concentration":10,"enable":true,"flow":true,"recuperate":false,"title":"","transmission":100,"macromolecule":"A","type":"Sample","typen":1,"viscosity":"low","volume":40,"volumeToLoad":40,"waittime":0,"plate":2,"row":19,"well":6}]');
+};
+
+SampleAutomaticPositionFactory.prototype.getAvailablePlates = function() {
+	var plates = EXI.proposalManager.getPlateByFlavour();
+	var bufferPositions = [];
+	var samplePositions = [];
+	
+	/** is there a 4x(8x3) Block **/
+	for (var i = 0; i < plates.length; i++) {
+		if (plates[i].plateTypeId == 2){
+			/** Booking place for buffers **/
+			for (var index = 0; index < 12; index++) {
+				bufferPositions.push({
+										plate : 2,
+										row : Math.floor(index / 3) + 1,
+										well : Number(Number(index % 3) + 9)
+									});
+			}
+			/** Booking place for macromolecules **/
+			var savedPositions = 0;
+			var positionHash = {};
+			for (var index = 0; index < 32; index++) {
+					var position = {
+						plate : 2,
+						row : Math.floor(index / 8) + 1,
+						well : Number(index % 8) + 1 - savedPositions
+					};
+					samplePositions.push(position);
+			}
+		}
+	}
+
+	/** Rest of the plates **/
+	for (var i = 0; i < plates.length; i++) {
+		if (plates[i].plateTypeId != 2){
+			/** Booking place for buffers **/
+			for (var indexRow = 0; indexRow < plates[i].rowCount; indexRow++) {
+				for (var indexColumn = 0; indexColumn < plates[i].columnCount; indexColumn++) {
+					bufferPositions.push({
+											plate 	: i + 1, 
+											row 	: indexRow + 1,
+											well 	: indexColumn + 1
+										});
+				}
+			}
+			
+			/** Booking place for samples **/
+			for (var indexRow = 0; indexRow < plates[i].rowCount; indexRow++) {
+				for (var indexColumn = 0; indexColumn < plates[i].columnCount; indexColumn++) {
+					samplePositions.push({
+											plate 	: i + 1,
+											row 	: indexRow + 1,
+											well 	: indexColumn + 1
+										});
+				}
+			}
+		}
+	}
+	return {
+		buffer : bufferPositions.reverse(),
+		sample : samplePositions.reverse()
+	};
+};
+
+SampleAutomaticPositionFactory.prototype._getKey = function(plate, row, well) {
+	return plate + ":" +  row + "-" + well;
+};
+
+SampleAutomaticPositionFactory.prototype.setPosition = function() {
+	var positions = (this.getAvailablePlates());
+	
+	var occupied = {};
+	/** First, we set positions for buffers **/
+	for (var i = 0; i < this.samples.length; i++) {
+		if (this.samples[i].type == 'Buffer'){
+			var key = this._getKey(this.samples[i].plate, this.samples[i].row, this.samples[i].well);
+			this.samples[i].plate = positions.buffer[ positions.buffer.length - 1].plate,
+			this.samples[i].row = positions.buffer[ positions.buffer.length - 1].row;
+			this.samples[i].well =  positions.buffer[ positions.buffer.length - 1].well;
+			occupied[key] = true;
+			positions.buffer.pop();
+		}
+	}
+	
+	var positionHash = {};
+	
+	for (var i = 0; i < this.samples.length; i++) {
+		if (this.samples[i].type == 'Sample'){
+			var key = this._getKey(positions.sample[ positions.sample.length - 1].plate,  positions.sample[ positions.sample.length - 1].row, positions.sample[ positions.sample.length - 1].well);
+			
+			/** If this position is already occupied by a buffer we pop the stack **/
+			while (occupied[key] != null){
+				positions.sample.pop();
+				key = this._getKey(positions.sample[ positions.sample.length - 1].plate,  positions.sample[ positions.sample.length - 1].row, positions.sample[ positions.sample.length - 1].well);
+			}
+			
+			/**
+			 * Position is important as it is the way to distiguish between same sample 
+			 * For temperatures series two measurements pointing to the same macromolecule and buffer and concentration
+			 * means that it is the same specimen
+			 * **/
+			var positionId = this.samples[i].macromolecule + "_" + this.samples[i].buffer + "_" + this.samples[i].concentration;
+			if (positionHash[positionId] == null) {
+				positionHash[positionId] = {
+						plate : positions.sample[ positions.sample.length - 1].plate,
+						row : positions.sample[ positions.sample.length - 1].row,
+						well : positions.sample[ positions.sample.length - 1].well,
+				};
+			} else {
+				/** There is already a specimen so we point out to its position **/
+				this.samples[i].plate = positionHash[positionId].plate,
+				this.samples[i].row = positionHash[positionId].row;
+				this.samples[i].well =  positionHash[positionId].well;
+				continue;
+			}
+			
+			this.samples[i].plate = positions.sample[ positions.sample.length - 1].plate,
+			this.samples[i].row = positions.sample[ positions.sample.length - 1].row;
+			this.samples[i].well =  positions.sample[ positions.sample.length - 1].well;
+			
+			occupied[key] = true;
+			positions.sample.pop();
+		}
+	}
+	return this.samples;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//function FinalStepWizardForm(measurements) {
+//	this.result = {};
+//
+//	this.id = BUI.id();
+//	this.title = "Confirmation";
+//	this.description = "This is the last step of this wizard. Write a name and a description (optional) for your experiment. Remember you are able to add new measurements later on";
+//	this.height = 500;
+//
+//	this.data = {
+//		measurements : measurements
+//	};
+//	var _this = this;
+//	this.onNext = function(data) {
+//
+//		this.result = {
+//			name : Ext.getCmp(_this.id + "name").getValue(),
+//			comments : Ext.getCmp(_this.id + "description").getValue(),
+//			data : _this.data.measurements
+//		};
+//
+//		_this.onWizardFinished.notify(this.result);
+//	};
+//	this.onBack = function() {
+//	};
+//	this.onWizardFinished = new Event(this);
+//}
+//
+//FinalStepWizardForm.prototype.getForm = function() {
+//	this.panel = Ext.create('Ext.panel.Panel', {
+//		plain : true,
+//		frame : false,
+//		border : 1,
+//		margin : "100 100 100 100",
+//
+//		fieldDefaults : {
+//			labelAlign : 'left',
+//			labelWidth : 90,
+//			anchor : '100%'
+//		},
+//		items : [ {
+//			xtype : 'textfield',
+//			name : 'Name',
+//			id : this.id + "name",
+//			width : 600,
+//			fieldLabel : 'Name',
+//			margin : '20 20 20 20',
+//			value : ''
+//		}, {
+//			xtype : 'textareafield',
+//			name : 'textarea1',
+//			id : this.id + "description",
+//			margin : '20 20 20 20',
+//			width : 600,
+//			fieldLabel : 'Description',
+//			value : ''
+//		} ]
+//	});
+//	return this.panel;
+//};
+//
+//FinalStepWizardForm.prototype.getNextForm = function() {
+//	return null;
+//};
+//
+//FinalStepWizardForm.prototype.input = function() {
+//	return [];
+//};
+//
+//FinalStepWizardForm.prototype.test = function(targetId) {
+//	var experimentTypeWizardForm = new FinalStepWizardForm();
+//	var form = experimentTypeWizardForm.getForm();
+//	form.render(targetId);
+//};
 
 /**
  * Macromolecule Grid showing macromolecules and adding anb updating buttons
@@ -10410,7 +11873,8 @@ function ItemFormat(args){
 	this.args.opacity = 1;
 	this.args.fontSize = "8";
 	this.args.fontColor = "#000000";
-	
+	this.args.display = "block";
+     this.args.style = 'display:block';
 	/** For directed edge with arrow **/ 
 	//this.args.arrowSize = 1;
 	
@@ -14454,6 +15918,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			fill : this.wellColor,
 			'stroke-width' : this.strokeWidth,
 			'stroke-opacity' : 1,
+           
 			stroke : "#000000",
 			size : this.nodeSize,
 			title : {
@@ -14465,6 +15930,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 		labeled : false,
 		height : this.height,
 		width : this.width,
+       
 		right : this.width,
 		backgroundColor : this.backgroundColor,
 		balanceNodes : false,
@@ -17078,4 +18544,162 @@ VolumeGrid.prototype.test = function(targetId) {
 		renderTo : targetId,
 		items : [ panel ]
 	});
+};
+
+/**
+ * It contains a set of form that we will communicate each other up to status finish is reached
+ * 
+ */
+function WizardWidget(args) {
+	this.targetId = null;
+	this.width = 910;
+	this.height = 400;
+	this.windowMode = true;
+
+	if (args != null) {
+		if (args.windowMode != null) {
+			this.windowMode = args.windowMode;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+
+	}
+
+	this.step = 0;
+	this.forms = [];
+
+	this.onFinished = new Event(this);
+}
+
+WizardWidget.prototype.draw = function(targetId, form) {
+	this.targetId = targetId;
+	this.forms.push(form);
+	this.renderMasterContainer();
+};
+
+WizardWidget.prototype.getButtons = function(step, onNext, onBack) {
+	var _this = this;
+
+	/** For the last step **/
+	if (_this.forms[_this.step].onWizardFinished != null) {
+		return [ {
+			text : 'Back',
+			handler : function() {
+				_this.step = _this.step - 1;
+				_this.renderMasterContainer();
+				onBack();
+				_this.forms[_this.step].reload();
+			}
+		}, "->", {
+			text : 'Finish',
+			handler : function() {
+				_this.forms[_this.step].onWizardFinished.attach(function(sender, result) {
+					_this.onFinished.notify(result);
+				});
+//				_this.step = _this.step + 1;
+				onNext();
+			}
+		} ];
+	}
+
+	/** First **/
+	if (step == 0) {
+		return [ "->", {
+			text : 'Next',
+			handler : function() {
+				_this.forms.push(_this.forms[_this.step].getNextForm());
+				_this.step = _this.step + 1;
+				_this.renderMasterContainer();
+				onNext(_this.forms[_this.step - 1].data);
+			}
+		} ];
+	}
+
+	if ((this.step > 0) && (this.forms[_this.step].onWizardFinished == null)) {
+		return [ {
+			text : 'Back',
+			handler : function() {
+				_this.step = _this.step - 1;
+				_this.renderMasterContainer();
+				onBack();
+				_this.forms[_this.step].reload();
+			}
+		}, "->", {
+			text : 'Next',
+			handler : function() {
+				if (_this.forms[_this.step].onWizardFinished == null) {
+					_this.forms.push(_this.forms[_this.step].getNextForm());
+					_this.step = _this.step + 1;
+					onNext(_this.forms[_this.step - 1].data);
+					_this.renderMasterContainer();
+				} else {
+					_this.forms[_this.step].onWizardFinished.attach(function(sender, result) {
+						_this.window.close();
+						_this.onFinished.notify(result);
+					});
+					_this.step = _this.step + 1;
+					onNext(_this.forms[_this.step - 1].data);
+				}
+			}
+		} ];
+	}
+
+};
+
+
+WizardWidget.prototype.getPanel = function(form) {
+	this.forms.push(form);
+	
+	return Ext.create('Ext.form.Panel', {
+		width : this.width,
+		height : 800,
+		items : [  this.forms[this.step].getForm() ],
+		buttons : this.getButtons(this.step, this.forms[this.step].onNext, this.forms[this.step].onBack)
+	});
+};
+
+WizardWidget.prototype.renderMasterContainer = function() {
+	var _this = this;
+
+	if (this.current != null) {
+		this.current.destroy();
+	}
+	if (this.window != null) {
+		this.window.destroy();
+	}
+	this.current = this.getPanel();
+
+	if (this.windowMode == false) {
+		this.current.render(this.targetId);
+	} else {
+
+		this.window = Ext.create('Ext.Window', {
+			id : this.id,
+			resizable : true,
+			constrain : true,
+			modal : true,
+			frame : false,
+			draggable : true,
+			autoscroll : true,
+			layout : {
+				type : 'vbox',
+				align : 'stretch'
+			},
+			items : this.current,
+			width : this.width,
+			title : "BIOSAXS Experiment Designer",
+			listeners : {
+				scope : this,
+				minimize : function() {
+					this.panel.hide();
+				},
+				destroy : function() {
+					delete this.panel;
+				}
+			}
+		});
+
+		this.window.show();
+	}
 };

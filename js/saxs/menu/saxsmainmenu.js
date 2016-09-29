@@ -116,25 +116,6 @@ SAXSMainMenu.prototype.getPreparationMenu = function() {
 		] });
 };
 
-SAXSMainMenu.prototype.getDataExplorerMenu = function() {
-	function onItemCheck(item, checked) {
-		if (item.text == "Sessions") {
-			location.hash = "/proposal/session/nav";
-		}
-		if (item.text == "Experiments") {
-			location.hash = "/experiment/nav";
-		}
-	}
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-			{
-				text : 'Sessions',
-				icon : '../images/icon/sessions.png',
-				handler : onItemCheck 
-			}
-		] 
-	});
-};
 
 SAXSMainMenu.prototype.getDataReductionMenu = function() {
 	var _this = this;
@@ -167,6 +148,26 @@ SAXSMainMenu.prototype.getDataReductionMenu = function() {
 };
 
 
+
+SAXSMainMenu.prototype.getDataExplorerMenu = function() {
+	function onItemCheck(item, checked) {
+		if (item.text == "Calendar") {
+			location.hash = "/session/nav";
+		}
+		if (item.text == "Experiments") {
+			location.hash = "/experiment/nav";
+		}
+	}
+	return Ext.create('Ext.menu.Menu', {
+		items : [ 
+			{
+				text : 'Calendar',
+				icon : '../images/icon/sessions.png',
+				handler : onItemCheck 
+			}
+		] 
+	});
+};
 
 SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 	var _this = this;

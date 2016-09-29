@@ -57,7 +57,7 @@ ParcelPanel.prototype.render = function() {
 	if (dewar != null){
 		if (dewar.containerVOs != null){
 			/** Sorting container by id **/
-			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId});
+			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
 				/** Adding the puck layout **/
