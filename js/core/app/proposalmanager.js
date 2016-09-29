@@ -278,5 +278,5 @@ ProposalManager.prototype.getUnpackedStockSolutions = function() {
 * @method getStockSolutionsByDewarId
 */
 ProposalManager.prototype.getStockSolutionsByDewarId = function(dewarId) {
-	return _.find(this.getStockSolutions(), function(o) { return o.boxId == dewarId; });
+	return _.filter(this.getStockSolutions(), function(o) { return o.boxId == dewarId; });
 };

@@ -8,9 +8,7 @@
                      </kbd> 
                       <span style='color:blue;'>
                      {.DataCollectionGroup_startTime}
-                     </span>
-                    
-               
+                     </span>                                   
                 </span>
              <p>{.DataCollection_imageDirectory}</p>      
             

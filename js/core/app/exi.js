@@ -102,10 +102,8 @@ Exi.prototype.appendDataAdapterParameters = function(args) {
     
      /** Is your token still valid */     
      
-    if (EXI.credentialManager.getCredentials()[0]){
-        console.log(EXI.credentialManager.getCredentials()[0].timeToExpire());
-        if (!EXI.credentialManager.getCredentials()[0].isValid()){
-                        
+    if (EXI.credentialManager.getCredentials()[0]){        
+        if (!EXI.credentialManager.getCredentials()[0].isValid()){                        
            location.hash = '/welcome';
            return;
         }        

@@ -112,6 +112,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			fill : this.wellColor,
 			'stroke-width' : this.strokeWidth,
 			'stroke-opacity' : 1,
+           
 			stroke : "#000000",
 			size : this.nodeSize,
 			title : {
@@ -123,6 +124,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 		labeled : false,
 		height : this.height,
 		width : this.width,
+       
 		right : this.width,
 		backgroundColor : this.backgroundColor,
 		balanceNodes : false,

@@ -320,48 +320,12 @@ SAXSExiController.prototype.routePrepare = function() {
 	
 	
 	
-//	Path.map("#/prepare/shipment").to(function() {
-//		var _this = this;
-//		var shipmentForm = new ShipmentForm({
-//			creationMode : true,
-//			showTitle : false
-//		});
-//		shipmentForm.onSaved.attach(function(sender, shipment) {
-//			location.hash = "/shipping/" + shipment.shippingId + "/main";
-//			window.close();
-//		});
-//		var window = Ext.create('Ext.window.Window', {
-//			title : 'New Shipment',
-//			height : 600,
-//			width : 800,
-//			modal : true,
-//			layout : 'fit',
-//			items : [ shipmentForm.getPanel() ]
-//		}).show();
-//	}).enter(this.setPageBackground);
 	
 
 	Path.map("#/prepare/designer").to(function() {
 			var mainView = new DesignerMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();
-//			function() {
-//				var wizardWidget = new WizardWidget({
-//					windowMode : true,
-//					width : 1200 });
-//
-//				wizardWidget.onFinished.attach(function(sender, result) {
-//					wizardWidget.window.close();
-//					EXI.setLoading();
-//					var onSuccess = (function(sender, experiment) {
-//						location.hash = "/experiment/templateId/" + experiment.experimentId + "/main";
-//					});
-//					wizardWidget.current.setLoading("ISPyB: Creating experiment");
-//					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data);
-//				});
-//
-//				wizardWidget.draw(this.targetId, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers()));
-
 			}).enter(this.setPageBackground);
 };
 

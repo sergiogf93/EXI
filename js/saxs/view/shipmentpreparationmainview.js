@@ -1,42 +1,82 @@
-function ShipmentPreparationMainView() {
-	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
-	MainView.call(this);
-	this.title = "How to prepare a Shipment?";
-	this.closable = false;
+
+function ShippingMainView() {
 	
+	MainView.call(this);
+	
+	var _this = this;
+	this.shipmentForm = new ShipmentForm();
+
+	this.shipmentForm.onSaved.attach(function(sender, shipment){
+		location.hash = "#/proposal/shipping/nav?nomain";
+		//_this.tabPanel.setActiveTab(1);
+		
+	});
+	this.caseGrid = new CaseGrid({
+		height : 300
+	});
+	
+	this.caseGrid.onRemove.attach(function(sender, dewar){
+		var onSuccess = function(sender){
+			_this.load(_this.shippingId);
+			_this.panel.setLoading(false);
+		};
+		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.removeDewar(_this.shippingId, dewar.dewarId );
+	});
 }
 
-ShipmentPreparationMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShipmentPreparationMainView.prototype.getContainer = MainView.prototype.getContainer;
+ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
 
-ShipmentPreparationMainView.prototype.getContainer = function() {
-	var text= "The aim of a BioSAXS experiment is to determine the low resolution shape of a macromolecule in solution \n" + 
-			"under physiological conditions. In order to define an experiment or create a shipment ISPyB needs to know the macromolecules and buffers that compose your samples";
-	
-	return {
-		    cls : 'border-grid',
-		    margin : 10,
-			items : [
-						{
-							 html : '<div class="welcome-title"><h2>How to define my samples on ISPyB?</h2> </div>'
+
+ShippingMainView.prototype.getContainer = function() {
+	this.tabPanel =  Ext.createWidget('tabpanel',
+			{
+				margin : 10,
+				defaults : {
+						anchor : '100%'
+				},
+				items : [
+				     	{
+							tabConfig : {
+								title : 'Delivery Details'
+							},
+							items : [ 
+							         	this.shipmentForm.getPanel()
+							]
 						},
 						{
-							 html : '<div class="help-text"> ' + text +'</div>'
-						},
-						{
-							 html :'<div class="welcome-title"><h4>What is a macromolecule and how can I define it on ISPyB?</h4> </div>'
-						},
-						{
-							 html : '<div class="help-text">A macromolecule is a biological construct in solution for investigation</div>'
-						},
-						
-			]
-	};
+							tabConfig : {
+								id : this.id + "grid",
+								title : 'Parcels',
+								icon : '../images/icon/shipping.png'
+							},
+							items : [ 
+							         	this.caseGrid.getPanel()
+							]
+						}
+					]
+			});
+
+	return this.tabPanel;
+
 };
 
 
-
-ShipmentPreparationMainView.prototype.load = function(username) {
+ShippingMainView.prototype.load = function(shippingId) {
+	this.shippingId = shippingId;
 	
+	if (shippingId == null){
+		Ext.getCmp(this.id + "grid").disable(true);
+	}
+	this.panel.setTitle("Shipment");
+	var _this = this;
+	if (shippingId != null){
+		this.panel.setLoading();
+		var onSuccess = function(sender, shipment){
+			_this.shipmentForm.load(shipment);
+			_this.caseGrid.load(shipment);
+			_this.panel.setLoading(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	}
 };
