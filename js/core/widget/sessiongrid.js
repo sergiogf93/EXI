@@ -62,17 +62,15 @@ function SessionGrid(args) {
 			this.hiddenGoColumn = args.hiddenGoColumn;
 		}
 	}
-
 	this.onSelected = new Event(this);
-
 }
+
 
 
 SessionGrid.prototype.load = function(sessions) {
     this.sessions = sessions;
 	this.store.loadData(sessions, false);
 };
-
 
 SessionGrid.prototype.filterByBeamline = function(beamlines) {
     if (beamlines){
@@ -88,7 +86,6 @@ SessionGrid.prototype.filterByBeamline = function(beamlines) {
         }
     }
 };
-
 
 SessionGrid.prototype.getToolbar = function(sessions) {
     var _this = this;
