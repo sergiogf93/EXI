@@ -4,9 +4,10 @@
          <div class="pull-left">                                
                 <h1 class="panel-title" style='color:#337ab7;'>
                     <kbd> {.v_datacollection_processingPrograms}</kbd>
-                    <kbd style='background-color:#337ab7;'>{.v_datacollection_summary_phasing_autoproc_space_group}</kbd>
-                    {@eq key=v_datacollection_summary_phasing_anomalous value=true type="boolean"}                
-                                <kbd style='background-color:orange;'>ANOMALOUS</kbd>              
+                    <kbd style='background-color:#337ab7;'>{.v_datacollection_summary_phasing_autoproc_space_group} </kbd>
+                    {@eq key=v_datacollection_summary_phasing_anomalous value="true" type="boolean"}                                          
+                                <kbd style='background-color:orange;'>ANOMALOUS</kbd> 
+                                             
                     {/eq}
                 </h1>
                                       

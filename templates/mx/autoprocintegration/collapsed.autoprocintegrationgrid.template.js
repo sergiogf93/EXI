@@ -2,8 +2,9 @@
     
 
    <table style='font-size:12px' class='table  table-striped '> 
-   <thead>                                                           
+            <thead>                                                           
                     <tr>
+                        <th  style='padding:0 15px 0 15px;' ><a href="#"  data-toggle="tooltip" title="Rank is done based on the space group and lower rMerge">Rank</a></th>
                         <th  style='padding:0 15px 0 15px;'>Pipeline</th>
                         <th  style='padding:0 15px 0 15px;'>SpaceGroup</th>
                         <th  style='padding:0 15px 0 15px;'>Anom</th>
@@ -27,6 +28,7 @@
                 <tbody>
                  {#.}
                     <tr>
+                        <td  style='padding:0 15px 0 15px;'>#{.rank}</td>
                         <td  style='padding:0 15px 0 15px;'>{.v_datacollection_processingPrograms}</td>
                         <td  style='padding:0 15px 0 15px;'>{.v_datacollection_summary_phasing_autoproc_space_group}</td>
                         <td  style='padding:0 15px 0 15px;'>

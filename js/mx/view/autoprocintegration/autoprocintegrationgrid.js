@@ -57,8 +57,16 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
     return data;
 };
 
-AutoProcIntegrationGrid.prototype.load = function(data) {  
+AutoProcIntegrationGrid.prototype.load = function(data) {      
     this.data =this.parseData(data);
+    
+    var anomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
+    var nonanomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
+    
+    this.data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");
+    
+    this.data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"), this.data);
+    
     if (this.collapsed){        
         this.loadCollapsed(this.data);
     }
@@ -117,10 +125,8 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
                 return splitted[i];
             }
         }
-        return "";
-        
-    }
-      
+        return "";        
+     }      
     
      for (var i = 0; i < type.length; i++) {
         if (type[i]){           
@@ -145,8 +151,7 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
 
 AutoProcIntegrationGrid.prototype.getStatistics = function(data) {	                    
     var type = data.scalingStatisticsType.split(",");
-    function getValue(attribute, i, decimals){
-        
+    function getValue(attribute, i, decimals){        
         if (attribute){
             var splitted = attribute.split(",");
             if (splitted[i]){
@@ -161,8 +166,7 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
                 return splitted[i];
             }
         }
-        return "";
-        
+        return "";        
     }
     var parsed = [];
     for (var i = 0; i < type.length; i++) {       
@@ -188,7 +192,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		sorters : 'spaceGroup',
+		
 		fields : [ 'autoProcId',
 		           'refinedCellA', 
                    'v_datacollection_summary_phasing_autoProcIntegrationId',
@@ -200,11 +204,11 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
   
 	
 	this.panel = Ext.create('Ext.grid.Panel', {		
-		store : this.store,
-		
+		store : this.store,		
         tbar: this.getToolBar(),
         margin : 10,
 		cls : 'border-grid',
+       
         layout : 'fit',
 		columns : [             
                     {
@@ -221,12 +225,9 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
                         name: 'dataCollectionGroup',
                         flex: 1.5,
                         hidden: false,
-                        renderer: function(grid, e, record) {
-                            
-                            var data = record.data;// _this._getAutoprocessingStatistics(record.data);                               
-                            var html = "";                
-                          
-                            
+                        renderer: function(grid, e, record) {                            
+                            var data = record.data;                            
+                            var html = "";                                                                      
                             if (_this.collapsed){              
                                 dust.render("collapsed.autoprocintegrationgrid.template", data.items, function(err, out) {
                                     html = html + out;
@@ -246,8 +247,8 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		],
 		flex : 1,
           viewConfig : {
-                preserveScrollOnRefresh: true,
-                stripeRows : false,                
+                preserveScrollOnRefresh : true,
+                stripeRows              : false,                
 	    	}
 	});
 
@@ -377,11 +378,8 @@ AutoProcIntegrationGrid.prototype.attachCallBackAfterRender = function() {
                             targetId : "anno_" + autoprocProgramId + "_plot"
                         });
                          $("#anno_" + autoprocProgramId).html(annoCorrPlotter.getHTML());                         
-                        annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoprocProgramId));
-	                  
-                 }
-                
-                
+                        annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoprocProgramId));	                  
+                 }                                
             });
     }, 1000);
 };
