@@ -4,7 +4,7 @@
          <div class="pull-left">
               <span style='font-size:12px;color:blue;' >
                      <kbd style='background-color:#CCCCCC;color:blue;'>
-                     Run #{.DataCollection_dataCollectionNumber} {.DataCollectionGroup_experimentType}
+                        Run #{.DataCollection_dataCollectionNumber} {.DataCollectionGroup_experimentType}
                      </kbd> 
                       <span style='color:blue;'>
                      {.DataCollectionGroup_startTime}

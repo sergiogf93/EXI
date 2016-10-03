@@ -19,7 +19,7 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             /** !!IMPORTANT this is the id of the parent node which contains the scroll **/
             appendScroll: document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
@@ -251,8 +251,6 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.phasingStepLength = phasingSteps.length;
                    
                 }
-
-
                 /** For crystal */
                 data.xtal1 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1);
                 data.xtal2 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2);
@@ -277,14 +275,10 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.workflows = [];
                 }
 
-                if (!_this.collapsed) {
-                    
-                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {
-                                                                       
+                if (!_this.collapsed) {                    
+                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                         html = html + out;
-                    });
-
-                    
+                    });                    
                     dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
                     });
@@ -294,8 +288,6 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                         html = html + out;
                     });
                 }
-
-
                 return html;
 
             }
@@ -314,8 +306,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 return html;
 
             }
-        },
-         
+        }         
     ];
     return columns;
 };
@@ -341,15 +332,12 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
                 }
             }
         }
-
-
     });
     Ext.getCmp(this.id + "_found").setText(filtered.length + " items found");
     this.reloadData(filtered);
 };
 
-MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
-    
+MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {    
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);
