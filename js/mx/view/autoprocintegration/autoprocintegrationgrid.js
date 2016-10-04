@@ -48,25 +48,25 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
          try{             
             data[i].statistics = this.getStatistics(data[i]);
             data[i].collapsed = this.getCollapseStatistics(data[i]);
-            data[i].phasing = this.getPhasing(data[i]);                        
+            data[i].phasing = this.getPhasing(data[i]);              
+            data[i].downloadFilesUrl = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(data[i].v_datacollection_summary_phasing_autoProcProgramId);                                          
          }
          catch(e){
              
          }  
     }
+    
+    var anomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
+    var nonanomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
+    /**Set non anomalous first */
+    data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"),data);    
     return data;
 };
 
 AutoProcIntegrationGrid.prototype.load = function(data) {      
     this.data =this.parseData(data);
-    
-    var anomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
-    var nonanomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
-    
-    this.data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");
-    
-    this.data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"), this.data);
-    
+       
     if (this.collapsed){        
         this.loadCollapsed(this.data);
     }
@@ -141,6 +141,7 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
                                             ccHalf 			        : getValue(data.ccHalf, i,1),
                                             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i,1),
                                             rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1)
+                                           
                                             
                };            
         }       
@@ -168,6 +169,7 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
         }
         return "";        
     }
+    
     var parsed = [];
     for (var i = 0; i < type.length; i++) {       
         parsed.push({
@@ -183,6 +185,7 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
             rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i)
             
         });
+        
     }
             
     return parsed;    				

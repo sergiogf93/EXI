@@ -1,4 +1,4 @@
- <div class="container-fluid" style='height:300px;overflow-y: auto;width:100%; overflow-x: hidden;'>
+ <div class="container-fluid" class='containerWithScroll' >
     <div class="row">
         <div class="col-xs-12 col-md-2" >        
             <table class="table"  >

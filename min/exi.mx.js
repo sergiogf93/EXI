@@ -1266,6 +1266,76 @@ WorkflowStepListView.prototype.getFields = function(){
 };
 
 
+function AutoprocessingRanker(){
+    
+    
+}
+
+/**
+ * Filter by space group and lower rMerge
+ * 
+ */
+AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName, rmergeFieldName){
+    array = array.sort(function(a1, a2){        
+         var spaceGroudTrimmed1 = a1[spacegroudFieldName].replace(/\s+/g, '');
+         var spaceGroudTrimmed2 = a2[spacegroudFieldName].replace(/\s+/g, '');
+        
+         var space1 = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed1);
+         var space2 = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed2);
+        
+         /** Sort by rmerge */
+         if (space2 -  space1 == 0){
+             var rmerge1 = a1["overall"]["rMerge"];
+             var rmerge2 = a2["overall"]["rMerge"];
+             
+             if (rmerge1){
+                 if (rmerge2){
+                     return rmerge1 - rmerge2;
+                 }
+                 else{
+                     return 1;
+                 }
+             }
+             return -1;
+             
+         }
+         return space2 -  space1;
+      
+    });
+    for(var i =0; i < array.length; i++){            
+            array[i].rank = i + 1;
+    }
+    return array;
+};
+
+AutoprocessingRanker.prototype.sortBySpaceGroup = function(array, spacegroudFieldName){
+    try{
+        for(var i =0; i < array.length; i++){
+            var spaceGroudTrimmed = array[i][spacegroudFieldName].replace(/\s+/g, '');
+            array[i].rank = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed);
+        }
+        
+    }
+    catch(e){
+        return array;
+    }
+    return array;
+};
+
+AutoprocessingRanker.prototype.sortByRMergeLower = function(array, spacegroudFieldName){
+    try{
+        for(var i =0; i < array.length; i++){
+            var spaceGroudTrimmed = array[i][spacegroudFieldName].replace(/\s+/g, '');
+            array[i].rank = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed);
+        }
+        
+    }
+    catch(e){
+        return array;
+    }
+    return array;
+};
+
 function AutoProcIntegrationAttachmentGrid(args) {
 	this.id = BUI.id();	
 	this.maxHeight = 300;
@@ -1368,15 +1438,16 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
     return data;
 };
 
-AutoProcIntegrationGrid.prototype.rank = function(data) {
-     for(var i =0; i < data.length; i++){
-         data[i].rank = i;
-     }
-     return data;
-};
-
-AutoProcIntegrationGrid.prototype.load = function(data) {  
-    this.data =this.parseData(this.rank(data));
+AutoProcIntegrationGrid.prototype.load = function(data) {      
+    this.data =this.parseData(data);
+    
+    var anomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
+    var nonanomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
+    
+    this.data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");
+    
+    this.data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"), this.data);
+    
     if (this.collapsed){        
         this.loadCollapsed(this.data);
     }
@@ -1502,7 +1573,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		sorters : 'spaceGroup',
+		
 		fields : [ 'autoProcId',
 		           'refinedCellA', 
                    'v_datacollection_summary_phasing_autoProcIntegrationId',
@@ -1514,11 +1585,11 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
   
 	
 	this.panel = Ext.create('Ext.grid.Panel', {		
-		store : this.store,
-		
+		store : this.store,		
         tbar: this.getToolBar(),
         margin : 10,
 		cls : 'border-grid',
+       
         layout : 'fit',
 		columns : [             
                     {
@@ -1557,8 +1628,8 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		],
 		flex : 1,
           viewConfig : {
-                preserveScrollOnRefresh: true,
-                stripeRows : false,                
+                preserveScrollOnRefresh : true,
+                stripeRows              : false,                
 	    	}
 	});
 
@@ -2743,7 +2814,7 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             /** !!IMPORTANT this is the id of the parent node which contains the scroll **/
             appendScroll: document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
@@ -2773,6 +2844,11 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     var dataCollectionGroupId = target.slice(4);
                     EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.dataCollection.getDataCollectionsByDataCollectionGroupId(dataCollectionGroupId);
                 }
+                
+                if (target.startsWith("#results")){
+                    alert("Results");
+                }
+                
                 
             });
     }, 1000);
@@ -2975,8 +3051,6 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.phasingStepLength = phasingSteps.length;
                    
                 }
-
-
                 /** For crystal */
                 data.xtal1 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1);
                 data.xtal2 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2);
@@ -3001,14 +3075,10 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.workflows = [];
                 }
 
-                if (!_this.collapsed) {
-                    
-                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {
-                                                                       
+                if (!_this.collapsed) {                    
+                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                         html = html + out;
-                    });
-
-                    
+                    });                    
                     dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
                     });
@@ -3018,8 +3088,6 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                         html = html + out;
                     });
                 }
-
-
                 return html;
 
             }
@@ -3038,8 +3106,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 return html;
 
             }
-        },
-         
+        }         
     ];
     return columns;
 };
@@ -3065,15 +3132,12 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
                 }
             }
         }
-
-
     });
     Ext.getCmp(this.id + "_found").setText(filtered.length + " items found");
     this.reloadData(filtered);
 };
 
-MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
-    
+MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {    
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);

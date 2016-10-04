@@ -29,7 +29,7 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 		ids = dataCollectionGroup.WorkflowStep_workflowStepId.split(",");
 		
 		
-		var previous = null;
+		//var previous = null;
 		for (var i = 0; i < steps.length; i++){
 			var step = {
 					status : status[i],
@@ -38,14 +38,14 @@ WorkflowSectionDataCollection.prototype.parseWorkflow = function(dataCollectionG
 					workflowStepIds : ids, 
 					img : EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(ids[i])
 			};
-			if (previous != steps[i]){
-				cleaned.push([step]);
+			//if (previous != steps[i]){
+				cleaned.push(step);
 				
-			}
-			else{
-				cleaned[cleaned.length - 1].push(step);
-			}
-			previous = steps[i];
+			//}
+			//else{
+			//	cleaned[cleaned.length - 1].push(step);
+			//}
+			//previous = steps[i];
 		}
 	}
 	return cleaned;
