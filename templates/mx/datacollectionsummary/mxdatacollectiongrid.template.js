@@ -4,7 +4,7 @@
          <div class="pull-left">
               <span style='font-size:12px;color:blue;' >
                      <kbd style='background-color:#CCCCCC;color:blue;'>
-                     Run #{.DataCollection_dataCollectionNumber} {.DataCollectionGroup_experimentType}
+                        Run #{.DataCollection_dataCollectionNumber} {.DataCollectionGroup_experimentType}
                      </kbd> 
                       <span style='color:blue;'>
                      {.DataCollectionGroup_startTime}
@@ -18,9 +18,11 @@
                <li class="active"><a data-toggle="tab" href="#datacollection_{.DataCollection_dataCollectionId}"> Summary</a></li>
                 <li><a data-toggle="tab" href="#dc_{.DataCollectionGroup_dataCollectionGroupId}">Data Collections <span class="badge" style='background-color:#337ab7;'>{.totalNumberOfDataCollections}</span></a></li>
                <li><a data-toggle="tab" href="#experimentparameters_{.DataCollection_dataCollectionId}">Beamline Parameters</a></li>
-               <li><a data-toggle="tab" href="#sample_{.DataCollection_dataCollectionId}">Sample</a></li>
-               <li><a data-toggle="tab" href="#df_{.DataCollection_dataCollectionId}">Diffraction Plan</a></li>
-              
+               {!<li><a data-toggle="tab" href="#sample_{.DataCollection_dataCollectionId}">Sample</a></li>!}
+               {!<li><a data-toggle="tab" href="#df_{.DataCollection_dataCollectionId}">Diffraction Plan</a></li>!}
+               <li><a data-toggle="tab" href="#re_{.DataCollection_dataCollectionId}">Results  <span class="badge" style='background-color:#337ab7;'>{.resultsCount}</span></a></li>
+               <li><a data-toggle="tab" href="#wf_{.DataCollection_dataCollectionId}">Workflow  <span class="badge" style='background-color:#337ab7;'>{.workflows.length}</span></a></li>
+           
             </ul>
          </div>
       </div>
@@ -116,38 +118,39 @@
                </div>
             </div>
          </div>
-         <div id="sample_{.DataCollection_dataCollectionId}" class="tab-pane fade">
+         {!<div id="sample_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
                   <div class="col-xs-6 col-md-2">
                      {>"sample.mxdatacollectiongrid.template"  /}                             
                   </div>
-                  
-                    <div class="col-xs-12 col-md-2">
-                        <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                        <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" />
-                        </a>                           
-                    </div>
-                    <div class="col-xs-12 col-md-2">
-                        <a href="{.xtal2}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                        <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal2}" />
-                        </a>                           
-                    </div>
-                    <div class="col-xs-12 col-md-2">
-                        <a href="{.xtal3}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                        <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal3}" />
-                        </a>                           
-                    </div>
-                    <div class="col-xs-12 col-md-2">
-                        <a href="{.xtal4}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                        <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal4}" />
-                        </a>                           
-                    </div>
+                    
+                        <div class="col-xs-12 col-md-2">
+                            <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
+                            <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" />
+                            </a>                           
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <a href="{.xtal2}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
+                            <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal2}" />
+                            </a>                           
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <a href="{.xtal3}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
+                            <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal3}" />
+                            </a>                           
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <a href="{.xtal4}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
+                            <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal4}" />
+                            </a>                           
+                        </div>
+                       
                 </div>
                
             </div>
-         </div>
-         
+         </div>!}
+         {!
           <div id="df_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
@@ -182,21 +185,43 @@
                                 <td class='column_parameter_value'>{.forcedSpaceGroup}</td>
                             </tr>
                         </table> 
-            </div>
+                    </div>
  
                </div>
             </div>
          </div>
+         !}
          
          <div id="dc_{.DataCollectionGroup_dataCollectionGroupId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
-                <div class="col-xs-12 col-md-12" id="dc_{.DataCollectionGroup_dataCollectionGroupId}">
-                     LOADING....                                            
-               </div>
+                    <div class="col-xs-12 col-md-12" id="__dc_{.DataCollection_dataCollectionId}">
+                            <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
+                    </div>
+                </div>
             </div>
          </div>
          
+        <div id="re_{.DataCollection_dataCollectionId}" class="tab-pane fade">
+            <div class="container-fluid">
+               <div class="row">
+                    <div class="col-xs-12 col-md-12" id="__re_{.DataCollection_dataCollectionId}">
+                            <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
+                    </div>
+                </div>
+            </div>
+         </div>
+       
+          <div id="wf_{.DataCollection_dataCollectionId}" class="tab-pane fade">
+            <div class="container-fluid">
+               <div class="row">
+                    <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionId}">
+                            <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
+                    </div>
+                </div>
+            </div>
+         </div>
+           
          
       </div>
    </div>

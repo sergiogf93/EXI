@@ -13,23 +13,28 @@ function MXDataCollectionGrid(args) {
 * @method attachCallBackAfterRender
 */
 MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
+    
     var _this = this;
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the id of the parent node which contains the scroll **/
             appendScroll: document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
             }
         };
         
-    var timer1 = setTimeout(function() {  $('.img-responsive').lazy(lazy);}, 1000);
-    var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 1000); 
+    var timer1 = setTimeout(function() {  $('.img-responsive').lazy(lazy);}, 500);
+    var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
     
-    var timer3 = setTimeout(function() {
+    
+    
+    var tabsEvents = function(grid) {
+        
+            this.grid = grid;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var target = $(e.target).attr("href"); // activated tab
                 /** Activate tab of data collections */
@@ -50,8 +55,41 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.dataCollection.getDataCollectionsByDataCollectionGroupId(dataCollectionGroupId);
                 }
                 
+                if (target.startsWith("#re")){                    
+                    var onSuccess2 = function(sender, data){                       
+                        /** Parsing data */
+                        var html = "";     
+                                           
+                        dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
+                                    html = html + out;
+                        });
+                        $(target).html(html);        
+                    };                    
+                    var dataCollectionId = target.slice(4);                    
+                    EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionId);    
+                }
+                
+                
+                if (target.startsWith("#wf")){                    
+                    var dataCollectionId = target.slice(4);
+                    var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
+                    if (dc){
+                        var html = "";
+                        var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
+                       
+                        dust.render("workflows.mxdatacollectiongrid.template",  items, function(err, out) {
+                                        html = html + out;
+                        });
+                        $(target).html(html);
+                    }  
+                }
+                
+                
+                
             });
-    }, 1000);
+    };
+    
+    var timer3 = setTimeout(tabsEvents, 500, _this);
  
 };
 
@@ -65,6 +103,7 @@ MXDataCollectionGrid.prototype.getPanel = function(dataCollectionGroup) {
         padding: 5,
         id: this.id,
         store: this.store,
+       
         disableSelection: true,
         tbar: this.getToolBar(),
         columns: this.getColumns(),
@@ -244,6 +283,13 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 data.sample = data.BLSample_name;
                 data.folder = data.DataCollection_imageDirectory;
 
+                
+                try{
+                    if (data.autoProcIntegrationId){                        
+                        data.resultsCount = _.uniq(data.autoProcIntegrationId.replace(/ /g,'').split(",")).length;
+                    }
+                }
+                catch(e){}
                 /** For Phasing */
                 
                 if (data.phasingStepType) {
@@ -251,8 +297,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.phasingStepLength = phasingSteps.length;
                    
                 }
-
-
+                
                 /** For crystal */
                 data.xtal1 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1);
                 data.xtal2 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2);
@@ -269,7 +314,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
 
-                /** For the workflows */
+                /** For the workflows **/
                 if (record.data.WorkflowStep_workflowStepType) {
                     data.workflows = new WorkflowSectionDataCollection().parseWorkflow(record.data);
                 }
@@ -277,25 +322,19 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.workflows = [];
                 }
 
-                if (!_this.collapsed) {
-                    
-                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {
-                                                                       
+                if (!_this.collapsed) {                    
+                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                         html = html + out;
-                    });
-
-                    
-                    dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
+                    });                    
+                    /*dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
-                    });
+                    });*/
                 }
                 else {
                     dust.render("collapsed.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
                     });
                 }
-
-
                 return html;
 
             }
@@ -314,8 +353,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 return html;
 
             }
-        },
-         
+        }         
     ];
     return columns;
 };
@@ -341,15 +379,12 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
                 }
             }
         }
-
-
     });
     Ext.getCmp(this.id + "_found").setText(filtered.length + " items found");
     this.reloadData(filtered);
 };
 
-MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
-    
+MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {    
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);
