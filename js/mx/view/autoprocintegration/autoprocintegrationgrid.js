@@ -48,8 +48,10 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
          try{             
             data[i].statistics = this.getStatistics(data[i]);
             data[i].collapsed = this.getCollapseStatistics(data[i]);
-            data[i].phasing = this.getPhasing(data[i]);              
-            data[i].downloadFilesUrl = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(data[i].v_datacollection_summary_phasing_autoProcProgramId);                                          
+            data[i].phasing = this.getPhasing(data[i]);    
+                      
+            data[i].downloadFilesUrl = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(data[i].v_datacollection_summary_phasing_autoProcProgramId);
+            console.log(data[i].downloadFilesUrl);                                          
          }
          catch(e){
              
