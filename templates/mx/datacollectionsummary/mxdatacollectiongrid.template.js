@@ -33,48 +33,49 @@
                <div class="row">
                    {>"general.mxdatacollectiongrid.template"  /}
                   <div class="col-xs-12 col-md-2">  
-                    {@ne key=ScreeningOutput_indexingSuccess value=null}
-                       <table class="table">
-                                <tr>
-                                    <td ><kbd style='background-color:#CCCCCC;color:blue;'>Indexed</kbd></td> 
-                                    <td>
-                                        {@eq key=ScreeningOutput_indexingSuccess type="boolean" value="true"}
-                                            <div class='summary_datacollection_success'></div>
-                                        {:else}
-                                            <div class='summary_datacollection_failed'></div>
-                                        {/eq}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Mosaicity</td> <td class='column_parameter_value'>{.ScreeningOutput_mosaicity}</td>
-                                </tr>  
-                                 {@ne key=ScreeningOutput_strategySuccess value=null}                    
-                                        <tr>
-                                            <td><kbd style='background-color:#CCCCCC;color:blue;'>Strategy</kbd></td> 
-                                           
-                                                {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
-                                                    <td> <div class='summary_datacollection_success'></div></td>
-                                                     
-                                                    <tr>
-                                                        <td>Rank. Res.</td> <td class='column_parameter_value'>{.ScreeningOutput_rankingResolution}</td>
-                                                    </tr>                                                               
-                                                    <tr>
-                                                        <td>Space Group</td> <td class='column_parameter_value'>{.ScreeningOutputLattice_spaceGroup}</td>
-                                                    </tr>     
-                                        
-                                                {:else}
-                                                    <td><div class='summary_datacollection_failed'></div></td>
-                                                {/eq}
-                                           
-                                        </tr>
-                                                                                                             
-                                  {/ne}                                                                                                                                                                                                           
-                        </table> 
-                         {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
-                            {>"unitcell.screening.mxdatacollectiongrid.template"  /}  
-                         {/eq}                             
-                    {/ne}
-                    
+                    {@eq key=isScreeningVisible  type="boolean"  value="true"}
+                        {@ne key=ScreeningOutput_indexingSuccess value=null}
+                            <table class="table">
+                                    <tr>
+                                        <td ><kbd style='background-color:#CCCCCC;color:blue;'>Indexed</kbd></td> 
+                                        <td>
+                                            {@eq key=ScreeningOutput_indexingSuccess type="boolean" value="true"}
+                                                <div class='summary_datacollection_success'></div>
+                                            {:else}
+                                                <div class='summary_datacollection_failed'></div>
+                                            {/eq}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Mosaicity</td> <td class='column_parameter_value'>{.ScreeningOutput_mosaicity}</td>
+                                    </tr>  
+                                    {@ne key=ScreeningOutput_strategySuccess value=null}                    
+                                            <tr>
+                                                <td><kbd style='background-color:#CCCCCC;color:blue;'>Strategy</kbd></td> 
+                                            
+                                                    {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
+                                                        <td> <div class='summary_datacollection_success'></div></td>
+                                                        
+                                                        <tr>
+                                                            <td>Rank. Res.</td> <td class='column_parameter_value'>{.ScreeningOutput_rankingResolution}</td>
+                                                        </tr>                                                               
+                                                        <tr>
+                                                            <td>Space Group</td> <td class='column_parameter_value'>{.ScreeningOutputLattice_spaceGroup}</td>
+                                                        </tr>     
+                                            
+                                                    {:else}
+                                                        <td><div class='summary_datacollection_failed'></div></td>
+                                                    {/eq}
+                                            
+                                            </tr>
+                                                                                                                
+                                    {/ne}                                                                                                                                                                                                           
+                            </table> 
+                            {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
+                                {>"unitcell.screening.mxdatacollectiongrid.template"  /}  
+                            {/eq}                             
+                        {/ne}
+                    {/eq}  
                     
                            
                      {>"autoproc.mxdatacollectiongrid.template"  /}       
