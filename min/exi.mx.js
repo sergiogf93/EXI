@@ -1266,6 +1266,76 @@ WorkflowStepListView.prototype.getFields = function(){
 };
 
 
+function AutoprocessingRanker(){
+    
+    
+}
+
+/**
+ * Filter by space group and lower rMerge
+ * 
+ */
+AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName, rmergeFieldName){
+    array = array.sort(function(a1, a2){        
+         var spaceGroudTrimmed1 = a1[spacegroudFieldName].replace(/\s+/g, '');
+         var spaceGroudTrimmed2 = a2[spacegroudFieldName].replace(/\s+/g, '');
+        
+         var space1 = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed1);
+         var space2 = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed2);
+        
+         /** Sort by rmerge */
+         if (space2 -  space1 == 0){
+             var rmerge1 = a1["overall"]["rMerge"];
+             var rmerge2 = a2["overall"]["rMerge"];
+             
+             if (rmerge1){
+                 if (rmerge2){
+                     return rmerge1 - rmerge2;
+                 }
+                 else{
+                     return 1;
+                 }
+             }
+             return -1;
+             
+         }
+         return space2 -  space1;
+      
+    });
+    for(var i =0; i < array.length; i++){            
+            array[i].rank = i + 1;
+    }
+    return array;
+};
+
+AutoprocessingRanker.prototype.sortBySpaceGroup = function(array, spacegroudFieldName){
+    try{
+        for(var i =0; i < array.length; i++){
+            var spaceGroudTrimmed = array[i][spacegroudFieldName].replace(/\s+/g, '');
+            array[i].rank = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed);
+        }
+        
+    }
+    catch(e){
+        return array;
+    }
+    return array;
+};
+
+AutoprocessingRanker.prototype.sortByRMergeLower = function(array, spacegroudFieldName){
+    try{
+        for(var i =0; i < array.length; i++){
+            var spaceGroudTrimmed = array[i][spacegroudFieldName].replace(/\s+/g, '');
+            array[i].rank = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed);
+        }
+        
+    }
+    catch(e){
+        return array;
+    }
+    return array;
+};
+
 function AutoProcIntegrationAttachmentGrid(args) {
 	this.id = BUI.id();	
 	this.maxHeight = 300;
@@ -1368,15 +1438,16 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
     return data;
 };
 
-AutoProcIntegrationGrid.prototype.rank = function(data) {
-     for(var i =0; i < data.length; i++){
-         data[i].rank = i;
-     }
-     return data;
-};
-
-AutoProcIntegrationGrid.prototype.load = function(data) {  
-    this.data =this.parseData(this.rank(data));
+AutoProcIntegrationGrid.prototype.load = function(data) {      
+    this.data =this.parseData(data);
+    
+    var anomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
+    var nonanomalous = _.filter(this.data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
+    
+    this.data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");
+    
+    this.data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"), this.data);
+    
     if (this.collapsed){        
         this.loadCollapsed(this.data);
     }
@@ -1502,7 +1573,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
 
 	this.store = Ext.create('Ext.data.Store', {
-		sorters : 'spaceGroup',
+		
 		fields : [ 'autoProcId',
 		           'refinedCellA', 
                    'v_datacollection_summary_phasing_autoProcIntegrationId',
@@ -1514,11 +1585,11 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
   
 	
 	this.panel = Ext.create('Ext.grid.Panel', {		
-		store : this.store,
-		
+		store : this.store,		
         tbar: this.getToolBar(),
         margin : 10,
 		cls : 'border-grid',
+       
         layout : 'fit',
 		columns : [             
                     {
@@ -1557,8 +1628,8 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 		],
 		flex : 1,
           viewConfig : {
-                preserveScrollOnRefresh: true,
-                stripeRows : false,                
+                preserveScrollOnRefresh : true,
+                stripeRows              : false,                
 	    	}
 	});
 
