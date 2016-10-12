@@ -30,11 +30,28 @@ AutoprocIntegrationController.prototype.init = function() {
 	var _this = this;
 	var listView;	
     
-	Path.map("#/autoprocintegration/datacollection/:datacollectionId/main").to(function() {
-        EXI.hideNavigationPanel();
+	Path.map("#/autoprocintegration/datacollection/:datacollectionId/main").to(function() {        
 		var mainView = new AutoProcIntegrationMainView();
 		EXI.addMainPanel(mainView);
-		mainView.load(this.params['datacollectionId']);
+		mainView.panel.setLoading(true);
+        
+        var listPanel = new AutoProcIntegrationListView();        
+        EXI.addNavigationPanel(listPanel);
+        
+        listPanel.onSelect.attach(function(sender, selected){           
+            mainView.load(selected);            
+        });
+         /** Load view for autoprocessing */
+        var onSuccess2 = function(sender, data){
+            mainView.load(data[0]);
+            console.log(data[0]);
+            mainView.panel.setLoading(false);            
+            listPanel.load(data[0]);
+        };
+        EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(this.params['datacollectionId']);
+    
+    
+    
 	}).enter(this.setPageBackground);
 
 	Path.map("#/autoprocintegration/datacollection/:datacollectionId/files").to(function() {
@@ -856,6 +873,35 @@ MXMainMenu.prototype.getDataExplorerMenu = function() {
 
 
 /**
+* AutoProcIntegrationListView displays the crystal as list on the navigation panels
+*
+* @class PuckListView
+* @constructor
+*/
+function AutoProcIntegrationListView(){
+	ListView.call(this);
+}
+
+
+AutoProcIntegrationListView.prototype.getPanel = ListView.prototype.getPanel;
+AutoProcIntegrationListView.prototype.load = ListView.prototype.load;
+AutoProcIntegrationListView.prototype.getFilter = ListView.prototype.getFilter;
+AutoProcIntegrationListView.prototype.getFields = ListView.prototype.getFields;
+AutoProcIntegrationListView.prototype.getColumns = ListView.prototype.getColumns;
+
+
+AutoProcIntegrationListView.prototype.getRow = function(record){
+	var html = "";
+	dust.render("autoprocintegration.listview", record.data, function(err, out){
+        
+        	html = out;
+    });
+	return html;
+};
+
+
+
+/**
 * CrystalListView displays the crystal as list on the navigation panels
 *
 * @class PuckListView
@@ -1430,8 +1476,15 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
          try{             
             data[i].statistics = this.getStatistics(data[i]);
             data[i].collapsed = this.getCollapseStatistics(data[i]);
+<<<<<<< HEAD
             data[i].phasing = this.getPhasing(data[i]);              
             data[i].downloadFilesUrl = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(data[i].v_datacollection_summary_phasing_autoProcProgramId);                                          
+=======
+            data[i].phasing = this.getPhasing(data[i]);    
+                      
+            data[i].downloadFilesUrl = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(data[i].v_datacollection_summary_phasing_autoProcProgramId);
+            console.log(data[i].downloadFilesUrl);                                          
+>>>>>>> CLEAN
          }
          catch(e){
              
@@ -1590,10 +1643,10 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 	
 	this.panel = Ext.create('Ext.grid.Panel', {		
 		store : this.store,		
-        tbar: this.getToolBar(),
+        //tbar: this.getToolBar(),
         margin : 10,
-		cls : 'border-grid',
-       
+		//cls : 'border-grid',
+        height : this.height,
         layout : 'fit',
 		columns : [             
                     {
@@ -1644,7 +1697,7 @@ AutoProcIntegrationGrid.prototype.getPanel = function() {
 };
 
 
-
+/*
 AutoProcIntegrationGrid.prototype.getToolBar = function() {
     var _this = this;
     return Ext.create('Ext.toolbar.Toolbar', {
@@ -1667,8 +1720,7 @@ AutoProcIntegrationGrid.prototype.getToolBar = function() {
           
         ]
     });
-};
-
+};*/
 /**
 * Attaches the events to lazy load to the images. Images concerned are with the class img-responsive and smalllazy
 *
@@ -1781,27 +1833,28 @@ function AutoProcIntegrationMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
 	var _this = this;
+    this.id = BUI.id();
 	
-     _this.programAttachments = [];
+    /* _this.programAttachments = [];
      _this.programAttachmentsAutoProcProgramIds = [];
 	
 	this.slaveWidth = 450;
+	*/
+	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid({height:300});
 	
-	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid();
-	
-	this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
+	/*this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
 		var ids = [];        
 		for (var i = 0; i < records.length; i++) {
 			ids.push(records[i].v_datacollection_summary_phasing_autoProcIntegrationId);
 		}		
-		/** Loading plots **/
+		
 		try{
 			_this.loadPlots(ids);
 		}
 		catch(e){
             console.log("Error loading plots");    
         }	        			
-	});
+	});*/
 
 }
 
@@ -1809,7 +1862,66 @@ AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
 AutoProcIntegrationMainView.prototype.getContainer = function() {
-	return  this.autoProcIntegrationGrid.getPanel();
+    var height = 200;
+    var width = 300;
+	this.panel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'fit'
+            },
+            //margin :10,
+            //cls : 'border-grid',         
+            items: [
+              this.autoProcIntegrationGrid.getPanel(),
+              {
+                  xtype: 'container',
+                  layout : 'hbox',
+                  margin : 20,
+                  items : [{
+                      
+                      html : '<div id="rfactor">rfactor</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                     
+                      html : '<div id="completeness">completeness</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                        html : '<div id="sigmaI">sigmaI</div>',
+                    
+                      width : width,
+                      height :height                                            
+                  }
+                  ]                                    
+              },
+               {
+                  xtype: 'container',
+                  layout : 'hbox',
+                  margin : 20,
+                  items : [{
+                     
+                       html : '<div id="cc2">cc2</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                    
+                      html : '<div id="sigmaAnno">sigmaAnno</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                      html : '<div id="anno">anno</div>',
+                      width : width,
+                      height :height                                            
+                  }
+                  ]                                    
+              }
+              ]
+        });
+        return this.panel;
 };
 
 /**
@@ -1818,35 +1930,100 @@ AutoProcIntegrationMainView.prototype.getContainer = function() {
 * _this.programAttachments with a list of attachments
 * @method loadAttachments
 */
+/*
 AutoProcIntegrationMainView.prototype.loadAttachments = function(autoProcessingIntegrationList) {
     var _this = this;
     
-     /** Load view for attachments */
+  
 	var onSuccess = function(sender, data){
         _this.programAttachments = (data);
 	};
     _this.programAttachmentsAutoProcProgramIds = _.map(autoProcessingIntegrationList, 'v_datacollection_summary_phasing_autoProcProgramId');
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getAttachmentListByautoProcProgramsIdList(_this.programAttachmentsAutoProcProgramIds);
 };	
-
+*/
 /**
 * It loads autoproc.getViewByDataCollectionId from autoprocessingdataadapter and call to loadAttachments
 * @method load
 */
-AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
+AutoProcIntegrationMainView.prototype.load = function(data) {
 	var _this = this;
 	this.panel.setTitle("Autoprocessing");
-	this.panel.setLoading("Generating plots");
 	
 	
-    /** Load view for autoprocessing */
-	var onSuccess2 = function(sender, data){
-        _this.data = data[0];
-        _this.panel.setLoading(false);
-		_this.autoProcIntegrationGrid.load(_this.data);
-        _this.loadAttachments(_this.data);
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionId);
+	this.autoProcIntegrationGrid.load(data);
+    
+    
+    var autoprocProgramId = [];
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
+            autoprocProgramId.push(data[i].v_datacollection_summary_phasing_autoProcProgramId);
+        }
+        
+    }
+   
+   
+    var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "Anom Corr vs Resolution",
+                          //  legend : 'never',
+                            targetId : "anno"
+    });
+    $("#anno").html(annoCorrPlotter.getHTML());                         
+    annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoprocProgramId));	                  
+       
+    var sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
+        height : 250,
+        title : "SigAno vs Resolution",
+     //   legend : 'never',
+        targetId : "sigmaAnno"
+    });
+        $("#sigmaAnno" + autoprocProgramId).html(sigmaAnnoPlotter.getHTML());                         
+    sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoprocProgramId));
+                       
+     var cc2Plotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "CC/2 vs Resolution",
+                         //   legend : 'never',
+                            targetId : "cc2"
+                        });
+    $("#cc2").html(cc2Plotter.getHTML());                         
+    cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoprocProgramId));
+	                     
+       
+       
+       
+        var rFactorPlotter = new AutoProcIntegrationCurvePlotter({
+		                    height : 250,
+		                    title : "Rfactor vs Resolution",
+		                  //  legend : 'never',
+                            targetId : "rfactor"
+	                    });                             
+                        $("#rfactor").html(rFactorPlotter.getHTML());                         
+                        rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoprocProgramId));
+                        
+                           /** Rfactor */
+                        var completenessPlotter = new AutoProcIntegrationCurvePlotter({
+		                    height : 250,
+		                    title : "Completeness vs Resolution",
+		                   // legend : 'never',
+                            targetId : " completeness"
+	                    });                             
+                        $("#completeness").html(completenessPlotter.getHTML());                         
+                        completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoprocProgramId));
+	                  
+                      	var isigmaPlotter = new AutoProcIntegrationCurvePlotter({
+                            height :250,
+                            title : "I/SigmaI vs Resolution",
+                           // legend : 'never',
+                            targetId : " sigmaI"
+                        });
+                        $("#sigmaI").html(isigmaPlotter.getHTML());                         
+                        isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoprocProgramId));
+	                  
+                      
+                      
+    //this.loadAttachments(data);
 };
 
 
@@ -2866,6 +3043,7 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     };                    
                     var dataCollectionId = target.slice(4);                    
                     EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionId);    
+<<<<<<< HEAD
                 }
                 
                 
@@ -2884,6 +3062,26 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                 }
                 
                 
+=======
+                }
+                
+                
+                if (target.startsWith("#wf")){                    
+                    var dataCollectionId = target.slice(4);
+                    var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
+                    if (dc){
+                        var html = "";
+                        var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
+                       
+                        dust.render("workflows.mxdatacollectiongrid.template",  items, function(err, out) {
+                                        html = html + out;
+                        });
+                        $(target).html(html);
+                    }  
+                }
+                
+                
+>>>>>>> CLEAN
                 
             });
     };
@@ -3107,12 +3305,35 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);
 
                 /** For online data analysis */
-                var online = (new OnlineResultSectionDataCollection().parseData(record.data));
-                data.autoprocessing = _.filter(online, function(b) { return b.name == "Autoprocessing"; });
+                //var online = (new OnlineResultSectionDataCollection().parseData(record.data));
+                //data.autoprocessing = _.filter(online, function(b) { return b.name == "Autoprocessing"; });
 
-                data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
+               
+                //data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
+                
+                /*if (data.autoprocessing.length > 0){
+                   data.isScreeningVisible = false;
+                }
+                else{
+                    data.isScreeningVisible = true;
+                }*/
+                //else{
+                //    data.ScreeningOutput_indexingSuccess = null;
+                //    data.ScreeningOutput_strategySuccess = null;
+               // }
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
+<<<<<<< HEAD
 
+=======
+                
+                /** We dont show screen if there are results of autoprocessing */
+                data.isScreeningVisible = true;
+                if (data.onlineresults){
+                    if (data.onlineresults.length > 0){
+                        data.isScreeningVisible = false;
+                    }                    
+                }
+>>>>>>> CLEAN
                 /** For the workflows **/
                 if (record.data.WorkflowStep_workflowStepType) {
                     data.workflows = new WorkflowSectionDataCollection().parseWorkflow(record.data);
@@ -5562,7 +5783,7 @@ CurvePlotter.prototype.render = function(url) {
                 title: this.title,
                 titleHeight: 20,
 
-                legend: this.legend,
+                //legend: this.legend,
                 labelsSeparateLines: true,
                 errorBars: true,
                 connectSeparatedPoints: true,
