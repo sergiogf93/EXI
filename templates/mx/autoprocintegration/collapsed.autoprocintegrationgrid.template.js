@@ -39,7 +39,7 @@
             {#.}
             <tr>
                <td  >#{.rank}</td>
-               <td  ><a href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/main'>{.v_datacollection_processingPrograms}</a></td>
+               <td  ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/main'>{.v_datacollection_processingPrograms}</a></td>
                <td  >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
                <td  >
                   {@eq key=v_datacollection_summary_phasing_anomalous type="boolean" value="true"}

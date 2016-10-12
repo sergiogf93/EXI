@@ -16,9 +16,9 @@
          <div class="pull-right">
             <ul class="nav nav-tabs" id="myTabs">
                <li class="active"><a data-toggle="tab" href="#datacollection_{.DataCollection_dataCollectionId}"> Summary</a></li>
+               <li><a data-toggle="tab" href="#experimentparameters_{.DataCollection_dataCollectionId}">Beamline Parameters</a></li>               
                 <li><a data-toggle="tab" href="#dc_{.DataCollectionGroup_dataCollectionGroupId}">Data Collections <span class="badge" style='background-color:#337ab7;'>{.totalNumberOfDataCollections}</span></a></li>
-               <li><a data-toggle="tab" href="#experimentparameters_{.DataCollection_dataCollectionId}">Beamline Parameters</a></li>
-               {!<li><a data-toggle="tab" href="#sample_{.DataCollection_dataCollectionId}">Sample</a></li>!}
+               <li><a data-toggle="tab" href="#sample_{.DataCollection_dataCollectionId}">Sample</a></li>
                {!<li><a data-toggle="tab" href="#df_{.DataCollection_dataCollectionId}">Diffraction Plan</a></li>!}
                <li><a data-toggle="tab" href="#re_{.DataCollection_dataCollectionId}">Results  <span class="badge" style='background-color:#337ab7;'>{.resultsCount}</span></a></li>
                <li><a data-toggle="tab" href="#wf_{.DataCollection_dataCollectionId}">Workflow  <span class="badge" style='background-color:#337ab7;'>{.workflows.length}</span></a></li>
@@ -119,7 +119,7 @@
                </div>
             </div>
          </div>
-         {!<div id="sample_{.DataCollection_dataCollectionId}" class="tab-pane fade">
+         <div id="sample_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
                   <div class="col-xs-6 col-md-2">
@@ -146,11 +146,16 @@
                             <img alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal4}" />
                             </a>                           
                         </div>
+                        
+                         <div class="col-xs-12 col-md-2">
+                            Sample Layout                           
+                        </div>
+                        
                        
                 </div>
                
             </div>
-         </div>!}
+         </div>
          {!
           <div id="df_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">

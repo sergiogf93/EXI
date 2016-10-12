@@ -84,6 +84,8 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     }  
                 }
                 
+               
+                
                 
                 
             });
