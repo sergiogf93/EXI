@@ -33,29 +33,34 @@ ExiController.prototype.init = function(){
 	}
 
 	/** Welcome Page **/
-	Path.map("#/").to(function() {
+	Path.map("#/").to(function() {       
 		location.hash = '/welcome';
 	}).enter(setPageBackground);
 	
 	Path.map("#/login").to(function() {
+        EXI.credentialManager.logout();
 		EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	
 	Path.map("#/welcome").to(function() {
-		EXI.addMainPanel(new WelcomeMainView());
+		//EXI.addMainPanel(new WelcomeMainView());
+        //location.hash = '/login';
+         EXI.credentialManager.logout();
+        EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	Path.map("#/welcome/user/:user/main").to(function() {
 		var user = this.params['user'];		
         var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
-         EXI.hideNavigationPanel();
+        EXI.hideNavigationPanel();
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
 
 	Path.map("#/welcome/manager/:user/main").to(function() {
+        
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);

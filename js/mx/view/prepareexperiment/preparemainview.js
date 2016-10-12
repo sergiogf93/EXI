@@ -9,7 +9,7 @@ function PrepareMainView() {
     this.dewarListSelector = new DewarListSelectorGrid({height : 600});
     this.dewarListSelector.onSelect.attach(function(sender, dewar){                       
             if (dewar.shippingStatus == "processing"){
-                _this.updateStatus(dewar.shippingId, "at ESRF");
+                _this.updateStatus(dewar.shippingId, "at_ESRF");
             } 
             if (dewar.shippingStatus != "processing"){
                 _this.updateStatus(dewar.shippingId, "processing");
@@ -20,7 +20,7 @@ function PrepareMainView() {
     });
     
 	this.containerListEditor = new ContainerPrepareSpreadSheet({height : 600});
-};
+}
 
 PrepareMainView.prototype.updateStatus = function(shippingId, status) {
     var _this = this;
@@ -29,10 +29,10 @@ PrepareMainView.prototype.updateStatus = function(shippingId, status) {
         EXI.mainStatusBar.showReady("Processing update successfully");
         _this.dewarListSelector.panel.setLoading(false);
         _this.load();
-    }
+    };
     var onError = function(data){
             EXI.setError(data);
-    }
+    };
     
     EXI.getDataAdapter({onSuccess : onStatusSuccess, onError : onError}).proposal.shipping.updateStatus(shippingId,status);
 };
@@ -59,9 +59,7 @@ PrepareMainView.prototype.load = function() {
         _this.dewarListSelector.panel.setLoading(false);
         
         /** Selecting containers that are processing */
-        var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
- 
-        _this.containerListEditor.load(processingContainers);
+        _this.containerListEditor.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
         
     };
      var onError = function(sender, error) {        

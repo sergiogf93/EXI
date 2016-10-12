@@ -7,10 +7,9 @@
 function SummaryPhasingGrid(args) {
 	
     this.pseudoFreeMin = 24;
-    this.ccOfPartialModel = 60;
-    
+    this.ccOfPartialModel = 60;    
     this.onSelect = new Event(this);
-};
+}
 
 SummaryPhasingGrid.prototype.load = function(data) {
    
@@ -21,9 +20,7 @@ SummaryPhasingGrid.prototype.load = function(data) {
            var metrics = element.metric.split(",");
            var statisticsValues = element.statisticsValue.split(",");
            if (metrics.length > 0){            
-               for (var j = 0; j < metrics.length; j++) {
-                   console.log(metrics[j])
-                   
+               for (var j = 0; j < metrics.length; j++) {                  
                    element[metrics[j]] = statisticsValues[j];
                }
                
@@ -35,29 +32,27 @@ SummaryPhasingGrid.prototype.load = function(data) {
 };
 
 
-SummaryPhasingGrid.prototype.filter = function(data, metric, min, max) {
-        
-        var filterFunction = function(b){ 
-            
-            if (b){
-                if(b[metric]){
-                    
-                    try{
-                        if (Number(b[metric]) > min){
-                            if (Number(b[metric]) < max){
-                                return true;
-                            }
+SummaryPhasingGrid.prototype.filter = function(data, metric, min, max) {        
+    var filterFunction = function(b){             
+        if (b){
+            if(b[metric]){
+                
+                try{
+                    if (Number(b[metric]) > min){
+                        if (Number(b[metric]) < max){
+                            return true;
                         }
-                    
-                    }   
-                    catch(e){
-                        return false;
                     }
+                
+                }   
+                catch(e){
+                    return false;
                 }
             }
-            return false;
         }
-        return _.filter(data, filterFunction);
+        return false;
+    };
+    return _.filter(data, filterFunction);
 };
 
 SummaryPhasingGrid.prototype.getPanel = function() {
@@ -208,7 +203,7 @@ SummaryPhasingGrid.prototype.getPanel = function() {
                                                 renderer : function(grid, e, record){
                                                    
                                                     if (record.data.phasingStepType == "SUBSTRUCTUREDETERMINATION"){
-                                                        return record.data.phasingPrograms.toUpperCase()
+                                                        return record.data.phasingPrograms.toUpperCase();
                                                     }
                                                 }
                                             },
@@ -219,7 +214,7 @@ SummaryPhasingGrid.prototype.getPanel = function() {
                                                 renderer : function(grid, e, record){
                                                    
                                                     if (record.data.phasingStepType == "PHASING"){
-                                                         return record.data.phasingPrograms.toUpperCase()
+                                                         return record.data.phasingPrograms.toUpperCase();
                                                     }
                                                 }
                                             },
@@ -229,7 +224,7 @@ SummaryPhasingGrid.prototype.getPanel = function() {
                                                 dataIndex : 'previousPhasingStepId',
                                                 renderer : function(grid, e, record){
                                                     if (record.data.phasingStepType == "MODELBUILDING"){
-                                                         return record.data.phasingPrograms.toUpperCase()
+                                                         return record.data.phasingPrograms.toUpperCase();
                                                     }
                                                 }
                                             },
@@ -272,7 +267,7 @@ SummaryPhasingGrid.prototype.getPanel = function() {
                             dataIndex : 'lowRes',
                             renderer : function(grid, e, record){
                                                     if (record.data.phasingStepType == "MODELBUILDING"){
-                                                         return record.data.lowRes + " - " + record.data.highRes 
+                                                         return record.data.lowRes + " - " + record.data.highRes ;
                                                     }
                                                 }
                         },

@@ -1,3 +1,62 @@
+.containerWithScroll{
+height:500px;
+overflow-y: auto;
+width:100%; 
+overflow-x: hidden;
+    
+}
+
+.meter-wrap{
+    position: relative;
+    border: gray 1px solid;
+    height:16px;
+    width:80px;
+    font-size: 10px;
+}
+
+.meter-value, .meter-text {
+    /* The width and height of your image */
+    width: 80px; height: 14px;
+}
+
+.meter-wrap, .meter-value {
+ /**    background: #FFFFFF url(/path/to/your-image.png) top left no-repeat; **/
+     background: #e6e6e6  top left no-repeat;
+}
+
+.meter-text {
+    position: absolute;
+    top:0; left:0;
+
+    padding-top: 1px;
+
+    color: #000;
+    text-align: center;
+    width: 100%;
+}
+
+
+
+
+
+.innershell{
+    color : #8A0886;
+    margin : 5px;
+    width : 40px;
+}
+
+.overallshell{
+    color : blue;
+    margin : 5px;
+    width : 40px;
+}
+
+.outershell{
+    color : green;
+    margin : 5px;
+    width : 40px;
+}
+
 .column_parameter_value{
     font-weight:700;
     font-size: 1.1em;
@@ -521,6 +580,7 @@ img.smalllazy {
 	
 }
 
+
 .inline-help{
 	font-style: oblique;
 	color : gray;
@@ -557,7 +617,7 @@ img.smalllazy {
 }
 
 .titlePanel {
-	background-color: #333;
+	background-color: #132577;
 	color: white;
 	font-weight: bold;
 	font-size: 25px;

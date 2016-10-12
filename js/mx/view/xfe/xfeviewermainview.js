@@ -34,7 +34,7 @@ XfeViewerMainView.prototype.getGrid = function() {
         fields: ['name', 'value', 'x', 'y'],
         sorters: [{ property: 'value', direction: 'DESC' }]
     });
-    return this.grid = Ext.create('Ext.grid.Panel', {
+    this.grid = Ext.create('Ext.grid.Panel', {
         title: 'Labels',
         store: this.store,
         cls: 'border-grid',        
@@ -99,6 +99,7 @@ XfeViewerMainView.prototype.getGrid = function() {
             
         }
     });
+    return this.grid;
 };
 
 /**
@@ -107,7 +108,7 @@ XfeViewerMainView.prototype.getGrid = function() {
 * @method setXColumn
 */
 XfeViewerMainView.prototype.setXColumn = function(labelName, selected) {
-    var label = _.filter(this.data.labels, function(o){ return o.name == labelName});
+    var label = _.filter(this.data.labels, function(o){ return o.name == labelName;});
     if (label){
         /** As X only can be one we set all x to false */
         this.data.labels = _.map(this.data.labels,  function disable(o){o.x = false; return o;});
@@ -126,7 +127,7 @@ XfeViewerMainView.prototype.setXColumn = function(labelName, selected) {
 * @method setXColumn
 */
 XfeViewerMainView.prototype.setYColumn = function(labelName, selected) {
-    var label = _.filter(this.data.labels, function(o){ return o.name == labelName});
+    var label = _.filter(this.data.labels, function(o){ return o.name == labelName;});
     if (label){
         if (label[0]){
             label[0].y = selected;
@@ -199,14 +200,14 @@ XfeViewerMainView.prototype.getSumForLabels = function(labels, sum) {
     var _this = this;
     /** Loading grid of labels */
     try {
-        function toJson(el) {
+        var toJson = function(el) {
             return {
                 name: el[0].name,
                 x: el[0].x,
                 y: el[0].y,
                 value: el[1]
             };
-        }
+        };
         /** This converts to arrays labels and sum in a single json array with name and value */
         var data = _.map(_.zip(labels, sum), toJson);
         data = _.reject(data, function(o) {
@@ -260,7 +261,7 @@ XfeViewerMainView.prototype.parseData = function() {
     var dataX =  this.getDataColumn(duplicatedData, [_.indexOf(this.data.labels, labelX)]);
    
    /** Getting the labels Y and data Y */
-   var duplicatedData = _.cloneDeep(this.data.data);
+    duplicatedData = _.cloneDeep(this.data.data);
     var labelsY = _.filter(this.data.labels.slice(), function(o){ return o.y;});
     /** Getting indexes for Y columns */
     var indexes = [];
@@ -272,7 +273,7 @@ XfeViewerMainView.prototype.parseData = function() {
     var data =  this.getDataColumn(duplicatedData, indexes);
   
    
-    for (var i = 0; i < dataX.length; i++) {
+    for ( i = 0; i < dataX.length; i++) {
         data[i] = _.concat(dataX[i], data[i]);
     }
    
@@ -291,13 +292,14 @@ XfeViewerMainView.prototype.getAnnotations = function(data, labels) {
         /**  First, we transpose the matrix **/
         var transposed = data[0].map(function(col, i) { 
             return data.map(function(row) { 
-                return row[i] 
-            })
+                return row[i]; 
+            });
         });
        
+        var findByMax = function(o) { return o == max; };
         for (var i = 0; i < labels.length; i++) {
                 var max = _.max(transposed[i]);
-                var index = _.findIndex(transposed[i], function(o) { return o == max; });
+                var index = _.findIndex(transposed[i], findByMax);
                 annotations.push({
                             x           : data[index][0],
                             shortText   : labels[i].name,//this.data.labels[i].name,
@@ -361,8 +363,8 @@ XfeViewerMainView.prototype.parseHeaders = function(line) {
                     name : element.replace(new RegExp("\"", 'g'), ""),
                     x    : counter == 1,
                     y    :  counter != 1
-        }
-     };
+        };
+     }
      return _.map(line.split(","), remove);
 };
 /**
@@ -392,14 +394,14 @@ XfeViewerMainView.prototype.plot = function() {
                     return;
                 }
 
-                function convertToNumber(element) {
+                var convertToNumber = function (element) {
                     var elements = element.split(',');
                     function toNumber(el) {
                         return parseFloat(el);
                     }
                     elements = _.map(elements, toNumber);
                     return elements;
-                }
+                };
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
                 

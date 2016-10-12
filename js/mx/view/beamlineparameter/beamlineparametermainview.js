@@ -1,3 +1,4 @@
+/*
 function BeamlineParameterMainView() {
     this.icon = 'images/icon/ic_satellite_black_18dp.png';
     MainView.call(this);
@@ -94,7 +95,7 @@ BeamlineParameterMainView.prototype.load = function(dataCollectionId) {
                 var dataCollection = dataCollections[0];
                 
                 _this.panel.setTitle(dataCollection.DataCollection_imagePrefix);
-                /** Getting parameters **/
+  
                 var wavelength = dataCollection.DataCollection_wavelength;
                 var detectorDistance = dataCollection.DataCollection_detectorDistance;
                 var xBeam = dataCollection.DataCollection_xBeam;
@@ -112,7 +113,7 @@ BeamlineParameterMainView.prototype.load = function(dataCollectionId) {
                             document.getElementById(_this.id + "detector").innerHTML = out;
                 });
                 
-                /** Image **/
+  
                 _this.resolutionScatteringImageViewer.load(dataCollection.lastImageId,  wavelength, xBeam, yBeam, detectorDistance,  _this.detectorResolution.sensitiveArea);                
             }
         }
@@ -124,3 +125,4 @@ BeamlineParameterMainView.prototype.load = function(dataCollectionId) {
 };
 
 
+*/

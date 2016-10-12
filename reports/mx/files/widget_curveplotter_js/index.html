@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">116.98</p>
+      <p class="stat">116.49</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">343</p>
+      <p class="stat">330</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">37.29</p>
+      <p class="stat">37.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.85</p>
+      <p class="stat">2.87</p>
     </div>
   </div>
 </div>
@@ -105,6 +105,9 @@
         }
         if (args.legend != null) {
             this.legend = args.legend;
+        }
+        if (args.targetId != null) {
+            this.targetId = args.targetId;
         }
     }
 
@@ -177,12 +180,10 @@ CurvePlotter.prototype.render = function(url) {
             }
 
         );
-
-        var _this = this;
+      
         this.dygraph.ready(function() {
             _this.onRendered.notify();
         });
-
     }
 };
 
@@ -202,11 +203,6 @@ CurvePlotter.prototype.loadUrl = function(url) {
 CurvePlotter.prototype.load = function(selections) {
     this.render(EXI.getDataAdapter().saxs.frame.getFramesURL(selections.frame, selections.average, selections.subtracted, selections.sampleaverage, selections.bufferaverage));
 };
-
-
-
-
-
 
 
 function AutoProcIntegrationCurvePlotter(args) {
@@ -346,12 +342,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     return;
                 }
 
-                function convertToNumber(element) {
-                    var noError = [];
-
-                    var elements = element.split(&#039;,&#039;);
-                    
-                    function toNumber(el) {
+                var toNumber = function toNumber(el) {
                         if (el) {
                             if (el != &quot;&quot;) {
                                 return parseFloat(el);
@@ -363,13 +354,12 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                         else {
                             return &quot;&quot;;
                         }
-                    }
-                    elements = _.map(elements, toNumber);
-
-
-                    /** Removing the errors */
+                };
+                    
+                var convertToNumber = function (element) {
                     var noError = [];
-                    //noError.push(elements[0]);
+                    var elements = element.split(&#039;,&#039;);                                       
+                    elements = _.map(elements, toNumber);                 
                     noError.push(index);
                     _this.xLabels.push(elements[0]);
 
@@ -380,7 +370,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     }
                     index = index + 1;
                     return noError;
-                }
+                };
                 lines = lines.reverse();
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
@@ -404,6 +394,9 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
 
 };
 
+AutoProcIntegrationCurvePlotter.prototype.getHTML = function() {
+    return &#039;&lt;div  id=&quot;&#039; + this.targetId + &#039;&quot;&gt;&lt;/div&gt;&lt;div  style=&quot;height:20px&quot; id=&quot;&#039; + this.targetId + &#039;_legend&quot;&gt;&lt;/div&gt;&#039;;
+};
 AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
     
     this.plotPanel = Ext.create(&#039;Ext.panel.Panel&#039;, {
@@ -413,7 +406,7 @@ AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
         height: this.height,
         margin: this.margin,
         items: [{
-                    html: &#039;&lt;div  id=&quot;&#039; + this.targetId + &#039;&quot;&gt;&lt;/div&gt;&lt;div  style=&quot;height:20px&quot; id=&quot;&#039; + this.targetId + &#039;_legend&quot;&gt;&lt;/div&gt;&#039;,
+                    html: this.getHTML(),
                     id: this.id,
                     style: {
                       border: &quot;1px solid black&quot;  
@@ -423,13 +416,7 @@ AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
         }
        
         ]
-    });
-
-    this.plotPanel.on(&quot;afterrender&quot;, function() {
-    });
-
-    this.plotPanel.on(&quot;resize&quot;, function() {
-    });
+    });   
     return this.plotPanel;
 };</textarea>
   </div>

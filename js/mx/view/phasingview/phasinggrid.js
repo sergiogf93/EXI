@@ -7,8 +7,7 @@
  * @width
  */
 function PhasingGrid(args) {
-	
-};
+}
 
 /**
  * {"processingPrograms":"grenades_parallelproc",
@@ -130,16 +129,18 @@ PhasingGrid.prototype.getPanel = function() {
 			flex : 1,
             renderer : function(e, sample, record){
 				var html  = "";
+                var output = function(err, out){
+                            html = html + "<br />" + out;
+                };
+                                       
 				try{   
                     var subs =  record.data.children;                    
                     for (var i = 0 ;i < subs.length; i++){ 
                         for (var j = 0 ;j < subs[i].children.length; j++){
                             var child =   subs[i].children[j];
-                            if (child.metric){    
-                                                                                          
+                            if (child.metric){                                                                                              
                                   if (child.statisticsValue){                                       
-                                        child.statistics = [];
-                                       
+                                        child.statistics = [];                                       
                                         for(k=0; k < child.metric.split(",").length; k++){
                                             child.statistics.push({
                                                 name : child.metric.split(",")[k],
@@ -150,10 +151,7 @@ PhasingGrid.prototype.getPanel = function() {
                                 }
                             }
                         }         
-                        dust.render("phasinggrid.stats", subs[i].children, function(err, out){
-                            html = html + "<br />" + out;
-                        });
-                       
+                        dust.render("phasinggrid.stats", subs[i].children, output);
                     }
 				}
 				catch(e){
@@ -161,53 +159,8 @@ PhasingGrid.prototype.getPanel = function() {
 				}
 				return html;
 			}
-		},             
-        {
-			text : 'Metrics and Statistics',
-			dataIndex : 'phasingStepType',
-			flex : 1,
-            hidden : true,
-            renderer : function(e, sample, record){
-				var html  = "";
-                return html;
-				try{
-                   // if (record.data.metric){
-                    //    if (record.data.statisticsValue){
-                            /*var metricsList = record.data.metric.split(",");
-                            var statsList = record.data.statisticsValue.split(",");
-                            var data = [];
-                            for(var i =0; i< metricsList.length; i++){
-                                data.push({
-                                   name :  metricsList[i],
-                                   value :  statsList[i],
-                                   
-                                });
-                            }
-                            data.push({
-                                name :  "Low Resolution",
-                                value :  record.data.lowRes,
-                            });
-                               data.push({
-                                name :  "High Resolution",
-                                value :  record.data.highRes,
-                            });
-                            */        
-                            
-                            dust.render("phasinggrid.stats", record.data, function(err, out){
-                                html = out;
-                            });
-                    //    }
-                        
-                  //  }
-                    
-				
-				}
-				catch(e){
-					return "Parsing error";
-				}
-				return html;
-			}
-		}
+		}            
+      
 
 		],
 		flex : 1

@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">142.72</p>
+      <p class="stat">133.55</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">32</p>
+      <p class="stat">42</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">15.63</p>
+      <p class="stat">15.43</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.42</p>
+      <p class="stat">0.52</p>
     </div>
   </div>
 </div>
@@ -93,7 +93,7 @@
 	 Exi.call(this, {
 		 					menu: new SAXSMainMenu(),
 		 					anonymousMenu: new MainMenu(),
-		 					controllers : [new SAXSExiController(),  new OfflineExiController(), new ProposalExiController(), new LabContactExiController()]
+		 					controllers : [new SAXSExiController(),  new OfflineExiController(), new ProposalExiController(), new SessionController(), new LabContactExiController()]
 	 });
 }
 
@@ -115,7 +115,17 @@ ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
 
 ExiSAXS.prototype.getHeader = function(){
-	return &#039;&lt;img class=&quot;titleImage&quot; src=&quot;../images/logo_EMBL.png&quot;&gt;&lt;span class=&quot;title&quot;&gt;ExiSAXS&lt;/span&gt;&lt;span class=&quot;subtitle&quot;&gt;Extended ISPyB for SAXS&lt;sub style=&quot;font-size:10px;color:orange&quot;&gt;BETA&lt;/sub&gt;&lt;/span&gt;&#039;;
+    var html = &quot;&quot;;
+    var data = {
+        version         : ExtISPyB.version,
+        release_date    : ExtISPyB.release_date
+       
+        
+    };
+    dust.render(&quot;saxsheader&quot;, data, function(err, out){
+		html = out;
+     });
+    return html;	
 };
 
 ExiSAXS.prototype.getDataAdapter = function(args){

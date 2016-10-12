@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">112.64</p>
+      <p class="stat">112.31</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">112</p>
+      <p class="stat">113</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">23.34</p>
+      <p class="stat">23.35</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.85</p>
+      <p class="stat">0.86</p>
     </div>
   </div>
 </div>
@@ -113,12 +113,12 @@
                 _this.fileManagerPhasingGrid.load(files);
                 _this.fileManagerPhasingGrid.panel.setLoading(false);
            }
-       }
+       };
        
        var onError = function(sender,error){
            alert(error);
            _this.fileManagerPhasingGrid.panel.setLoading(false);
-       }
+       };
        _this.fileManagerPhasingGrid.panel.setLoading();    
        EXI.getDataAdapter({onSuccess : onSuccess,onError: onError }).mx.phasing.getPhasingFilesByPhasingStepId(phasingStep.phasingStepId);
 	
@@ -179,14 +179,15 @@ PhasingViewerMainView.prototype.load = function(data, phasingStepId) {
     var phasingStepIdParantes = [];
     var aux = [];
     if (phasingStepId){
-            var parent = _.find(data, function(b){return  b.phasingStepId == phasingStepId});
+           var parent = _.find(data, function(b){return  b.phasingStepId == phasingStepId;});
           if (parent != null){ 
                 aux.push(parent);
                 phasingStepIdParantes.push(parent.phasingStepId);
             }
             
+        var sortByPhasingId = function(b){return  b == data[i].previousPhasingStepId;};     
         for(var i =0; i&lt; data.length; i++){            
-            if (_.find(phasingStepIdParantes, function(b){return  b == data[i].previousPhasingStepId}) != null){ 
+            if (_.find(phasingStepIdParantes, sortByPhasingId(b)) != null){ 
                 aux.push(data[i]);
                 phasingStepIdParantes.push(data[i].phasingStepId);
             }

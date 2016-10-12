@@ -1,4 +1,5 @@
 function SAXSExiController() {
+    
 	this.init();
 }
 
@@ -319,48 +320,12 @@ SAXSExiController.prototype.routePrepare = function() {
 	
 	
 	
-//	Path.map("#/prepare/shipment").to(function() {
-//		var _this = this;
-//		var shipmentForm = new ShipmentForm({
-//			creationMode : true,
-//			showTitle : false
-//		});
-//		shipmentForm.onSaved.attach(function(sender, shipment) {
-//			location.hash = "/shipping/" + shipment.shippingId + "/main";
-//			window.close();
-//		});
-//		var window = Ext.create('Ext.window.Window', {
-//			title : 'New Shipment',
-//			height : 600,
-//			width : 800,
-//			modal : true,
-//			layout : 'fit',
-//			items : [ shipmentForm.getPanel() ]
-//		}).show();
-//	}).enter(this.setPageBackground);
 	
 
 	Path.map("#/prepare/designer").to(function() {
 			var mainView = new DesignerMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();
-//			function() {
-//				var wizardWidget = new WizardWidget({
-//					windowMode : true,
-//					width : 1200 });
-//
-//				wizardWidget.onFinished.attach(function(sender, result) {
-//					wizardWidget.window.close();
-//					EXI.setLoading();
-//					var onSuccess = (function(sender, experiment) {
-//						location.hash = "/experiment/templateId/" + experiment.experimentId + "/main";
-//					});
-//					wizardWidget.current.setLoading("ISPyB: Creating experiment");
-//					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data);
-//				});
-//
-//				wizardWidget.draw(this.targetId, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers()));
-
 			}).enter(this.setPageBackground);
 };
 
@@ -381,6 +346,37 @@ SAXSExiController.prototype.init = function() {
 
 	
 
+    /** Loading a single session on the navigation panel * */
+	Path.map("#/session/nav/:sessionId/session").to(function() {
+       
+        EXI.clearNavigationPanel();
+		var listView = new SessionSaxsListView();		
+		/** When selected move to hash * */
+		listView.onSelect.attach(function(sender, selected) {
+			if (selected[0].experimentType == "HPLC"){
+				location.hash = "/experiment/hplc/" + selected[0].experimentId + "/main";
+			}
+			if ((selected[0].experimentType == "STATIC")||(selected[0].experimentType == "CALIBRATION")){
+				location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
+			}
+			if (selected[0].experimentType == "TEMPLATE"){
+				location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
+			}
+		});
+         var onSuccess = function(sender, data){            
+		    EXI.addNavigationPanel(listView);
+            listView.load(data);            
+            EXI.setLoadingMainPanel(false);    
+          };
+            
+         EXI.getDataAdapter({
+                onSuccess : onSuccess                
+            }).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']); 
+            
+
+	}).enter(this.setPageBackground);
+    
+    
 	Path.map("#/project/:projectId/run/:runId/main").to(function() {
 		var projectId = this.params['projectId'];
 		var runId = this.params['runId'];

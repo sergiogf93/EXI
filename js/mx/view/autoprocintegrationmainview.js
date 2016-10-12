@@ -9,138 +9,96 @@ function AutoProcIntegrationMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
 	var _this = this;
+    this.id = BUI.id();
 	
-     _this.programAttachments = [];
+    /* _this.programAttachments = [];
      _this.programAttachmentsAutoProcProgramIds = [];
 	
 	this.slaveWidth = 450;
+	*/
+	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid({height:300});
 	
-	this.autoProcIntegrationGrid = new AutoProcIntegrationGrid();
-	
-	this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
+	/*this.autoProcIntegrationGrid.onSelected.attach(function(sender, records){
 		var ids = [];        
 		for (var i = 0; i < records.length; i++) {
 			ids.push(records[i].v_datacollection_summary_phasing_autoProcIntegrationId);
 		}		
-		/** Loading plots **/
+		
 		try{
 			_this.loadPlots(ids);
 		}
 		catch(e){
             console.log("Error loading plots");    
-        }	
-        	
-		/** Loading attachments
-		if (records.length == 1){                                                                                     
-			var record = _this.getByAutoProcId(records[0].v_datacollection_summary_phasing_autoproc_autoprocId);
-			if (record != null){
-				_this.autoProcIntegrationAttachmentGrid.load(_this.programAttachments[_.findIndex(_this.programAttachmentsAutoProcProgramIds, function(o) { return o == records[0].v_datacollection_summary_phasing_autoProcProgramId; })]);
-			}
-		}	 **/	
-		
-		/** Loading phasing network 
-		var tmp = [].concat.apply([], _this.autoProcIntegrationPhasingViewList);
-		var filtered = [];
-		for ( i = 0; i < tmp.length; i++) {
-			if ( tmp[i].v_datacollection_summary_phasing_autoProcIntegrationId == records[0].v_datacollection_summary_phasing_autoProcIntegrationId){
-				filtered.push( tmp[i]);
-			}
-		}	**/	
-	});
-	
-    /*
-	this.autoProcIntegrationAttachmentGrid = new AutoProcIntegrationAttachmentGrid({
-																					width : this.slaveWidth, 
-																					margin: 5
-																					
-	});
-	*/
-	/** Netowkrwidget for phasing **/
-	//this.phasingNetworkWidget = new PhasingNetworkWidget({tbar : "OPEN_VIEWER"});
-	
-	/** Curve completenessPlotter * */
-	this.completenessPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 250,
-		title : "Completeness vs Resolution",
-		legend : 'never'
-	});
-	
-	this.completenessPlotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-	this.rFactorPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 250,
-		title : "Rfactor vs Resolution",
-		legend : 'never'
-	});
-	
-	this.rFactorPlotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-	this.isigmaPlotter = new AutoProcIntegrationCurvePlotter({
-		height :250,
-		title : "I/SigmaI vs Resolution",
-		legend : 'never'
-	});
+        }	        			
+	});*/
 
-	this.isigmaPlotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-	this.cc2Plotter = new AutoProcIntegrationCurvePlotter({
-		height : 250,
-		title : "CC/2 vs Resolution",
-		legend : 'never'
-	});
-	
-	this.cc2Plotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-	this.sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
-		height :250,
-		title : "SigAno vs Resolution",
-		legend : 'never'
-	});
-	
-	this.sigmaAnnoPlotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-	this.wilsonPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 250,
-		title : "Wilson Plot",
-		legend : 'never'
-	});
-	
-	this.wilsonPlotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-	this.annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
-		height : 300,
-		title : "Anom Corr vs Resolution",
-		legend : 'never'
-	});
-
-	this.annoCorrPlotter.onPointClickCallback.attach(function(sender, id){
-		_this.onPlotClicked(id);
-	});
-	
-};
+}
 
 AutoProcIntegrationMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
 AutoProcIntegrationMainView.prototype.getContainer = function() {
-	return  this.autoProcIntegrationGrid.getPanel();
+    var height = 200;
+    var width = 300;
+	this.panel = Ext.create('Ext.container.Container', {
+            layout: {
+                type: 'fit'
+            },
+            //margin :10,
+            //cls : 'border-grid',         
+            items: [
+              this.autoProcIntegrationGrid.getPanel(),
+              {
+                  xtype: 'container',
+                  layout : 'hbox',
+                  margin : 20,
+                  items : [{
+                      
+                      html : '<div id="rfactor">rfactor</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                     
+                      html : '<div id="completeness">completeness</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                        html : '<div id="sigmaI">sigmaI</div>',
+                    
+                      width : width,
+                      height :height                                            
+                  }
+                  ]                                    
+              },
+               {
+                  xtype: 'container',
+                  layout : 'hbox',
+                  margin : 20,
+                  items : [{
+                     
+                       html : '<div id="cc2">cc2</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                    
+                      html : '<div id="sigmaAnno">sigmaAnno</div>',
+                      width : width,
+                      height :height                                            
+                  },
+                  {
+                      html : '<div id="anno">anno</div>',
+                      width : width,
+                      height :height                                            
+                  }
+                  ]                                    
+              }
+              ]
+        });
+        return this.panel;
 };
-
-
-
-
 
 /**
 * It loads the list of attachments and stores them into two class variables:
@@ -148,35 +106,100 @@ AutoProcIntegrationMainView.prototype.getContainer = function() {
 * _this.programAttachments with a list of attachments
 * @method loadAttachments
 */
+/*
 AutoProcIntegrationMainView.prototype.loadAttachments = function(autoProcessingIntegrationList) {
     var _this = this;
     
-     /** Load view for attachments */
+  
 	var onSuccess = function(sender, data){
         _this.programAttachments = (data);
 	};
     _this.programAttachmentsAutoProcProgramIds = _.map(autoProcessingIntegrationList, 'v_datacollection_summary_phasing_autoProcProgramId');
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getAttachmentListByautoProcProgramsIdList(_this.programAttachmentsAutoProcProgramIds);
 };	
-
+*/
 /**
 * It loads autoproc.getViewByDataCollectionId from autoprocessingdataadapter and call to loadAttachments
 * @method load
 */
-AutoProcIntegrationMainView.prototype.load = function(dataCollectionId) {
+AutoProcIntegrationMainView.prototype.load = function(data) {
 	var _this = this;
 	this.panel.setTitle("Autoprocessing");
-	this.panel.setLoading("Generating plots");
 	
 	
-    /** Load view for autoprocessing */
-	var onSuccess2 = function(sender, data){
-        _this.data = data[0];
-        _this.panel.setLoading(false);
-		_this.autoProcIntegrationGrid.load(_this.data);
-        _this.loadAttachments(_this.data);
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionId);
+	this.autoProcIntegrationGrid.load(data);
+    
+    
+    var autoprocProgramId = [];
+    for (var i = 0; i < data.length; i++) {
+        if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
+            autoprocProgramId.push(data[i].v_datacollection_summary_phasing_autoProcProgramId);
+        }
+        
+    }
+   
+   
+    var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "Anom Corr vs Resolution",
+                          //  legend : 'never',
+                            targetId : "anno"
+    });
+    $("#anno").html(annoCorrPlotter.getHTML());                         
+    annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoprocProgramId));	                  
+       
+    var sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
+        height : 250,
+        title : "SigAno vs Resolution",
+     //   legend : 'never',
+        targetId : "sigmaAnno"
+    });
+        $("#sigmaAnno" + autoprocProgramId).html(sigmaAnnoPlotter.getHTML());                         
+    sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoprocProgramId));
+                       
+     var cc2Plotter = new AutoProcIntegrationCurvePlotter({
+                            height : 250,
+                            title : "CC/2 vs Resolution",
+                         //   legend : 'never',
+                            targetId : "cc2"
+                        });
+    $("#cc2").html(cc2Plotter.getHTML());                         
+    cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoprocProgramId));
+	                     
+       
+       
+       
+        var rFactorPlotter = new AutoProcIntegrationCurvePlotter({
+		                    height : 250,
+		                    title : "Rfactor vs Resolution",
+		                  //  legend : 'never',
+                            targetId : "rfactor"
+	                    });                             
+                        $("#rfactor").html(rFactorPlotter.getHTML());                         
+                        rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoprocProgramId));
+                        
+                           /** Rfactor */
+                        var completenessPlotter = new AutoProcIntegrationCurvePlotter({
+		                    height : 250,
+		                    title : "Completeness vs Resolution",
+		                   // legend : 'never',
+                            targetId : " completeness"
+	                    });                             
+                        $("#completeness").html(completenessPlotter.getHTML());                         
+                        completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoprocProgramId));
+	                  
+                      	var isigmaPlotter = new AutoProcIntegrationCurvePlotter({
+                            height :250,
+                            title : "I/SigmaI vs Resolution",
+                           // legend : 'never',
+                            targetId : " sigmaI"
+                        });
+                        $("#sigmaI").html(isigmaPlotter.getHTML());                         
+                        isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoprocProgramId));
+	                  
+                      
+                      
+    //this.loadAttachments(data);
 };
 
 

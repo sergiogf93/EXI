@@ -5,7 +5,7 @@ AuthenticationForm.prototype.show = function(){
 	this.window = Ext.create('Ext.window.Window', {
 	    title: 'Authentication <span style="FONT-SIZE:9PX;color:red;">[INTRANET ONLY]</span>',
 	    height: 250,
-//	    closable :  EXI.localExtorage.tokenManager.getTokens().length > 0,
+	    closable :  false,
 	    width: 400,
 	    modal : true,
 	    layout: 'fit',
@@ -27,6 +27,7 @@ AuthenticationForm.prototype.getPanel = function(){
 	    bodyPadding: 5,
 	    width: 350,
 	    layout: 'anchor',
+       
 	    defaults: {
 	        anchor: '90%'
 	    },

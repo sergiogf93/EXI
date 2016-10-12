@@ -72,12 +72,14 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
     this.panel.setTitle("Workflow");
     _this.mainPanel.removeAll();
      _this.mainPanel.setLoading();
+     
     function onSuccess(sender, data){    
    
         var items = JSON.parse(data).items;
         _this.panel.setTitle(JSON.parse(data).title);
         
-        var insertContainer = function(err, out){        
+        var insertContainer = function(err, out){    
+                
                     _this.mainPanel.insert({
                             padding : 2,
                            
@@ -92,15 +94,17 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
             }
             else{
                 if (items[i].type == "image"){
+                    
                     items[i] = _this.getImageResolution(items[i]);
                 }
                 
                  if (items[i].type == "images"){
+                     
                     items[i].items = _this.getImagesResolution(items[i].items);
                    
                 }
                
-                dust.render("workflowstepmain_main_steps", items[i], insertContainer);
+                dust.render("workflowmainview.template", items[i], insertContainer);
             }
         }
       

@@ -20,7 +20,7 @@ Clone a copy of the main EXI git repo by running:
 git clone git://github.com/ispyb/EXI.git
 ```
 
-Enter the jquery directory and run the build script:
+Enter into the installation directory and run the build script:
 
 ```bash
 npm install

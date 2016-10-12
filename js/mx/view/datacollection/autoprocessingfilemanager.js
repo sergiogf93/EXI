@@ -104,7 +104,7 @@ AutoProcessingFileManager.prototype.reloadData = function(programId, filtered){
     if (this.filtered){
          dataByProgram = _.filter(dataByProgram, function(b){         
                 return b.fileName.indexOf(".mtz") != -1;
-        })
+        });
     }
    
     if (!dataByProgram){
@@ -128,7 +128,7 @@ AutoProcessingFileManager.prototype.load = function(dataCollectionIds){
             if (dataAttachments.length != _this.autoProcProgramIds.length){
                 /** Removing null */
                 
-                _this.autoProcProgramIds =  _.filter(_this.autoProcProgramIds, function(b){return b != null});
+                _this.autoProcProgramIds =  _.filter(_this.autoProcProgramIds, function(b){return b != null;});
                 
             }
 			_this.attachments = dataAttachments;
@@ -153,4 +153,4 @@ AutoProcessingFileManager.prototype.load = function(dataCollectionIds){
 	this.autoProcIntegrationAttachmentGrid.panel.setLoading();
     
 	EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionIds);
-}
+};

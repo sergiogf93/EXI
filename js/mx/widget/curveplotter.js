@@ -79,7 +79,7 @@ CurvePlotter.prototype.render = function(url) {
                 title: this.title,
                 titleHeight: 20,
 
-                legend: this.legend,
+                //legend: this.legend,
                 labelsSeparateLines: true,
                 errorBars: true,
                 connectSeparatedPoints: true,
@@ -89,12 +89,10 @@ CurvePlotter.prototype.render = function(url) {
             }
 
         );
-
-        var _this = this;
+      
         this.dygraph.ready(function() {
             _this.onRendered.notify();
         });
-
     }
 };
 
@@ -253,12 +251,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     return;
                 }
 
-                function convertToNumber(element) {
-                    var noError = [];
-
-                    var elements = element.split(',');
-                    
-                    function toNumber(el) {
+                var toNumber = function toNumber(el) {
                         if (el) {
                             if (el != "") {
                                 return parseFloat(el);
@@ -270,13 +263,12 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                         else {
                             return "";
                         }
-                    }
-                    elements = _.map(elements, toNumber);
-
-
-                    /** Removing the errors */
+                };
+                    
+                var convertToNumber = function (element) {
                     var noError = [];
-                    //noError.push(elements[0]);
+                    var elements = element.split(',');                                       
+                    elements = _.map(elements, toNumber);                 
                     noError.push(index);
                     _this.xLabels.push(elements[0]);
 
@@ -287,7 +279,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     }
                     index = index + 1;
                     return noError;
-                }
+                };
                 lines = lines.reverse();
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);

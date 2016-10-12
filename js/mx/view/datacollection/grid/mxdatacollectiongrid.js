@@ -13,23 +13,28 @@ function MXDataCollectionGrid(args) {
 * @method attachCallBackAfterRender
 */
 MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
+    
     var _this = this;
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the id of the parent node which contains the scroll **/
             appendScroll: document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id),
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
             }
         };
         
-    var timer1 = setTimeout(function() {  $('.img-responsive').lazy(lazy);}, 1000);
-    var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 1000); 
+    var timer1 = setTimeout(function() {  $('.img-responsive').lazy(lazy);}, 500);
+    var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
     
-    var timer3 = setTimeout(function() {
+    
+    
+    var tabsEvents = function(grid) {
+        
+            this.grid = grid;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var target = $(e.target).attr("href"); // activated tab
                 /** Activate tab of data collections */
@@ -50,8 +55,43 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.dataCollection.getDataCollectionsByDataCollectionGroupId(dataCollectionGroupId);
                 }
                 
+                if (target.startsWith("#re")){                    
+                    var onSuccess2 = function(sender, data){                       
+                        /** Parsing data */
+                        var html = "";     
+                                           
+                        dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
+                                    html = html + out;
+                        });
+                        $(target).html(html);        
+                    };                    
+                    var dataCollectionId = target.slice(4);                    
+                    EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(dataCollectionId);    
+                }
+                
+                
+                if (target.startsWith("#wf")){                    
+                    var dataCollectionId = target.slice(4);
+                    var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
+                    if (dc){
+                        var html = "";
+                        var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
+                       
+                        dust.render("workflows.mxdatacollectiongrid.template",  items, function(err, out) {
+                                        html = html + out;
+                        });
+                        $(target).html(html);
+                    }  
+                }
+                
+               
+                
+                
+                
             });
-    }, 1000);
+    };
+    
+    var timer3 = setTimeout(tabsEvents, 500, _this);
  
 };
 
@@ -65,6 +105,7 @@ MXDataCollectionGrid.prototype.getPanel = function(dataCollectionGroup) {
         padding: 5,
         id: this.id,
         store: this.store,
+       
         disableSelection: true,
         tbar: this.getToolBar(),
         columns: this.getColumns(),
@@ -126,7 +167,7 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     var cell_gamma = getArrayValues(data.Autoprocessing_cell_gamma);
 
 
-    var data = {};
+    data = {};
     /** Returning if no autoprocs */
     if (autoProcIds) {
         if (autoProcIds[0] == "") {
@@ -163,19 +204,19 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     /** Convert from map to array */
     var ids = _.map(data, 'autoProcId');
     var result = [];
-    for (var i = 0; i < ids.length; i++) {
+    for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
 
     function sortByBest(a, b) {
         var spaceGroupA = a.spaceGroup.replace(/\s/g, "");
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");        
-        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) < _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
+        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");              
+        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
     }
 
     var sorted = result.sort(sortByBest).reverse();    
     /** Add new attribute for ranking order */
-    for (var i = 0; i < sorted.length; i++) {
+    for ( i = 0; i < sorted.length; i++) {
         sorted[i]["rank"] = i + 1;
     }
 
@@ -231,6 +272,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
             flex: 1.5,
             hidden: false,
             renderer: function(grid, e, record) {
+                
                 var data = record.data;                              
                 var html = "";                               
                 /** For thumbnail */
@@ -243,6 +285,13 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 data.sample = data.BLSample_name;
                 data.folder = data.DataCollection_imageDirectory;
 
+                
+                try{
+                    if (data.autoProcIntegrationId){                        
+                        data.resultsCount = _.uniq(data.autoProcIntegrationId.replace(/ /g,'').split(",")).length;
+                    }
+                }
+                catch(e){}
                 /** For Phasing */
                 
                 if (data.phasingStepType) {
@@ -250,8 +299,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.phasingStepLength = phasingSteps.length;
                    
                 }
-
-
+                
                 /** For crystal */
                 data.xtal1 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1);
                 data.xtal2 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 2);
@@ -262,13 +310,32 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);
 
                 /** For online data analysis */
-                var online = (new OnlineResultSectionDataCollection().parseData(record.data));
-                data.autoprocessing = _.filter(online, function(b) { return b.name == "Autoprocessing"; });
+                //var online = (new OnlineResultSectionDataCollection().parseData(record.data));
+                //data.autoprocessing = _.filter(online, function(b) { return b.name == "Autoprocessing"; });
 
-                data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
+               
+                //data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
+                
+                /*if (data.autoprocessing.length > 0){
+                   data.isScreeningVisible = false;
+                }
+                else{
+                    data.isScreeningVisible = true;
+                }*/
+                //else{
+                //    data.ScreeningOutput_indexingSuccess = null;
+                //    data.ScreeningOutput_strategySuccess = null;
+               // }
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
-
-                /** For the workflows */
+                
+                /** We dont show screen if there are results of autoprocessing */
+                data.isScreeningVisible = true;
+                if (data.onlineresults){
+                    if (data.onlineresults.length > 0){
+                        data.isScreeningVisible = false;
+                    }                    
+                }
+                /** For the workflows **/
                 if (record.data.WorkflowStep_workflowStepType) {
                     data.workflows = new WorkflowSectionDataCollection().parseWorkflow(record.data);
                 }
@@ -276,25 +343,19 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                     data.workflows = [];
                 }
 
-                if (!_this.collapsed) {
-                    
-                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {
-                                                                       
+                if (!_this.collapsed) {                    
+                    dust.render("mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                         html = html + out;
-                    });
-
-                    
-                    dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
+                    });                    
+                    /*dust.render("online.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
-                    });
+                    });*/
                 }
                 else {
                     dust.render("collapsed.mxdatacollectiongrid.template", data, function(err, out) {
                         html = html + out;
                     });
                 }
-
-
                 return html;
 
             }
@@ -313,8 +374,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 return html;
 
             }
-        },
-         
+        }         
     ];
     return columns;
 };
@@ -340,14 +400,12 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
                 }
             }
         }
-
-
     });
     Ext.getCmp(this.id + "_found").setText(filtered.length + " items found");
     this.reloadData(filtered);
 };
 
-MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
+MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {    
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);

@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">114.07</p>
+      <p class="stat">115.13</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">338</p>
+      <p class="stat">356</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">34.01</p>
+      <p class="stat">34.38</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">3.90</p>
+      <p class="stat">4.10</p>
     </div>
   </div>
 </div>
@@ -123,7 +123,24 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var timer3 = setTimeout(function() {
             $(&#039;a[data-toggle=&quot;tab&quot;]&#039;).on(&#039;shown.bs.tab&#039;, function (e) {
                 var target = $(e.target).attr(&quot;href&quot;); // activated tab
-                $(target).html(&quot;test&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;testtest&lt;br /&gt;test&quot;);
+                /** Activate tab of data collections */
+                if (target.startsWith(&quot;#dc&quot;)){
+                    var onSuccess = function(sender, data){
+                        var html = &quot;&quot;;
+                        
+                        dust.render(&quot;datacollections.mxdatacollectiongrid.template&quot;, data, function(err, out) {                                                                                               
+                            html = html + out;
+                        });
+                        $(target).html(html);
+                    };
+                    var onError = function(sender, data){
+                        $(target).html(&quot;Error retrieving data&quot;);
+                    };
+                     /** Retrieve data collections */
+                    var dataCollectionGroupId = target.slice(4);
+                    EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.dataCollection.getDataCollectionsByDataCollectionGroupId(dataCollectionGroupId);
+                }
+                
             });
     }, 1000);
  
@@ -200,7 +217,7 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     var cell_gamma = getArrayValues(data.Autoprocessing_cell_gamma);
 
 
-    var data = {};
+    data = {};
     /** Returning if no autoprocs */
     if (autoProcIds) {
         if (autoProcIds[0] == &quot;&quot;) {
@@ -237,19 +254,19 @@ MXDataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     /** Convert from map to array */
     var ids = _.map(data, &#039;autoProcId&#039;);
     var result = [];
-    for (var i = 0; i &lt; ids.length; i++) {
+    for ( i = 0; i &lt; ids.length; i++) {
         result.push(data[ids[i]]);
     }
 
     function sortByBest(a, b) {
         var spaceGroupA = a.spaceGroup.replace(/\s/g, &quot;&quot;);
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, &quot;&quot;);
+        var spaceGroupB = b.spaceGroup.replace(/\s/g, &quot;&quot;);              
         return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) &gt; _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
     }
 
-    var sorted = result.sort(sortByBest).reverse();
+    var sorted = result.sort(sortByBest).reverse();    
     /** Add new attribute for ranking order */
-    for (var i = 0; i &lt; sorted.length; i++) {
+    for ( i = 0; i &lt; sorted.length; i++) {
         sorted[i][&quot;rank&quot;] = i + 1;
     }
 
@@ -305,6 +322,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
             flex: 1.5,
             hidden: false,
             renderer: function(grid, e, record) {
+                
                 var data = record.data;                              
                 var html = &quot;&quot;;                               
                 /** For thumbnail */
@@ -357,7 +375,7 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                         html = html + out;
                     });
 
-                 
+                    
                     dust.render(&quot;online.mxdatacollectiongrid.template&quot;, data, function(err, out) {
                         html = html + out;
                     });
@@ -403,8 +421,7 @@ MXDataCollectionGrid.prototype.reloadData = function(dataCollections) {
 * @method filterBy
 * @return {String} searchTerm prefix, protein acronym or sample to be searched
 */
-MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
-    console.log(this.dataCollectionGroup);
+MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {  
     var filtered = _.filter(this.dataCollectionGroup, function(dataCollection) {
         var params = [&quot;DataCollection_imagePrefix&quot;, &quot;Protein_acronym&quot;, &quot;BLSample_name&quot;];
         for (var i = 0; i &lt; params.length; i++) {
@@ -423,6 +440,7 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
 };
 
 MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
+    
     this.dataCollectionGroup = dataCollectionGroup;
     this.dataCollectionGroup.reverse();
     this.store.loadData(this.dataCollectionGroup);

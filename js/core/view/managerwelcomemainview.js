@@ -15,7 +15,8 @@ function ManagerWelcomeMainView() {
     this.sessionGrid = new SessionGrid({
                     width : null,
                     height:600,
-                    isHiddenTitle : false,
+                    isHiddenTitle : true,
+                    isHiddenPI : false,
                     isHiddenNumberOfShifts : false,
                     isHiddenLocalContact : false,                                        
                     margin : '10 10 10 10'
@@ -239,6 +240,7 @@ ManagerWelcomeMainView.prototype.load = function(username) {
     var today = moment().format("YYYYMMDD");
     this.loadSessionsByDate(username, today, today);
   }    
+  EXI.setLoadingMainPanel(false);
 };
 
 /**

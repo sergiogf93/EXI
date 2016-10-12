@@ -95,6 +95,5 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function(){
                 
             ]
     });
-    return this.panel;
-    
-}
+    return this.panel;    
+};
