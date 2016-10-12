@@ -172,6 +172,15 @@ module.exports = function(grunt) {
 		      }]
 		}
 	},
+	watch: {
+	  scripts: {
+		files: '**/*.js',
+		tasks: ['dev'],
+		options: {
+		  interrupt: true,
+		},
+	  },
+	},
 	 wiredep: {
 	      target: {
 	                    src: ['mx/dev.html', 'saxs/dev.html'], // point to your HTML file.
