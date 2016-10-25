@@ -174,7 +174,7 @@ module.exports = function(grunt) {
 	},
 	watch: {
 	  scripts: {
-		files: '**/*.js',
+		files: ['css/**/*css','templates/**/*js','js/**/*js'],
 		tasks: ['dev'],
 		options: {
 		  interrupt: true,

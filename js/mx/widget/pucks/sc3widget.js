@@ -1,9 +1,12 @@
-function SC3Widget () {
+function SC3Widget (args) {
 	
-	SampleChangerWidget.call(this);
+	SampleChangerWidget.call(this,args);
 	
+	this.name = 'SC3Widget';
+	this.clockwise = -1;
+
 	this.data = {
-		radius : 250,
+		radius : this.radius,
 		cells : 5,
 		text : []
 	};
@@ -12,10 +15,15 @@ function SC3Widget () {
 	this.createPucks(2, this.data.cells, 0, this.data.radius/2, 0.8);
 }
 
+SC3Widget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
 SC3Widget.prototype.createPucks = SampleChangerWidget.prototype.createPucks;
 SC3Widget.prototype.getPanel = SampleChangerWidget.prototype.getPanel;
 SC3Widget.prototype.load = SampleChangerWidget.prototype.load;
 SC3Widget.prototype.getStructure = SampleChangerWidget.prototype.getStructure;
+SC3Widget.prototype.findPuckById = SampleChangerWidget.prototype.findPuckById;
+SC3Widget.prototype.getAllPucks = SampleChangerWidget.prototype.getAllPucks;
+SC3Widget.prototype.render = SampleChangerWidget.prototype.render;
+
 
 SC3Widget.prototype.createStructure = function () {
 	var textR = this.data.radius*0.9;

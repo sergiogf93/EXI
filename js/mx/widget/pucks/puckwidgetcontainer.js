@@ -12,9 +12,11 @@ function PuckWidgetContainer(args) {
 			switch (args.puckType) {
 				case 1:
 					this.puckWidget = new UniPuckWidget(args);
+					this.capacity = 16;
 					break;
 				case 2:
 					this.puckWidget = new SpinePuckWidget(args);
+					this.capacity = 10;
 					break;
 			}
 		}
@@ -49,9 +51,12 @@ PuckWidgetContainer.prototype.getPanel = function () {
 	var _this = this;
 	
 	this.panel =  Ext.create('Ext.panel.Panel', {
+			id: this.puckWidget.id + "-container",
 		   x: this.x,
 		   y: this.y,
-		   // cls:'border-grid',
+		   width : 2*this.puckWidget.data.mainRadius + 1,
+		   height : 2*this.puckWidget.data.mainRadius + 1,
+		//    cls:'border-grid',
 		   frame: false,
 			border: false,
 			bodyStyle: 'background:transparent;',

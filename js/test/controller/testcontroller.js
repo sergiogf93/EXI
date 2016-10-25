@@ -10,6 +10,8 @@ function TestController() {
 }
 
 
+TestController.prototype.loadNavigationPanel = ExiController.prototype.loadNavigationPanel;
+
 
 TestController.prototype.setPageBackground = function() {
 };
@@ -65,7 +67,7 @@ TestController.prototype.init = function() {
 		});
 		
 		EXI.addNavigationPanel(listView);
-		adapter = loadNavigationPanel(listView);
+		adapter = _this.loadNavigationPanel(listView);
 		adapter.mx.sample.getSampleInfoByProposalId();
 	
 	
@@ -78,7 +80,7 @@ TestController.prototype.init = function() {
 		console.log(this.params['crystalId']);
 		mainView.load(this.params['crystalId']);
 	}).enter(this.setPageBackground);
-	/*
+	
 	Path.map("#/test/test4").to(function() {		
 		EXI.clearNavigationPanel();
 	    var mainView = new PuckWidgetView();
@@ -90,7 +92,7 @@ TestController.prototype.init = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(333486,333486,333486);
 	}).enter(this.setPageBackground);
 	
-	*/
+	
 
 	Path.rescue(this.notFound);
 };

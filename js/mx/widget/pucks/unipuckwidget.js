@@ -10,14 +10,19 @@ function UniPuckWidget(args){
 	}
 	args.isUnipuck = true;
 	PuckWidget.call(this, args);
+
+	this.data = this.parseData(this.data);
+	this.capacity = 16;
 }
 
 UniPuckWidget.prototype.getPanel = PuckWidget.prototype.getPanel;
 UniPuckWidget.prototype.load = PuckWidget.prototype.load;
 UniPuckWidget.prototype.addCirclePathCells = PuckWidget.prototype.addCirclePathCells;
 UniPuckWidget.prototype.focus = PuckWidget.prototype.focus;
-UniPuckWidget.prototype.select = PuckWidget.prototype.select;
+UniPuckWidget.prototype.render = PuckWidget.prototype.render;
 UniPuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
+UniPuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
+UniPuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
 
 UniPuckWidget.prototype.parseData = function (data) {
 	var n = 5;

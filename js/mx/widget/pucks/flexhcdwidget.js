@@ -1,9 +1,11 @@
-function FlexHCDWidget () {
+function FlexHCDWidget (args) {
 	
-	SampleChangerWidget.call(this);
+	SampleChangerWidget.call(this,args);
 	
+	this.name = 'FlexHCD';
+	this.initAlpha = -7*2*Math.PI/16;
 	this.data = {
-		radius : 200,
+		radius : this.radius,
 		cells : 8,
 		lines : [],
 		text :[]
@@ -15,10 +17,14 @@ function FlexHCDWidget () {
 	
 }
 
+FlexHCDWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
 FlexHCDWidget.prototype.createPucks = SampleChangerWidget.prototype.createPucks;
 FlexHCDWidget.prototype.getPanel = SampleChangerWidget.prototype.getPanel;
 FlexHCDWidget.prototype.load = SampleChangerWidget.prototype.load;
 FlexHCDWidget.prototype.getStructure = SampleChangerWidget.prototype.getStructure;
+FlexHCDWidget.prototype.findPuckById = SampleChangerWidget.prototype.findPuckById;
+FlexHCDWidget.prototype.getAllPucks = SampleChangerWidget.prototype.getAllPucks;
+FlexHCDWidget.prototype.render = SampleChangerWidget.prototype.render;
 
 FlexHCDWidget.prototype.createStructure = function () {
 	for (var i = 0 ; i < this.data.cells/2 ; i++){
@@ -37,8 +43,8 @@ FlexHCDWidget.prototype.createStructure = function () {
 		var ang = i*2*Math.PI/this.data.cells;
 		var textNumber = {
 			text : i+1,
-			x : textR*Math.sin(7*this.initAlpha + ang) + this.data.radius,
-			y : -textR*Math.cos(7*this.initAlpha + ang) + this.data.radius
+			x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
+			y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius
 		};
 		this.data.text.push(textNumber);
 	}

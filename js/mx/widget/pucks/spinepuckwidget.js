@@ -9,15 +9,19 @@ function SpinePuckWidget(args){
 		args = {};
 	}
 	args.isUnipuck = false;
-	PuckWidget.call(this, args);	
+	PuckWidget.call(this, args);
+	this.data = this.parseData(this.data);	
+	this.capacity = 10;
 }
 
 SpinePuckWidget.prototype.getPanel = PuckWidget.prototype.getPanel;
 SpinePuckWidget.prototype.load = PuckWidget.prototype.load;
 SpinePuckWidget.prototype.addCirclePathCells = PuckWidget.prototype.addCirclePathCells;
 SpinePuckWidget.prototype.focus = PuckWidget.prototype.focus;
-SpinePuckWidget.prototype.select = PuckWidget.prototype.select;
+SpinePuckWidget.prototype.render = PuckWidget.prototype.render;
 SpinePuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
+SpinePuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
+SpinePuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
 
 SpinePuckWidget.prototype.parseData = function (data) {
 	var n = 10;

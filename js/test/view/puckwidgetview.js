@@ -1,25 +1,25 @@
 function PuckWidgetView() {
 	this.queueGridList = [];
-    // this.widget = new FlexHCDWidget();
+    this.widget = new FlexHCDWidget();
     // this.widget = new SC3Widget();
-    this.widget = new PuckWidgetContainer({puckType : 1});
+    // this.widget = new PuckWidgetContainer({puckType : 1});
 	this.title = 'Samples';
 	
 	MainView.call(this);
 
     var _this = this;
 	
-	this.widget.mouseOverCell.attach(function(sender, location){
-		for (row in _this.grid.getStore().data.items) {
-			if (_this.grid.getStore().data.items[row].data.location == location){
-				_this.grid.getSelectionModel().select(Number(row));
-			}
-		}
-	});
+	// this.widget.mouseOverCell.attach(function(sender, location){
+	// 	for (row in _this.grid.getStore().data.items) {
+	// 		if (_this.grid.getStore().data.items[row].data.location == location){
+	// 			_this.grid.getSelectionModel().select(Number(row));
+	// 		}
+	// 	}
+	// });
 	
-	this.widget.mouseOutCell.attach(function(sender){
-		_this.grid.getSelectionModel().deselectAll();
-	});
+	// this.widget.mouseOutCell.attach(function(sender){
+	// 	_this.grid.getSelectionModel().deselectAll();
+	// });
 }
 	
 PuckWidgetView.prototype.getPanel = function() {
