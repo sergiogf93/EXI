@@ -23,7 +23,10 @@ SC3Widget.prototype.getStructure = SampleChangerWidget.prototype.getStructure;
 SC3Widget.prototype.findPuckById = SampleChangerWidget.prototype.findPuckById;
 SC3Widget.prototype.getAllPucks = SampleChangerWidget.prototype.getAllPucks;
 SC3Widget.prototype.render = SampleChangerWidget.prototype.render;
-
+SC3Widget.prototype.setClickListeners = SampleChangerWidget.prototype.setClickListeners;
+SC3Widget.prototype.disablePucksOfDifferentCapacity = SampleChangerWidget.prototype.disablePucksOfDifferentCapacity;
+SC3Widget.prototype.allowAllPucks = SampleChangerWidget.prototype.allowAllPucks;
+SC3Widget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
 
 SC3Widget.prototype.createStructure = function () {
 	var textR = this.data.radius*0.9;

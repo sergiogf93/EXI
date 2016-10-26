@@ -1,29 +1,42 @@
 function SampleChangerSelector () {
     this.sampleChangerWidget = null;
 
-    this.onPuckSelected = new Event(this);
+    // this.onPuckSelected = new Event(this);
     this.onSampleChangerSelected = new Event(this);
 }
 
 SampleChangerSelector.prototype.getPanel = function() {
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'vbox',
+            align: 'center',
+            pack: 'center'
+        },
         width: 500,
         height: 600,
-        margin: 5,
         tbar : this.getToolbar(),
         items : []
     });
 
-    return this.panel;
+    this.container = Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'vbox',
+            align: 'center',
+            pack: 'center'
+        },
+        margin: 5,
+        items : [this.panel]
+    });
+    return this.container;
 }
 
-SampleChangerSelector.prototype.loadSampleChanger = function (sampleChangerWidget) {
-    this.sampleChangerWidget = sampleChangerWidget;
-    this.panel.insert(0,sampleChangerWidget.getPanel());
-    this.sampleChangerWidget.render();
-    this.setClickListeners();
-}
+// SampleChangerSelector.prototype.loadSampleChanger = function (sampleChangerWidget) {
+//     this.sampleChangerWidget = sampleChangerWidget;
+//     this.panel.insert(0,sampleChangerWidget.getPanel());
+//     this.sampleChangerWidget.render();
+//     this.setClickListeners();
+// }
 
 SampleChangerSelector.prototype.createSampleChanger = function (changerName) {
     var data = {
@@ -38,7 +51,7 @@ SampleChangerSelector.prototype.createSampleChanger = function (changerName) {
     this.panel.removeAll();
     this.panel.add(this.sampleChangerWidget.getPanel());
     this.sampleChangerWidget.render();
-    this.setClickListeners();
+    // this.setClickListeners();
 }
 
 SampleChangerSelector.prototype.getToolbar = function() {
@@ -69,15 +82,15 @@ SampleChangerSelector.prototype.getToolbar = function() {
     });
 }
 
-SampleChangerSelector.prototype.setClickListeners = function () {
-    var _this = this;
-	for (puckType in this.sampleChangerWidget.pucks) {
-		for (puckIndex in this.sampleChangerWidget.pucks[puckType]){
-			var puck = this.sampleChangerWidget.pucks[puckType][puckIndex];
-			$("#" + puck.puckWidget.id).css('cursor','pointer');
-			$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-				_this.onPuckSelected.notify(_this.sampleChangerWidget.findPuckById(sender.target.id));
-			});
-		}
-	}
-}
+// SampleChangerSelector.prototype.setClickListeners = function () {
+//     var _this = this;
+// 	for (puckType in this.sampleChangerWidget.pucks) {
+// 		for (puckIndex in this.sampleChangerWidget.pucks[puckType]){
+// 			var puck = this.sampleChangerWidget.pucks[puckType][puckIndex];
+// 			$("#" + puck.puckWidget.id).css('cursor','pointer');
+// 			$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
+// 				_this.onPuckSelected.notify(_this.sampleChangerWidget.findPuckById(sender.target.id));
+// 			});
+// 		}
+// 	}
+// }

@@ -6,6 +6,7 @@ function SampleChangerWidget (args) {
 	this.isLoading = true;
 	this.radius = 200;
 	this.name = '';
+	this.onPuckSelected = new Event(this);
 
 	if (args) {
 		if (args.radius){
@@ -135,4 +136,49 @@ SampleChangerWidget.prototype.render = function () {
             puck.render(puck.data.cells[cell].location);
         }
     }
+}
+
+SampleChangerWidget.prototype.setClickListeners = function () {
+    var _this = this;
+	var allPucks = this.getAllPucks();
+	for (puckIndex in allPucks) {
+		var puck = allPucks[puckIndex];
+		$("#" + puck.puckWidget.id).css('cursor','pointer');
+		$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
+			if (!sender.target.classList.contains('disabled')){
+				_this.onPuckSelected.notify(_this.findPuckById(sender.target.id));
+			}
+		});
+	}
+}
+
+SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capacity) {
+	var _this = this;
+	var allPucks = this.getAllPucks();
+	for (puckIndex in allPucks) {
+		var puck = allPucks[puckIndex];
+		if (puck.capacity != capacity) {
+			$("#" + puck.puckWidget.id).addClass("disabled");
+		}
+	}
+}
+
+SampleChangerWidget.prototype.allowAllPucks = function () {
+	var _this = this;
+	var allPucks = this.getAllPucks();
+	for (puckIndex in allPucks) {
+		var puck = allPucks[puckIndex];
+		$("#" + puck.puckWidget.id).removeClass("disabled");
+	}
+}
+
+SampleChangerWidget.prototype.getPuckData = function () {
+	var allPucks = this.getAllPucks();
+	var puckData = {};
+    for (puckContainerIndex in allPucks) {
+        var puckContainer = allPucks[puckContainerIndex];
+        var location = puckContainer.puckWidget.id.substring(puckContainer.puckWidget.id.indexOf('-')+1);
+        puckData[location] = puckContainer.puckWidget.data;
+    }
+	return puckData;
 }

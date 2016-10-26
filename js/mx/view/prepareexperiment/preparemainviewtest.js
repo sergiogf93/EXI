@@ -1,12 +1,13 @@
 function PrepareMainViewTest() {
 	this.icon = '../images/icon/contacts.png';
 	this.queueGridList = [];
-
+    
 	MainView.call(this);
     
     var _this = this;
     
     this.dewarListSelector = new DewarListSelectorGridTest({height : 600});
+    this.sampleChangerSelector = new SampleChangerSelector();
     this.loadShipmentView = new LoadShipmentView();
     this.confirmShipmentView = new ConfirmShipmentView();
 
@@ -25,7 +26,7 @@ function PrepareMainViewTest() {
     this.currentStep = 1;
     if (typeof(Storage) != "undefined") {
         if (sessionStorage.getItem('currentStep')) {
-            this.currentStep = sessionStorage.getItem('currentStep');
+            this.currentStep = Math.min(sessionStorage.getItem('currentStep'),3);
         }
     }
     
@@ -35,20 +36,36 @@ function PrepareMainViewTest() {
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
-    this.loadShipmentView.onSampleChangerSelected.attach(function(sender,changerName){
+    this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
         $('#next-button').attr("disabled", false);
         _this.sampleChangerName = changerName;
         _this.save('sampleChangerName', changerName);
         if (typeof(Storage) != "undefined") {
             sessionStorage.removeItem('puckData');
         }
+        var data = {
+            radius : 143,
+            isLoading : false
+        };
+        if (changerName == "FlexHCD") {
+            _this.loadShipmentView.sampleChangerWidget = new FlexHCDWidget(data);
+        } else if (changerName == "SC3Widget") {
+            _this.loadShipmentView.sampleChangerWidget = new SC3Widget(data);
+        }
+        _this.loadShipmentView.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
+            _this.loadShipmentView.onPuckSelected.notify(puck);
+        });
     });
 
     this.loadShipmentView.onSelectRow.attach(function(sender, row){
         if (row) {
+            if (_this.selectedPuck){
+                _this.deselectPuck();
+            }
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
                     _this.deselectRow();
+                    _this.loadShipmentView.previewPanelView.clean();
                 } else {
                     _this.deselectRow();
                     _this.setSelectedRow(row);
@@ -63,6 +80,7 @@ function PrepareMainViewTest() {
         if (_this.selectedPuck) {
             if (_this.selectedPuck == puck) {
                 _this.deselectPuck();
+                _this.loadShipmentView.previewPanelView.clean();
             } else {
                 _this.deselectPuck();
                 _this.setSelectedPuck(puck);
@@ -78,9 +96,8 @@ function PrepareMainViewTest() {
 
     this.loadShipmentView.onEmptyButtonClicked.attach(function(sender){
         _this.selectedPuck.emptyAll();
-        _this.loadShipmentView.puckPreviewPanel.removeAll();
         _this.drawSelectedPuck(_this.selectedPuck);
-        _this.storeSampleChangerWidget();
+        _this.storeSampleChangerWidget(_this.loadShipmentView.sampleChangerWidget);
     });
 
 }
@@ -89,17 +106,22 @@ PrepareMainViewTest.prototype.setSelectedRow = function (row) {
     this.loadShipmentView.containerListEditor.panel.getSelectionModel().select(this.loadShipmentView.containerListEditor.store.indexOf(row));
     this.selectedContainerId = row.get('containerId');
     this.selectedContainerCapacity = row.get('capacity');
-    this.drawSelectedPuckFromRow(this.selectedContainerId, this.selectedContainerCapacity);
-    this.checkIfLoadIsPossible();
+    this.drawSelectedPuckFromRow(this.selectedContainerId, this.selectedContainerCapacity, row.get('containerCode'));
+    this.loadShipmentView.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
+    // this.checkIfLoadIsPossible();
 }
 
 PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
-    $("#" + puck.id).attr("class","puck-selected");
     this.selectedPuck = puck;
-    this.drawSelectedPuck(puck);
-    this.checkIfLoadIsPossible();
-    if (!puck.isEmpty) {
-        this.loadShipmentView.emptyButton.setDisabled(false);    
+    if (this.selectedContainerId){
+        this.loadShipment(puck, this.selectedContainerId);
+    } else {
+        $("#" + puck.id).attr("class","puck-selected");
+        this.drawSelectedPuck(puck);
+        // this.checkIfLoadIsPossible();
+        // if (!puck.isEmpty) {
+        //     this.loadShipmentView.emptyButton.setDisabled(false);    
+        // }
     }
 }
 
@@ -135,7 +157,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
             items : [
-                        this.getToolBar(), this.container
+                        this.getToolBar(), this.getButtons(), this.container
             ]
 	});
 
@@ -143,63 +165,69 @@ PrepareMainViewTest.prototype.getPanel = function() {
         if (_this.currentStep == 1) {
             $('#previous-button-div').hide();
         }
-        if (_this.currentStep < 3) {        
+        if (_this.currentStep == 2) {
+            $('#next-button').attr("disabled", true);
+        }
+        if (_this.currentStep < 4) {        
             $('#done-button-div').hide();
         }
-        if (_this.currentStep == 3) {
+        if (_this.currentStep == 4) {
             $('#next-button-div').hide();
         }
         $('#next-button').unbind('click').click(function (sender){
-                if (_this.currentStep < 3) {
-                    $('#step-' + _this.currentStep).removeClass('active-step');
-                    $('#step-' + _this.currentStep).attr("disabled", "disabled");
-                    if (_this.currentStep == 1) {
-                        _this.save('containers',JSON.stringify(_this.containers));
-                        $('#next-button').attr("disabled", true);
-                    }
-                    _this.currentStep++;
-                    if (_this.currentStep > 0) {
-                        $('#previous-button-div').show();
-                    }
-                    if (_this.currentStep == 3) {
-                        $('#next-button-div').hide();
-                        $('#done-button-div').show();
-                    }
-                    $('#step-' + _this.currentStep).addClass('active-step');
-                    $('#step-' + _this.currentStep).attr("disabled", false);
-                    _this.container.removeAll();
-                    _this.reload();
-                    _this.save('currentStep',_this.currentStep);
+            if (_this.currentStep < 4) {
+                $('#step-' + _this.currentStep).removeClass('active-step');
+                $('#step-' + _this.currentStep).attr("disabled", "disabled");
+                if (_this.currentStep == 1) {
+                    _this.save('containers',JSON.stringify(_this.containers));
+                    $('#next-button').attr("disabled", true);
                 }
-            });
+                _this.currentStep++;
+                if (_this.currentStep > 1) {
+                    $('#previous-button-div').show();
+                }
+                if (_this.currentStep == 4) {
+                    $('#next-button-div').hide();
+                    $('#done-button-div').show();
+                }
+                $('#step-' + _this.currentStep).addClass('active-step');
+                $('#step-' + _this.currentStep).attr("disabled", false);
+                _this.container.removeAll();
+                _this.reload();
+                _this.save('currentStep',_this.currentStep);
+            }
+        });
         $('#previous-button').unbind('click').click(function (sender){
-                if (_this.currentStep > 0) {
-                    $('#step-' + _this.currentStep).removeClass('active-step');
-                    $('#step-' + _this.currentStep).attr("disabled", "disabled");
-                    _this.currentStep--;
-                    if (_this.currentStep < 3) {
-                        $('#next-button-div').show();
-                        $('#done-button-div').hide();
-                    }
-                    if (_this.currentStep == 1) {
-                        $('#previous-button-div').hide();
-                        $('#next-button').attr("disabled", false);                        
-                    }
-                    $('#step-' + _this.currentStep).addClass('active-step');
-                    $('#step-' + _this.currentStep).attr("disabled", false);
-                    _this.container.removeAll();
-                    _this.reload();
-                    _this.save('currentStep',_this.currentStep);   
-                    if (_this.currentStep == 2) {
-                        _this.storeSampleChangerWidget(_this.confirmShipmentView.sampleChangerWidget);
-                        _this.loadShipmentView.sampleChangerSelector.loadSampleChanger(_this.confirmShipmentView.sampleChangerWidget);                        
-                    }             
+            if (_this.currentStep > 0) {
+                $('#step-' + _this.currentStep).removeClass('active-step');
+                $('#step-' + _this.currentStep).attr("disabled", "disabled");
+                _this.currentStep--;
+                if (_this.currentStep < 4) {
+                    $('#next-button-div').show();
+                    $('#done-button-div').hide();
                 }
-            });
+                if (_this.currentStep == 1) {
+                    $('#previous-button-div').hide();
+                    $('#next-button').attr("disabled", false);                        
+                }
+                if (_this.currentStep == 2) {
+                    $('#next-button').attr("disabled", true);                        
+                }
+                $('#step-' + _this.currentStep).addClass('active-step');
+                $('#step-' + _this.currentStep).attr("disabled", false);
+                _this.container.removeAll();
+                _this.reload();
+                _this.save('currentStep',_this.currentStep);   
+                if (_this.currentStep == 3) {
+                    _this.storeSampleChangerWidget(_this.confirmShipmentView.sampleChangerWidget);
+                    _this.checkStoreData();                    
+                }             
+            }
+        });
         $('#done-button').unbind('click').click(function (sender){
             _this.confirmShipmentView;
         });
-        for (var i = 1 ; i <= 3 ; i++){
+        for (var i = 1 ; i <= 4 ; i++){
             if (i == _this.currentStep){
                 $('#step-' + i).addClass('active-step');
             } else {
@@ -222,6 +250,16 @@ PrepareMainViewTest.prototype.getToolBar = function () {
 
     return {html : html};
 }
+
+PrepareMainViewTest.prototype.getButtons = function () {
+    var html = "";
+	dust.render("buttons.prepare.template", [], function(err, out){
+		html = out;
+	});
+
+    return {html : html};
+}
+
 
 PrepareMainViewTest.prototype.load = function() {
     var _this = this;
@@ -248,7 +286,9 @@ PrepareMainViewTest.prototype.reload = function() {
         };
         
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    } else if (this.currentStep == 2) {
+    } else if (this.currentStep == 2){
+        this.container.add(this.sampleChangerSelector.getPanel());
+    } else if (this.currentStep == 3) {
         this.container.add(this.loadShipmentView.getPanel());
         if (this.containers == null) {
             if (typeof(Storage) != "undefined"){
@@ -256,48 +296,37 @@ PrepareMainViewTest.prototype.reload = function() {
             }
         }
         this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));        
-    } else if (this.currentStep == 3) {
+    } else if (this.currentStep == 4) {
+        debugger
         this.container.add(this.confirmShipmentView.getPanel());
-        if (this.loadShipmentView.sampleChangerSelector.sampleChangerWidget) {
-            this.confirmShipmentView.loadSampleChanger(this.loadShipmentView.sampleChangerSelector.sampleChangerWidget);
+        if (this.loadShipmentView.sampleChangerWidget) {
+            this.confirmShipmentView.loadSampleChanger(this.loadShipmentView.sampleChangerWidget.name,this.loadShipmentView.sampleChangerWidget.getPuckData());
         }
     }
 }
 
 PrepareMainViewTest.prototype.checkStoreData = function () {
-    if (this.currentStep == 2) {
-        if (typeof(Storage) != "undefined"){
+    if (typeof(Storage) != "undefined"){
+        // if (this.currentStep == 3) {
             var sampleChangerName = sessionStorage.getItem('sampleChangerName');
             if (sampleChangerName) {
-                this.loadShipmentView.sampleChangerSelector.createSampleChanger(sampleChangerName);
                 var puckData = JSON.parse(sessionStorage.getItem('puckData'));
                 if (puckData) {
-                    this.loadShipmentView.sampleChangerSelector.sampleChangerWidget.load(puckData);
+                    this.loadShipmentView.sampleChangerWidget.load(puckData);
                 }
             }
-            this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));                        
-        }
-    } else if (this.currentStep == 3) {
-        if (typeof(Storage) != "undefined"){
-            var sampleChangerName = sessionStorage.getItem('sampleChangerName');
-            if (sampleChangerName) {
-                var data = {
-                    radius : 200,
-                    isLoading : false
-                };
-                var sampleChangerWidget = null;
-                if (sampleChangerName == "FlexHCD") {
-                    sampleChangerWidget = new FlexHCDWidget(data);
-                } else if (sampleChangerName == "SC3Widget") {
-                    sampleChangerWidget = new SC3Widget(data);
-                }
-                this.confirmShipmentView.loadSampleChanger(sampleChangerWidget);
-                var puckData = JSON.parse(sessionStorage.getItem('puckData'));
-                if (puckData) {
-                    this.confirmShipmentView.sampleChangerWidget.load(puckData);
-                }
+            if (this.currentStep == 3){
+                this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));
             }
-        }
+        // } else if (this.currentStep == 4) {
+        //     var sampleChangerName = sessionStorage.getItem('sampleChangerName');
+        //     if (sampleChangerName) {
+        //         var puckData = JSON.parse(sessionStorage.getItem('puckData'));
+        //         if (puckData) {
+        //             // this.confirmShipmentView.loadSampleChanger(sampleChangerName,puckData);
+        //         }
+        //     }
+        // }
     }
 }
 
@@ -305,16 +334,17 @@ PrepareMainViewTest.prototype.deselectRow = function () {
     this.loadShipmentView.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
-    this.loadShipmentView.rowPreviewPanel.removeAll();
-    this.loadShipmentView.loadButton.setDisabled(true);
+    // this.loadShipmentView.previewPanelView.clean();
+    this.loadShipmentView.sampleChangerWidget.allowAllPucks();
+    // this.loadShipmentView.loadButton.setDisabled(true);
 }
 
 PrepareMainViewTest.prototype.deselectPuck = function () {
     $("#" + this.selectedPuck.id).attr("class","puck");
     this.selectedPuck = null;
-    this.loadShipmentView.puckPreviewPanel.removeAll();
-    this.loadShipmentView.loadButton.setDisabled(true);   
-    this.loadShipmentView.emptyButton.setDisabled(true);     
+    // this.loadShipmentView.previewPanelView.clean();
+    // this.loadShipmentView.loadButton.setDisabled(true);   
+    // this.loadShipmentView.emptyButton.setDisabled(true);     
 }
 
 PrepareMainViewTest.prototype.returnToSelectionStatus = function () {
@@ -329,7 +359,7 @@ PrepareMainViewTest.prototype.drawSelectedPuck = function (puck) {
         puckType : 1,
         containerId : puck.containerId,
         mainRadius : 100,
-        x : 50,
+        x : 100,
         y : 10,
         enableMouseOver : true
     };
@@ -338,11 +368,18 @@ PrepareMainViewTest.prototype.drawSelectedPuck = function (puck) {
         data.puckType = 2;
         puckContainer = new PuckWidgetContainer(data);
     }
-    this.loadShipmentView.puckPreviewPanel.add(puckContainer.getPanel());
+    
+    this.loadShipmentView.previewPanelView.loadPuck(puckContainer, {
+                info : [{
+                    text : 'SC Location',
+                    value : puck.id.substring(puck.id.indexOf('-')+1)
+                }]
+            }, false, puck.isEmpty);
+
     puckContainer.puckWidget.load(puck.data.cells);
 }
 
-PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, capacity) {
+PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, capacity, containerCode) {
     var _this = this;
     function onSuccess (sender, samples) {
         if (samples){
@@ -350,7 +387,7 @@ PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, c
                 puckType : 1,
                 containerId : containerId,
                 mainRadius : 100,
-                x : 50,
+                x : 100,
                 y : 10,
                 enableMouseOver : true
             };
@@ -359,7 +396,15 @@ PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, c
                 data.puckType = 2;
                 puckContainer = new PuckWidgetContainer(data);
             }
-            _this.loadShipmentView.rowPreviewPanel.add(puckContainer.getPanel());
+            _this.loadShipmentView.previewPanelView.loadPuck(puckContainer, {
+                info : [{
+                    text : 'Container',
+                    value : containerCode
+                },{
+                    text : 'Container Id',
+                    value : containerId
+                }]
+            }, true);
             puckContainer.puckWidget.loadSamples(samples);
         }
     }
@@ -375,7 +420,9 @@ PrepareMainViewTest.prototype.loadShipment = function (puck, containerId) {
             puck.loadSamples(samples);
         }
         _this.returnToSelectionStatus();
-        _this.storeSampleChangerWidget(_this.loadShipmentView.sampleChangerSelector.sampleChangerWidget);
+        _this.setSelectedPuck(puck);
+        // _this.loadShipmentView.previewPanelView.setEmptyButton();
+        _this.storeSampleChangerWidget(_this.loadShipmentView.sampleChangerWidget);
     }
 
     EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerId);
@@ -388,12 +435,6 @@ PrepareMainViewTest.prototype.save = function (key, value) {
 }
 
 PrepareMainViewTest.prototype.storeSampleChangerWidget = function (sampleChangerWidget) {
-    var allPucks = sampleChangerWidget.getAllPucks();
-    var puckData = {};
-    for (puckContainerIndex in allPucks) {
-        var puckContainer = allPucks[puckContainerIndex];
-        var location = puckContainer.puckWidget.id.substring(puckContainer.puckWidget.id.indexOf('-')+1);
-        puckData[location] = puckContainer.puckWidget.data;
-    }
+    var puckData = sampleChangerWidget.getPuckData();
     this.save('puckData',JSON.stringify(puckData));
 }
