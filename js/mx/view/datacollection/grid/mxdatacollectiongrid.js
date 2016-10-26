@@ -84,6 +84,8 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     }  
                 }
                 
+               
+                
                 
                 
             });
@@ -308,12 +310,31 @@ MXDataCollectionGrid.prototype.getColumns = function() {
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);
 
                 /** For online data analysis */
-                var online = (new OnlineResultSectionDataCollection().parseData(record.data));
-                data.autoprocessing = _.filter(online, function(b) { return b.name == "Autoprocessing"; });
+                //var online = (new OnlineResultSectionDataCollection().parseData(record.data));
+                //data.autoprocessing = _.filter(online, function(b) { return b.name == "Autoprocessing"; });
 
-                data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
+               
+                //data.screening = _.filter(online, function(b) { return b.name == "Screening"; });
+                
+                /*if (data.autoprocessing.length > 0){
+                   data.isScreeningVisible = false;
+                }
+                else{
+                    data.isScreeningVisible = true;
+                }*/
+                //else{
+                //    data.ScreeningOutput_indexingSuccess = null;
+                //    data.ScreeningOutput_strategySuccess = null;
+               // }
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
-
+                
+                /** We dont show screen if there are results of autoprocessing */
+                data.isScreeningVisible = true;
+                if (data.onlineresults){
+                    if (data.onlineresults.length > 0){
+                        data.isScreeningVisible = false;
+                    }                    
+                }
                 /** For the workflows **/
                 if (record.data.WorkflowStep_workflowStepType) {
                     data.workflows = new WorkflowSectionDataCollection().parseWorkflow(record.data);
