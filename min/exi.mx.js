@@ -3293,9 +3293,9 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                         var dataCollectionId = target.slice(4);
 
                         var divName = "xtal1_samples_" + dataCollectionId;
-                        $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
-                        $("#xtal3_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
-                        $("#xtal4_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
+                        // $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
+                        // $("#xtal3_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
+                        // $("#xtal4_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
 
                         // $("#xtal1_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: 2});
                         // $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: 2});
@@ -3304,7 +3304,7 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
 
 
                         // $(".elevatezoom").elevateZoom({scrollZoom : true, zoomWindowPosition: 2});
-                        Intense(document.querySelectorAll('.intense'));
+                        // Intense(document.querySelectorAll('.intense'));
 
                         var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
                         
@@ -5653,10 +5653,10 @@ function LoadShipmentView () {
     var _this = this;
 
     var data = {
-        radius : 143,
+        radius : 120,
         isLoading : false
     };
-
+    
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 600});
     this.previewPanelView = new PreviewPanelView();
     this.sampleChangerWidget = new FlexHCDWidget(data);
@@ -5670,7 +5670,6 @@ function LoadShipmentView () {
             }
         }
     }
-    // this.sampleChangerSelector = new SampleChangerSelector();
 
     this.onSelectRow = new Event(this);
     this.onPuckSelected = new Event(this);
@@ -5690,64 +5689,10 @@ function LoadShipmentView () {
         _this.onEmptyButtonClicked.notify();
     });
 
-    // this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender, changerName){
-	// 	_this.onSampleChangerSelected.notify(changerName);
-	// });
-
 }
 
 LoadShipmentView.prototype.getPanel = function () {
     var _this = this;
-
-    // this.rowPreviewPanel = Ext.create('Ext.panel.Panel', {
-    //     cls     : 'border-grid',
-    //     title : 'Selected Sample',
-    //     width : 300,
-    //     height : 265,
-    //     items : []
-    // });
-
-    // this.puckPreviewPanel = Ext.create('Ext.panel.Panel', {
-    //     cls     : 'border-grid',
-    //     title: 'Selected Puck',
-    //     width : 300,
-    //     height : 265,
-    //     items : []
-    // });
-
-    // this.loadButton = Ext.create('Ext.Button', {
-    //     text: 'Load shipment',
-    //     width: 300,
-    //     height: 40,
-    //     disabled : true,
-    //     listeners: {
-    //         click: function() {
-    //             _this.onLoadButtonClicked.notify();
-    //         }
-    //     }
-    // });
-
-    // this.emptyButton = Ext.create('Ext.Button', {
-    //     text: 'Empty puck',
-    //     width: 300,
-    //     height: 30,
-    //     disabled : true,
-    //     style: {
-    //         background: '#444444'
-    //     },
-    //     listeners: {
-    //         click: function() {
-    //             _this.onEmptyButtonClicked.notify();
-    //         }
-    //     }
-    // });
-
-    // this.previewPanel = Ext.create('Ext.panel.Panel', {
-    //     width : 300,
-    //     height : 600,
-    //     margin  : 5,
-    //     items : [this.rowPreviewPanel,this.loadButton,this.puckPreviewPanel,this.emptyButton]
-    // });
 
     var widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
@@ -5962,7 +5907,6 @@ PrepareMainViewTest.prototype.setSelectedRow = function (row) {
     this.selectedContainerCapacity = row.get('capacity');
     this.drawSelectedPuckFromRow(this.selectedContainerId, this.selectedContainerCapacity, row.get('containerCode'));
     this.loadShipmentView.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
-    // this.checkIfLoadIsPossible();
 }
 
 PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
@@ -5972,18 +5916,6 @@ PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
     } else {
         $("#" + puck.id).attr("class","puck-selected");
         this.drawSelectedPuck(puck);
-        // this.checkIfLoadIsPossible();
-        // if (!puck.isEmpty) {
-        //     this.loadShipmentView.emptyButton.setDisabled(false);    
-        // }
-    }
-}
-
-PrepareMainViewTest.prototype.checkIfLoadIsPossible = function () {
-    if (this.selectedContainerId != null && this.selectedPuck != null) {
-        if (this.selectedContainerCapacity == this.selectedPuck.capacity) {
-            this.loadShipmentView.loadButton.setDisabled(false);
-        }
     }
 }
 
@@ -6016,6 +5948,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
 	});
 
     this.panel.on('boxready', function() {
+        alert("!");
         if (_this.currentStep == 1) {
             $('#previous-button-div').hide();
         }
@@ -6118,12 +6051,10 @@ PrepareMainViewTest.prototype.getButtons = function () {
 PrepareMainViewTest.prototype.load = function() {
     var _this = this;
     _this.panel.setTitle("Prepare Experiment");
-    // this.reload();
 };
 
 PrepareMainViewTest.prototype.reload = function() {
     var _this = this;
-    // this.container.removeAll();
     if (this.currentStep == 1) {
         _this.container.add(_this.dewarListSelector.getPanel());
         _this.dewarListSelector.panel.setLoading();
@@ -6161,7 +6092,6 @@ PrepareMainViewTest.prototype.reload = function() {
 
 PrepareMainViewTest.prototype.checkStoreData = function () {
     if (typeof(Storage) != "undefined"){
-        // if (this.currentStep == 3) {
             var sampleChangerName = sessionStorage.getItem('sampleChangerName');
             if (sampleChangerName) {
                 var puckData = JSON.parse(sessionStorage.getItem('puckData'));
@@ -6172,15 +6102,6 @@ PrepareMainViewTest.prototype.checkStoreData = function () {
             if (this.currentStep == 3){
                 this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));
             }
-        // } else if (this.currentStep == 4) {
-        //     var sampleChangerName = sessionStorage.getItem('sampleChangerName');
-        //     if (sampleChangerName) {
-        //         var puckData = JSON.parse(sessionStorage.getItem('puckData'));
-        //         if (puckData) {
-        //             // this.confirmShipmentView.loadSampleChanger(sampleChangerName,puckData);
-        //         }
-        //     }
-        // }
     }
 }
 
@@ -6188,17 +6109,12 @@ PrepareMainViewTest.prototype.deselectRow = function () {
     this.loadShipmentView.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
-    // this.loadShipmentView.previewPanelView.clean();
     this.loadShipmentView.sampleChangerWidget.allowAllPucks();
-    // this.loadShipmentView.loadButton.setDisabled(true);
 }
 
 PrepareMainViewTest.prototype.deselectPuck = function () {
     $("#" + this.selectedPuck.id).attr("class","puck");
-    this.selectedPuck = null;
-    // this.loadShipmentView.previewPanelView.clean();
-    // this.loadShipmentView.loadButton.setDisabled(true);   
-    // this.loadShipmentView.emptyButton.setDisabled(true);     
+    this.selectedPuck = null; 
 }
 
 PrepareMainViewTest.prototype.returnToSelectionStatus = function () {

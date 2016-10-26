@@ -19,7 +19,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         title: 'Loaded or to be Loaded on MxCube',
         store: this.store,
         cls     : 'border-grid',
-        height  :600,
+        height  :590,
         flex    : 0.5,
         columns: [
             {

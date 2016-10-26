@@ -108,7 +108,6 @@ PrepareMainViewTest.prototype.setSelectedRow = function (row) {
     this.selectedContainerCapacity = row.get('capacity');
     this.drawSelectedPuckFromRow(this.selectedContainerId, this.selectedContainerCapacity, row.get('containerCode'));
     this.loadShipmentView.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
-    // this.checkIfLoadIsPossible();
 }
 
 PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
@@ -118,18 +117,6 @@ PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
     } else {
         $("#" + puck.id).attr("class","puck-selected");
         this.drawSelectedPuck(puck);
-        // this.checkIfLoadIsPossible();
-        // if (!puck.isEmpty) {
-        //     this.loadShipmentView.emptyButton.setDisabled(false);    
-        // }
-    }
-}
-
-PrepareMainViewTest.prototype.checkIfLoadIsPossible = function () {
-    if (this.selectedContainerId != null && this.selectedPuck != null) {
-        if (this.selectedContainerCapacity == this.selectedPuck.capacity) {
-            this.loadShipmentView.loadButton.setDisabled(false);
-        }
     }
 }
 
@@ -264,12 +251,11 @@ PrepareMainViewTest.prototype.getButtons = function () {
 PrepareMainViewTest.prototype.load = function() {
     var _this = this;
     _this.panel.setTitle("Prepare Experiment");
-    // this.reload();
 };
 
 PrepareMainViewTest.prototype.reload = function() {
     var _this = this;
-    // this.container.removeAll();
+    this.container.removeAll();
     if (this.currentStep == 1) {
         _this.container.add(_this.dewarListSelector.getPanel());
         _this.dewarListSelector.panel.setLoading();
@@ -297,7 +283,6 @@ PrepareMainViewTest.prototype.reload = function() {
         }
         this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));        
     } else if (this.currentStep == 4) {
-        debugger
         this.container.add(this.confirmShipmentView.getPanel());
         if (this.loadShipmentView.sampleChangerWidget) {
             this.confirmShipmentView.loadSampleChanger(this.loadShipmentView.sampleChangerWidget.name,this.loadShipmentView.sampleChangerWidget.getPuckData());
@@ -307,7 +292,6 @@ PrepareMainViewTest.prototype.reload = function() {
 
 PrepareMainViewTest.prototype.checkStoreData = function () {
     if (typeof(Storage) != "undefined"){
-        // if (this.currentStep == 3) {
             var sampleChangerName = sessionStorage.getItem('sampleChangerName');
             if (sampleChangerName) {
                 var puckData = JSON.parse(sessionStorage.getItem('puckData'));
@@ -318,15 +302,6 @@ PrepareMainViewTest.prototype.checkStoreData = function () {
             if (this.currentStep == 3){
                 this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));
             }
-        // } else if (this.currentStep == 4) {
-        //     var sampleChangerName = sessionStorage.getItem('sampleChangerName');
-        //     if (sampleChangerName) {
-        //         var puckData = JSON.parse(sessionStorage.getItem('puckData'));
-        //         if (puckData) {
-        //             // this.confirmShipmentView.loadSampleChanger(sampleChangerName,puckData);
-        //         }
-        //     }
-        // }
     }
 }
 
@@ -334,17 +309,12 @@ PrepareMainViewTest.prototype.deselectRow = function () {
     this.loadShipmentView.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
-    // this.loadShipmentView.previewPanelView.clean();
     this.loadShipmentView.sampleChangerWidget.allowAllPucks();
-    // this.loadShipmentView.loadButton.setDisabled(true);
 }
 
 PrepareMainViewTest.prototype.deselectPuck = function () {
     $("#" + this.selectedPuck.id).attr("class","puck");
-    this.selectedPuck = null;
-    // this.loadShipmentView.previewPanelView.clean();
-    // this.loadShipmentView.loadButton.setDisabled(true);   
-    // this.loadShipmentView.emptyButton.setDisabled(true);     
+    this.selectedPuck = null; 
 }
 
 PrepareMainViewTest.prototype.returnToSelectionStatus = function () {

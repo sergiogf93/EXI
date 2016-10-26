@@ -2,10 +2,10 @@ function LoadShipmentView () {
     var _this = this;
 
     var data = {
-        radius : 143,
+        radius : 120,
         isLoading : false
     };
-
+    
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 600});
     this.previewPanelView = new PreviewPanelView();
     this.sampleChangerWidget = new FlexHCDWidget(data);
@@ -19,7 +19,6 @@ function LoadShipmentView () {
             }
         }
     }
-    // this.sampleChangerSelector = new SampleChangerSelector();
 
     this.onSelectRow = new Event(this);
     this.onPuckSelected = new Event(this);
@@ -39,64 +38,10 @@ function LoadShipmentView () {
         _this.onEmptyButtonClicked.notify();
     });
 
-    // this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender, changerName){
-	// 	_this.onSampleChangerSelected.notify(changerName);
-	// });
-
 }
 
 LoadShipmentView.prototype.getPanel = function () {
     var _this = this;
-
-    // this.rowPreviewPanel = Ext.create('Ext.panel.Panel', {
-    //     cls     : 'border-grid',
-    //     title : 'Selected Sample',
-    //     width : 300,
-    //     height : 265,
-    //     items : []
-    // });
-
-    // this.puckPreviewPanel = Ext.create('Ext.panel.Panel', {
-    //     cls     : 'border-grid',
-    //     title: 'Selected Puck',
-    //     width : 300,
-    //     height : 265,
-    //     items : []
-    // });
-
-    // this.loadButton = Ext.create('Ext.Button', {
-    //     text: 'Load shipment',
-    //     width: 300,
-    //     height: 40,
-    //     disabled : true,
-    //     listeners: {
-    //         click: function() {
-    //             _this.onLoadButtonClicked.notify();
-    //         }
-    //     }
-    // });
-
-    // this.emptyButton = Ext.create('Ext.Button', {
-    //     text: 'Empty puck',
-    //     width: 300,
-    //     height: 30,
-    //     disabled : true,
-    //     style: {
-    //         background: '#444444'
-    //     },
-    //     listeners: {
-    //         click: function() {
-    //             _this.onEmptyButtonClicked.notify();
-    //         }
-    //     }
-    // });
-
-    // this.previewPanel = Ext.create('Ext.panel.Panel', {
-    //     width : 300,
-    //     height : 600,
-    //     margin  : 5,
-    //     items : [this.rowPreviewPanel,this.loadButton,this.puckPreviewPanel,this.emptyButton]
-    // });
 
     var widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
@@ -117,10 +62,12 @@ LoadShipmentView.prototype.getPanel = function () {
 
     this.panel = Ext.create('Ext.panel.Panel', {
         layout : 'hbox',
-            items : [
-                        this.containerListEditor.getPanel(),
-                        verticalPanel  
-            ]
+        height : 600,
+        margin : 5,
+        items : [
+                    this.containerListEditor.getPanel(),
+                    verticalPanel  
+        ]
     });
 
     this.panel.on('boxready', function() {

@@ -17,12 +17,13 @@ ConfirmShipmentView.prototype.getPanel = function () {
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        height : 600,
         layout: {
             type: 'hbox',
             align: 'center',
             pack: 'center'
         },
-        margin : 20,
+        margin : 5,
         items : [this.puckPreviewPanel],
 			
 	});
@@ -53,19 +54,6 @@ ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName, p
         _this.selectPuck(puck);
     });
 }
-
-// ConfirmShipmentView.prototype.setClickListeners = function () {
-//     var _this = this;
-// 	for (puckType in this.sampleChangerWidget.pucks) {
-// 		for (puckIndex in this.sampleChangerWidget.pucks[puckType]){
-// 			var puck = this.sampleChangerWidget.pucks[puckType][puckIndex];
-// 			$("#" + puck.puckWidget.id).css('cursor','pointer');
-// 			$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-//                 _this.selectPuck(_this.sampleChangerWidget.findPuckById(sender.target.id));
-// 			});
-// 		}
-// 	}
-// }
 
 ConfirmShipmentView.prototype.selectPuck = function (puck) {
     if (this.selectedPuck) {
