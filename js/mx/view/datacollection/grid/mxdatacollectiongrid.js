@@ -88,9 +88,9 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                         var dataCollectionId = target.slice(4);
 
                         var divName = "xtal1_samples_" + dataCollectionId;
-                        $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
-                        $("#xtal3_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
-                        $("#xtal4_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
+                        // $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
+                        // $("#xtal3_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
+                        // $("#xtal4_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
 
                         // $("#xtal1_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: 2});
                         // $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: 2});
@@ -99,7 +99,7 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
 
 
                         // $(".elevatezoom").elevateZoom({scrollZoom : true, zoomWindowPosition: 2});
-                        Intense(document.querySelectorAll('.intense'));
+                        // Intense(document.querySelectorAll('.intense'));
 
                         var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
                         

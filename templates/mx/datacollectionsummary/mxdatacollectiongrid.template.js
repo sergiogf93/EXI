@@ -127,23 +127,22 @@
                   </div>
                         <div class="col-xs-12 col-md-2">
                             <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal1_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy elevatezoom intense" data-src="{.xtal1}" 
-                            data-zoom-image="{.xtal1}"/>
+                            <img id="xtal1_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}"/>
                             </a>                           
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <a href="{.xtal2}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal2_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy elevatezoom intense" data-src="{.xtal2}" data-zoom-image="{.xtal2}"/>
+                            <img id="xtal2_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal2}"/>
                             </a>                           
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <a href="{.xtal3}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal3_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy elevatezoom intense" data-src="{.xtal3}" data-zoom-image="{.xtal3}"/>
+                            <img id="xtal3_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal3}"/>
                             </a>                           
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <a href="{.xtal4}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal4_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy elevatezoom intense" data-src="{.xtal4}" data-zoom-image="{.xtal4}"/>
+                            <img id="xtal4_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal4}"/>
                             </a>                           
                         </div>
                         

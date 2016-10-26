@@ -157,7 +157,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
             items : [
-                        this.getToolBar(), this.getButtons(), this.container
+                        this.getToolBar(), this.container,  this.getButtons()
             ]
 	});
 

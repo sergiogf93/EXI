@@ -6011,7 +6011,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
             items : [
-                        this.getToolBar(), this.getButtons(), this.container
+                        this.getToolBar(), this.container,  this.getButtons()
             ]
 	});
 
@@ -8168,23 +8168,26 @@ function SampleChangerSelector () {
 SampleChangerSelector.prototype.getPanel = function() {
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'vbox',
+            align: 'center',
+            pack: 'center'
+        },
         width: 500,
         height: 600,
+        tbar : this.getToolbar(),
         items : []
     });
 
     this.container = Ext.create('Ext.panel.Panel', {
-        width: 500,
-        height: 600,
-        margin: 5,
         layout: {
-            type: 'hbox',
+            type: 'vbox',
             align: 'center',
             pack: 'center'
-        }, 
+        },
+        margin: 5,
         items : [this.panel]
     });
-
     return this.container;
 }
 
