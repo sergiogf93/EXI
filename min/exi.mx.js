@@ -4850,12 +4850,13 @@ ConfirmShipmentView.prototype.getPanel = function () {
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        height : 600,
         layout: {
             type: 'hbox',
             align: 'center',
             pack: 'center'
         },
-        margin : 20,
+        margin : 5,
         items : [this.puckPreviewPanel],
 			
 	});
@@ -4886,19 +4887,6 @@ ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName, p
         _this.selectPuck(puck);
     });
 }
-
-// ConfirmShipmentView.prototype.setClickListeners = function () {
-//     var _this = this;
-// 	for (puckType in this.sampleChangerWidget.pucks) {
-// 		for (puckIndex in this.sampleChangerWidget.pucks[puckType]){
-// 			var puck = this.sampleChangerWidget.pucks[puckType][puckIndex];
-// 			$("#" + puck.puckWidget.id).css('cursor','pointer');
-// 			$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-//                 _this.selectPuck(_this.sampleChangerWidget.findPuckById(sender.target.id));
-// 			});
-// 		}
-// 	}
-// }
 
 ConfirmShipmentView.prototype.selectPuck = function (puck) {
     if (this.selectedPuck) {
@@ -5059,7 +5047,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         title: 'Loaded or to be Loaded on MxCube',
         store: this.store,
         cls     : 'border-grid',
-        height  :600,
+        height  :590,
         flex    : 0.5,
         columns: [
             {
@@ -5713,10 +5701,12 @@ LoadShipmentView.prototype.getPanel = function () {
 
     this.panel = Ext.create('Ext.panel.Panel', {
         layout : 'hbox',
-            items : [
-                        this.containerListEditor.getPanel(),
-                        verticalPanel  
-            ]
+        height : 600,
+        margin : 5,
+        items : [
+                    this.containerListEditor.getPanel(),
+                    verticalPanel  
+        ]
     });
 
     this.panel.on('boxready', function() {
@@ -5948,7 +5938,6 @@ PrepareMainViewTest.prototype.getPanel = function() {
 	});
 
     this.panel.on('boxready', function() {
-        alert("!");
         if (_this.currentStep == 1) {
             $('#previous-button-div').hide();
         }
@@ -6055,6 +6044,7 @@ PrepareMainViewTest.prototype.load = function() {
 
 PrepareMainViewTest.prototype.reload = function() {
     var _this = this;
+    this.container.removeAll();
     if (this.currentStep == 1) {
         _this.container.add(_this.dewarListSelector.getPanel());
         _this.dewarListSelector.panel.setLoading();
@@ -6082,7 +6072,6 @@ PrepareMainViewTest.prototype.reload = function() {
         }
         this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));        
     } else if (this.currentStep == 4) {
-        debugger
         this.container.add(this.confirmShipmentView.getPanel());
         if (this.loadShipmentView.sampleChangerWidget) {
             this.confirmShipmentView.loadSampleChanger(this.loadShipmentView.sampleChangerWidget.name,this.loadShipmentView.sampleChangerWidget.getPuckData());
