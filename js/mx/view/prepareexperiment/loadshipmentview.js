@@ -2,7 +2,7 @@ function LoadShipmentView () {
     var _this = this;
 
     var data = {
-        radius : 120,
+        radius : 115,
         isLoading : false
     };
     

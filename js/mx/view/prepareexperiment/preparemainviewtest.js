@@ -213,6 +213,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
         });
         $('#done-button').unbind('click').click(function (sender){
             _this.confirmShipmentView;
+            debugger
         });
         for (var i = 1 ; i <= 4 ; i++){
             if (i == _this.currentStep){
