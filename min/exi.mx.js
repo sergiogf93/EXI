@@ -5641,7 +5641,7 @@ function LoadShipmentView () {
     var _this = this;
 
     var data = {
-        radius : 120,
+        radius : 115,
         isLoading : false
     };
     
@@ -6002,6 +6002,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
         });
         $('#done-button').unbind('click').click(function (sender){
             _this.confirmShipmentView;
+            debugger
         });
         for (var i = 1 ; i <= 4 ; i++){
             if (i == _this.currentStep){

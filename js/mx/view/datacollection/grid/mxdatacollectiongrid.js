@@ -10,8 +10,7 @@ function MXDataCollectionGrid(args) {
     /** DATACOLLECTION, DATACOLLECTION_COLLAPSED, PLATES_VIEW */
     this.renderingType = 'DATACOLLECTION';
 
-    this.uncollapsedDataCollectionGrid = new UncollapsedDataCollectionGrid({
-                                                                    mxDataCollectionGrid : this
+    this.uncollapsedDataCollectionGrid = new UncollapsedDataCollectionGrid({ mxDataCollectionGrid : this
                                                                 });
     this.collapsedDataCollectionGrid = new CollapsedDataCollectionGrid({
                                                                     mxDataCollectionGrid : this
