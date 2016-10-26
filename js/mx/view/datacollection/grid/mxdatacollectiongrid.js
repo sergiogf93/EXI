@@ -62,11 +62,9 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                 
                 if (_this.activePanel != _this.platesDataCollectionGrid){
                     _this.activePanel = _this.platesDataCollectionGrid;
+                    _this.reloadData(_this.dataCollectionGroup);                 
                     if (Ext.getCmp(_this.id + "_search").getValue() != "") {
-                        _this.platesDataCollectionGrid.reloadPlates(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()),true);
-                    }
-                    else {
-                        _this.platesDataCollectionGrid.reloadPlates(_this.dataCollectionGroup,false);
+                       _this.platesDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
                     }
                 }
             }
@@ -92,8 +90,8 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                         if (e.getKey() == e.ENTER) {
                             _this.filter = field.getValue();
 
-                            if (_this.renderingType == "PLATES"){
-                                _this.reloadPlates(_this.filterBy(field.getValue()));
+                            if (_this.renderingType == "PLATES"){                              
+                                _this.platesDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
                             } else {
                                 _this.reloadData(_this.filterBy(field.getValue()));
                             }
@@ -107,12 +105,17 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
 };
 
 MXDataCollectionGrid.prototype.reloadData = function(dataCollections) {
-    /** TODO: To be moved to uncollapsedDataCollectionGrid 
-    this.attachCallBackAfterRender(); */
     this.panel.removeAll();
     this.panel.add(this.activePanel.getPanel(this.dataCollectionGroup));
     this.activePanel.load(dataCollections);
 };
+
+MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {    
+    this.dataCollectionGroup = dataCollectionGroup;  
+    this.activePanel.load(this.dataCollectionGroup);
+};
+
+
 /**
 * Filters data by prefix, protein acronym or sample
 *
@@ -135,8 +138,3 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
     return filtered;
 };
 
-MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {    
-    this.dataCollectionGroup = dataCollectionGroup;
-    this.dataCollectionGroup.reverse();
-    this.activePanel.load(this.dataCollectionGroup);
-};

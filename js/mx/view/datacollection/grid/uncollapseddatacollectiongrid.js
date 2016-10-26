@@ -60,10 +60,11 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     
     var _this = this;
     
-    var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id).id;
+    var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+    
     var lazy = {
             bind: 'event',
-            /** !!IMPORTANT this is the id of the parent node which contains the scroll **/
+            /** !!IMPORTANT this is the parent node which contains the scroll **/
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
                 console.log('image "' + (element.data('src')) + '" is about to be loaded');                                

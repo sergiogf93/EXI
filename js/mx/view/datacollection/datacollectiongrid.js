@@ -2,10 +2,7 @@ function DataCollectionGrid(args) {
 
     this.store = Ext.create('Ext.data.Store', {
             fields: ["dataCollectionGroup"]
-        });
-
-    if (args) {      
-    }
+     });
 }
     
 /**
