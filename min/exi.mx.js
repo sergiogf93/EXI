@@ -2764,13 +2764,56 @@ function DataCollectionGrid(args) {
             fields: ["dataCollectionGroup"]
         });
 
-    if (args) {
-        if (args.mxDataCollectionGrid) {
-            this.mxDataCollectionGrid = args.mxDataCollectionGrid;
-        }
+    if (args) {      
     }
 }
     
+/**
+* By using Jquery sets lazy loading of the thumbnails
+*
+* @method loadMagnifiers
+* @return {dataCollectionGroup} Array of data collections
+*/
+DataCollectionGrid.prototype.loadMagnifiers = function(dataCollectionGroup){
+     for (var i = 0; i < dataCollectionGroup.length; i++) {
+            var elementId = dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
+            $('#' + elementId).Lazy();
+     }
+};
+
+/**
+* Loads the store and load the maginifiers
+*
+* @method load
+* @return {dataCollectionGroup} Array of data collections
+*/
+DataCollectionGrid.prototype.load = function(dataCollectionGroup){
+    try{    
+        this.store.loadData(dataCollectionGroup);
+        this.loadMagnifiers(dataCollectionGroup);
+    }
+    catch(e){
+        console.log(e);
+    }
+};
+
+DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
+    var _this = this;
+    this.panel = Ext.create('Ext.grid.Panel', {
+        border: 1,        
+        store: this.store,       
+        disableSelection: true,
+        columns: this.getColumns(),
+        viewConfig: {
+            enableTextSelection: true,
+            stripeRows: false
+        }
+    });
+
+    return this.panel;
+};
+
+
 /**
 * Parses statistics and return the best one
 *
@@ -2949,6 +2992,7 @@ DataCollectionGrid.prototype.getColumns = function() {
 
     return columns;
 };
+
 /**
 * Landing page for where data collections are shown. It manages the DataCollectionSummaryGrid
 *
@@ -3090,36 +3134,10 @@ function CollapsedDataCollectionGrid(args) {
 
 CollapsedDataCollectionGrid.prototype._getAutoprocessingStatistics = DataCollectionGrid.prototype._getAutoprocessingStatistics;
 CollapsedDataCollectionGrid.prototype.getColumns = DataCollectionGrid.prototype.getColumns;
+CollapsedDataCollectionGrid.prototype.load = DataCollectionGrid.prototype.load;
+CollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prototype.loadMagnifiers;
+CollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.getPanel;
 
-CollapsedDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
-    var _this = this;
-    this.panel = Ext.create('Ext.grid.Panel', {
-        border: 1,
-        
-        store: this.store,
-       
-        disableSelection: true,
-        columns: this.getColumns(),
-        viewConfig: {
-            enableTextSelection: true,
-            stripeRows: false
-        },
-        listeners: {
-            viewready: function() {
-                function loadMagnifiers() {
-                    for (var i = 0; i < _this.mxDataCollectionGrid.dataCollectionGroup.length; i++) {
-                        var elementId = _this.mxDataCollectionGrid.dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
-                        $('#' + elementId).Lazy();
-
-                    }
-                }
-            }
-        }
-
-    });
-
-    return this.panel;
-}
 function CustomSectionDataCollection(args) {
 	this.noFoundClass = "summary_datacollection_noFound";
 	this.failedClass = "summary_datacollection_failed";
@@ -3215,15 +3233,9 @@ function MXDataCollectionGrid(args) {
     /** DATACOLLECTION, DATACOLLECTION_COLLAPSED, PLATES_VIEW */
     this.renderingType = 'DATACOLLECTION';
 
-    this.uncollapsedDataCollectionGrid = new UncollapsedDataCollectionGrid({
-                                                                    mxDataCollectionGrid : this
-                                                                });
-    this.collapsedDataCollectionGrid = new CollapsedDataCollectionGrid({
-                                                                    mxDataCollectionGrid : this
-                                                                });
-    this.platesDataCollectionGrid = new PlatesDataCollectionGrid({
-                                                                        mxDataCollectionGrid : this
-                                                                    });  
+    this.uncollapsedDataCollectionGrid = new UncollapsedDataCollectionGrid();
+    this.collapsedDataCollectionGrid = new CollapsedDataCollectionGrid();
+    this.platesDataCollectionGrid = new PlatesDataCollectionGrid();  
                                                                     
     this.activePanel = this.uncollapsedDataCollectionGrid;
 }
@@ -3468,7 +3480,7 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
 };
 
 MXDataCollectionGrid.prototype.reloadData = function(dataCollections) {
-    this.activePanel.store.loadData(dataCollections);
+    this.activePanel.load(dataCollections);
     this.attachCallBackAfterRender();
     this.panel.removeAll();
 
@@ -3777,11 +3789,8 @@ OnlineResultSectionDataCollection.prototype.getPhasingHTML = function(dataCollec
 * @constructor
 */
 function PlatesDataCollectionGrid(args) {
-    DataCollectionGrid.call(this,args);
+
 }
-
-PlatesDataCollectionGrid.prototype._getAutoprocessingStatistics = DataCollectionGrid.prototype._getAutoprocessingStatistics;
-
 
 PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
     var _this = this;
@@ -3795,7 +3804,7 @@ PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
         }
     });
     return this.panel;
-}
+};
 
 PlatesDataCollectionGrid.prototype.getColumns = function() {
     var _this = this;
@@ -3946,7 +3955,8 @@ PlatesDataCollectionGrid.prototype.reloadPlates = function(data, filtered) {
     
     var containerIds =_.filter(Object.keys(_.keyBy(data, "Container_containerId")), function(element){return isNumber(element);});                                                      
     this.mxDataCollectionGrid.reloadData([{containerIds : containerIds, selected : selected}]);
-}
+};
+
 function ThumbnailSectionDatacollection(args) {
 }
 
@@ -3984,36 +3994,12 @@ function UncollapsedDataCollectionGrid(args) {
 
 UncollapsedDataCollectionGrid.prototype._getAutoprocessingStatistics = DataCollectionGrid.prototype._getAutoprocessingStatistics;
 UncollapsedDataCollectionGrid.prototype.getColumns = DataCollectionGrid.prototype.getColumns;
+UncollapsedDataCollectionGrid.prototype.load = DataCollectionGrid.prototype.load;
+UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prototype.loadMagnifiers;
+UncollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.getPanel;
 
-UncollapsedDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
-    var _this = this;
-    this.panel = Ext.create('Ext.grid.Panel', {
-        border: 1,
-        
-        store: this.store,
-       
-        disableSelection: true,
-        columns: this.getColumns(),
-        viewConfig: {
-            enableTextSelection: true,
-            stripeRows: false
-        },
-        listeners: {
-            viewready: function() {
-                function loadMagnifiers() {
-                    for (var i = 0; i < _this.mxDataCollectionGrid.dataCollectionGroup.length; i++) {
-                        var elementId = _this.mxDataCollectionGrid.dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
-                        $('#' + elementId).Lazy();
 
-                    }
-                }
-            }
-        }
 
-    });
-
-    return this.panel;
-}
 function WorkflowSectionDataCollection(args) {
 	this.noFoundClass = "summary_datacollection_noFound";
 	this.failedClass = "summary_datacollection_failed";

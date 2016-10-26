@@ -5,25 +5,18 @@
 * @constructor
 */
 function PlatesDataCollectionGrid(args) {
-    DataCollectionGrid.call(this,args);
+
 }
-
-PlatesDataCollectionGrid.prototype._getAutoprocessingStatistics = DataCollectionGrid.prototype._getAutoprocessingStatistics;
-
 
 PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
     var _this = this;
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
         store: this.store,               
-        columns: this.getColumns(),      
-        listeners: {
-            viewready: function() {             
-            }
-        }
+        columns: this.getColumns()
     });
     return this.panel;
-}
+};
 
 PlatesDataCollectionGrid.prototype.getColumns = function() {
     var _this = this;
@@ -174,4 +167,4 @@ PlatesDataCollectionGrid.prototype.reloadPlates = function(data, filtered) {
     
     var containerIds =_.filter(Object.keys(_.keyBy(data, "Container_containerId")), function(element){return isNumber(element);});                                                      
     this.mxDataCollectionGrid.reloadData([{containerIds : containerIds, selected : selected}]);
-}
+};
