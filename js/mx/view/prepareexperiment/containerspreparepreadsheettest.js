@@ -38,7 +38,21 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 type: 'text',
                 flex: 1,
                 readOnly: true
-            },           
+            },
+             {
+                header: 'DewarId',
+                dataIndex: 'dewarId',
+                type: 'text',
+                flex: 1,
+                readOnly: true
+            },              
+             {
+                header: 'ContainerId',
+                dataIndex: 'containerId',
+                type: 'text',
+                flex: 1,
+                readOnly: true
+            },   
             {
                 header: 'Barcode',
                 dataIndex: 'barCode',
@@ -114,6 +128,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
 }
 
 ContainerPrepareSpreadSheetTest.prototype.load = function(dewars) {
+   
     var data = [];
     //Parse data
     for (dewar in dewars) {
