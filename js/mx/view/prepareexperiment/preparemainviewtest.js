@@ -11,7 +11,8 @@ function PrepareMainViewTest() {
     this.loadShipmentView = new LoadShipmentView();
     this.confirmShipmentView = new ConfirmShipmentView();
 
-    this.dewarListSelector.onSelect.attach(function(sender, dewar){                       
+    this.dewarListSelector.onSelect.attach(function(sender, dewar){  
+                             
             if (dewar.shippingStatus == "processing"){
                 _this.updateStatus(dewar.shippingId, "at_ESRF");
             } 
@@ -112,6 +113,12 @@ PrepareMainViewTest.prototype.setSelectedRow = function (row) {
     this.loadShipmentView.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
 }
 
+/**
+ * TODO: COMMENT
+*
+* @method setSelectedPuck
+* @return 
+*/
 PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
     this.selectedPuck = puck;
     if (this.selectedContainerId){
@@ -122,10 +129,18 @@ PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
     }
 }
 
+
+/**
+* Stores on the DB the status given a shippingId
+* Status may be : [at_ESRF, processing, opened, ready to go]
+*
+* @method updateStatus
+* @return 
+*/
 PrepareMainViewTest.prototype.updateStatus = function(shippingId, status) {
     var _this = this;
     _this.dewarListSelector.panel.setLoading("Updating shipment Status");
-    var onStatusSuccess = function(sender, dewar) {     
+    var onStatusSuccess = function(sender, dewar) {             
         EXI.mainStatusBar.showReady("Processing update successfully");
         _this.dewarListSelector.panel.setLoading(false);
         _this.load();
@@ -137,12 +152,17 @@ PrepareMainViewTest.prototype.updateStatus = function(shippingId, status) {
     EXI.getDataAdapter({onSuccess : onStatusSuccess, onError : onError}).proposal.shipping.updateStatus(shippingId,status);
 };
 
+/**
+* Loads a Ext.panel.panel constaining a Ext.panel.Panel that will render the steps inside
+*
+* @method getPanel
+* @return 
+*/
 PrepareMainViewTest.prototype.getPanel = function() {
     var _this = this;
 
-    this.container = Ext.create('Ext.panel.Panel' , {
-        items : []
-    });
+    /** Main container where the steps are rendered */
+    this.container = Ext.create('Ext.panel.Panel' , {items : []});
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
             items : [
@@ -214,8 +234,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
             }
         });
         $('#done-button').unbind('click').click(function (sender){
-            _this.confirmShipmentView;
-            debugger
+            _this.confirmShipmentView;            
         });
         for (var i = 1 ; i <= 4 ; i++){
             if (i == _this.currentStep){
@@ -251,9 +270,9 @@ PrepareMainViewTest.prototype.getButtons = function () {
 }
 
 
-PrepareMainViewTest.prototype.load = function() {
-    var _this = this;
-    _this.panel.setTitle("Prepare Experiment");
+PrepareMainViewTest.prototype.load = function() {    
+    this.panel.setTitle("Prepare Experiment");
+    this.reload();
 };
 
 PrepareMainViewTest.prototype.reload = function() {
@@ -387,6 +406,12 @@ PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, c
     EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerId);
 }
 
+/**
+ * TODO: COMMENT
+*
+* @method loadShipment
+* @return 
+*/
 PrepareMainViewTest.prototype.loadShipment = function (puck, containerId) {
     var _this = this;
     function onSuccess (sender, samples) {

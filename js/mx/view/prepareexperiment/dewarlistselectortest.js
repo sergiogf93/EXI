@@ -22,8 +22,7 @@ function DewarListSelectorGridTest(args){
 
 
 /**
-* My method description.  Like other pieces of your comment blocks, 
-* this can span multiple lines.
+* Loads a set if shipments
 *
 * @method load
 * @param {Object} dewars Array of containers
@@ -176,44 +175,33 @@ DewarListSelectorGridTest.prototype.getPanel = function(){
                 {
                     xtype: 'actioncolumn',
                     flex : 0.3,
-                    items: [
-                               
+                    items: [                               
                                  {
                                     icon: '../images/icon/add.png',
                                     handler: function (grid, rowIndex, colIndex) {
                                             grid.getSelectionModel().select(rowIndex);
-                                            
                                             _this.onSelect.notify(_this.store.getAt(rowIndex).data);
                                     },
                                      isDisabled : function(view, rowIndex, colIndex, item, record) {
-                                            // Returns true if 'editable' is false (, null, or undefined)
                                             return record.data.shippingStatus == "processing";
                                     }
-                                 }
-                                   
-                            
+                                 }                                                               
                     ]
                 },
                   {
                     xtype: 'actioncolumn',
                      flex : 0.3,
-                    items: [
-                              
+                    items: [                              
                                  {
                                     icon: '../images/icon/ic_highlight_remove_black_48dp.png',
-                                    handler: function (grid, rowIndex, colIndex) {
-                                        
-                                            grid.getSelectionModel().select(rowIndex);
-                                            
+                                    handler: function (grid, rowIndex, colIndex) {                                        
+                                            grid.getSelectionModel().select(rowIndex);                                            
                                             _this.onSelect.notify(_this.store.getAt(rowIndex).data);
                                     },
-                                     isDisabled : function(view, rowIndex, colIndex, item, record) {
-                                            // Returns true if 'editable' is false (, null, or undefined)
+                                     isDisabled : function(view, rowIndex, colIndex, item, record) {                                            
                                             return record.data.shippingStatus != "processing";
                                     }
                                  }
-                                   
-                            
                     ]
                 }
             ],
@@ -228,6 +216,5 @@ DewarListSelectorGridTest.prototype.getPanel = function(){
                 }
 	    	},
     });
-    return this.panel;
-    
+    return this.panel;    
 };
