@@ -25,7 +25,7 @@
             </tbody>
             </table>
         </div>
-        {!
+        
         <div class="col-xs-6 col-md-6">
             <table class='table-sm table-condensed '>
             <thead>
@@ -37,6 +37,7 @@
                 {#.cells}
                 {@ne key="{.state}" value="EMPTY"}
                 <tr>
+                    <hr>
                     <td  style='padding:0 15px 0 15px;'>Location:</td>
                     <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.location}</td>
                 </tr>
@@ -49,7 +50,7 @@
             </tbody>
             </table>
         </div>
-        !}
+        
     </div>
    {/pucks}
 </div>
