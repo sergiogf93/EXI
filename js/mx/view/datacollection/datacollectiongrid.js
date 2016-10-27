@@ -25,7 +25,7 @@ DataCollectionGrid.prototype.loadMagnifiers = function(dataCollectionGroup){
 * @return {dataCollectionGroup} Array of data collections
 */
 DataCollectionGrid.prototype.load = function(dataCollectionGroup){
-    try{    
+    try{
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
     }

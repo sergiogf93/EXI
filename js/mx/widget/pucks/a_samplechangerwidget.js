@@ -128,6 +128,11 @@ SampleChangerWidget.prototype.getAllPucks = function () {
 	return allPucks;
 }
 
+SampleChangerWidget.prototype.getAllFilledPucks = function () {
+	var allPucks = this.getAllPucks();
+	return _.filter(allPucks, function (o) {return !o.puckWidget.isEmpty;})
+}
+
 SampleChangerWidget.prototype.render = function () {
     var allPucks = this.getAllPucks();
     for (puck in allPucks){
@@ -173,11 +178,12 @@ SampleChangerWidget.prototype.allowAllPucks = function () {
 }
 
 SampleChangerWidget.prototype.getPuckData = function () {
-	var allPucks = this.getAllPucks();
+	var filledPucks = this.getAllFilledPucks();
 	var puckData = {};
-    for (puckContainerIndex in allPucks) {
-        var puckContainer = allPucks[puckContainerIndex];
+    for (puckContainerIndex in filledPucks) {
+        var puckContainer = filledPucks[puckContainerIndex];
         var location = puckContainer.puckWidget.id.substring(puckContainer.puckWidget.id.indexOf('-')+1);
+		puckContainer.puckWidget.data.sampleChangerLocation = location;
         puckData[location] = puckContainer.puckWidget.data;
     }
 	return puckData;

@@ -16,6 +16,16 @@ ConfirmShipmentView.prototype.getPanel = function () {
         items : []
     });
 
+    this.pucksList = Ext.create('Ext.panel.Panel', {
+        cls     : 'border-grid',
+        title: 'Shipment',
+        width : 600,
+        height : 500,
+        margin : 5,
+        autoScroll:true,
+        items : []
+    });
+
     this.panel = Ext.create('Ext.panel.Panel', {
         height : 600,
         layout: {
@@ -24,7 +34,7 @@ ConfirmShipmentView.prototype.getPanel = function () {
             pack: 'center'
         },
         margin : 5,
-        items : [this.puckPreviewPanel],
+        items : [this.pucksList],
 			
 	});
 	
@@ -53,6 +63,16 @@ ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName, p
     this.sampleChangerWidget.onPuckSelected.attach(function(sender,puck){
         _this.selectPuck(puck);
     });
+
+    this.loadPucksList(this.sampleChangerWidget);
+}
+
+ConfirmShipmentView.prototype.loadPucksList = function (sampleChangerWidget) {
+    var html = "";
+	dust.render("confirm.table.prepare.template", {pucks : Object.values(sampleChangerWidget.getPuckData())}, function(err, out){
+		html = out;
+	});
+    this.pucksList.add({html : html});
 }
 
 ConfirmShipmentView.prototype.selectPuck = function (puck) {

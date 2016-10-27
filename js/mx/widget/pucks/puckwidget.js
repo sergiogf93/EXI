@@ -10,6 +10,7 @@ function PuckWidget(args){
 	this.mainRadius = 150;
 	this.dataCollectionIds = {};
 	this.containerId = 0;
+	this.containerCode = "";
 	this.enableMouseOver = false;
 	this.enableClick = false;
 	this.initSelected = {};
@@ -60,6 +61,7 @@ function PuckWidget(args){
 				shapeRadiusX : this.shapeRadiusX,
 				shapeRadiusY : this.shapeRadiusY,
 				containerId : this.containerId,
+				containerCode : this.containerCode,
 				enableClick : this.enableClick,
 				enableMouseOver : this.enableMouseOver,
 				dataCollectionIds : this.dataCollectionIds,
@@ -153,7 +155,9 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 			sample_name : sample.BLSample_name,
 			protein_acronym : sample.Protein_acronym,
 			protein_name : sample.Protein_name,
-			dataCollectionIds : dataCollectionIds
+			dataCollectionIds : dataCollectionIds,
+			containerId : sample.Container_containerId,
+			containerCode : sample.Container_code
 		});
 	}
 	this.load(cells);
@@ -169,16 +173,25 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 PuckWidget.prototype.load = function (data) {
 	var _this = this;
 	$("#" + _this.data.id + "-loading-text").remove();
-	
-	for (sample in data){
-		var id = this.id + "-" + data[sample].location;
+
+	for (sampleIndex in data){
+		var sample = data[sampleIndex];
+		var id = this.id + "-" + sample.location;
 		var cellIndex = this.findCellIndexById(id);
-		this.data.cells[cellIndex].state = data[sample].state;
-		this.data.cells[cellIndex].selected = data[sample].selected;
-		this.data.cells[cellIndex].sample_name = data[sample].sample_name;
-		this.data.cells[cellIndex].protein_acronym = data[sample].protein_acronym;
-		this.data.cells[cellIndex].protein_name = data[sample].protein_name;
-		this.isEmpty = false;
+		this.data.cells[cellIndex].state = sample.state;
+		this.data.cells[cellIndex].selected = sample.selected;
+		this.data.cells[cellIndex].sample_name = sample.sample_name;
+		this.data.cells[cellIndex].protein_acronym = sample.protein_acronym;
+		this.data.cells[cellIndex].protein_name = sample.protein_name;
+		this.data.cells[cellIndex].containerId = sample.containerId;
+		this.data.cells[cellIndex].containerCode = sample.containerCode;
+		if (sample.state != "EMPTY"){
+			this.containerId = sample.containerId;
+			this.containerCode = sample.containerCode;
+			this.data.containerId = this.containerId;
+			this.data.containerCode = this.containerCode;
+			this.isEmpty = false;
+		}
 	}
 
 	for (i in this.data.cells){

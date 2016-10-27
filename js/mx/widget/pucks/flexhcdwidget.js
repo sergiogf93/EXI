@@ -29,6 +29,7 @@ FlexHCDWidget.prototype.setClickListeners = SampleChangerWidget.prototype.setCli
 FlexHCDWidget.prototype.disablePucksOfDifferentCapacity = SampleChangerWidget.prototype.disablePucksOfDifferentCapacity;
 FlexHCDWidget.prototype.allowAllPucks = SampleChangerWidget.prototype.allowAllPucks;
 FlexHCDWidget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
+FlexHCDWidget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
 
 FlexHCDWidget.prototype.createStructure = function () {
 	for (var i = 0 ; i < this.data.cells/2 ; i++){

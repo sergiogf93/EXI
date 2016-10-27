@@ -1,22 +1,13 @@
 function LoadShipmentView () {
     var _this = this;
 
-    var data = {
-        radius : 115,
-        isLoading : false
-    };
-    
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 600});
     this.previewPanelView = new PreviewPanelView();
-    this.sampleChangerWidget = new FlexHCDWidget(data);
-    if (typeof(Storage) != "undefined") {
-        var sampleChangerName = sessionStorage.getItem('sampleChangerName');
-        if (sampleChangerName) {
-            if (sampleChangerName == "FlexHCD") {
-                this.sampleChangerWidget = new FlexHCDWidget(data);
-            } else if (sampleChangerName == "SC3Widget") {
-                this.sampleChangerWidget = new SC3Widget(data);
-            }
+    this.sampleChangerName = "";
+    if (typeof(Storage) != "undefined"){
+        var sampleChangerName = sessionStorage.getItem("sampleChangerName");
+        if (sampleChangerName){
+            this.sampleChangerName = sampleChangerName;
         }
     }
 
@@ -30,33 +21,49 @@ function LoadShipmentView () {
 		_this.onSelectRow.notify(row);
 	});
 
-    this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
-		_this.onPuckSelected.notify(puck);
-	});
-
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
         _this.onEmptyButtonClicked.notify();
     });
 
 }
 
+LoadShipmentView.prototype.generateSampleChangerWidget = function (sampleChangerName) {
+    var _this = this;
+    var data = {
+        radius : 115,
+        isLoading : false
+    };
+    var sampleChangerWidget = new FlexHCDWidget(data);
+    if (sampleChangerName == "SC3Widget") {
+        sampleChangerWidget = new SC3Widget(data);
+    }
+    if (typeof(Storage) != "undefined"){
+        var puckData = JSON.parse(sessionStorage.getItem('puckData'));
+        if (puckData) {
+            sampleChangerWidget.load(puckData);
+        }
+    }
+
+    return sampleChangerWidget;
+}
+
 LoadShipmentView.prototype.getPanel = function () {
     var _this = this;
 
-    var widgetContainer = Ext.create('Ext.panel.Panel', {
+    this.sampleChangerWidget = this.generateSampleChangerWidget(this.sampleChangerName);
+
+    this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
         height : 400,
         margin : 20,
-        items : [
-                    this.sampleChangerWidget.getPanel()     
-        ]
+        items : [this.sampleChangerWidget.getPanel()]
     });
 
     var verticalPanel = Ext.create('Ext.panel.Panel', {
         // layout : 'hbox',
             items : [
                         this.previewPanelView.getPanel(),
-                        widgetContainer    
+                        this.widgetContainer    
             ]
     });
 
@@ -72,6 +79,10 @@ LoadShipmentView.prototype.getPanel = function () {
 
     this.panel.on('boxready', function() {
         _this.sampleChangerWidget.setClickListeners();
+        _this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
+            _this.onPuckSelected.notify(puck);
+        });
+        _this.sampleChangerWidget.render();
     });
 
     return this.panel;

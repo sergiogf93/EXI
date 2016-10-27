@@ -22,7 +22,8 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 * @return {dataCollectionGroup} Array of data collections
 */
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
-    try{    
+    try{
+        this.dataCollectionGroup = dataCollectionGroup;
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
@@ -78,7 +79,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
     
     var tabsEvents = function(grid) {
-        
             this.grid = grid;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var target = $(e.target).attr("href"); // activated tab
@@ -116,7 +116,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
 
                  if (target.startsWith("#sa")){                    
                         var dataCollectionId = target.slice(4);
-
+                        _this;
                         var divName = "xtal1_samples_" + dataCollectionId;
                         // $("#xtal2_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
                         // $("#xtal3_samples_" + dataCollectionId).elevateZoom({scrollZoom : true, zoomWindowPosition: divName, zoomWindowHeight: 200, zoomWindowWidth:200, borderSize: 0, easing:true});
@@ -132,7 +132,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                         // Intense(document.querySelectorAll('.intense'));
 
                         var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
-                        
                         if (dc){
                             if ($("#sample_puck_layout_" +dataCollectionId)){
                                 

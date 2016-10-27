@@ -43,18 +43,20 @@ function PrepareMainViewTest() {
         if (typeof(Storage) != "undefined") {
             sessionStorage.removeItem('puckData');
         }
-        var data = {
-            radius : 143,
-            isLoading : false
-        };
-        if (changerName == "FlexHCD") {
-            _this.loadShipmentView.sampleChangerWidget = new FlexHCDWidget(data);
-        } else if (changerName == "SC3Widget") {
-            _this.loadShipmentView.sampleChangerWidget = new SC3Widget(data);
-        }
-        _this.loadShipmentView.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
-            _this.loadShipmentView.onPuckSelected.notify(puck);
-        });
+        _this.loadShipmentView.sampleChangerName = changerName;
+        // _this.loadShipmentView.generateSampleChangerWidget(changerName);
+        // var data = {
+        //     radius : 143,
+        //     isLoading : false
+        // };
+        // if (changerName == "FlexHCD") {
+        //     _this.loadShipmentView.sampleChangerWidget = new FlexHCDWidget(data);
+        // } else if (changerName == "SC3Widget") {
+        //     _this.loadShipmentView.sampleChangerWidget = new SC3Widget(data);
+        // }
+        // _this.loadShipmentView.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
+        //     _this.loadShipmentView.onPuckSelected.notify(puck);
+        // });
     });
 
     this.loadShipmentView.onSelectRow.attach(function(sender, row){
@@ -293,16 +295,18 @@ PrepareMainViewTest.prototype.reload = function() {
 
 PrepareMainViewTest.prototype.checkStoreData = function () {
     if (typeof(Storage) != "undefined"){
-            var sampleChangerName = sessionStorage.getItem('sampleChangerName');
-            if (sampleChangerName) {
-                var puckData = JSON.parse(sessionStorage.getItem('puckData'));
-                if (puckData) {
-                    this.loadShipmentView.sampleChangerWidget.load(puckData);
-                }
-            }
-            if (this.currentStep == 3){
-                this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));
-            }
+        var sampleChangerName = sessionStorage.getItem('sampleChangerName');
+        if (sampleChangerName) {
+            this.loadShipmentView.sampleChangerName = sampleChangerName;
+            // this.loadShipmentView.generateSampleChangerWidget(sampleChangerName);
+            // var puckData = JSON.parse(sessionStorage.getItem('puckData'));
+            // if (puckData) {
+            //     this.loadShipmentView.sampleChangerWidget.load(puckData);
+            // }
+        }
+        if (this.currentStep == 3){
+            this.loadShipmentView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));
+        }
     }
 }
 
