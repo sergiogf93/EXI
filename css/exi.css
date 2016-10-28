@@ -1,10 +1,9 @@
 /** Prepare experiment steps **/
 
 .rounded-border{
-    border-radius: 15px 25px;
 	border-color:#666666;
 	border-style: solid;
-    border-width: 2px;
+    border-width: 1px;
 }
 
 .clickable-row {

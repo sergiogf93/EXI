@@ -100,7 +100,7 @@ LoadSampleChangerView.prototype.getPanel = function () {
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
-        title : 'Load the sample changer',
+        // title : 'Load the sample changer',
         layout : 'hbox',
         height : this.height,
         width : this.width,

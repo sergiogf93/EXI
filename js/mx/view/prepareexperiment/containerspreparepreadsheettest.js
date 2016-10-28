@@ -110,7 +110,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 source: EXI.credentialManager.getBeamlines()
             },
             {
-                header: 'SC Location',
+                header: 'Sample Changer Location',
                 dataIndex: 'sampleChangerLocation',
                 flex: 1,
                 type: 'text'
@@ -125,8 +125,8 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify(grid.getSelectionModel().getSelection()[0]);             
-            }
+                _this.onSelectRow.notify(record);             
+            },
         },
         margin  : 5,
         items   : [
@@ -137,6 +137,13 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
             }
             
         ]
+    });
+
+    //arrowUp and arrowDown listeners
+    this.panel.view.addElListener('keyup', function(event,row) {
+        if (event.keyCode == 38 || event.keyCode == 40) { 
+            _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
+        }
     });
 
     return this.panel;
