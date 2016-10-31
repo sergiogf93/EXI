@@ -8,6 +8,7 @@ function LoadSampleChangerView (args) {
 
     this.height = 600;
     this.width = 600;
+    this.widgetRadius = 110;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -30,12 +31,15 @@ function LoadSampleChangerView (args) {
     this.onSelectRow = new Event(this);
     this.onPuckSelected = new Event(this);
     this.onSampleChangerSelected = new Event(this);
-    this.onLoadButtonClicked = new Event(this);
     this.onEmptyButtonClicked = new Event(this);
 
     this.containerListEditor.onSelectRow.attach(function(sender, row){
 		_this.onSelectRow.notify(row);
 	});
+
+    this.containerListEditor.onContainerListLoaded.attach(function(sender){
+        _this.loadSampleChangerWidgetFromContainersList();
+    });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
         _this.onEmptyButtonClicked.notify();
@@ -52,21 +56,47 @@ function LoadSampleChangerView (args) {
 LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleChangerName) {
     var _this = this;
     var data = {
-        radius : 110,
+        radius : this.widgetRadius,
         isLoading : false
     };
     var sampleChangerWidget = new FlexHCDWidget(data);
     if (sampleChangerName == "SC3") {
         sampleChangerWidget = new SC3Widget(data);
     }
-    if (typeof(Storage) != "undefined"){
-        var puckData = JSON.parse(sessionStorage.getItem('puckData'));
-        if (puckData) {
-            sampleChangerWidget.load(puckData);
+
+    return sampleChangerWidget;
+};
+
+/**
+* Loads the sampleChangerWidget using the containerListEditor
+*
+* @method loadSampleChangerWidgetFromContainersList
+* @return 
+*/
+LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = function () {
+    var _this = this;
+
+    this.sampleChangerWidget.emptyAllPucks();
+    var filledContainers = {};
+    for (var i = 0 ; i < this.containerListEditor.panel.store.data.length ; i++){
+        var record = this.containerListEditor.panel.store.getAt(i);
+        if (record.get('sampleChangerLocation') != " "){
+            var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(record.get('sampleChangerLocation')));
+            if (puckId) {
+                filledContainers[record.get('containerId')] = puckId;
+            } else {
+                $.notify("Warning: The sample in the container " + record.get('containerCode') + " has an incorrect location value for this type of sample changer.", "warn");
+            }
         }
     }
 
-    return sampleChangerWidget;
+    if (!_.isEmpty(filledContainers)){
+        var onSuccess = function (sender, samples) {
+            _this.sampleChangerWidget.loadSamples(samples,filledContainers);
+        }
+
+        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+    }
 };
 
 /**
@@ -82,7 +112,7 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
-        height : 400,
+        height : 2*this.widgetRadius,
         margin : 10,
         layout: {
             type: 'hbox',
@@ -91,10 +121,9 @@ LoadSampleChangerView.prototype.getPanel = function () {
         items : [this.sampleChangerWidget.getPanel()]
     });
 
-    var verticalPanel = Ext.create('Ext.panel.Panel', {
+    this.verticalPanel = Ext.create('Ext.panel.Panel', {
         // layout : 'hbox',
             items : [
-                        this.previewPanelView.getPanel(),
                         this.widgetContainer    
             ]
     });
@@ -107,7 +136,7 @@ LoadSampleChangerView.prototype.getPanel = function () {
         margin : 5,
         items : [
                     this.containerListEditor.getPanel(),
-                    verticalPanel  
+                    this.verticalPanel  
         ]
     });
 
@@ -120,4 +149,29 @@ LoadSampleChangerView.prototype.getPanel = function () {
     });
 
     return this.panel;
+};
+
+/**
+* Cleans and removes the previewPanelView
+*
+* @method cleanPreviewPanel
+* @return
+*/
+LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
+    this.previewPanelView.clean();
+    this.verticalPanel.remove(this.previewPanelView.panel);
+};
+
+/**
+* Cleans and removes the previewPanelView
+*
+* @method cleanPreviewPanel
+* @return
+*/
+LoadSampleChangerView.prototype.previewPuck = function (puckContainer, data, instructionsButtonText) {
+    if (this.previewPanelView.previewPanel){
+        this.cleanPreviewPanel();
+    }
+    this.verticalPanel.add(this.previewPanelView.getPanel());
+    this.previewPanelView.loadPuck(puckContainer, data, instructionsButtonText);
 };

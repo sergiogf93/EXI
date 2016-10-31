@@ -35,6 +35,8 @@ FlexHCDWidget.prototype.disablePucksOfDifferentCapacity = SampleChangerWidget.pr
 FlexHCDWidget.prototype.allowAllPucks = SampleChangerWidget.prototype.allowAllPucks;
 FlexHCDWidget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
 FlexHCDWidget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
+FlexHCDWidget.prototype.loadSamples = SampleChangerWidget.prototype.loadSamples;
+FlexHCDWidget.prototype.emptyAllPucks = SampleChangerWidget.prototype.emptyAllPucks;
 
 /**
 * Creates the particular structure of the FlexHCD
@@ -53,16 +55,16 @@ FlexHCDWidget.prototype.createStructure = function () {
 		this.data.lines.push(line);
 	}
 	
-	var textR = this.data.radius/4;
-	for (var i = 0 ; i < this.data.cells ; i++){
-		var ang = i*2*Math.PI/this.data.cells;
-		var textNumber = {
-			text : i+1,
-			x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
-			y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius
-		};
-		this.data.text.push(textNumber);
-	}
+	// var textR = this.data.radius/4;
+	// for (var i = 0 ; i < this.data.cells ; i++){
+	// 	var ang = i*2*Math.PI/this.data.cells;
+	// 	var textNumber = {
+	// 		text : i+1,
+	// 		x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
+	// 		y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius
+	// 	};
+	// 	this.data.text.push(textNumber);
+	// }
 };
 
 /**
@@ -75,4 +77,24 @@ FlexHCDWidget.prototype.convertIdToSampleChangerLocation = function (idLocation)
 	var n = Number(idLocation.split("-")[0]);
 	var i = Number(idLocation.split("-")[1]);
 	return (n-1)*3 + i;
+};
+
+/**
+* Converts the sample changer location in a FlexHCD to the id of the puck
+*
+* @method convertSampleChangerLocationToId
+* @return The corresponding id of the puck in the given location
+*/
+FlexHCDWidget.prototype.convertSampleChangerLocationToId = function (sampleChangerLocation) {
+	if (sampleChangerLocation <= 24 && sampleChangerLocation > 0) {
+		var n = Math.floor(sampleChangerLocation/3) + 1;
+		var i = sampleChangerLocation % 3;
+		if (i == 0){
+			n--;
+			i = 3;
+		}
+		return this.id + "-" + n + "-" + i;
+	} else {
+		return null;
+	}
 };

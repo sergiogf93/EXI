@@ -18,6 +18,7 @@ function ContainerPrepareSpreadSheetTest(args){
     }
 
     this.onSelectRow = new Event(this);
+    this.onContainerListLoaded = new Event(this);
 };
 
 /**
@@ -150,6 +151,28 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
 };
 
 /**
+* Loads the processing dewars from the database
+*
+* @method loadProcessingDewars
+* @return
+*/
+ContainerPrepareSpreadSheetTest.prototype.loadProcessingDewars = function () {
+    var _this = this;
+
+    this.panel.setLoading();
+    var onSuccessProposal = function(sender, containers) {
+        _this.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
+        _this.panel.setLoading(false);
+        _this.onContainerListLoaded.notify();
+    };
+    var onError = function(sender, error) {        
+        EXI.setError("Ops, there was an error");
+        _this.panel.setLoading(false);
+    };
+    EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
+}
+
+/**
 * Loads an array of dewars to the store
 *
 * @method load
@@ -194,10 +217,21 @@ ContainerPrepareSpreadSheetTest.prototype.load = function(dewars) {
 * @return
 */
 ContainerPrepareSpreadSheetTest.prototype.updateSampleChangerLocation = function (containerId, location) {
+    var _this = this;
+
     for (var i = 0 ; i < this.panel.store.data.length ; i++) {
         var record = this.panel.store.getAt(i);
         if (record.get('containerId') == containerId) {
-            record.set('sampleChangerLocation',location);
+            var beamlineName = record.get('beamlineName');
+
+            var onSuccess = function(sender, containers) {
+                _this.loadProcessingDewars();
+            };
+            var onError = function(sender, error) {        
+                EXI.setError("Ops, there was an error");
+            };
+
+            EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
             return
         }
     }

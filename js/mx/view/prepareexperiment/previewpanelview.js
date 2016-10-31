@@ -68,7 +68,7 @@ PreviewPanelView.prototype.getPanel = function () {
 
 }
 
-PreviewPanelView.prototype.loadPuck = function (puckContainer, data, fromRow, isEmpty) {
+PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instructionsButtonText) {
     this.clean();
     this.previewPanel.add(puckContainer.getPanel());
     var html = "";
@@ -80,13 +80,8 @@ PreviewPanelView.prototype.loadPuck = function (puckContainer, data, fromRow, is
                             html : html,
                             margin:6
                     });
-    if (fromRow) {
-        this.instructionsButton.setText("Click on sample<br/>changer to load");
-    } else {
-        if (!isEmpty) {
-            this.instructionsButton.setText("EMPTY");
-        }
-    }
+
+    this.instructionsButton.setText(instructionsButtonText);
 }
 
 PreviewPanelView.prototype.clean = function () {

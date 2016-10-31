@@ -4,13 +4,22 @@
 * @class PrepareMainViewTest
 * @constructor
 */
-function PrepareMainViewTest() {
+function PrepareMainViewTest(args) {
 	this.icon = '../images/icon/contacts.png';
 	this.queueGridList = [];
     
 	MainView.call(this);
     
     var _this = this;
+
+    this.currentStep = 1;
+    if (args) {
+        if (args.currentStep) {
+            this.currentStep = args.currentStep;
+        }
+    }
+
+    this.steps = ["","/selectSampleChanger","/loadSampleChanger","/confirm"];
 
     this.height = 550;
     this.width = 1300;
@@ -21,7 +30,9 @@ function PrepareMainViewTest() {
     this.confirmShipmentView = new ConfirmShipmentView();
 
     this.dewarListSelector.onSelect.attach(function(sender, dewar){  
-                             
+            $('#step-3').attr("disabled", true);
+            _this.loadSampleChangerView.sampleChangerName = "";
+            _this.save("sampleChangerName","");     
             if (dewar.shippingStatus == "processing"){
                 _this.updateStatus(dewar.shippingId, "at_ESRF");
             } 
@@ -32,14 +43,6 @@ function PrepareMainViewTest() {
      
     this.dewarListSelector.onSelectionChange.attach(function(sender, dewars){
     });
-    
-    this.currentStep = 1;
-    if (typeof(Storage) != "undefined") {
-        if (sessionStorage.getItem('currentStep')) {
-            this.currentStep = Math.min(sessionStorage.getItem('currentStep'),3);
-        }
-    }
-    
 
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
@@ -65,7 +68,7 @@ function PrepareMainViewTest() {
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
                     _this.deselectRow();
-                    _this.loadSampleChangerView.previewPanelView.clean();
+                    _this.loadSampleChangerView.cleanPreviewPanel();
                 } else {
                     _this.deselectRow();
                     _this.setSelectedRow(row);
@@ -77,36 +80,55 @@ function PrepareMainViewTest() {
 	});
 
     this.loadSampleChangerView.onPuckSelected.attach(function(sender, puck){
-        if (_this.selectedPuck) {
-            if (_this.selectedPuck == puck) {
-                _this.deselectPuck();
-                _this.loadSampleChangerView.previewPanelView.clean();
+        if (_this.selectedContainerId) {
+            if (_this.selectedPuck) {
+                if (_this.selectedPuck == puck) {
+                    _this.returnToSelectionStatus();
+                } else {
+                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                }
             } else {
-                _this.deselectPuck();
-                _this.setSelectedPuck(puck);
+                _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
             }
         } else {
-            _this.setSelectedPuck(puck);
+            if (_this.selectedPuck) {
+                if (_this.selectedPuck == puck) {
+                    _this.returnToSelectionStatus();
+                } else {
+                    _this.deselectRow();
+                    _this.deselectPuck();
+                    _this.setSelectedPuck(puck);
+                }
+            } else {
+                _this.setSelectedPuck(puck);
+            }
         }
 	});
 
-    this.loadSampleChangerView.onLoadButtonClicked.attach(function(sender){
-        _this.loadSampleChangerPuck(_this.selectedPuck, _this.selectedContainerId);
-    });
-
     this.loadSampleChangerView.onEmptyButtonClicked.attach(function(sender){
-        _this.selectedPuck.emptyAll();
-        _this.drawSelectedPuck(_this.selectedPuck);
-        _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
+        if (_this.selectedPuck){
+            _this.selectedPuck.emptyAll();
+            _this.drawSelectedPuck(_this.selectedPuck);
+        }
+        _this.loadSampleChangerView.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId," ");
+        _this.returnToSelectionStatus();
     });
 };
 
 PrepareMainViewTest.prototype.setSelectedRow = function (row) {
-    this.loadSampleChangerView.containerListEditor.panel.getSelectionModel().select(this.loadSampleChangerView.containerListEditor.store.indexOf(row));
+    this.loadSampleChangerView.containerListEditor.panel.getSelectionModel().select(row);
     this.selectedContainerId = row.get('containerId');
     this.selectedContainerCapacity = row.get('capacity');
-    this.drawSelectedPuckFromRow(this.selectedContainerId, this.selectedContainerCapacity, row.get('containerCode'));
+    this.drawSelectedPuckFromRecord(row);
     this.loadSampleChangerView.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
+
+    if (!this.selectedPuck) {
+        var puckId = this.loadSampleChangerView.sampleChangerWidget.convertSampleChangerLocationToId(Number(row.get('sampleChangerLocation')));
+        if (puckId){
+            var puck = this.loadSampleChangerView.sampleChangerWidget.findPuckById(puckId);
+            this.setSelectedPuck(puck);
+        }
+    }
 };
 
 /**
@@ -117,11 +139,16 @@ PrepareMainViewTest.prototype.setSelectedRow = function (row) {
 */
 PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
     this.selectedPuck = puck;
-    if (this.selectedContainerId){
-        this.loadSampleChangerPuck(puck, this.selectedContainerId);
-    } else {
-        $("#" + puck.id).attr("class","puck-selected");
+    $("#" + puck.id).attr("class","puck-selected");
+    if (puck.isEmpty){
         this.drawSelectedPuck(puck);
+    } else if (!this.selectedContainerId) {
+        for (var i = 0 ; i < this.loadSampleChangerView.containerListEditor.panel.store.data.length ; i++) {
+            var record = this.loadSampleChangerView.containerListEditor.panel.store.getAt(i);
+            if (record.get('containerId') == puck.containerId) {
+                this.setSelectedRow(record);
+            }
+        }
     }
 };
 
@@ -182,14 +209,8 @@ PrepareMainViewTest.prototype.manageButtons = function () {
 * @return 
 */
 PrepareMainViewTest.prototype.changeStep = function (direction) {
-    $('#step-' + this.currentStep).removeClass('active-step');
     this.currentStep += direction;
-    this.manageButtons();
-    this.manageStepButtons();
-    $('#step-' + this.currentStep).addClass('active-step');
-    this.container.removeAll();
-    this.load();
-    this.save('currentStep',this.currentStep);
+    location.href = "#/mx/prepare/main" + this.steps[this.currentStep-1];
 };
 
 /**
@@ -266,14 +287,17 @@ PrepareMainViewTest.prototype.getPanel = function() {
         });
         $('.step-btn').unbind('click').click(function (sender){
             if(sender.target.getAttribute("disabled") != "disabled"){
+                if (_this.loadSampleChangerView.sampleChangerWidget){
+                    _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
+                }
                 var direction = Number(sender.target.innerHTML) - _this.currentStep;
                 _this.changeStep(direction);
             }
         });
         _this.manageStepButtons();
         _this.manageButtons();
-        _this.load();
-        _this.checkStoreData();
+        // _this.load();
+        // _this.checkStoreData();
     });
         
 
@@ -325,11 +349,8 @@ PrepareMainViewTest.prototype.load = function() {
         _this.dewarListSelector.panel.setLoading();
         var onSuccessProposal = function(sender, containers) {        
             _this.containers = containers;
-            _this.save('containers',JSON.stringify(_this.containers));
             _this.dewarListSelector.load(containers);
             _this.dewarListSelector.panel.setLoading(false);
-            $('#step-3').attr("disabled", true);
-            _this.loadSampleChangerView.sampleChangerName = "";
         };
         var onError = function(sender, error) {        
             EXI.setError("Ops, there was an error");
@@ -352,34 +373,11 @@ PrepareMainViewTest.prototype.load = function() {
         }
     } else if (this.currentStep == 3) {
         this.container.add(this.loadSampleChangerView.getPanel());
-        if (this.containers == null) {
-            if (typeof(Storage) != "undefined"){
-                this.containers = JSON.parse(sessionStorage.getItem('containers'));
-            }
-        }
-        this.loadSampleChangerView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));        
+        this.loadSampleChangerView.containerListEditor.loadProcessingDewars();
     } else if (this.currentStep == 4) {
         this.container.add(this.confirmShipmentView.getPanel());
         if (this.loadSampleChangerView.sampleChangerWidget) {
             this.confirmShipmentView.loadSampleChanger(this.loadSampleChangerView.sampleChangerWidget.name,this.loadSampleChangerView.sampleChangerWidget.getPuckData());
-        }
-    }
-};
-
-/**
-* Checks the session storage in case of refresh
-*
-* @method checkStoreData
-* @return 
-*/
-PrepareMainViewTest.prototype.checkStoreData = function () {
-    if (typeof(Storage) != "undefined"){
-        var sampleChangerName = sessionStorage.getItem('sampleChangerName');
-        if (sampleChangerName) {
-            this.loadSampleChangerView.sampleChangerName = sampleChangerName;
-        }
-        if (this.currentStep == 3){
-            this.loadSampleChangerView.containerListEditor.load(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}));
         }
     }
 };
@@ -419,6 +417,7 @@ PrepareMainViewTest.prototype.returnToSelectionStatus = function () {
     if (this.selectedPuck) {
         this.deselectPuck();        
     }
+    this.loadSampleChangerView.cleanPreviewPanel();
 };
 
 /**
@@ -443,27 +442,30 @@ PrepareMainViewTest.prototype.drawSelectedPuck = function (puck) {
         puckContainer = new PuckWidgetContainer(data);
     }
     
-    this.loadSampleChangerView.previewPanelView.loadPuck(puckContainer, {
+    this.loadSampleChangerView.previewPuck(puckContainer, {
                 info : [{
                     text : 'SC Location',
                     value : this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id.substring(puck.id.indexOf('-')+1))
                 }]
-            }, false, puck.isEmpty);
-
-    puckContainer.puckWidget.load(puck.data.cells);
+            }, "");
 };
 
 /**
 * Draws the selected row in puck form on the preview panel
 *
-* @method drawSelectedPuckFromRow
+* @method drawSelectedPuckFromRecord
 * @param {Integer} containerId The container Id of the container corresponding to the row selected
 * @param {Integer} capacity The capacity of the container corresponding to the row selected
 * @param {Integer} containerCode The container code of the row selected
 * @return 
 */
-PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, capacity, containerCode) {
+PrepareMainViewTest.prototype.drawSelectedPuckFromRecord = function (record) {
     var _this = this;
+
+    var containerId = record.get('containerId');
+    var containerCode = record.get('containerCode');
+    var capacity = record.get('capacity');
+    var sampleChangerLocation = record.get('sampleChangerLocation');
     function onSuccess (sender, samples) {
         if (samples){
             var data = {
@@ -479,15 +481,18 @@ PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, c
                 data.puckType = 2;
                 puckContainer = new PuckWidgetContainer(data);
             }
-            _this.loadSampleChangerView.previewPanelView.loadPuck(puckContainer, {
+            _this.loadSampleChangerView.previewPuck(puckContainer, {
                 info : [{
                     text : 'Container',
                     value : containerCode
                 },{
                     text : 'Container Id',
                     value : containerId
+                },{
+                    text : 'SC Location',
+                    value : sampleChangerLocation
                 }]
-            }, true);
+            }, "EMPTY");
             puckContainer.puckWidget.loadSamples(samples);
         }
     }
@@ -504,20 +509,13 @@ PrepareMainViewTest.prototype.drawSelectedPuckFromRow = function (containerId, c
 * @return 
 */
 PrepareMainViewTest.prototype.loadSampleChangerPuck = function (puck, containerId) {
-    var _this = this;
-    function onSuccess (sender, samples) {
-        if (samples) {
-            puck.emptyAll();
-            puck.loadSamples(samples);
-        }
-        _this.returnToSelectionStatus();
-        _this.setSelectedPuck(puck);
-        _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
-        var location = _this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id.substring(puck.id.indexOf('-')+1));
-        _this.loadSampleChangerView.containerListEditor.updateSampleChangerLocation(containerId,location);
+    if (puck.isEmpty){
+        this.returnToSelectionStatus();
+        var location = this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id.substring(puck.id.indexOf('-')+1));
+        this.loadSampleChangerView.containerListEditor.updateSampleChangerLocation(containerId,location);
+    } else {
+        $.notify("Error: choose an empty puck", "error");
     }
-
-    EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerId);
 };
 
 /**

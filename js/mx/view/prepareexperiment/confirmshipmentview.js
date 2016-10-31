@@ -1,11 +1,20 @@
 function ConfirmShipmentView(args) {
 
+    this.sampleChangerName = "";
+    if (typeof(Storage) != "undefined"){
+        var sampleChangerName = sessionStorage.getItem("sampleChangerName");
+        if (sampleChangerName){
+            this.sampleChangerName = sampleChangerName;
+        }
+    }
+
     this.sampleChangerWidget = null;
     this.selectedPuck = null;
 
 }
 
 ConfirmShipmentView.prototype.getPanel = function () {
+    var _this = this;
 
     this.pucksList = Ext.create('Ext.panel.Panel', {
         cls     : 'rounded-border',
@@ -28,12 +37,19 @@ ConfirmShipmentView.prototype.getPanel = function () {
         items : [this.pucksList],
 			
 	});
+
+    this.panel.on('boxready', function(){
+        if (_this.sampleChangerName) {
+            _this.loadSampleChanger(_this.sampleChangerName)
+        }
+    });
+    
 	
 	return this.panel;
 
 }
 
-ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName, puckData) {
+ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName) {
     var _this = this;
     var data = {
         radius : 200,
@@ -47,9 +63,15 @@ ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName, p
     }
     this.sampleChangerWidget = sampleChangerWidget;
     this.panel.insert(0,sampleChangerWidget.getPanel());
+    if (typeof(Storage) != "undefined"){
+        var puckData = sessionStorage.getItem("puckData");
+        if (puckData){
+            this.sampleChangerWidget.load(JSON.parse(puckData));
+        }
+    }
     this.sampleChangerWidget.render();
     // this.sampleChangerWidget.setClickListeners();
-    this.sampleChangerWidget.load(puckData);
+    
 
     this.sampleChangerWidget.onPuckSelected.attach(function(sender,puck){
         _this.selectPuck(puck);
@@ -64,11 +86,4 @@ ConfirmShipmentView.prototype.loadPucksList = function (sampleChangerWidget) {
 		html = out;
 	});
     this.pucksList.add({html : html});
-}
-
-ConfirmShipmentView.prototype.updateSampleChangerLocation = function (containerId, location) {
-    for (var i=0 ; i < this.panel.store.data ; i++){
-        var record = this.panel.store.getAt(i);
-        debugger
-    }
 }

@@ -34,6 +34,8 @@ SC3Widget.prototype.disablePucksOfDifferentCapacity = SampleChangerWidget.protot
 SC3Widget.prototype.allowAllPucks = SampleChangerWidget.prototype.allowAllPucks;
 SC3Widget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
 SC3Widget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
+SC3Widget.prototype.loadSamples = SampleChangerWidget.prototype.loadSamples;
+SC3Widget.prototype.emptyAllPucks = SampleChangerWidget.prototype.emptyAllPucks;
 
 /**
 * Creates the particular structure of the SC3
@@ -61,4 +63,18 @@ SC3Widget.prototype.createStructure = function () {
 */
 SC3Widget.prototype.convertIdToSampleChangerLocation = function (idLocation) {
 	return Number(idLocation.split("-")[0]);
+};
+
+/**
+* Converts the sample changer location in a SC3 to the id of the puck
+*
+* @method convertSampleChangerLocationToId
+* @return The corresponding id of the puck in the given location
+*/
+SC3Widget.prototype.convertSampleChangerLocationToId = function (sampleChangerLocation) {
+	if (sampleChangerLocation <= 5 && sampleChangerLocation > 0) {
+		return this.id + "-" + sampleChangerLocation + "-1";
+	} else {
+		return null;
+	}
 };
