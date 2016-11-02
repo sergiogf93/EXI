@@ -254,7 +254,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
         }, 
         height : this.height,
         width : this.width,
-        cls : 'rounded-border',
+        cls : 'border-grid',
         items : []}
     );
 
@@ -344,6 +344,7 @@ PrepareMainViewTest.prototype.load = function() {
     var _this = this; 
     this.panel.setTitle("Prepare Experiment");
     this.container.removeAll();
+
     if (this.currentStep == 1) {
         _this.container.add(_this.dewarListSelector.getPanel());
         _this.dewarListSelector.panel.setLoading();
@@ -352,6 +353,7 @@ PrepareMainViewTest.prototype.load = function() {
             _this.dewarListSelector.load(containers);
             _this.dewarListSelector.panel.setLoading(false);
         };
+
         var onError = function(sender, error) {        
             EXI.setError("Ops, there was an error");
             _this.dewarListSelector.panel.setLoading(false);
@@ -359,18 +361,28 @@ PrepareMainViewTest.prototype.load = function() {
         
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
     } else if (this.currentStep == 2){
-        if (this.containers == null) {
-            if (typeof(Storage) != "undefined"){
-                this.containers = JSON.parse(sessionStorage.getItem('containers'));
-            }
-        }
-        var beamlinesSelected = _.uniq(_.map(_.filter(this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
         this.container.add(this.sampleChangerSelector.getPanel());
-        if (beamlinesSelected.length > 1) {
-            $.notify("Warning: Multiple beamlines selected", "warn");
-        } else if (beamlinesSelected.length == 1) {
-            this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
-        }
+        this.sampleChangerSelector.panel.setLoading();
+
+        var onSuccessProposal = function(sender, containers) { 
+            _this.containers = containers;
+            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
+
+            if (beamlinesSelected.length > 1) {
+                $.notify("Warning: Multiple beamlines selected", "warn");
+            } else if (beamlinesSelected.length == 1) {
+                _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+            }
+
+            _this.sampleChangerSelector.panel.setLoading(false);
+        };
+
+        var onError = function(sender, error) {        
+            EXI.setError("Ops, there was an error");
+            _this.sampleChangerSelector.panel.setLoading(false);
+        };
+        
+        EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
     } else if (this.currentStep == 3) {
         this.container.add(this.loadSampleChangerView.getPanel());
         this.loadSampleChangerView.containerListEditor.loadProcessingDewars();
@@ -445,7 +457,7 @@ PrepareMainViewTest.prototype.drawSelectedPuck = function (puck) {
     this.loadSampleChangerView.previewPuck(puckContainer, {
                 info : [{
                     text : 'SC Location',
-                    value : this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id.substring(puck.id.indexOf('-')+1))
+                    value : this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
                 }]
             }, "");
 };
@@ -511,7 +523,7 @@ PrepareMainViewTest.prototype.drawSelectedPuckFromRecord = function (record) {
 PrepareMainViewTest.prototype.loadSampleChangerPuck = function (puck, containerId) {
     if (puck.isEmpty){
         this.returnToSelectionStatus();
-        var location = this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id.substring(puck.id.indexOf('-')+1));
+        var location = this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id);
         this.loadSampleChangerView.containerListEditor.updateSampleChangerLocation(containerId,location);
     } else {
         $.notify("Error: choose an empty puck", "error");

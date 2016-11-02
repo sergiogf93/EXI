@@ -79,7 +79,7 @@ SampleChangerSelector.prototype.getPanel = function() {
                     {
                         xtype : 'container',
                         layout: 'vbox',  
-                        cls : 'rounded-border',
+                        cls : 'border-grid',
                         margin : 20,
                         items: [
                                     this.sampleChangerGrid.getPanel(),

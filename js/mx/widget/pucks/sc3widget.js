@@ -62,7 +62,7 @@ SC3Widget.prototype.createStructure = function () {
 * @return The corresponding location in the SC3 by convention
 */
 SC3Widget.prototype.convertIdToSampleChangerLocation = function (idLocation) {
-	return Number(idLocation.split("-")[0]);
+	return Number(idLocation.split("-")[1]);
 };
 
 /**

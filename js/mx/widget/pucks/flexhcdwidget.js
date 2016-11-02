@@ -74,8 +74,8 @@ FlexHCDWidget.prototype.createStructure = function () {
 * @return The corresponding location in the FlexHCD by convention
 */
 FlexHCDWidget.prototype.convertIdToSampleChangerLocation = function (idLocation) {
-	var n = Number(idLocation.split("-")[0]);
-	var i = Number(idLocation.split("-")[1]);
+	var n = Number(idLocation.split("-")[1]);
+	var i = Number(idLocation.split("-")[2]);
 	return (n-1)*3 + i;
 };
 

@@ -75,7 +75,7 @@ LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleCh
 */
 LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = function () {
     var _this = this;
-
+    
     this.sampleChangerWidget.emptyAllPucks();
     var filledContainers = {};
     for (var i = 0 ; i < this.containerListEditor.panel.store.data.length ; i++){
@@ -84,15 +84,34 @@ LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = func
             var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(record.get('sampleChangerLocation')));
             if (puckId) {
                 filledContainers[record.get('containerId')] = puckId;
+                var puck = this.sampleChangerWidget.findPuckById(puckId);
+                if (puck.capacity != record.get('capacity')){
+                    $.notify("Warning: The container type of the container " + record.get('containerCode') + " does not match with the container on that location.", "warn");
+                    Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
+                }
             } else {
                 $.notify("Warning: The sample in the container " + record.get('containerCode') + " has an incorrect location value for this type of sample changer.", "warn");
+                Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
             }
+        } else {
+            $.notify("Warning: The container " + record.get('containerCode') + " has no sample changer location value.", "warn");
+            Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
         }
     }
-
+        
     if (!_.isEmpty(filledContainers)){
         var onSuccess = function (sender, samples) {
-            _this.sampleChangerWidget.loadSamples(samples,filledContainers);
+            var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
+            if (errorPucks.length > 0){
+                for (index in errorPucks) {
+                    var puck = errorPucks[index];
+                    var recordsByLocation = _.filter(_this.containerListEditor.panel.store.data.items,function(o) {return o.data.sampleChangerLocation == _this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)});
+                    for (i in recordsByLocation) {
+                        var record = recordsByLocation[i];
+                        Ext.fly(_this.containerListEditor.panel.getView().getNode(record)).addCls("error-row");
+                    }
+                }
+            }
         }
 
         EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));

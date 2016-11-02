@@ -109,14 +109,16 @@ SampleChangerWidget.prototype.getPanel = function () {
 };
 
 /**
-* Load the pucks using the array of samples and a map of containerId to puckId
+* Load the pucks using the array of samples and a map of containerId to puckId and returns an array of pucks that couldn't be loaded
 *
 * @method loadSamples
 * @param {Object} samples An array of samples returned by the query to the database
 * @param {Object} containerIdsMap A map of the form containerId -> puckId
+* @return {Array} An array of the pucks that couldn't be loaded
 */
 SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) {
 	var pucksToBeLoaded = {};
+	var errorPucks = [];
 	for (sampleIndex in samples) {
 		var sample = samples[sampleIndex];
 		var puckId = containerIdsMap[sample.Container_containerId];
@@ -131,22 +133,24 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
 			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
-			$.notify("Capacity Error: Couldn't load the puck at location " + this.convertIdToSampleChangerLocation(puck.id.substring(puck.id.indexOf('-')+1)) + ".", "error");
+			$.notify("Capacity Error: Couldn't load the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			errorPucks.push(puck);
 		}
 	}
+	return errorPucks;
 };
 
 /**
 * Load the pucks using correctly parsed data
 *
 * @method load
-* @param {Object} data Keys are the locations and the values are puckWidget data 
+* @param {Object} data Keys are the ids and the values are puckWidget data 
 */
 SampleChangerWidget.prototype.load = function (data) {
 	for (i in _.keys(data)){
-		var location = _.keys(data)[i];
+		var location = _.keys(data)[i].substring(_.keys(data)[i].indexOf('-')+1);
 		var puck = this.findPuckById(this.id + "-" + location);
-		puck.load(data[location].cells);
+		puck.load(data[_.keys(data)[i]].cells);
 	}
 };
 
@@ -276,7 +280,7 @@ SampleChangerWidget.prototype.getPuckData = function () {
 	var puckData = {};
     for (puckContainerIndex in filledPucks) {
         var puckContainer = filledPucks[puckContainerIndex];
-        var location = puckContainer.puckWidget.id.substring(puckContainer.puckWidget.id.indexOf('-')+1);
+        var location = puckContainer.puckWidget.id;
 		puckContainer.puckWidget.sampleChangerLocation = this.convertIdToSampleChangerLocation(location);
 		puckContainer.puckWidget.data.sampleChangerLocation = this.convertIdToSampleChangerLocation(location);
         puckData[location] = puckContainer.puckWidget.data;

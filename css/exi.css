@@ -1,10 +1,14 @@
 /** Prepare experiment steps **/
 
-.rounded-border{
-	border-color:#666666;
-	border-style: solid;
-    border-width: 1px;
+.error-row .x-grid-cell { 
+    background-color: #ffe2e2; 
+    color: #900; 
 }
+
+.warning-row .x-grid-cell { 
+    background-color: #ffbb0f; 
+    color: #666666; 
+} 
 
 .clickable-row {
 	cursor : pointer;

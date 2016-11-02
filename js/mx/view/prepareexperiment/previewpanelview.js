@@ -58,7 +58,7 @@ PreviewPanelView.prototype.getPanel = function () {
 
     this.panel = Ext.create('Ext.panel.Panel', {
         margin : 5,
-        cls : 'rounded-border',
+        cls : 'border-grid',
         width : this.width,
         height : this.height + 50,
         items : [this.previewPanel,infoContainer]

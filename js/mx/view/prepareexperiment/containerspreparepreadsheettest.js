@@ -39,7 +39,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
     this.panel = Ext.create('Ext.grid.Panel', {
         title: 'Loaded or to be Loaded on MxCube',
         store: this.store,
-        cls : 'rounded-border',
+        cls : 'border-grid',
         height  : this.height,
         width  : this.width,
         flex    : 0.5,
@@ -219,8 +219,10 @@ ContainerPrepareSpreadSheetTest.prototype.load = function(dewars) {
 ContainerPrepareSpreadSheetTest.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
 
-    for (var i = 0 ; i < this.panel.store.data.length ; i++) {
-        var record = this.panel.store.getAt(i);
+    var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
+
+    for (var i = 0 ; i < recordsByContainerId.length ; i++) {
+        var record = recordsByContainerId[i];
         if (record.get('containerId') == containerId) {
             var beamlineName = record.get('beamlineName');
 
