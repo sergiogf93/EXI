@@ -1,3 +1,9 @@
+/**
+* This class renders a panel with a puck widget and some information tabs
+*
+* @class PreviewPanelView
+* @constructor
+*/
 function PreviewPanelView (args) {
     this.width = 400;
     this.height = 265;
@@ -12,8 +18,14 @@ function PreviewPanelView (args) {
     }
 
     this.onEmptyButtonClicked = new Event(this);
-}
+};
 
+/**
+* Returns an Ext.panel.Panel containing a puck widget, an info tab and a button.
+*
+* @method getPanel
+* @return An Ext.panel.Panel containing a puck widget, an info tab and a button.
+*/
 PreviewPanelView.prototype.getPanel = function () {
     var _this = this;
 
@@ -65,9 +77,17 @@ PreviewPanelView.prototype.getPanel = function () {
     });
 
     return this.panel;
+};
 
-}
-
+/**
+* Loads a puck to the preview panel and some information about the puck to the info tab. It also sets the text of the button.
+*
+* @method loadPuck
+* @param puckContainer The puck widget container to be loaded
+* @param {Object} data The data to be displayed on the info tab
+* @param {String} instructionsButtonText The text to be set on the button
+* @return
+*/
 PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instructionsButtonText) {
     this.clean();
     this.previewPanel.add(puckContainer.getPanel());
@@ -82,14 +102,16 @@ PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instruction
                     });
 
     this.instructionsButton.setText(instructionsButtonText);
-}
+};
 
+/**
+* Takes care of cleaning the panel
+*
+* @method clean
+* @return
+*/
 PreviewPanelView.prototype.clean = function () {
     this.previewPanel.removeAll();
     this.infoPanel.removeAll();
     this.instructionsButton.setText("");
-}
-
-PreviewPanelView.prototype.setEmptyButton = function () {
-    this.instructionsButton.setText("EMPTY");
-}
+};

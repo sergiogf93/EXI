@@ -44,13 +44,6 @@ MxPrepare.prototype.init = function() {
 	    mainView.load();
 	}).enter(this.setPageBackground);
 
-	Path.map("#/mx/prepare/main/confirm").to(function() {
-		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainViewTest({currentStep : 4});
-		EXI.addMainPanel(mainView);
-	    mainView.load();
-	}).enter(this.setPageBackground);
-
 	Path.map("#/mx/prepare/:dewarIds/main").to(function() {
 		var mainView = new PrepareMainView();
 		var ids = this.params['dewarIds'].split(",");

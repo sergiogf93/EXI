@@ -132,7 +132,7 @@ LoadSampleChangerView.prototype.getPanel = function () {
     this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
         height : 2*this.widgetRadius,
-        margin : 10,
+        margin : 8,
         layout: {
             type: 'hbox',
             pack: 'center'

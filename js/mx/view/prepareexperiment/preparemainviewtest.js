@@ -191,13 +191,12 @@ PrepareMainViewTest.prototype.manageButtons = function () {
     if (this.currentStep == 2) {
         $('#next-button').attr("disabled", true);
     }
-    if (this.currentStep < 4) {
+    if (this.currentStep < 3) {
         $('#next-button-div').show();  
         $('#done-button-div').hide();
     }
-    if (this.currentStep == 4) {
+    if (this.currentStep == 3) {
         $('#next-button-div').hide();
-        $('#done-button-div').show();
     }
 };
 
@@ -220,11 +219,6 @@ PrepareMainViewTest.prototype.changeStep = function (direction) {
 * @return 
 */
 PrepareMainViewTest.prototype.manageStepButtons = function () {
-    if (this.currentStep != 3 && this.currentStep != 4) {
-        $('#step-4').attr("disabled", true);
-    } else {
-        $('#step-4').attr("disabled", false);
-    }
     if (this.loadSampleChangerView.sampleChangerName == "") {
         $('#step-3').attr("disabled", true);
     } else {
@@ -282,9 +276,6 @@ PrepareMainViewTest.prototype.getPanel = function() {
                 _this.changeStep(-1);             
             }
         });
-        $('#done-button').unbind('click').click(function (sender){
-            _this.confirmShipmentView;            
-        });
         $('.step-btn').unbind('click').click(function (sender){
             if(sender.target.getAttribute("disabled") != "disabled"){
                 if (_this.loadSampleChangerView.sampleChangerWidget){
@@ -296,8 +287,6 @@ PrepareMainViewTest.prototype.getPanel = function() {
         });
         _this.manageStepButtons();
         _this.manageButtons();
-        // _this.load();
-        // _this.checkStoreData();
     });
         
 
@@ -386,11 +375,6 @@ PrepareMainViewTest.prototype.load = function() {
     } else if (this.currentStep == 3) {
         this.container.add(this.loadSampleChangerView.getPanel());
         this.loadSampleChangerView.containerListEditor.loadProcessingDewars();
-    } else if (this.currentStep == 4) {
-        this.container.add(this.confirmShipmentView.getPanel());
-        if (this.loadSampleChangerView.sampleChangerWidget) {
-            this.confirmShipmentView.loadSampleChanger(this.loadSampleChangerView.sampleChangerWidget.name,this.loadSampleChangerView.sampleChangerWidget.getPuckData());
-        }
     }
 };
 
