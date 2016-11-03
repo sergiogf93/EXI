@@ -4004,16 +4004,27 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                
                
                if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
-                   var modelBuildingStep = _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"});
-                   if (modelBuildingStep.metric){
-                       var metrics = modelBuildingStep.metric.split(",");
-                       var statsValues =  modelBuildingStep.statisticsValue.split(",");
-                       for (var i = 0; i < metrics.length; i++) {   
-                           /** Spaces are replaced by _ to be used on the templates */                       
-                           node[metrics[i].replace(/ /g, '_')] = statsValues[i];                           
+                   var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"});
+                   node["metrics"] = [];
+                   if (modelBuildingSteps){
+                       var metrics = _.map(modelBuildingSteps, "metric");
+                       var statisticsValues = _.map(modelBuildingSteps, "statisticsValue");
+                       debugger
+                       for (var i=0; i < metrics.length; i++){
+                           var singleMetric = metrics[i].split(",");
+                           var values = statisticsValues[i].split(",");
+                           var metricsPerModel = {};
+                           
+                           for (var j = 0; j < singleMetric.length; j++) {   
+                                /* Spaces are replaced by _ to be used on the templates */                        
+                                metricsPerModel[singleMetric[j].replace(/ /g, '_')] = values[i];                           
+                           }
+                           node["metrics"].push(metricsPerModel);
                        }
+                       
+                     
                    }     
-                   node["phasingStepId"] = modelBuildingStep.PhasingStep_phasingStepId;
+                   node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
                                                                              
                   
                }
@@ -4040,6 +4051,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
+        console.log(parsed);
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;

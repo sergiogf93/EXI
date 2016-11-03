@@ -39,6 +39,12 @@
                     <th><abbr title="Phasing Step">PHASING</abbr></th>
                     <th><abbr title="Model Building Step">MODEL</abbr></th>
                     <th>Download</th>
+                    <th style='color:gray'>Program</th>
+                    <th style='color:gray'>Method</th>
+                    <th style='color:gray'>Resolution</th>
+                    <th style='color:gray'>Solvent</th>
+                    
+                    
                     <th style='color:gray'>Chain Count</th>
                     <th style='color:gray'>Residues Count</th>
                     <th style='color:gray'>Average Fragment Length</th>
@@ -47,11 +53,8 @@
                 </tr>
     </thead>    
        <tbody>               
-        {#.}		
-              
-                  <tr>
-              
-                
+        {#.}		              
+                  <tr>                              
                     <td><a href='#/phasing/autoprocintegrationId/{.autoProcIntegrationId}/main'>{.spaceGroup}</a></td>
                     <td>
                         {@eq key=prepare type="boolean" value="true"}
@@ -74,7 +77,7 @@
                             <span style='color:red;' class="glyphicon glyphicon-remove"></span>
                         {/eq}
                     </td>
-                      <td>
+                      <td> 
                         {@eq key=model type="boolean" value="true"}                           
                             <span style='color:green;' class="glyphicon glyphicon-ok"></span>                          
                         {:else}
@@ -82,15 +85,20 @@
                         {/eq}
                     </td>
                      <td >
-                       
-                        <a href='{.downloadFilesUrl}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a> 
-                      
+                        
+                        <a href='{.downloadFilesUrl}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a>                       
                                            
-                     </td>
-                     <td>{.Chain_Count} </td>
-                     <td>{.Residues_Count} </td>
-                     <td>{@decimal key="Average_Fragment_Length" decimals=2}{/decimal} </td>
-                     <td>{@decimal key="CC_of_partial_model" decimals=2}{/decimal} </td>
+                     </td> 
+                     <td>{#metrics}{.PhasingProgramRun_phasingPrograms}<br />{/metrics} </td>
+                     <td>{#metrics}{.PhasingStep_method}<br />{/metrics} </td>
+                     <td>{#metrics}{.PhasingStep_highRes} - {.PhasingStep_lowRes}<br />{/metrics} </td>
+                     <td>{#metrics}{.PhasingStep_solventContent}<br />{/metrics} </td>
+                     
+                     
+                     <td>{#metrics}{.Chain_Count}<br />{/metrics} </td>
+                     <td>{#metrics}{.Residues_Count}<br />{/metrics} </td>
+                     <td>{#metrics}{@decimal key="Average_Fragment_Length" decimals=2}{/decimal} <br /> {/metrics} </td>
+                     <td>{#metrics}{@decimal key="CC_of_partial_model" decimals=2}{/decimal} <br /> {/metrics}</td>
                      <td><a href='{.downloadCSV}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a> </td>
 
                 </tr>

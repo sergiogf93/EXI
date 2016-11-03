@@ -136,7 +136,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                function getStepId(stepsBySpaceGroup){
                    return _.keys(_.keyBy(stepsBySpaceGroup, "PhasingStep_phasingStepId")).toString();
                }
-                 function getCSV(stepsBySpaceGroup){
+               function getCSV(stepsBySpaceGroup){
                    var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
                    return _.filter(keys, function(e){return e!= "null";});
                }
@@ -152,20 +152,53 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    
                });
                
+               function getMetrics(phasingStep){                   
+                    if (phasingStep.metric){                        
+                            var singleMetric = phasingStep.metric.split(",");
+                            var values = phasingStep.statisticsValue.split(",");                            
+                            for (var j = 0; j < singleMetric.length; j++) {   
+                                    /* Spaces are replaced by _ to be used on the templates */                        
+                                    phasingStep[singleMetric[j].replace(/ /g, '_')] = values[j];                           
+                            }
+                    } 
+                    return (phasingStep);                     
+               }
                
-               if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
-                   var modelBuildingStep = _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"});
-                   if (modelBuildingStep.metric){
-                       var metrics = modelBuildingStep.metric.split(",");
-                       var statsValues =  modelBuildingStep.statisticsValue.split(",");
-                       for (var i = 0; i < metrics.length; i++) {   
-                           /** Spaces are replaced by _ to be used on the templates */                       
-                           node[metrics[i].replace(/ /g, '_')] = statsValues[i];                           
-                       }
+               function getNodeByPhasingStep(node, stepsBySpaceGroup, step){
+                   var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : step});
+                   node["metrics"] = [];
+                   if (modelBuildingSteps){
+                       var metrics = _.map(modelBuildingSteps, "metric");
+                       var statisticsValues = _.map(modelBuildingSteps, "statisticsValue");
+                       for (var z=0; z < modelBuildingSteps.length; z++){   
+                            var toBePushed =  modelBuildingSteps[z];                          
+                            if (modelBuildingSteps[z].metric){                                                        
+                                toBePushed = getMetrics(modelBuildingSteps[z]);
+                            }  
+                            node["metrics"].push(toBePushed);                         
+                       }                                            
                    }     
-                   node["phasingStepId"] = modelBuildingStep.PhasingStep_phasingStepId;
-                                                                             
-                  
+                   node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
+                   return node;         
+               }
+               
+               /** Filling the model if any */
+               if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
+                        node = getNodeByPhasingStep(node, stepsBySpaceGroup, "MODELBUILDING");
+               }
+               else{
+                   /** There is no model building the we parse the phasing*/
+                    if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null){
+                       node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PHASING");
+                    }
+                    else{
+                        if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null){ 
+                            node = getNodeByPhasingStep(node, stepsBySpaceGroup, "SUBSTRUCTUREDETERMINATION"); 
+                        }
+                        else{
+                           node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PREPARE");      
+                        }
+                    }
                }
                
                /** This will be used to sort */
@@ -190,6 +223,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
+       console.log(parsed);
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
