@@ -18,7 +18,7 @@ function ContainerPrepareSpreadSheetTest(args){
     }
 
     this.onSelectRow = new Event(this);
-    this.onContainerListLoaded = new Event(this);
+    this.onLoaded = new Event(this);
 };
 
 /**
@@ -44,7 +44,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         width  : this.width,
         flex    : 0.5,
         columns: [
-            {
+            /*{
                 dataIndex: 'rowIndex',
                 sortable : false,
                 autoSizeColumn: true,
@@ -53,7 +53,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 {
                     return rowIndex+1;
                 }
-            },
+            },*/
             {
                 header: 'Shipment',
                 dataIndex: 'shippingName',
@@ -66,15 +66,29 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 dataIndex: 'dewarId',
                 type: 'text',
                 flex: 1,
+                hidden : true,
                 readOnly: true
             },              
              {
                 header: 'ContainerId',
                 dataIndex: 'containerId',
+                hidden : true,
                 type: 'text',
                 flex: 1,
                 readOnly: true
             },   
+             {
+                header: 'Container',
+                dataIndex: 'containerCode',
+                type: 'text',
+                flex: 1,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){
+                    
+                    return record.data.containerCode +  " <span style='color:gray;font-size:10px; font-style:italic;'>(" + record.data.sampleCount +" samples)</span>";
+                }
+                
+            },
             {
                 header: 'Barcode',
                 dataIndex: 'barCode',
@@ -82,32 +96,37 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 flex: 1,
                 readOnly: true
             },
-            {
-                header: 'Container',
-                dataIndex: 'containerCode',
-                type: 'text',
-                flex: 1,
-                readOnly: true
-            },
+           
             {
                 header: 'Container type',
                 dataIndex: 'containerType',
                 type: 'text',
-                flex: 1,
-                readOnly: true
+                 flex: 0.75,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){                    
+                    switch(record.data.containerType) {
+                            case "Unipuck":
+                                return   "<kbd style='color:white;font-size:11px;background-color:blue;'>UNIPUCK</kbd>";                                
+                             case "Spinepuck":
+                                return "<kbd style='color:black;font-size:11px;background-color:#CCCCCC;'>SPINEPUCK</kbd>";  
+                            default:
+                               return record.data.containerType;
+                        }
+                }
             },
             {
                 header: 'Samples',
                 dataIndex: 'sampleCount',
                 type: 'text',
-                flex: 1,
+                flex: 0.6,
+                hidden :true,
                 readOnly: true
             },
             { 
                 header : 'Beamline',
                 dataIndex: 'beamlineName',
                 type: 'dropdown',			        	 								
-                flex: 1,
+                flex: 0.6,
                 source: EXI.credentialManager.getBeamlineNames()
             },
             {
@@ -119,9 +138,9 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         ],
         viewConfig: {
             listeners: {
-                refresh: function(dataview) {
+                /*refresh: function(dataview) {
                     dataview.panel.columns[0].autoSize();//works on the first colum
-                }
+                }*/
             }
         },
         listeners: {
@@ -163,7 +182,7 @@ ContainerPrepareSpreadSheetTest.prototype.loadProcessingDewars = function () {
     var onSuccessProposal = function(sender, containers) {
         _this.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
         _this.panel.setLoading(false);
-        _this.onContainerListLoaded.notify();
+        _this.onLoaded.notify(containers);
     };
     var onError = function(sender, error) {        
         EXI.setError("Ops, there was an error");

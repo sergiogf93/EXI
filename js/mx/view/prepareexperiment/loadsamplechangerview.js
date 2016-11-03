@@ -19,8 +19,11 @@ function LoadSampleChangerView (args) {
     };
 
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
-    this.previewPanelView = new PreviewPanelView({height : 200});
+    this.previewPanelView = new PreviewPanelView({
+                                                        height : 200
+                                                    });
     this.sampleChangerName = "";
+    
     if (typeof(Storage) != "undefined"){
         var sampleChangerName = sessionStorage.getItem("sampleChangerName");
         if (sampleChangerName){
@@ -37,9 +40,9 @@ function LoadSampleChangerView (args) {
 		_this.onSelectRow.notify(row);
 	});
 
-    this.containerListEditor.onContainerListLoaded.attach(function(sender){
+    this.containerListEditor.onLoaded.attach(function(sender, containers){
         $('.notifyjs-corner').empty();        
-        _this.loadSampleChangerWidgetFromContainersList();
+        _this.loadSampleChangerWidgetFromContainersList(containers);
     });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
@@ -50,11 +53,11 @@ function LoadSampleChangerView (args) {
 /**
 * Generates a sampleChangerWidget given its name. It also checks for puck data on the sessionStorage
 *
-* @method generateSampleChangerWidget
+* @method getSampleChangerWidget
 * @param {String} sampleChangerName The name of the sampleChangerWidget to be generated
 * @return A sampleChangerWidget
 */
-LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleChangerName) {
+LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChangerName) {
     var _this = this;
     var data = {
         radius : this.widgetRadius,
@@ -76,9 +79,9 @@ LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleCh
 * @method loadSampleChangerWidgetFromContainersList
 * @return 
 */
-LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = function () {
+LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = function (containers) {
     var _this = this;
-    
+    // TODO: Decouple the store
     this.sampleChangerWidget.emptyAllPucks();
     var filledContainers = {};
     for (var i = 0 ; i < this.containerListEditor.panel.store.data.length ; i++){
@@ -130,7 +133,7 @@ LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = func
 LoadSampleChangerView.prototype.getPanel = function () {
     var _this = this;
 
-    this.sampleChangerWidget = this.generateSampleChangerWidget(this.sampleChangerName);
+    this.sampleChangerWidget = this.getSampleChangerWidget(this.sampleChangerName);
 
     this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
@@ -195,5 +198,5 @@ LoadSampleChangerView.prototype.previewPuck = function (puckContainer, data, ins
         this.cleanPreviewPanel();
     }
     this.verticalPanel.add(this.previewPanelView.getPanel());
-    this.previewPanelView.loadPuck(puckContainer, data, instructionsButtonText);
+    this.previewPanelView.load(puckContainer, data, instructionsButtonText);
 };

@@ -33,6 +33,7 @@ PreviewPanelView.prototype.getPanel = function () {
         // cls     : 'border-grid',
         width : this.width/2,
         height : 50,
+        border :2,
         items : []
     });
 
@@ -73,7 +74,7 @@ PreviewPanelView.prototype.getPanel = function () {
         cls : 'border-grid',
         width : this.width,
         height : this.height + 50,
-        items : [this.previewPanel,infoContainer]
+        items : [this.previewPanel, infoContainer]
     });
 
     return this.panel;
@@ -88,7 +89,7 @@ PreviewPanelView.prototype.getPanel = function () {
 * @param {String} instructionsButtonText The text to be set on the button
 * @return
 */
-PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instructionsButtonText) {
+PreviewPanelView.prototype.load = function (puckContainer, data, instructionsButtonText) {
     this.clean();
     this.previewPanel.add(puckContainer.getPanel());
     var html = "";
@@ -97,8 +98,8 @@ PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instruction
 	});
     this.infoPanel.removeAll();
     this.infoPanel.add({
-                            html : html,
-                            margin:6
+                            html    : html,
+                            margin  : 6
                     });
 
     this.instructionsButton.setText(instructionsButtonText);
