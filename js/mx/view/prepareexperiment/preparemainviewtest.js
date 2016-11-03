@@ -331,6 +331,7 @@ PrepareMainViewTest.prototype.getButtons = function () {
 */
 PrepareMainViewTest.prototype.load = function() {
     var _this = this; 
+    $('.notifyjs-corner').empty();    
     this.panel.setTitle("Prepare Experiment");
     this.container.removeAll();
 
@@ -360,7 +361,11 @@ PrepareMainViewTest.prototype.load = function() {
             if (beamlinesSelected.length > 1) {
                 $.notify("Warning: Multiple beamlines selected", "warn");
             } else if (beamlinesSelected.length == 1) {
-                _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+                if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
+                    _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+                } else {
+                    $.notify("Warning: Unknown beamline", "warn");
+                }
             }
 
             _this.sampleChangerSelector.panel.setLoading(false);

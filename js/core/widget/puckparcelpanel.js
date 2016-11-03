@@ -10,9 +10,9 @@ function PuckParcelPanel(args) {
     this.containerId = 0;
     this.code = "";
     this.data = {puckType : 1, 
-                mainRadius : this.radius - 20, 
-                x : 20, 
-                y : 15, 
+                mainRadius : this.radius - 5, 
+                x : this.width/2 - this.radius + 2.5, 
+                y : 2.5, 
                 enableMouseOver : true
     };
 
@@ -22,8 +22,8 @@ function PuckParcelPanel(args) {
 		}
 		if (args.radius != null) {
 			this.radius = args.radius;
-            this.data.mainRadius = this.radius - 20;
-            this.data.x = this.width/2 - this.data.mainRadius;
+            this.data.mainRadius = this.radius - 5;
+            this.data.x = this.width/2 - this.radius + 2.5;
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
@@ -56,12 +56,10 @@ PuckParcelPanel.prototype.getPanel = function () {
     this.puckPanel = Ext.create('Ext.panel.Panel', {
         width : this.width,
         height : 2*this.radius,
-        // cls : 'border-grid',
         items : [this.puck.getPanel()]
 	});
 
     this.panel = Ext.create('Ext.panel.Panel', {
-        // cls : 'border-grid',
         width : this.width,
         height : 2*this.radius + 70,
         items : [{
@@ -99,7 +97,7 @@ PuckParcelPanel.prototype.load = function (samples) {
 */
 PuckParcelPanel.prototype.getCodeHeader = function () {
     var templateData = {info : [{
-                                    text : 'Code',
+                                    text : 'Code:',
                                     value : this.code
                                 }]
     }
@@ -133,7 +131,6 @@ PuckParcelPanel.prototype.getButtons = function () {
                 xtype: 'button',
                 margin : 5,
                 icon : '../images/icon/edit.png',
-                text : 'Edit',
                 handler : function(widget, e) {
                     var puckForm = new PuckForm({
                         width : Ext.getBody().getWidth() - 150
@@ -167,8 +164,8 @@ PuckParcelPanel.prototype.getButtons = function () {
             },{
                 xtype: 'button',
                 margin : 5,
+                cls:'btn-remove',
                 icon : '../images/icon/ic_highlight_remove_black_24dp.png',
-                text : 'Remove',
                 handler: function(){
 			    	function showResult(result){
 						if (result == "yes"){
