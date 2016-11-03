@@ -19,8 +19,8 @@ function PreviewPanelView (args) {
 
     this.puckData = {
                 puckType : 1,
-                mainRadius : this.height/4,
-                x : this.width/2 - this.height/4,
+                mainRadius : this.height*0.4,
+                x : this.width/2 - this.height*0.4,
                 y : 10,
                 enableMouseOver : true
             };
@@ -71,7 +71,7 @@ PreviewPanelView.prototype.getPanel = function () {
 
     this.previewPanel = Ext.create('Ext.panel.Panel', {
         // cls     : 'border-grid',
-        title: 'Selected Puck',
+        // title: 'Selected Puck',
         width : this.width,
         height : this.height,
         items : []
@@ -111,10 +111,11 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
                     });
 
     this.instructionsButton.setText(instructionsButtonText);
-    debugger
     this.puckData.containerId = containerId;
     if (capacity == 10){
         this.puckData.puckType = 2;
+    } else {
+        this.puckData.puckType = 1;
     }
 
     var puckContainer = new PuckWidgetContainer(this.puckData);

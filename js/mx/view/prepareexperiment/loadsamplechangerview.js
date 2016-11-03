@@ -8,7 +8,7 @@ function LoadSampleChangerView (args) {
 
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 150;
+    this.widgetRadius = 170;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -25,7 +25,7 @@ function LoadSampleChangerView (args) {
 
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
     this.previewPanelView = new PreviewPanelView({
-                                                        height : 120
+                                                        height : 80
                                                     });
     this.sampleChangerName = "";
     
@@ -37,7 +37,6 @@ function LoadSampleChangerView (args) {
     }
 
     this.containerListEditor.onSelectRow.attach(function(sender, row){
-		// _this.onSelectRow.notify(row);
         if (row) {
             if (_this.selectedPuck){
                 _this.deselectPuck();
@@ -62,7 +61,6 @@ function LoadSampleChangerView (args) {
     });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
-        // _this.onEmptyButtonClicked.notify();
         if (_this.selectedPuck){
             _this.selectedPuck.emptyAll();
             _this.previewPuck(_this.selectedPuck.containerId, _this.selectedPuck.capacity, {
@@ -81,7 +79,6 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     this.containerListEditor.panel.getSelectionModel().select(row);
     this.selectedContainerId = row.get('containerId');
     this.selectedContainerCapacity = row.get('capacity');
-    // this.drawSelectedPuckFromRecord(row);
     this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
 
     if (!this.selectedPuck) {
@@ -116,19 +113,16 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
 LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
     this.selectedPuck = puck;
     $("#" + puck.id).attr("class","puck-selected");
-    if (!puck.isEmpty && !this.selectedContainerId) {
-        this.setSelectedRow(this.containerListEditor.getRowByContainerId(puck.containerId));
-    }
-    var buttonText = "";
-    if (!puck.isEmpty){
-        buttonText = "EMPTY";
-    }
-    this.previewPuck(puck.containerId, puck.capacity, {
+    if (puck.isEmpty){
+        this.previewPuck(puck.containerId, puck.capacity, {
         info : [{
             text : 'SC Location',
             value : this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
         }]
-    }, buttonText);
+    }, "EMPTY");
+    } else if (!this.selectedContainerId) {
+        this.setSelectedRow(this.containerListEditor.getRowByContainerId(puck.containerId));
+    }
 };
 
 /**
