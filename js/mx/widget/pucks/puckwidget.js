@@ -131,6 +131,7 @@ PuckWidget.prototype.emptyAll = function () {
 *
 * @method loadSamples
 * @param {Object} samples Result of the sample query by containerId
+* @param {Integer} selectedLocation Optional parameter for having a selected cell
 */
 PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
@@ -161,7 +162,6 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	}
 	this.load(cells);
 };
-
 
 /**
 * Load sample data to the puck given that the data is correctly parsed

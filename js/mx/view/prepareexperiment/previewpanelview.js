@@ -92,7 +92,7 @@ PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instruction
     this.clean();
     this.previewPanel.add(puckContainer.getPanel());
     var html = "";
-	dust.render("puck.info.prepare.template", data, function(err, out){
+	dust.render("info.grid.template", data, function(err, out){
 		html = out;
 	});
     this.infoPanel.removeAll();

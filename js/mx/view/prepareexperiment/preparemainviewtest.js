@@ -252,7 +252,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
         items : []}
     );
 
-	this.panel =  Ext.create('Ext.panel.Panel', {
+	this.panel = Ext.create('Ext.panel.Panel', {
         layout: {
             type: 'vbox',
             align: 'center'
