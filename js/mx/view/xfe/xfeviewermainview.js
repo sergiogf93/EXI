@@ -11,7 +11,7 @@ function XfeViewerMainView() {
     MainView.call(this);
 
     //this.filters = ['channel', 'counts', 'Energy', 'fit', 'continuum', 'pileup'];
-    this.filters = ['channel'];
+    this.filters = [];
 
     this.data = {
         labels : [], // labels = [{name: 'axisX', x: true, y, false},{name: 'axisXY', x: false, y, true}] 
