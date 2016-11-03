@@ -8,7 +8,7 @@ function LoadSampleChangerView (args) {
 
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 110;
+    this.widgetRadius = 150;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -18,9 +18,14 @@ function LoadSampleChangerView (args) {
         }
     };
 
+    this.selectedContainerId = null;
+    this.selectedContainerCapacity = null;
+    this.selectedPuck = null;
+    this.sampleChangerName = null;
+
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
     this.previewPanelView = new PreviewPanelView({
-                                                        height : 200
+                                                        height : 120
                                                     });
     this.sampleChangerName = "";
     
@@ -31,23 +36,155 @@ function LoadSampleChangerView (args) {
         }
     }
 
-    this.onSelectRow = new Event(this);
-    this.onPuckSelected = new Event(this);
-    this.onSampleChangerSelected = new Event(this);
-    this.onEmptyButtonClicked = new Event(this);
-
     this.containerListEditor.onSelectRow.attach(function(sender, row){
-		_this.onSelectRow.notify(row);
+		// _this.onSelectRow.notify(row);
+        if (row) {
+            if (_this.selectedPuck){
+                _this.deselectPuck();
+            }
+            if (_this.selectedContainerId) {
+                if (_this.selectedContainerId == row.get('containerId')){
+                    _this.deselectRow();
+                    _this.cleanPreviewPanel();
+                } else {
+                    _this.deselectRow();
+                    _this.setSelectedRow(row);
+                }
+            } else {
+                _this.setSelectedRow(row);
+            }
+        }
 	});
 
     this.containerListEditor.onLoaded.attach(function(sender, containers){
         $('.notifyjs-corner').empty();        
-        _this.loadSampleChangerWidgetFromContainersList(containers);
+        _this.load(containers);
     });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
-        _this.onEmptyButtonClicked.notify();
+        // _this.onEmptyButtonClicked.notify();
+        if (_this.selectedPuck){
+            _this.selectedPuck.emptyAll();
+            _this.previewPuck(_this.selectedPuck.containerId, _this.selectedPuck.capacity, {
+                info : [{
+                    text : 'SC Location',
+                    value : _this.sampleChangerWidget.convertIdToSampleChangerLocation(_this.selectedPuck.id)
+                }]
+            }, "");
+        }
+        _this.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId," ");
+        _this.returnToSelectionStatus();
     });
+};
+
+LoadSampleChangerView.prototype.setSelectedRow = function (row) {
+    this.containerListEditor.panel.getSelectionModel().select(row);
+    this.selectedContainerId = row.get('containerId');
+    this.selectedContainerCapacity = row.get('capacity');
+    // this.drawSelectedPuckFromRecord(row);
+    this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
+
+    if (!this.selectedPuck) {
+        var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(row.get('sampleChangerLocation')));
+        if (puckId){
+            var puck = this.sampleChangerWidget.findPuckById(puckId);
+            this.setSelectedPuck(puck);
+        }
+    }
+
+    this.previewPuck(row.get('containerId'), 
+                        row.get('capacity'), {
+                                info : [{
+                                    text : 'Container',
+                                    value : row.get('containerCode')
+                                },{
+                                    text : 'Container Id',
+                                    value : row.get('containerId')
+                                },{
+                                    text : 'SC Location',
+                                    value : row.get('sampleChangerLocation')
+                                }]
+        }, "EMPTY");
+};
+
+/**
+* Method executed once a puck from the sample changer widget is clicked.
+*
+* @method setSelectedPuck
+* @return 
+*/
+LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
+    this.selectedPuck = puck;
+    $("#" + puck.id).attr("class","puck-selected");
+    if (!puck.isEmpty && !this.selectedContainerId) {
+        this.setSelectedRow(this.containerListEditor.getRowByContainerId(puck.containerId));
+    }
+    var buttonText = "";
+    if (!puck.isEmpty){
+        buttonText = "EMPTY";
+    }
+    this.previewPuck(puck.containerId, puck.capacity, {
+        info : [{
+            text : 'SC Location',
+            value : this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
+        }]
+    }, buttonText);
+};
+
+/**
+* Takes care of deselecting a row in the loading step.
+*
+* @method deselectRow
+* @return 
+*/
+LoadSampleChangerView.prototype.deselectRow = function () {
+    this.containerListEditor.panel.getSelectionModel().deselectAll();
+    this.selectedContainerId = null;
+    this.selectedSampleCount = null;
+    this.sampleChangerWidget.allowAllPucks();
+}
+
+/**
+* Takes care of deselecting a puck in the loading step
+*
+* @method deselectPuck
+* @return 
+*/
+LoadSampleChangerView.prototype.deselectPuck = function () {
+    $("#" + this.selectedPuck.id).attr("class","puck");
+    this.selectedPuck = null; 
+};
+
+/**
+* Returns to the initial state
+*
+* @method returnToSelectionStatus
+* @return 
+*/
+LoadSampleChangerView.prototype.returnToSelectionStatus = function () {
+    this.deselectRow();
+    if (this.selectedPuck) {
+        this.deselectPuck();        
+    }
+    this.cleanPreviewPanel();
+};
+
+/**
+* Takes care of the process when a puck is selected after clicking a row, loading that puck with the selected container
+*
+* @method loadSampleChangerPuck
+* @param {PuckWidget} puck The puck of the sample changer widget to be loaded
+* @param {Integer} containerId The container Id of the container to be loaded
+* @return 
+*/
+LoadSampleChangerView.prototype.loadSampleChangerPuck = function (puck, containerId) {
+    if (puck.isEmpty){
+        this.returnToSelectionStatus();
+        var location = this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id);
+        this.containerListEditor.updateSampleChangerLocation(containerId,location);
+    } else {
+        $.notify("Error: choose an empty puck", "error");
+    }
 };
 
 /**
@@ -74,34 +211,36 @@ LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChanger
 };
 
 /**
-* Loads the sampleChangerWidget using the containerListEditor
+* Loads the sampleChangerWidget
 *
-* @method loadSampleChangerWidgetFromContainersList
+* @method load
 * @return 
 */
-LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = function (containers) {
+LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
-    // TODO: Decouple the store
+
     this.sampleChangerWidget.emptyAllPucks();
     var filledContainers = {};
-    for (var i = 0 ; i < this.containerListEditor.panel.store.data.length ; i++){
-        var record = this.containerListEditor.panel.store.getAt(i);
-        if (record.get('sampleChangerLocation') != " "){
-            var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(record.get('sampleChangerLocation')));
-            if (puckId) {
-                filledContainers[record.get('containerId')] = puckId;
-                var puck = this.sampleChangerWidget.findPuckById(puckId);
-                if (puck.capacity != record.get('capacity')){
-                    $.notify("Warning: The container type of the container " + record.get('containerCode') + " does not match with the container on that location.", "warn");
-                    Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
+    for (var i = 0 ; i < containers.length ; i++){
+        var container = containers[i];
+        if (container.sampleCount > 0){
+            if (container.sampleChangerLocation != " "){
+                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
+                if (puckId) {
+                    filledContainers[container.containerId] = puckId;
+                    var puck = this.sampleChangerWidget.findPuckById(puckId);
+                    if (puck.capacity != container.capacity){
+                        // $.notify("Warning: The container type of the container " + container.containerCode + " does not match with the container on that location.", "warn");
+                        this.containerListEditor.addClassToRow (container.containerId, "warning-row");
+                    }
+                } else {
+                    // $.notify("Warning: The sample in the container " + container.containerCode + " has an incorrect location value for this type of sample changer.", "warn");
+                    this.containerListEditor.addClassToRow (container.containerId, "warning-row");
                 }
             } else {
-                $.notify("Warning: The sample in the container " + record.get('containerCode') + " has an incorrect location value for this type of sample changer.", "warn");
-                Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
+                // $.notify("Warning: The container " + container.containerCode + " has no sample changer location value.", "warn");
+                this.containerListEditor.addClassToRow (container.containerId, "warning-row");
             }
-        } else {
-            $.notify("Warning: The container " + record.get('containerCode') + " has no sample changer location value.", "warn");
-            Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
         }
     }
         
@@ -111,11 +250,7 @@ LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = func
             if (errorPucks.length > 0){
                 for (index in errorPucks) {
                     var puck = errorPucks[index];
-                    var recordsByLocation = _.filter(_this.containerListEditor.panel.store.data.items,function(o) {return o.data.sampleChangerLocation == _this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)});
-                    for (i in recordsByLocation) {
-                        var record = recordsByLocation[i];
-                        Ext.fly(_this.containerListEditor.panel.getView().getNode(record)).addCls("error-row");
-                    }
+                    _this.containerListEditor.addClassToRow (puck.containerId, "error-row");
                 }
             }
         }
@@ -168,7 +303,29 @@ LoadSampleChangerView.prototype.getPanel = function () {
     this.panel.on('boxready', function() {
         _this.sampleChangerWidget.setClickListeners();
         _this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
-            _this.onPuckSelected.notify(puck);
+            if (_this.selectedContainerId) {
+                if (_this.selectedPuck) {
+                    if (_this.selectedPuck == puck) {
+                        _this.returnToSelectionStatus();
+                    } else {
+                        _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                    }
+                } else {
+                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                }
+            } else {
+                if (_this.selectedPuck) {
+                    if (_this.selectedPuck == puck) {
+                        _this.returnToSelectionStatus();
+                    } else {
+                        _this.deselectRow();
+                        _this.deselectPuck();
+                        _this.setSelectedPuck(puck);
+                    }
+                } else {
+                    _this.setSelectedPuck(puck);
+                }
+            }
         });
         _this.sampleChangerWidget.render();
     });
@@ -193,10 +350,10 @@ LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
 * @method cleanPreviewPanel
 * @return
 */
-LoadSampleChangerView.prototype.previewPuck = function (puckContainer, data, instructionsButtonText) {
+LoadSampleChangerView.prototype.previewPuck = function (containerId, capacity, data, instructionsButtonText) {
     if (this.previewPanelView.previewPanel){
         this.cleanPreviewPanel();
     }
     this.verticalPanel.add(this.previewPanelView.getPanel());
-    this.previewPanelView.load(puckContainer, data, instructionsButtonText);
+    this.previewPanelView.load(containerId, capacity, data, instructionsButtonText);
 };

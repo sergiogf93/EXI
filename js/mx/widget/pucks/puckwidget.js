@@ -124,6 +124,7 @@ PuckWidget.prototype.emptyAll = function () {
 		this.render(this.data.cells[cellIndex].location,true);
 	}
 	this.isEmpty = true;
+	this.containerId = 0;
 };
 
 /**

@@ -17,6 +17,14 @@ function PreviewPanelView (args) {
         }
     }
 
+    this.puckData = {
+                puckType : 1,
+                mainRadius : this.height/4,
+                x : this.width/2 - this.height/4,
+                y : 10,
+                enableMouseOver : true
+            };
+
     this.onEmptyButtonClicked = new Event(this);
 };
 
@@ -89,9 +97,9 @@ PreviewPanelView.prototype.getPanel = function () {
 * @param {String} instructionsButtonText The text to be set on the button
 * @return
 */
-PreviewPanelView.prototype.load = function (puckContainer, data, instructionsButtonText) {
+PreviewPanelView.prototype.load = function (containerId, capacity, data, instructionsButtonText) {
     this.clean();
-    this.previewPanel.add(puckContainer.getPanel());
+    
     var html = "";
 	dust.render("info.grid.template", data, function(err, out){
 		html = out;
@@ -103,6 +111,24 @@ PreviewPanelView.prototype.load = function (puckContainer, data, instructionsBut
                     });
 
     this.instructionsButton.setText(instructionsButtonText);
+    debugger
+    this.puckData.containerId = containerId;
+    if (capacity == 10){
+        this.puckData.puckType = 2;
+    }
+
+    var puckContainer = new PuckWidgetContainer(this.puckData);
+    this.previewPanel.add(puckContainer.getPanel());
+
+    function onSuccess (sender, samples) {
+        
+        if (samples.length > 0) {
+            puckContainer.puckWidget.loadSamples(samples);
+        }
+    }
+
+    EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerId);
+
 };
 
 /**

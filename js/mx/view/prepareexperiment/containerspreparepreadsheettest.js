@@ -159,12 +159,13 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         ]
     });
 
-    //arrowUp and arrowDown listeners
-    this.panel.view.addElListener('keyup', function(event,row) {
-        if (event.keyCode == 38 || event.keyCode == 40) { 
-            _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
-        }
-    });
+    //arrowUp and arrowDown listeners. 
+    //Needs the first column of row Index
+    // this.panel.view.addElListener('keyup', function(event,row) {
+    //     if (event.keyCode == 38 || event.keyCode == 40) { 
+    //         _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
+    //     }
+    // });
 
     return this.panel;
 };
@@ -180,9 +181,10 @@ ContainerPrepareSpreadSheetTest.prototype.loadProcessingDewars = function () {
 
     this.panel.setLoading();
     var onSuccessProposal = function(sender, containers) {
-        _this.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
+        var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
+        _this.load(processingContainers);
         _this.panel.setLoading(false);
-        _this.onLoaded.notify(containers);
+        _this.onLoaded.notify(processingContainers);
     };
     var onError = function(sender, error) {        
         EXI.setError("Ops, there was an error");
@@ -256,4 +258,29 @@ ContainerPrepareSpreadSheetTest.prototype.updateSampleChangerLocation = function
             return
         }
     }
+};
+
+/**
+* Returns the row with the given containerId
+*
+* @method getRowByContainerId
+* @param {Integer} containerId The container Id of the record to be returned
+* @return The row with the given containerId
+*/
+ContainerPrepareSpreadSheetTest.prototype.getRowByContainerId = function (containerId) {
+    var recordsByContainerId = _.filter(this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
+    return recordsByContainerId[0];
+};
+
+/**
+* Adds a class to the record with the given containerId
+*
+* @method addClassToRow
+* @param {Integer} containerId The container Id of the record to be updated
+* @param {String} className The class to be added
+* @return
+*/
+ContainerPrepareSpreadSheetTest.prototype.addClassToRow = function (containerId, className) {
+    var record = this.getRowByContainerId(containerId);
+    Ext.fly(this.panel.getView().getNode(record)).addCls(className);
 };

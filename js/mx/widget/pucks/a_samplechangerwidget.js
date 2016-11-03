@@ -134,6 +134,7 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
 			$.notify("Capacity Error: Couldn't load the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
 			errorPucks.push(puck);
 		}
 	}

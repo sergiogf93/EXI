@@ -29,7 +29,7 @@ function PuckWidgetContainer(args) {
 	}
 	
 	if(!this.puckWidget) {
-		this.puckWidget = new SpineCellWidget(args);
+		this.puckWidget = new SpinePuckWidget(args);
 	}
 	
 	this.puckWidget.onClick.attach(function(sender, cell){

@@ -55,16 +55,35 @@ FlexHCDWidget.prototype.createStructure = function () {
 		this.data.lines.push(line);
 	}
 	
-	// var textR = this.data.radius/4;
-	// for (var i = 0 ; i < this.data.cells ; i++){
-	// 	var ang = i*2*Math.PI/this.data.cells;
-	// 	var textNumber = {
-	// 		text : i+1,
-	// 		x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
-	// 		y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius
-	// 	};
-	// 	this.data.text.push(textNumber);
-	// }
+	var textR = this.data.radius*0.31;
+	var textRBig = this.data.radius*0.94;
+	var dAlpha = Math.PI/16;
+	var currentNumber = 1;
+	var textSize = Math.round((15-7)*(this.data.radius-100)/(200-100) + 7);
+	for (var i = 0 ; i < this.data.cells ; i++){
+		var ang = i*2*Math.PI/this.data.cells;
+		this.data.text.push({
+			text : currentNumber,
+			x : textRBig*Math.sin(this.initAlpha + ang - dAlpha) + this.data.radius,
+			y : -textRBig*Math.cos(this.initAlpha + ang - dAlpha) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+		this.data.text.push({
+			text : currentNumber,
+			x : textRBig*Math.sin(this.initAlpha + ang + dAlpha) + this.data.radius,
+			y : -textRBig*Math.cos(this.initAlpha + ang + dAlpha) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+		this.data.text.push({
+			text : currentNumber,
+			x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
+			y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+	}
 };
 
 /**
