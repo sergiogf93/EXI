@@ -166,8 +166,8 @@
 
 
 .containerWithScroll{
-height:500px;
-overflow-y: auto;
+height:250px;
+overflow-y: scroll;
 width:100%; 
 overflow-x: hidden;
     

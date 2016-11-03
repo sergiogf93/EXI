@@ -117,6 +117,92 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
     }   
 };
 
+
+/**
+* Displays the data worflows tab
+*
+* @param {Object} target HTML node where the content will be rendered
+* @param {Integer} dataCollectionId 
+* @method displayWorkflowsTab
+*/
+UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionId) {
+  var onSuccess = function(sender, data){                       
+        /** Parsing data */
+       var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
+       var parsed = [];
+       for(var spaceGroup in spaceGroups){
+           if (spaceGroup != "null"){               
+               var stepsBySpaceGroup = _.filter(data[0],{"SpaceGroup_spaceGroupShortName": spaceGroup});
+               function getStepId(stepsBySpaceGroup){
+                   return _.keys(_.keyBy(stepsBySpaceGroup, "PhasingStep_phasingStepId")).toString();
+               }
+                 function getCSV(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }
+               var node = {};
+               node = ({
+                   spaceGroup      : spaceGroup,
+                   prepare         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
+                   sub             : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
+                   phasing         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                   model           : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
+                   downloadCSV     : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                   downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                   
+               });
+               
+               
+               if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
+                   var modelBuildingStep = _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"});
+                   if (modelBuildingStep.metric){
+                       var metrics = modelBuildingStep.metric.split(",");
+                       var statsValues =  modelBuildingStep.statisticsValue.split(",");
+                       for (var i = 0; i < metrics.length; i++) {   
+                           /** Spaces are replaced by _ to be used on the templates */                       
+                           node[metrics[i].replace(/ /g, '_')] = statsValues[i];                           
+                       }
+                   }     
+                   node["phasingStepId"] = modelBuildingStep.PhasingStep_phasingStepId;
+                                                                             
+                  
+               }
+               
+               /** This will be used to sort */
+               var count = 0;
+               if (node.prepare){
+                   count = count + 1;
+               }
+               if (node.sub){
+                   count = count + 1;
+               }
+               if (node.phasing){
+                   count = count + 1;
+               }
+               if (node.model){
+                   count = count + 1;
+               }
+               
+               node["count"] = count;
+               
+               parsed.push(node);
+           }
+       }
+       
+        parsed.sort(function(a,b){return a.count < b.count;});
+        var html = "";     
+        dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
+                    html = html + out;
+        });
+        $(target).html(html);        
+    };
+    var onError = function(sender, msg){
+        $(target).html("Error retrieving data " + msg);        
+    };                    
+                    
+    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
+};
+
 /**
 * Displays the sample tab
 *
@@ -221,6 +307,12 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                 if (target.startsWith("#wf")){      
                     var dataCollectionId = target.slice(4);
                     _this.displayWorkflowsTab(target, dataCollectionId);              
+                   
+                }
+                
+                  if (target.startsWith("#ph")){                           
+                    var dataCollectionId = target.slice(4);
+                    _this.displayPhasingTab(target, dataCollectionId);              
                    
                 }
             });
