@@ -78,7 +78,7 @@ BootstrapGrid.prototype.selectRowByValue = function (value) {
     var rowIndex = this.data.values.indexOf(value);
     if (rowIndex >= 0) {
         $("#row-" + rowIndex + "-" + this.id).addClass('active-step').siblings().removeClass('active-step');
-        this.rowSelected.notify($("#row-" + rowIndex + "-" + this.id).innerText);
+        this.rowSelected.notify($("#row-" + rowIndex + "-" + this.id)[0].innerText);
     }
 };
 

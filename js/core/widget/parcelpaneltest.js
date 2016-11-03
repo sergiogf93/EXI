@@ -41,9 +41,8 @@ ParcelPanelTest.prototype.addHeaderPanel = function() {
 					xtype 	: 'container',
 					width	: this.width - 50,
 					border : 1,
-					padding : 5,
+					padding : 1,
 					items 	: [	{html : html}
-				
 					]
 				}
 	);
@@ -64,7 +63,7 @@ ParcelPanelTest.prototype.render = function() {
                 cls 		: "border-grid",
                 margin 		: 10,
                 width       : this.width - 50,
-                height       : this.height - 250,
+                height       : 250,
                 autoScroll : true,
                 items       : []
             });
@@ -231,18 +230,12 @@ ParcelPanelTest.prototype.getPanel = function() {
 	var _this = this;
 
 	this.panel = Ext.create('Ext.panel.Panel', {
-        title       : 'Parcel',
 		cls 		: "border-grid",
 		margin 		: 10,
 		height 		: this.height,
 		width 		: this.width,
 		autoScroll	: false,
 		items 		: [],
-		// listeners : {
-		// 	afterrender : function(component, eOpts) {
-		// 				_this.render();
-		// 	}
-	    // }
 	});
 
     this.panel.addDocked({

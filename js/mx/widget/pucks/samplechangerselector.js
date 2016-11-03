@@ -20,11 +20,19 @@ function SampleChangerSelector (args) {
 
     var SCtypes = {
         header : "Type (Sample Changer)",
-        values : ["FlexHCD","SC3"]
+        values : ["FlexHCD","SC3","RoboDiff"]
     };
+
+    this.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
+    var beamlinesGridData = [];
+    for (var i = 0 ; i < this.beamlines.length ; i++) {
+        var beamline = this.beamlines[i];
+        beamlinesGridData.push(beamline.name + " (" + beamline.sampleChangerType + ")");
+    }
+
     var beamlines = {
         header : "Beamlines",
-        values : EXI.credentialManager.getBeamlineNames()
+        values : beamlinesGridData
     };
 
     this.sampleChangerGrid = new BootstrapGrid({template : "bootstrap.grid.template"});
@@ -41,7 +49,8 @@ function SampleChangerSelector (args) {
     });
     this.beamlinesGrid.rowSelected.attach(function(sender,text){
         _this.sampleChangerGrid.deselectAll();
-        _this.sampleChangerWidget = _this.createSampleChanger(text);
+        var sampleChangerType = _.filter(_this.beamlines,{'name':text.split(" ")[0]})[0].sampleChangerType;
+        _this.sampleChangerWidget = _this.createSampleChanger(sampleChangerType);
         _this.addSampleChanger(_this.sampleChangerWidget);
     });
     this.onSampleChangerSelected = new Event(this);
@@ -109,6 +118,8 @@ SampleChangerSelector.prototype.createSampleChanger = function (changerName) {
     var sampleChangerWidget = new FlexHCDWidget(data);
     if (changerName == "SC3") {
         sampleChangerWidget = new SC3Widget(data);
+    } else if (changerName == "RoboDiff") {
+        sampleChangerWidget = new RoboDiffWidget(data);
     }
     sampleChangerWidget.render();
     return sampleChangerWidget;
@@ -135,5 +146,6 @@ SampleChangerSelector.prototype.addSampleChanger = function (sampleChangerWidget
 * @return
 */
 SampleChangerSelector.prototype.selectRowByBeamlineName = function (beamlineName) {
-    this.beamlinesGrid.selectRowByValue(beamlineName);
+    var sampleChangerType = _.filter(this.beamlines,{'name':beamlineName})[0].sampleChangerType;
+    this.beamlinesGrid.selectRowByValue(beamlineName + " (" + sampleChangerType + ")");
 };

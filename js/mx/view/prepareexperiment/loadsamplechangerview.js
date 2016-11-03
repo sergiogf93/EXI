@@ -38,6 +38,7 @@ function LoadSampleChangerView (args) {
 	});
 
     this.containerListEditor.onContainerListLoaded.attach(function(sender){
+        $('.notifyjs-corner').empty();        
         _this.loadSampleChangerWidgetFromContainersList();
     });
 
@@ -62,6 +63,8 @@ LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleCh
     var sampleChangerWidget = new FlexHCDWidget(data);
     if (sampleChangerName == "SC3") {
         sampleChangerWidget = new SC3Widget(data);
+    } else if (sampleChangerName == "RoboDiff") {
+        sampleChangerWidget = new RoboDiffWidget(data);
     }
 
     return sampleChangerWidget;
