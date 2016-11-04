@@ -9,10 +9,10 @@ function PuckParcelPanel(args) {
     this.width = 220;
     this.containerId = 0;
     this.code = "";
-    this.data = {puckType : 1, 
+    this.data = {puckType : "Unipuck", 
                 mainRadius : this.radius - 5, 
-                x : this.width/2 - this.radius + 2.5, 
-                y : 2.5, 
+                xMargin : this.width/2 - this.radius + 2.5, 
+                yMargin : 2.5, 
                 enableMouseOver : true
     };
 
@@ -23,7 +23,7 @@ function PuckParcelPanel(args) {
 		if (args.radius != null) {
 			this.radius = args.radius;
             this.data.mainRadius = this.radius - 5;
-            this.data.x = this.width/2 - this.radius + 2.5;
+            this.data.xMargin = this.width/2 - this.radius + 2.5;
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
@@ -33,7 +33,7 @@ function PuckParcelPanel(args) {
 		}
         if (args.capacity != null) {
 			if (args.capacity != 16) {
-                this.data.puckType = 2;
+                this.data.puckType = "Spinepuck";
             }
 		}
 	}
@@ -65,7 +65,7 @@ PuckParcelPanel.prototype.getPanel = function () {
         items : [{
                     html : this.getCodeHeader(),
                     margin : 5,
-                    x : this.data.x
+                    x : this.data.xMargin
                 },
                 this.puckPanel,
                 this.getButtons()]

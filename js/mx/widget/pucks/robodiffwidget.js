@@ -9,6 +9,7 @@ function RoboDiffWidget (args) {
 	SampleChangerWidget.call(this,args);
 	
 	this.name = 'RoboDiff';
+	this.sampleChangerCapacity = 24;
 	this.initAlpha = -7*2*Math.PI/16;
 	this.data = {
 		radius : this.radius,
@@ -18,7 +19,7 @@ function RoboDiffWidget (args) {
 	};
 	
 	this.createStructure();
-	this.createPucks(2, this.data.cells, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Spinepuck", this.data.cells, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
 };
 
 RoboDiffWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;

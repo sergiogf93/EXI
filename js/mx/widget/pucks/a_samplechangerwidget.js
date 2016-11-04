@@ -13,6 +13,7 @@ function SampleChangerWidget (args) {
 	this.radius = 200;
 	this.name = '';
 	this.onPuckSelected = new Event(this);
+	this.sampleChangerCapacity = 0; //This is set in each sample changer type
 
 	if (args) {
 		if (args.radius){
@@ -47,17 +48,17 @@ SampleChangerWidget.prototype.createPucks = function (puckType, n, initAlpha, di
 		}
 		var cx = dist*Math.sin(initAlpha + ang) + this.data.radius - rad;
 		var cy = -dist*Math.cos(initAlpha + ang) + this.data.radius - rad;
-		this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : puckId, mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+		this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : puckId, mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 		
 		if (args) {
 			if (args.dAlpha != null && args.dist != null){
 				cx = args.dist*Math.sin(initAlpha + ang + args.dAlpha) + this.data.radius - rad;
 				cy = -args.dist*Math.cos(initAlpha + ang + args.dAlpha) + this.data.radius - rad;
-				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-2", mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-2", mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 				
 				cx = args.dist*Math.sin(initAlpha + ang - args.dAlpha) + this.data.radius - rad;
 				cy = -args.dist*Math.cos(initAlpha + ang - args.dAlpha) + this.data.radius - rad;
-				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-1", mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-1", mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 			}
 		}
 	}
@@ -241,7 +242,7 @@ SampleChangerWidget.prototype.setClickListeners = function () {
 		var puck = allPucks[puckIndex];
 		$("#" + puck.puckWidget.id).css('cursor','pointer');
 		$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-			if (!sender.target.classList.contains('disabled')){
+			if (!sender.target.classList.contains('puck-disabled')){
 				_this.onPuckSelected.notify(_this.findPuckById(sender.target.id));
 			}
 		});
@@ -260,7 +261,8 @@ SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capaci
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
 		if (puck.capacity != capacity) {
-			$("#" + puck.puckWidget.id).addClass("disabled");
+			$("#" + puck.puckWidget.id).addClass("puck-disabled");
+			puck.puckWidget.disableAllCells();
 		}
 	}
 };
@@ -275,7 +277,8 @@ SampleChangerWidget.prototype.allowAllPucks = function () {
 	var allPucks = this.getAllPucks();
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
-		$("#" + puck.puckWidget.id).removeClass("disabled");
+		$("#" + puck.puckWidget.id).removeClass("puck-disabled");
+		puck.puckWidget.allowAllCells();
 	}
 };
 

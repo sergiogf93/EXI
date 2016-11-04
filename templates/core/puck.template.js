@@ -1,5 +1,5 @@
 <div id="{.id}-div">
-	<svg   height="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" width="{@math key="{mainRadius}" method="multiply" operand="2.2" /}">
+	<svg id="{.id}-svg"  height="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" width="{@math key="{mainRadius}" method="multiply" operand="2.2" /}">
 		<defs>
 		
 			<radialGradient id="errorGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
@@ -37,7 +37,7 @@
 					<circle id="{.id}-inner" visibility="hidden" fill="none" stroke="yellow" stroke-width="2" cx="{.x}" cy="{.y}" r="{@math key="{.radius}" method="multiply" operand="0.7" /}" pointer-events="none"></circle>
 				{?enableClick}{?.dataCollectionIds}</a>{/.dataCollectionIds}{/enableClick}						
 				{@gt key=radius value=10}
-					<text id="{.id}-label" x="{.x}" y="{.y}" fill="white" font-size="{@math key="{shapeRadiusX}" method="multiply" operand="1.1" /}" text-anchor="middle" pointer-events="none">
+					<text id="{.id}-label" x="{.x}" y="{.y}" fill="black" font-size="{@math key="{shapeRadiusX}" method="multiply" operand="1.1" /}" text-anchor="middle" pointer-events="none">
 						<tspan dx="0" dy="{@math key="{shapeRadiusX}" method="multiply" operand="0.4" /}" pointer-events="none">{@math key="{$idx}" method="add" operand="1" /}</tspan>
 						<tspan x="{.x}" dy="12"></tspan>
 					</text>

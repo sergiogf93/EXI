@@ -24,7 +24,7 @@ function PrepareMainView(args) {
     this.height = 550;
     this.width = 1300;
     
-    this.dewarListSelector = new DewarListSelectorGridTest({height : this.height - 12, width : this.width - 60});
+    this.dewarListSelector = new DewarListSelectorGrid({height : this.height - 12, width : this.width - 60});
     this.sampleChangerSelector = new SampleChangerSelector({height : this.height - 12, width : this.width - 0});
     this.loadSampleChangerView = new LoadSampleChangerView({height : this.height - 12, width : this.width - 0});
     this.confirmShipmentView = new ConfirmShipmentView();
@@ -289,7 +289,7 @@ PrepareMainView.prototype.load = function() {
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
     } else if (this.currentStep == 3) {
         this.container.add(this.loadSampleChangerView.getPanel());
-        this.loadSampleChangerView.containerListEditor.loadProcessingDewars();
+        this.loadSampleChangerView.load();
     }
 };
 

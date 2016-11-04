@@ -8,7 +8,7 @@ function LoadSampleChangerView (args) {
 
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 170;
+    this.widgetRadius = 185;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -26,7 +26,7 @@ function LoadSampleChangerView (args) {
 
     this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
     this.previewPanelView = new PreviewPanelView({
-                                                        height : 120
+                                                        height : 100
                                                     });
     this.sampleChangerName = "";
     
@@ -59,15 +59,6 @@ function LoadSampleChangerView (args) {
     this.containerListEditor.onLoaded.attach(function(sender, containers){
         $('.notifyjs-corner').empty();        
         _this.load(containers);
-
-        /*var setWarningRows = function () {
-            for (var i = 0 ; i < _this.warningRows.length ; i++) {
-                var containerId = _this.warningRows[i];
-                _this.containerListEditor.addClassToRow (containerId, "warning-row");
-            }
-        }
-
-        _.defer(setWarningRows);*/
     });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
@@ -105,9 +96,6 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     text : 'Container',
                                     value : row.get('containerCode')
                                 },{
-                                    text : 'Container Id',
-                                    value : row.get('containerId')
-                                },{
                                     text : 'SC Location',
                                     value : row.get('sampleChangerLocation')
                                 }]
@@ -131,7 +119,8 @@ LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
         }]
     }, "EMPTY");
     } else if (!this.selectedContainerId) {
-        this.setSelectedRow(this.containerListEditor.getRowByContainerId(puck.containerId));
+        var rowsByContainerId = this.containerListEditor.getRowsByContainerId(puck.containerId);
+        this.setSelectedRow(rowsByContainerId[0]);
     }
 };
 
@@ -226,39 +215,43 @@ LoadSampleChangerView.prototype.load = function (containers) {
     this.sampleChangerWidget.emptyAllPucks();
     this.warningRows = [];
     var filledContainers = {};
-    for (var i = 0 ; i < containers.length ; i++){
-        var container = containers[i];
-        if (container.sampleCount > 0){
-            if (container.sampleChangerLocation != " "){
-                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
-                if (puckId) {
-                    filledContainers[container.containerId] = puckId;
-                    var puck = this.sampleChangerWidget.findPuckById(puckId);
-                    if (puck.capacity != container.capacity){
+
+    if (containers) {
+        for (var i = 0 ; i < containers.length ; i++){
+            var container = containers[i];
+            if (container.sampleCount > 0){
+                if (container.sampleChangerLocation != " "){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
+                    if (puckId) {
+                        filledContainers[container.containerId] = puckId;
+                        var puck = this.sampleChangerWidget.findPuckById(puckId);
+                        if (puck.capacity != container.capacity){
+                            this.warningRows.push(container.containerId);
+                        }
+                    } else {
                         this.warningRows.push(container.containerId);
                     }
                 } else {
                     this.warningRows.push(container.containerId);
                 }
-            } else {
-                this.warningRows.push(container.containerId);
             }
         }
-    }
-    
-    
-    if (!_.isEmpty(filledContainers)){
-        var onSuccess = function (sender, samples) {
-            var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
-            if (errorPucks.length > 0){
-                for (index in errorPucks) {
-                    var puck = errorPucks[index];
-                    _this.containerListEditor.addClassToRow (puck.containerId, "error-row");
+        
+        
+        if (!_.isEmpty(filledContainers)){
+            var onSuccess = function (sender, samples) {
+                var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
+                if (errorPucks.length > 0){
+                    for (index in errorPucks) {
+                        var puck = errorPucks[index];
+                    }
                 }
             }
-        }
 
-        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+            EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+        }
+    } else {
+        this.containerListEditor.loadProcessingDewars(this.sampleChangerWidget);
     }
 };
 

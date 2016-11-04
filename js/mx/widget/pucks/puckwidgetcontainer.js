@@ -4,27 +4,32 @@ function PuckWidgetContainer(args) {
 	this.mouseOverCell = new Event(this);
 	this.mouseOutCell = new Event(this);
 	
-	this.x = 0;
-	this.y = 0;
-	
+	this.xMargin = 0;
+	this.yMargin = 0;
 	if (args){
 		if (args.puckType) {
+			if (args.puckType == "UniPuck" || args.puckType == "SpinePuck") {
+				debugger
+			}
 			switch (args.puckType) {
-				case 1:
+				case "Unipuck":
 					this.puckWidget = new UniPuckWidget(args);
 					this.capacity = 16;
 					break;
-				case 2:
+				case "Spinepuck":
 					this.puckWidget = new SpinePuckWidget(args);
 					this.capacity = 10;
 					break;
 			}
 		}
-		if (args.x){
-			this.x = args.x;
+		if (args.xMargin){
+			this.xMargin = args.xMargin;
 		}
-		if (args.y){
-			this.y = args.y;
+		if (args.yMargin){
+			this.yMargin = args.yMargin;
+		}
+		if (args.x) {
+			debugger
 		}
 	}
 	
@@ -52,8 +57,8 @@ PuckWidgetContainer.prototype.getPanel = function () {
 	
 	this.panel =  Ext.create('Ext.panel.Panel', {
 			id: this.puckWidget.id + "-container",
-		   x: this.x,
-		   y: this.y,
+		   x: this.xMargin,
+		   y: this.yMargin,
 		   width : 2*this.puckWidget.data.mainRadius + 1,
 		   height : 2*this.puckWidget.data.mainRadius + 1,
 		//    cls:'border-grid',

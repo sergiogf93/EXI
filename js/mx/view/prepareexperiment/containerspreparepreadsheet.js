@@ -137,15 +137,28 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
             }       
         ],
         viewConfig: {
-            listeners: {
-                /*refresh: function(dataview) {
-                    dataview.panel.columns[0].autoSize();//works on the first colum
-                }*/
-            },
             getRowClass: function(record, index, rowParams, store) {
-                console.log(record.data);
-                console.log(_this.dewars);
-                   return "warning-row";
+                if (record.get('sampleChangerLocation') == " ") {
+                    return "warning-row";
+                }
+                for (var i = 0 ; i < _this.dewars.length ; i++){
+                    var dewar = _this.dewars[i];
+                    if (record.get('dewarId') != dewar.dewarId) {
+                        if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
+                            return "error-row";
+                        }
+                    }
+                }
+                if (_this.sampleChangerWidget){
+                    if (record.get('sampleChangerLocation') > _this.sampleChangerWidget.sampleChangerCapacity) {
+                        return "warning-row";
+                    }
+                    var puckToBeFilled = _this.sampleChangerWidget.findPuckById(_this.sampleChangerWidget.convertSampleChangerLocationToId(record.get('sampleChangerLocation')));
+                    if (puckToBeFilled.capacity != record.get('capacity')){
+                        return "warning-row";
+                    }
+                }
+                return "";
             }
         },
         listeners: {
@@ -190,13 +203,13 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 * @method loadProcessingDewars
 * @return
 */
-ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function () {
+ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleChangerWidget) {
     var _this = this;
 
     this.panel.setLoading();
     var onSuccessProposal = function(sender, containers) {
         var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
-        _this.load(processingContainers);
+        _this.load(processingContainers,sampleChangerWidget);
         _this.panel.setLoading(false);
         _this.onLoaded.notify(processingContainers);
     };
@@ -214,8 +227,11 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function () {
 * @param dewars
 * @return
 */
-ContainerPrepareSpreadSheet.prototype.load = function(dewars) {
-   this.dewars = dewars;
+ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+    this.dewars = dewars;
+    if (sampleChangerWidget){
+        this.sampleChangerWidget = sampleChangerWidget;
+    }
     var data = [];
     //Parse data
     for (dewar in dewars) {
@@ -284,20 +300,4 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
 ContainerPrepareSpreadSheet.prototype.getRowsByContainerId = function (containerId) {
     var recordsByContainerId = _.filter(this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
     return recordsByContainerId;
-};
-
-/**
-* Adds a class to the record with the given containerId
-*
-* @method addClassToRow
-* @param {Integer} containerId The container Id of the record to be updated
-* @param {String} className The class to be added
-* @return
-*/
-ContainerPrepareSpreadSheet.prototype.addClassToRow = function (containerId, className) {
-    debugger
-    var records = this.getRowsByContainerId(containerId);
-    for (var i=0 ; i < records.length ; i++){
-        Ext.fly(this.panel.getView().getNode(records[i])).addCls(className);
-    }
 };

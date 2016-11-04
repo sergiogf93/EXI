@@ -321,3 +321,29 @@ PuckWidget.prototype.findCellIndexById = function (id) {
 		}
 	}
 };
+
+/**
+* Adds the disabled class to each cell
+*
+* @method disableAllCells
+* @return
+*/
+PuckWidget.prototype.disableAllCells = function () {
+	for (var i = 0 ; i < this.data.cells.length ; i++) {
+		var cell = this.data.cells[i];
+		$("#" + cell.id).addClass("cell-disabled");
+	}
+};
+
+/**
+* Removes the disabled class to each cell
+*
+* @method allowAllCells
+* @return
+*/
+PuckWidget.prototype.allowAllCells = function () {
+	for (var i = 0 ; i < this.data.cells.length ; i++) {
+		var cell = this.data.cells[i];
+		$("#" + cell.id).removeClass("cell-disabled");
+	}
+};

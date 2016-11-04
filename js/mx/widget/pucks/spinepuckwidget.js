@@ -23,6 +23,8 @@ SpinePuckWidget.prototype.render = PuckWidget.prototype.render;
 SpinePuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 SpinePuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
 SpinePuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
+SpinePuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
+SpinePuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
 
 /**
 * Parses the data
