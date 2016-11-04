@@ -131,9 +131,18 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 	for (puckIndex in _.keys(pucksToBeLoaded)) {
 		var puck = this.findPuckById(_.keys(pucksToBeLoaded)[puckIndex]);
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
+			var errorSamples = [];
+			for (var i = 0 ; i < pucksToBeLoaded[puck.id].length ; i++) {
+				var sample = pucksToBeLoaded[puck.id][i];
+				if (Number(sample.BLSample_location) > puck.capacity) {
+					errorSamples.push(sample);
+					errorPucks = _.union(errorPucks,[puck]);
+				}
+			}
+			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
-			$.notify("Capacity Error: Couldn't load the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			$.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
 			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
 			errorPucks.push(puck);
 		}

@@ -18,12 +18,13 @@ function LoadSampleChangerView (args) {
         }
     };
 
+    this.warningRows = [];
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
-    this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
+    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
     this.previewPanelView = new PreviewPanelView({
                                                         height : 80
                                                     });
@@ -58,6 +59,15 @@ function LoadSampleChangerView (args) {
     this.containerListEditor.onLoaded.attach(function(sender, containers){
         $('.notifyjs-corner').empty();        
         _this.load(containers);
+
+        /*var setWarningRows = function () {
+            for (var i = 0 ; i < _this.warningRows.length ; i++) {
+                var containerId = _this.warningRows[i];
+                _this.containerListEditor.addClassToRow (containerId, "warning-row");
+            }
+        }
+
+        _.defer(setWarningRows);*/
     });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
@@ -214,6 +224,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
 
     this.sampleChangerWidget.emptyAllPucks();
+    this.warningRows = [];
     var filledContainers = {};
     for (var i = 0 ; i < containers.length ; i++){
         var container = containers[i];
@@ -224,20 +235,18 @@ LoadSampleChangerView.prototype.load = function (containers) {
                     filledContainers[container.containerId] = puckId;
                     var puck = this.sampleChangerWidget.findPuckById(puckId);
                     if (puck.capacity != container.capacity){
-                        // $.notify("Warning: The container type of the container " + container.containerCode + " does not match with the container on that location.", "warn");
-                        this.containerListEditor.addClassToRow (container.containerId, "warning-row");
+                        this.warningRows.push(container.containerId);
                     }
                 } else {
-                    // $.notify("Warning: The sample in the container " + container.containerCode + " has an incorrect location value for this type of sample changer.", "warn");
-                    this.containerListEditor.addClassToRow (container.containerId, "warning-row");
+                    this.warningRows.push(container.containerId);
                 }
             } else {
-                // $.notify("Warning: The container " + container.containerCode + " has no sample changer location value.", "warn");
-                this.containerListEditor.addClassToRow (container.containerId, "warning-row");
+                this.warningRows.push(container.containerId);
             }
         }
     }
-        
+    
+    
     if (!_.isEmpty(filledContainers)){
         var onSuccess = function (sender, samples) {
             var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
