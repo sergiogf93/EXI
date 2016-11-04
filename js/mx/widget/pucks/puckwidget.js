@@ -274,6 +274,7 @@ PuckWidget.prototype.focus = function (location, bool) {
 */
 PuckWidget.prototype.render = function (location) {
 	var cellIndex = this.findCellIndexById(this.id + "-" + location);
+        
 	switch (this.data.cells[cellIndex].state) {
 		case "FILLED":
 			$("#" + this.id + "-" + location).attr("class","cell_filled");
