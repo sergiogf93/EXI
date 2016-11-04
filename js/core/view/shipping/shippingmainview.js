@@ -6,7 +6,6 @@
 * @constructor
 */
 function ShippingMainView() {
-	debugger
 	MainView.call(this);
 	var _this = this;
 

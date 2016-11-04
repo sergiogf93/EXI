@@ -1,12 +1,44 @@
 <div class="container">
-  <table class="table">
-    <tbody>
-      <tr>
-        <td><b>Code:</b> {.code}</td>
-        <td><b>Status:</b> {.dewarStatus}</td>
-        <td><b>Store Location:</b> {.storageLocation}</td>
-        <td><b>Comments:</b> {.comments}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="col-sm-6">
+          <b>Code:</b>
+        </div>
+        <div class="col-sm-6">
+          {.code}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="col-sm-6">
+          <b>Status:</b>
+        </div>
+        <div class="col-sm-6">
+          {.dewarStatus}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="col-sm-6">
+          <b>Store Location:</b>
+        </div>
+        <div class="col-sm-6">
+          {.storageLocation}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="row">
+        <div class="col-sm-6">
+          <b>Comments:</b>
+        </div>
+        <div class="col-sm-6">
+          {.comments}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

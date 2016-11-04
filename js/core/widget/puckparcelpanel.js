@@ -60,6 +60,7 @@ PuckParcelPanel.prototype.getPanel = function () {
 	});
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        // cls : 'border-grid',
         width : this.width,
         height : 2*this.radius + 70,
         items : [{
