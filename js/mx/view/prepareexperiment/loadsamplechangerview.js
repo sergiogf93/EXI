@@ -25,7 +25,7 @@ function LoadSampleChangerView (args) {
 
     this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
     this.previewPanelView = new PreviewPanelView({
-                                                        height : 80
+                                                        height : 120
                                                     });
     this.sampleChangerName = "";
     

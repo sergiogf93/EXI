@@ -6,7 +6,7 @@
 */
 function PreviewPanelView (args) {
     this.width = 400;
-    this.height = 265;
+    this.height = 300;
 
     if (args) {
         if (args.width) {
@@ -40,7 +40,7 @@ PreviewPanelView.prototype.getPanel = function () {
     this.infoPanel = Ext.create('Ext.panel.Panel', {
         // cls     : 'border-grid',
         width : this.width/2,
-        height : 50,
+        height : this.height/3*2,
         border :2,
         items : []
     });
@@ -48,7 +48,7 @@ PreviewPanelView.prototype.getPanel = function () {
     this.instructionsButton = Ext.create('Ext.Button', {
         text: '',
         width: this.width/2,
-        height: 50,
+        height:  this.height/3,
         scale: 'large',
         style: {
             background: '#444444'
@@ -63,15 +63,14 @@ PreviewPanelView.prototype.getPanel = function () {
     });
 
     var infoContainer = Ext.create('Ext.panel.Panel', {
-        layout : 'hbox',
-        width : this.width,
-        height : 50,
+        layout : 'vbox',
+        width : this.width/2,
+        height : this.height,
         items : [this.infoPanel,this.instructionsButton]
     });
 
     this.previewPanel = Ext.create('Ext.panel.Panel', {
-        // cls     : 'border-grid',
-        // title: 'Selected Puck',
+
         width : this.width,
         height : this.height,
         items : []
@@ -80,9 +79,10 @@ PreviewPanelView.prototype.getPanel = function () {
     this.panel = Ext.create('Ext.panel.Panel', {
         margin : 5,
         cls : 'border-grid',
+        layout : 'hbox',
         width : this.width,
-        height : this.height + 50,
-        items : [this.previewPanel, infoContainer]
+        height : this.height,
+        items : [infoContainer, this.previewPanel ]
     });
 
     return this.panel;
@@ -118,6 +118,9 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
         this.puckData.puckType = 1;
     }
 
+
+    /** margin? */
+    this.puckData.x = 10;
     var puckContainer = new PuckWidgetContainer(this.puckData);
     this.previewPanel.add(puckContainer.getPanel());
 

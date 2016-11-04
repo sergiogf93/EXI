@@ -1,5 +1,5 @@
 <div id="{.id}-div">
-	<svg  height="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" width="{@math key="{mainRadius}" method="multiply" operand="2.2" /}">
+	<svg   height="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" width="{@math key="{mainRadius}" method="multiply" operand="2.2" /}">
 		<defs>
 		
 			<radialGradient id="errorGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
@@ -19,7 +19,7 @@
 			</clipPath>
 		
 	  </defs>
-		<circle id="{.id}" cx="{mainRadius}" cy="{mainRadius}" r="{mainRadius}" fill="#CCCCCC" class='puck' />
+		<circle  id="{.id}" cx="{mainRadius}" cy="{mainRadius}" r="{mainRadius}" fill="#CCCCCC" class='puck' />
 		{?isUnipuck}
 		<g>
 			<rect width="100%" height="100%" fill="#888888" stroke="black" stroke-width="1" clip-path="url(#unipuckShape)" pointer-events="none"/>
