@@ -119,6 +119,11 @@
 	stroke-width : 3;
 }
 
+.puck-error {
+	fill : red;
+	stroke-width : 2;
+}
+
 .cell_info_tooltip {
     border-radius: 5px;
 	padding: 5px; 

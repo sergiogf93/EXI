@@ -125,6 +125,7 @@ PuckWidget.prototype.emptyAll = function () {
 	}
 	this.isEmpty = true;
 	this.containerId = 0;
+	$("#" + this.id).removeClass("puck-error");
 };
 
 /**

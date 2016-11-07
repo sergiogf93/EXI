@@ -110,7 +110,7 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
 */
 LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
     this.selectedPuck = puck;
-    $("#" + puck.id).attr("class","puck-selected");
+    $("#" + puck.id).addClass("puck-selected");
     if (puck.isEmpty){
         this.previewPuck(puck.containerId, puck.capacity, {
         info : [{
@@ -144,7 +144,7 @@ LoadSampleChangerView.prototype.deselectRow = function () {
 * @return 
 */
 LoadSampleChangerView.prototype.deselectPuck = function () {
-    $("#" + this.selectedPuck.id).attr("class","puck");
+    $("#" + this.selectedPuck.id).removeClass("puck-selected");
     this.selectedPuck = null; 
 };
 
@@ -244,6 +244,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
                 if (errorPucks.length > 0){
                     for (index in errorPucks) {
                         var puck = errorPucks[index];
+                        $("#" + puck.id).addClass("puck-error");
                     }
                 }
             }

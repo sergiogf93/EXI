@@ -9,7 +9,7 @@ function ParcelPanel(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
-	this.pucksPanelHeight = 250;
+	this.pucksPanelHeight = 200;
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -69,7 +69,7 @@ ParcelPanel.prototype.render = function() {
                 cls 		: "border-grid",
                 margin: '0 0 0 6px',
                 width       : this.width - 15,
-                height       : this.pucksPanelHeight,
+                height       : this.pucksPanelHeight + 20,
                 autoScroll : true,
                 items       : []
             });
@@ -82,7 +82,7 @@ ParcelPanel.prototype.render = function() {
             
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-                var puckPanel = new PuckParcelPanel({width : this.width/10, radius : this.pucksPanelHeight*0.33, containerId : container.containerId, capacity : container.capacity, code : container.code});
+                var puckPanel = new PuckParcelPanel({height : this.pucksPanelHeight , containerId : container.containerId, capacity : container.capacity, code : container.code});
                 puckPanel.onPuckRemoved.attach(function (sender, containerId) {
                     _.remove(_this.dewar.containerVOs, {containerId: containerId});
                     _this.load(_this.dewar);

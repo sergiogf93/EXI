@@ -133,10 +133,14 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 		var puck = this.findPuckById(_.keys(pucksToBeLoaded)[puckIndex]);
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
 			var errorSamples = [];
+			var currentDewar = pucksToBeLoaded[puck.id][0].Dewar_dewarId;
 			for (var i = 0 ; i < pucksToBeLoaded[puck.id].length ; i++) {
 				var sample = pucksToBeLoaded[puck.id][i];
 				if (Number(sample.BLSample_location) > puck.capacity) {
 					errorSamples.push(sample);
+					errorPucks = _.union(errorPucks,[puck]);
+				}
+				if (sample.Dewar_dewarId != currentDewar) {
 					errorPucks = _.union(errorPucks,[puck]);
 				}
 			}
