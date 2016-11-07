@@ -70,8 +70,8 @@ ParcelGrid.prototype.load = function(shipment) {
     }
    
 	for ( var i in this.dewars) {
-		var parcelForm = new ParcelPanelTest({
-			height : 370,
+		var parcelForm = new ParcelPanel({
+			height : 275,
 			width : this.width - 40
 		});
 		this.panel.insert(parcelForm.getPanel());

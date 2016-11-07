@@ -23,6 +23,8 @@ UniPuckWidget.prototype.render = PuckWidget.prototype.render;
 UniPuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 UniPuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
 UniPuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
+UniPuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
+UniPuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
 
 /**
 * Parses the data

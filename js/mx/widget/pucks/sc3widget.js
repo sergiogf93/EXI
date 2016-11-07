@@ -9,6 +9,7 @@ function SC3Widget (args) {
 	SampleChangerWidget.call(this,args);
 	
 	this.name = 'SC3';
+	this.sampleChangerCapacity = 5;
 	this.clockwise = -1;
 
 	this.data = {
@@ -18,7 +19,7 @@ function SC3Widget (args) {
 	};
 	
 	this.createStructure();
-	this.createPucks(2, this.data.cells, 0, this.data.radius/2, 0.8);
+	this.createPucks("Spinepuck", this.data.cells, 0, this.data.radius/2, 0.8);
 };
 
 SC3Widget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;

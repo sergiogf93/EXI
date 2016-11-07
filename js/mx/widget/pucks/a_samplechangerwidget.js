@@ -13,6 +13,7 @@ function SampleChangerWidget (args) {
 	this.radius = 200;
 	this.name = '';
 	this.onPuckSelected = new Event(this);
+	this.sampleChangerCapacity = 0; //This is set in each sample changer type
 
 	if (args) {
 		if (args.radius){
@@ -47,17 +48,17 @@ SampleChangerWidget.prototype.createPucks = function (puckType, n, initAlpha, di
 		}
 		var cx = dist*Math.sin(initAlpha + ang) + this.data.radius - rad;
 		var cy = -dist*Math.cos(initAlpha + ang) + this.data.radius - rad;
-		this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : puckId, mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+		this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : puckId, mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 		
 		if (args) {
 			if (args.dAlpha != null && args.dist != null){
 				cx = args.dist*Math.sin(initAlpha + ang + args.dAlpha) + this.data.radius - rad;
 				cy = -args.dist*Math.cos(initAlpha + ang + args.dAlpha) + this.data.radius - rad;
-				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-2", mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-2", mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 				
 				cx = args.dist*Math.sin(initAlpha + ang - args.dAlpha) + this.data.radius - rad;
 				cy = -args.dist*Math.cos(initAlpha + ang - args.dAlpha) + this.data.radius - rad;
-				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-1", mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-1", mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 			}
 		}
 	}
@@ -131,9 +132,22 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 	for (puckIndex in _.keys(pucksToBeLoaded)) {
 		var puck = this.findPuckById(_.keys(pucksToBeLoaded)[puckIndex]);
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
+			var errorSamples = [];
+			var currentDewar = pucksToBeLoaded[puck.id][0].Dewar_dewarId;
+			for (var i = 0 ; i < pucksToBeLoaded[puck.id].length ; i++) {
+				var sample = pucksToBeLoaded[puck.id][i];
+				if (Number(sample.BLSample_location) > puck.capacity) {
+					errorSamples.push(sample);
+					errorPucks = _.union(errorPucks,[puck]);
+				}
+				if (sample.Dewar_dewarId != currentDewar) {
+					errorPucks = _.union(errorPucks,[puck]);
+				}
+			}
+			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
-			$.notify("Capacity Error: Couldn't load the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			$.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
 			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
 			errorPucks.push(puck);
 		}
@@ -232,7 +246,7 @@ SampleChangerWidget.prototype.setClickListeners = function () {
 		var puck = allPucks[puckIndex];
 		$("#" + puck.puckWidget.id).css('cursor','pointer');
 		$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-			if (!sender.target.classList.contains('disabled')){
+			if (!sender.target.classList.contains('puck-disabled')){
 				_this.onPuckSelected.notify(_this.findPuckById(sender.target.id));
 			}
 		});
@@ -251,7 +265,8 @@ SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capaci
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
 		if (puck.capacity != capacity) {
-			$("#" + puck.puckWidget.id).addClass("disabled");
+			$("#" + puck.puckWidget.id).addClass("puck-disabled");
+			puck.puckWidget.disableAllCells();
 		}
 	}
 };
@@ -266,7 +281,8 @@ SampleChangerWidget.prototype.allowAllPucks = function () {
 	var allPucks = this.getAllPucks();
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
-		$("#" + puck.puckWidget.id).removeClass("disabled");
+		$("#" + puck.puckWidget.id).removeClass("puck-disabled");
+		puck.puckWidget.allowAllCells();
 	}
 };
 

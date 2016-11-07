@@ -8,59 +8,39 @@
 function ShippingMainView() {
 	MainView.call(this);
 	var _this = this;
-	
-	/**
+
+    /**
 	* 
 	* @property shipmentForm
 	*/
-	this.shipmentForm = new ShipmentForm();
+    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = "#/proposal/shipping/nav?nomain";
 	});
-	
-	/**
+
+    /**
 	* 
 	* @property parcelGrid
 	*/
-	this.parcelGrid = new ParcelGrid({
-		height : 300
-	});
+	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 200});
+	
 }
 
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
+ShippingMainView.prototype.getPanel = function() {
+	
+    this.panel =  Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'vbox',
+            align: 'center'
+        },
+        cls : 'border-grid',
+        items : [
+                    this.shipmentForm.getPanel(),
+                    this.parcelGrid.getPanel()
+        ]
+	});
 
-ShippingMainView.prototype.getContainer = function() {
-	this.tabPanel =  Ext.createWidget('tabpanel',
-			{
-				margin : 10,
-				defaults : {
-						anchor : '100%'
-				},
-				items : [
-				     		{
-							tabConfig : {
-								title : 'Delivery Details'
-							},
-							items : [ 
-							         	this.shipmentForm.getPanel()
-							]
-						},
-						{
-							tabConfig : {
-								id : this.id + "grid",
-								title : 'Parcels',
-								icon : '../images/icon/shipping.png'
-							},
-							items : [ 
-							         	this.parcelGrid.getPanel()
-							]
-						}
-					]
-			});
-
-	return this.tabPanel;
-
+    return this.panel;
 };
 
 

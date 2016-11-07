@@ -306,21 +306,21 @@ MxPrepare.prototype.init = function() {
 
 	Path.map("#/mx/prepare/main").to(function() {
 		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainViewTest({currentStep : 1});
+	    var mainView = new PrepareMainView({currentStep : 1});
 		EXI.addMainPanel(mainView);
 	    mainView.load();
 	}).enter(this.setPageBackground);
 
 	Path.map("#/mx/prepare/main/selectSampleChanger").to(function() {
 		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainViewTest({currentStep : 2});
+	    var mainView = new PrepareMainView({currentStep : 2});
 		EXI.addMainPanel(mainView);
 	    mainView.load();
 	}).enter(this.setPageBackground);
 
 	Path.map("#/mx/prepare/main/loadSampleChanger").to(function() {
 		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainViewTest({currentStep : 3});
+	    var mainView = new PrepareMainView({currentStep : 3});
 		EXI.addMainPanel(mainView);
 	    mainView.load();
 	}).enter(this.setPageBackground);
@@ -3986,7 +3986,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                function getStepId(stepsBySpaceGroup){
                    return _.keys(_.keyBy(stepsBySpaceGroup, "PhasingStep_phasingStepId")).toString();
                }
-                 function getCSV(stepsBySpaceGroup){
+               function getCSV(stepsBySpaceGroup){
                    var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
                    return _.filter(keys, function(e){return e!= "null";});
                }
@@ -4002,31 +4002,53 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    
                });
                
+               function getMetrics(phasingStep){                   
+                    if (phasingStep.metric){                        
+                            var singleMetric = phasingStep.metric.split(",");
+                            var values = phasingStep.statisticsValue.split(",");                            
+                            for (var j = 0; j < singleMetric.length; j++) {   
+                                    /* Spaces are replaced by _ to be used on the templates */                        
+                                    phasingStep[singleMetric[j].replace(/ /g, '_')] = values[j];                           
+                            }
+                    } 
+                    return (phasingStep);                     
+               }
                
-               if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
-                   var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"});
+               function getNodeByPhasingStep(node, stepsBySpaceGroup, step){
+                   var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : step});
                    node["metrics"] = [];
                    if (modelBuildingSteps){
                        var metrics = _.map(modelBuildingSteps, "metric");
                        var statisticsValues = _.map(modelBuildingSteps, "statisticsValue");
-                       debugger
-                       for (var i=0; i < metrics.length; i++){
-                           var singleMetric = metrics[i].split(",");
-                           var values = statisticsValues[i].split(",");
-                           var metricsPerModel = {};
-                           
-                           for (var j = 0; j < singleMetric.length; j++) {   
-                                /* Spaces are replaced by _ to be used on the templates */                        
-                                metricsPerModel[singleMetric[j].replace(/ /g, '_')] = values[i];                           
-                           }
-                           node["metrics"].push(metricsPerModel);
-                       }
-                       
-                     
+                       for (var z=0; z < modelBuildingSteps.length; z++){   
+                            var toBePushed =  modelBuildingSteps[z];                          
+                            if (modelBuildingSteps[z].metric){                                                        
+                                toBePushed = getMetrics(modelBuildingSteps[z]);
+                            }  
+                            node["metrics"].push(toBePushed);                         
+                       }                                            
                    }     
                    node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
-                                                                             
-                  
+                   return node;         
+               }
+               
+               /** Filling the model if any */
+               if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
+                        node = getNodeByPhasingStep(node, stepsBySpaceGroup, "MODELBUILDING");
+               }
+               else{
+                   /** There is no model building the we parse the phasing*/
+                    if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null){
+                       node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PHASING");
+                    }
+                    else{
+                        if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null){ 
+                            node = getNodeByPhasingStep(node, stepsBySpaceGroup, "SUBSTRUCTUREDETERMINATION"); 
+                        }
+                        else{
+                           node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PREPARE");      
+                        }
+                    }
                }
                
                /** This will be used to sort */
@@ -4051,7 +4073,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
-        console.log(parsed);
+       console.log(parsed);
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
@@ -5087,113 +5109,12 @@ ConfirmShipmentView.prototype.loadPucksList = function (sampleChangerWidget) {
 	});
     this.pucksList.add({html : html});
 }
-function ContainerPrepareSpreadSheet(){
-    this.id = BUI.id();    
-}
-
-
-ContainerPrepareSpreadSheet.prototype.load = function(dewars){
-    
-  var hotSettings = {
-    data: dewars,
-    columns: [
-        {
-            data: 'shippingName',
-            type: 'text',
-            width: 40,
-            readOnly: true
-        },           
-        {
-            data: 'barCode',
-            type: 'text',
-            readOnly: true
-        },
-        {
-            data: 'containerCode',
-            type: 'text',
-            readOnly: true
-        },
-        {
-            data: 'sampleCount',
-            type: 'text',
-            readOnly: true
-        },
-        { 
-            data : 'beamlineName',
-            type: 'dropdown',			        	 								
-            source: EXI.credentialManager.getBeamlineNames()
-        },
-        {
-            data: 'sampleChangerLocation',
-            type: 'text'
-        }       
-    ],
-    stretchH: 'all',   
-    autoWrapRow: true,      
-    rowHeaders: true,
-    colHeaders: [
-        'Shipment',       
-        'Barcode',
-        'Container',
-        'Samples',
-        'Beamline',
-        'Sample Changer Location'
-    ]
-};
-    
-  this.spreadSheet =  new Handsontable(document.getElementById(this.id), hotSettings);
-};
-ContainerPrepareSpreadSheet.prototype.getPanel = function(){
-    var _this = this;    
-    this.panel = Ext.create('Ext.panel.Panel', {
-            title   : 'Loaded or to be Loaded on MxCube',            
-            cls     : 'border-grid',            
-            height  : 600,
-            flex    : 0.5,  
-            buttons : [{
-                            text : 'Save',
-                            scope : this,
-                            handler : function() {
-                               var data = this.spreadSheet.getData();
-                               var containerIdList = [];
-                               var beamlineList = [];
-                               var sampleLocation = [];
-                               for(var i = 0; i < data.length; i++){
-                                   containerIdList.push(data[i].containerId);
-                                   beamlineList.push(data[i].beamlineName);
-                                   sampleLocation.push(data[i].sampleChangerLocation);
-                                   
-                               }
-                               _this.panel.setLoading();
-                               var onSuccess = function(sender){
-                                   _this.panel.setLoading(false);
-                               };
-                               
-                               var onError = function(sender, error){
-                                   EXI.setError(error);                                   
-                                   _this.panel.setLoading(false);
-                               };
-                               EXI.getDataAdapter({onSuccess:onSuccess, onError: onError}).proposal.dewar.updateSampleLocation(containerIdList, beamlineList, sampleLocation);
-                            }
-		    }],                     
-            margin  : 5,
-            items   : [
-                {
-                    html : "<div style='height:700px;' id='" + this.id +"'></div>",
-                    flex : 1,
-                    height : 700                              
-                }
-                
-            ]
-    });
-    return this.panel;    
-};
 /**
 * This class renders a grid containing container information
-* @class ContainerPrepareSpreadSheetTest
+* @class ContainerPrepareSpreadSheet
 * @constructor
 */
-function ContainerPrepareSpreadSheetTest(args){
+function ContainerPrepareSpreadSheet(args){
     this.id = BUI.id();
 
     this.height = 600;
@@ -5208,7 +5129,7 @@ function ContainerPrepareSpreadSheetTest(args){
     }
 
     this.onSelectRow = new Event(this);
-    this.onContainerListLoaded = new Event(this);
+    this.onLoaded = new Event(this);
 };
 
 /**
@@ -5217,7 +5138,7 @@ function ContainerPrepareSpreadSheetTest(args){
 * @method getPanel
 * @return A panel containing the grid of containers
 */
-ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
+ContainerPrepareSpreadSheet.prototype.getPanel = function() {
     var _this = this;
 
     this.store = Ext.create('Ext.data.Store', {
@@ -5234,7 +5155,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         width  : this.width,
         flex    : 0.5,
         columns: [
-            {
+            /*{
                 dataIndex: 'rowIndex',
                 sortable : false,
                 autoSizeColumn: true,
@@ -5243,7 +5164,7 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 {
                     return rowIndex+1;
                 }
-            },
+            },*/
             {
                 header: 'Shipment',
                 dataIndex: 'shippingName',
@@ -5256,15 +5177,29 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 dataIndex: 'dewarId',
                 type: 'text',
                 flex: 1,
+                hidden : true,
                 readOnly: true
             },              
              {
                 header: 'ContainerId',
                 dataIndex: 'containerId',
+                hidden : true,
                 type: 'text',
                 flex: 1,
                 readOnly: true
             },   
+             {
+                header: 'Container',
+                dataIndex: 'containerCode',
+                type: 'text',
+                flex: 1,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){
+                    
+                    return record.data.containerCode +  " <span style='color:gray;font-size:10px; font-style:italic;'>(" + record.data.sampleCount +" samples)</span>";
+                }
+                
+            },
             {
                 header: 'Barcode',
                 dataIndex: 'barCode',
@@ -5272,32 +5207,37 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
                 flex: 1,
                 readOnly: true
             },
-            {
-                header: 'Container',
-                dataIndex: 'containerCode',
-                type: 'text',
-                flex: 1,
-                readOnly: true
-            },
+           
             {
                 header: 'Container type',
                 dataIndex: 'containerType',
                 type: 'text',
-                flex: 1,
-                readOnly: true
+                 flex: 0.75,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){                    
+                    switch(record.data.containerType) {
+                            case "Unipuck":
+                                return   "<kbd style='color:white;font-size:11px;background-color:blue;'>UNIPUCK</kbd>";                                
+                             case "Spinepuck":
+                                return "<kbd style='color:black;font-size:11px;background-color:#CCCCCC;'>SPINEPUCK</kbd>";  
+                            default:
+                               return record.data.containerType;
+                        }
+                }
             },
             {
                 header: 'Samples',
                 dataIndex: 'sampleCount',
                 type: 'text',
-                flex: 1,
+                flex: 0.6,
+                hidden :true,
                 readOnly: true
             },
             { 
                 header : 'Beamline',
                 dataIndex: 'beamlineName',
                 type: 'dropdown',			        	 								
-                flex: 1,
+                flex: 0.6,
                 source: EXI.credentialManager.getBeamlineNames()
             },
             {
@@ -5308,16 +5248,36 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
             }       
         ],
         viewConfig: {
-            listeners: {
-                refresh: function(dataview) {
-                    dataview.panel.columns[0].autoSize();//works on the first colum
+            getRowClass: function(record, index, rowParams, store) {
+                if (record.get('sampleChangerLocation') == " ") {
+                    return "warning-row";
                 }
+                for (var i = 0 ; i < _this.dewars.length ; i++){
+                    var dewar = _this.dewars[i];
+                    if (record.get('dewarId') != dewar.dewarId) {
+                        if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
+                            return "error-row";
+                        }
+                    }
+                }
+                if (_this.sampleChangerWidget){
+                    if (record.get('sampleChangerLocation') > _this.sampleChangerWidget.sampleChangerCapacity) {
+                        return "warning-row";
+                    }
+                    var puckToBeFilled = _this.sampleChangerWidget.findPuckById(_this.sampleChangerWidget.convertSampleChangerLocationToId(record.get('sampleChangerLocation')));
+                    if (puckToBeFilled.capacity != record.get('capacity')){
+                        return "warning-row";
+                    }
+                }
+                return "";
             }
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
                 _this.onSelectRow.notify(record);             
-            },
+            }
+           
+
         },
         margin  : 5,
         items   : [
@@ -5330,12 +5290,20 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
         ]
     });
 
-    //arrowUp and arrowDown listeners
-    this.panel.view.addElListener('keyup', function(event,row) {
-        if (event.keyCode == 38 || event.keyCode == 40) { 
-            _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
-        }
-    });
+    //arrowUp and arrowDown listeners. 
+    //Needs the first column of row Index
+    // this.panel.view.addElListener('keyup', function(event,row) {
+    //     if (event.keyCode == 38 || event.keyCode == 40) { 
+    //         _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
+    //     }
+    // });
+
+    // this.panel.on('boxready', function() {
+    //     for (var i = 0 ; i < _this.warningRows.length ; i++) {
+    //         var containerId = _this.warningRows[i];
+    //         _this.addClassToRow (containerId, "warning-row");
+    //     }
+    // });
 
     return this.panel;
 };
@@ -5346,14 +5314,15 @@ ContainerPrepareSpreadSheetTest.prototype.getPanel = function() {
 * @method loadProcessingDewars
 * @return
 */
-ContainerPrepareSpreadSheetTest.prototype.loadProcessingDewars = function () {
+ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleChangerWidget) {
     var _this = this;
 
     this.panel.setLoading();
     var onSuccessProposal = function(sender, containers) {
-        _this.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
+        var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
+        _this.load(processingContainers,sampleChangerWidget);
         _this.panel.setLoading(false);
-        _this.onContainerListLoaded.notify();
+        _this.onLoaded.notify(processingContainers);
     };
     var onError = function(sender, error) {        
         EXI.setError("Ops, there was an error");
@@ -5369,8 +5338,11 @@ ContainerPrepareSpreadSheetTest.prototype.loadProcessingDewars = function () {
 * @param dewars
 * @return
 */
-ContainerPrepareSpreadSheetTest.prototype.load = function(dewars) {
-   
+ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+    this.dewars = dewars;
+    if (sampleChangerWidget){
+        this.sampleChangerWidget = sampleChangerWidget;
+    }
     var data = [];
     //Parse data
     for (dewar in dewars) {
@@ -5406,7 +5378,7 @@ ContainerPrepareSpreadSheetTest.prototype.load = function(dewars) {
 * @param {Integer} location The new value for the sample changer location cell in the grid
 * @return
 */
-ContainerPrepareSpreadSheetTest.prototype.updateSampleChangerLocation = function (containerId, location) {
+ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
 
     var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
@@ -5430,6 +5402,17 @@ ContainerPrepareSpreadSheetTest.prototype.updateSampleChangerLocation = function
 };
 
 /**
+* Returns the row with the given containerId
+*
+* @method getRowByContainerId
+* @param {Integer} containerId The container Id of the record to be returned
+* @return The row with the given containerId
+*/
+ContainerPrepareSpreadSheet.prototype.getRowsByContainerId = function (containerId) {
+    var recordsByContainerId = _.filter(this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
+    return recordsByContainerId;
+};
+/**
 * This class renders a grid that allows user to select the dewars from a list.
 *
 * @class DewarListSelectorGrid
@@ -5437,13 +5420,16 @@ ContainerPrepareSpreadSheetTest.prototype.updateSampleChangerLocation = function
 */
 function DewarListSelectorGrid(args){
     this.height = 600;
+    this.width = 1000;
     if (args != null){
-        if (args.height  != null){
+        if (args.height){
             this.height = args.height;
-            
+        }
+        if (args.width){
+            this.width = args.width;
         }
     }
-    
+
     this.filterByDate = true;
     
     this.onSelect = new Event(this);
@@ -5453,8 +5439,7 @@ function DewarListSelectorGrid(args){
 
 
 /**
-* My method description.  Like other pieces of your comment blocks, 
-* this can span multiple lines.
+* Loads a set if shipments
 *
 * @method load
 * @param {Object} dewars Array of containers
@@ -5534,243 +5519,6 @@ DewarListSelectorGrid.prototype.getStore = function(){
     return this.store;
 };
 DewarListSelectorGrid.prototype.getPanel = function(){
-    var _this = this;
-   
-    this.tbar = Ext.create('Ext.toolbar.Toolbar', {
-    
-    items: [
-       
-        {
-            xtype       : 'checkboxfield',
-            boxLabel    : 'Display only shipments scheduled for future sessions',
-            checked     : this.filterByDate,
-            listeners : {
-                change : function( cb, newValue, oldValue, eOpts ){
-                    _this.filterByDate = newValue;
-                    _this.load(_this.dewars);
-                }
-                
-            }
-        }
-    ]
-    });
-
-    this.panel = Ext.create('Ext.grid.Panel', {
-            title: 'Select dewars',
-            store: this.getStore(),
-            cls : 'border-grid',           
-            height : this.height, 
-            flex : 0.5, 
-            tbar : this.tbar,                 
-            margin : 5,
-            columns: [ 
-                {
-                    text    : 'Shipment',
-                    columns : [
-                         { text: 'Name',  dataIndex: 'shippingName', width: 150 },
-                         { text: 'Status',  dataIndex: 'shippingStatus', flex: 1 },
-                         { text: 'Created on',  dataIndex: 'creationDate', flex: 1,   hidden : true,
-                            renderer : function(grid, a, record){
-                                if (record.data.creationDate){
-                                    return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD/MM/YYYY");
-                                }     
-                                
-                            } 
-                        },
-                                                 
-                    ]                                         
-                },
-                {
-                    text    : 'Experiment',
-                    columns : [
-                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex: 2, 
-                            renderer : function(grid, a, record){
-                                if (record.data.sessionStartDate){
-                                    return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD/MM/YYYY");
-                                }     
-                                
-                            } 
-                        },
-                            { text: 'beamline', dataIndex: 'beamlineName', flex: 1 },     
-                            { text: 'Local contact',  dataIndex: 'beamLineOperator', flex: 2, hidden : true  }                 
-                    ]                                         
-                },              
-                 {      
-                        text: '#Dewars/#Parcels (#Samples)',     
-                        flex: 1,
-                        renderer : function(grid, e, record){
-                            var stats =  _this.getStatsByDewarId(record.data.shippingId);
-                            return stats.dewars + " / " + stats.containers + " (" +  stats.samples + ")";
-                            
-                        }
-                },
-                {
-                    xtype: 'actioncolumn',
-                    flex : 0.3,
-                    items: [
-                               
-                                 {
-                                    icon: '../images/icon/add.png',
-                                    handler: function (grid, rowIndex, colIndex) {
-                                        
-                                            grid.getSelectionModel().select(rowIndex);
-                                            
-                                            _this.onSelect.notify(_this.store.getAt(rowIndex).data);
-                                    },
-                                     isDisabled : function(view, rowIndex, colIndex, item, record) {
-                                            // Returns true if 'editable' is false (, null, or undefined)
-                                            return record.data.shippingStatus == "processing";
-                                    }
-                                 }
-                                   
-                            
-                    ]
-                },
-                  {
-                    xtype: 'actioncolumn',
-                     flex : 0.3,
-                    items: [
-                              
-                                 {
-                                    icon: '../images/icon/ic_highlight_remove_black_48dp.png',
-                                    handler: function (grid, rowIndex, colIndex) {
-                                        
-                                            grid.getSelectionModel().select(rowIndex);
-                                            
-                                            _this.onSelect.notify(_this.store.getAt(rowIndex).data);
-                                    },
-                                     isDisabled : function(view, rowIndex, colIndex, item, record) {
-                                            // Returns true if 'editable' is false (, null, or undefined)
-                                            return record.data.shippingStatus != "processing";
-                                    }
-                                 }
-                                   
-                            
-                    ]
-                }
-            ],
-             viewConfig : {
-                stripeRows : true,
-                getRowClass : function(record, rowIndex, rowParams, store){
-
-                    if (record.data.shippingStatus == "processing"){
-                         return "warning-grid-row";                       
-                    }
-                   
-                }
-	    	},
-    });
-    return this.panel;
-    
-};
-
-/**
-* This class renders a grid that allows user to select the dewars from a list.
-*
-* @class DewarListSelectorGrid
-* @constructor
-*/
-function DewarListSelectorGridTest(args){
-    this.height = 600;
-    this.width = 1000;
-    if (args != null){
-        if (args.height){
-            this.height = args.height;
-        }
-        if (args.width){
-            this.width = args.width;
-        }
-    }
-
-    this.filterByDate = true;
-    
-    this.onSelect = new Event(this);
-    this.onDeselect = new Event(this);
-    this.onSelectionChange = new Event(this);
-}
-
-
-/**
-* Loads a set if shipments
-*
-* @method load
-* @param {Object} dewars Array of containers
-*/
-DewarListSelectorGridTest.prototype.load = function(dewars){
-    var _this = this;
-    this.dewars = dewars;
-    /** Filter by Dewars */ 
-      
-    var filtered = _.keyBy(dewars, "shippingId");
-    var data = [];
-    _(filtered).forEach(function(value) {
-        if (_this.filterByDate){
-            if (value.shippingStatus){
-                if (value.shippingStatus.toUpperCase() == "PROCESSING"){
-                    data.push(value);
-                    return;
-                }                        
-            }       
-        
-            /** Filtering only future sessions */            
-            if (value.sessionStartDate){
-                if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
-                    data.push(value);
-                }
-            }
-            else{
-                /** No session or not parseable */
-                data.push(value);
-            }
-        }
-        else{
-                data.push(value);
-        }
-        
-    });
-        
-    this.panel.setTitle(data.length + " shipments candidates for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);    
-    this.store.loadData(data);
-
-};
-
-/**
-* Return the number of containers and samples for a given dewar 
-*
-* @method getStatsByDewarId
-* @param {Integer} dewarId DewarId
-*/
-DewarListSelectorGridTest.prototype.getStatsByDewarId = function(shippingId){ 
-    var _this = this;
-    var containers = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
-    var sampleCount = 0;
-    _(containers).forEach(function(value) {
-        sampleCount = sampleCount + value.sampleCount;
-    });      
-    return {
-                samples     : sampleCount,
-                dewars      : Object.keys(_.groupBy(containers, "dewarId")).length,
-                containers   : containers.length
-        
-    };
-};
-
-DewarListSelectorGridTest.prototype.getSelectedData = function() {
-	var elements = this.panel.getSelectionModel().selected.items;
-	var data = [];
-	for (var i = 0; i < elements.length; i++) {
-		data.push(elements[i].data);
-	}
-	return data;
-};
-
-DewarListSelectorGridTest.prototype.getStore = function(){
-    this.store = Ext.create('Ext.data.Store', {
-        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type']
-    });
-    return this.store;
-};
-DewarListSelectorGridTest.prototype.getPanel = function(){
     var _this = this;
    
     this.tbar = Ext.create('Ext.toolbar.Toolbar', {
@@ -5896,7 +5644,7 @@ function LoadSampleChangerView (args) {
 
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 110;
+    this.widgetRadius = 185;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -5906,9 +5654,18 @@ function LoadSampleChangerView (args) {
         }
     };
 
-    this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
-    this.previewPanelView = new PreviewPanelView({height : 200});
+    this.warningRows = [];
+    this.selectedContainerId = null;
+    this.selectedContainerCapacity = null;
+    this.selectedPuck = null;
+    this.sampleChangerName = null;
+
+    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
+    this.previewPanelView = new PreviewPanelView({
+                                                        height : 100
+                                                    });
     this.sampleChangerName = "";
+    
     if (typeof(Storage) != "undefined"){
         var sampleChangerName = sessionStorage.getItem("sampleChangerName");
         if (sampleChangerName){
@@ -5916,32 +5673,157 @@ function LoadSampleChangerView (args) {
         }
     }
 
-    this.onSelectRow = new Event(this);
-    this.onPuckSelected = new Event(this);
-    this.onSampleChangerSelected = new Event(this);
-    this.onEmptyButtonClicked = new Event(this);
-
     this.containerListEditor.onSelectRow.attach(function(sender, row){
-		_this.onSelectRow.notify(row);
+        if (row) {
+            if (_this.selectedPuck){
+                _this.deselectPuck();
+            }
+            if (_this.selectedContainerId) {
+                if (_this.selectedContainerId == row.get('containerId')){
+                    _this.deselectRow();
+                    _this.cleanPreviewPanel();
+                } else {
+                    _this.deselectRow();
+                    _this.setSelectedRow(row);
+                }
+            } else {
+                _this.setSelectedRow(row);
+            }
+        }
 	});
 
-    this.containerListEditor.onContainerListLoaded.attach(function(sender){
-        _this.loadSampleChangerWidgetFromContainersList();
+    this.containerListEditor.onLoaded.attach(function(sender, containers){
+        $('.notifyjs-corner').empty();        
+        _this.load(containers);
     });
 
     this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
-        _this.onEmptyButtonClicked.notify();
+        if (_this.selectedPuck){
+            _this.selectedPuck.emptyAll();
+            _this.previewPuck(_this.selectedPuck.containerId, _this.selectedPuck.capacity, {
+                info : [{
+                    text : 'SC Location',
+                    value : _this.sampleChangerWidget.convertIdToSampleChangerLocation(_this.selectedPuck.id)
+                }]
+            }, "");
+        }
+        _this.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId," ");
+        _this.returnToSelectionStatus();
     });
+};
+
+LoadSampleChangerView.prototype.setSelectedRow = function (row) {
+    this.containerListEditor.panel.getSelectionModel().select(row);
+    this.selectedContainerId = row.get('containerId');
+    this.selectedContainerCapacity = row.get('capacity');
+    this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
+
+    if (!this.selectedPuck) {
+        var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(row.get('sampleChangerLocation')));
+        if (puckId){
+            var puck = this.sampleChangerWidget.findPuckById(puckId);
+            this.setSelectedPuck(puck);
+        }
+    }
+
+    this.previewPuck(row.get('containerId'), 
+                        row.get('capacity'), {
+                                info : [{
+                                    text : 'Container',
+                                    value : row.get('containerCode')
+                                },{
+                                    text : 'SC Location',
+                                    value : row.get('sampleChangerLocation')
+                                }]
+        }, "EMPTY");
+};
+
+/**
+* Method executed once a puck from the sample changer widget is clicked.
+*
+* @method setSelectedPuck
+* @return 
+*/
+LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
+    this.selectedPuck = puck;
+    $("#" + puck.id).attr("class","puck-selected");
+    if (puck.isEmpty){
+        this.previewPuck(puck.containerId, puck.capacity, {
+        info : [{
+            text : 'SC Location',
+            value : this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
+        }]
+    }, "EMPTY");
+    } else if (!this.selectedContainerId) {
+        var rowsByContainerId = this.containerListEditor.getRowsByContainerId(puck.containerId);
+        this.setSelectedRow(rowsByContainerId[0]);
+    }
+};
+
+/**
+* Takes care of deselecting a row in the loading step.
+*
+* @method deselectRow
+* @return 
+*/
+LoadSampleChangerView.prototype.deselectRow = function () {
+    this.containerListEditor.panel.getSelectionModel().deselectAll();
+    this.selectedContainerId = null;
+    this.selectedSampleCount = null;
+    this.sampleChangerWidget.allowAllPucks();
+}
+
+/**
+* Takes care of deselecting a puck in the loading step
+*
+* @method deselectPuck
+* @return 
+*/
+LoadSampleChangerView.prototype.deselectPuck = function () {
+    $("#" + this.selectedPuck.id).attr("class","puck");
+    this.selectedPuck = null; 
+};
+
+/**
+* Returns to the initial state
+*
+* @method returnToSelectionStatus
+* @return 
+*/
+LoadSampleChangerView.prototype.returnToSelectionStatus = function () {
+    this.deselectRow();
+    if (this.selectedPuck) {
+        this.deselectPuck();        
+    }
+    this.cleanPreviewPanel();
+};
+
+/**
+* Takes care of the process when a puck is selected after clicking a row, loading that puck with the selected container
+*
+* @method loadSampleChangerPuck
+* @param {PuckWidget} puck The puck of the sample changer widget to be loaded
+* @param {Integer} containerId The container Id of the container to be loaded
+* @return 
+*/
+LoadSampleChangerView.prototype.loadSampleChangerPuck = function (puck, containerId) {
+    if (puck.isEmpty){
+        this.returnToSelectionStatus();
+        var location = this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id);
+        this.containerListEditor.updateSampleChangerLocation(containerId,location);
+    } else {
+        $.notify("Error: choose an empty puck", "error");
+    }
 };
 
 /**
 * Generates a sampleChangerWidget given its name. It also checks for puck data on the sessionStorage
 *
-* @method generateSampleChangerWidget
+* @method getSampleChangerWidget
 * @param {String} sampleChangerName The name of the sampleChangerWidget to be generated
 * @return A sampleChangerWidget
 */
-LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleChangerName) {
+LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChangerName) {
     var _this = this;
     var data = {
         radius : this.widgetRadius,
@@ -5950,59 +5832,62 @@ LoadSampleChangerView.prototype.generateSampleChangerWidget = function (sampleCh
     var sampleChangerWidget = new FlexHCDWidget(data);
     if (sampleChangerName == "SC3") {
         sampleChangerWidget = new SC3Widget(data);
+    } else if (sampleChangerName == "RoboDiff") {
+        sampleChangerWidget = new RoboDiffWidget(data);
     }
 
     return sampleChangerWidget;
 };
 
 /**
-* Loads the sampleChangerWidget using the containerListEditor
+* Loads the sampleChangerWidget
 *
-* @method loadSampleChangerWidgetFromContainersList
+* @method load
 * @return 
 */
-LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = function () {
+LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
-    
+
     this.sampleChangerWidget.emptyAllPucks();
+    this.warningRows = [];
     var filledContainers = {};
-    for (var i = 0 ; i < this.containerListEditor.panel.store.data.length ; i++){
-        var record = this.containerListEditor.panel.store.getAt(i);
-        if (record.get('sampleChangerLocation') != " "){
-            var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(record.get('sampleChangerLocation')));
-            if (puckId) {
-                filledContainers[record.get('containerId')] = puckId;
-                var puck = this.sampleChangerWidget.findPuckById(puckId);
-                if (puck.capacity != record.get('capacity')){
-                    $.notify("Warning: The container type of the container " + record.get('containerCode') + " does not match with the container on that location.", "warn");
-                    Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
+
+    if (containers) {
+        for (var i = 0 ; i < containers.length ; i++){
+            var container = containers[i];
+            if (container.sampleCount > 0){
+                if (container.sampleChangerLocation != " "){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
+                    if (puckId) {
+                        filledContainers[container.containerId] = puckId;
+                        var puck = this.sampleChangerWidget.findPuckById(puckId);
+                        if (puck.capacity != container.capacity){
+                            this.warningRows.push(container.containerId);
+                        }
+                    } else {
+                        this.warningRows.push(container.containerId);
+                    }
+                } else {
+                    this.warningRows.push(container.containerId);
                 }
-            } else {
-                $.notify("Warning: The sample in the container " + record.get('containerCode') + " has an incorrect location value for this type of sample changer.", "warn");
-                Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
             }
-        } else {
-            $.notify("Warning: The container " + record.get('containerCode') + " has no sample changer location value.", "warn");
-            Ext.fly(this.containerListEditor.panel.getView().getNode(record)).addCls("warning-row");
         }
-    }
         
-    if (!_.isEmpty(filledContainers)){
-        var onSuccess = function (sender, samples) {
-            var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
-            if (errorPucks.length > 0){
-                for (index in errorPucks) {
-                    var puck = errorPucks[index];
-                    var recordsByLocation = _.filter(_this.containerListEditor.panel.store.data.items,function(o) {return o.data.sampleChangerLocation == _this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)});
-                    for (i in recordsByLocation) {
-                        var record = recordsByLocation[i];
-                        Ext.fly(_this.containerListEditor.panel.getView().getNode(record)).addCls("error-row");
+        
+        if (!_.isEmpty(filledContainers)){
+            var onSuccess = function (sender, samples) {
+                var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
+                if (errorPucks.length > 0){
+                    for (index in errorPucks) {
+                        var puck = errorPucks[index];
                     }
                 }
             }
-        }
 
-        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+            EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+        }
+    } else {
+        this.containerListEditor.loadProcessingDewars(this.sampleChangerWidget);
     }
 };
 
@@ -6015,7 +5900,7 @@ LoadSampleChangerView.prototype.loadSampleChangerWidgetFromContainersList = func
 LoadSampleChangerView.prototype.getPanel = function () {
     var _this = this;
 
-    this.sampleChangerWidget = this.generateSampleChangerWidget(this.sampleChangerName);
+    this.sampleChangerWidget = this.getSampleChangerWidget(this.sampleChangerName);
 
     this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
@@ -6050,7 +5935,29 @@ LoadSampleChangerView.prototype.getPanel = function () {
     this.panel.on('boxready', function() {
         _this.sampleChangerWidget.setClickListeners();
         _this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
-            _this.onPuckSelected.notify(puck);
+            if (_this.selectedContainerId) {
+                if (_this.selectedPuck) {
+                    if (_this.selectedPuck == puck) {
+                        _this.returnToSelectionStatus();
+                    } else {
+                        _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                    }
+                } else {
+                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                }
+            } else {
+                if (_this.selectedPuck) {
+                    if (_this.selectedPuck == puck) {
+                        _this.returnToSelectionStatus();
+                    } else {
+                        _this.deselectRow();
+                        _this.deselectPuck();
+                        _this.setSelectedPuck(puck);
+                    }
+                } else {
+                    _this.setSelectedPuck(puck);
+                }
+            }
         });
         _this.sampleChangerWidget.render();
     });
@@ -6075,92 +5982,20 @@ LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
 * @method cleanPreviewPanel
 * @return
 */
-LoadSampleChangerView.prototype.previewPuck = function (puckContainer, data, instructionsButtonText) {
+LoadSampleChangerView.prototype.previewPuck = function (containerId, capacity, data, instructionsButtonText) {
     if (this.previewPanelView.previewPanel){
         this.cleanPreviewPanel();
     }
     this.verticalPanel.add(this.previewPanelView.getPanel());
-    this.previewPanelView.loadPuck(puckContainer, data, instructionsButtonText);
+    this.previewPanelView.load(containerId, capacity, data, instructionsButtonText);
 };
-function PrepareMainView() {
-	this.icon = '../images/icon/contacts.png';
-	this.queueGridList = [];
-
-	MainView.call(this);
-
-    var _this = this;
-    
-    this.dewarListSelector = new DewarListSelectorGrid({height : 600});
-    this.dewarListSelector.onSelect.attach(function(sender, dewar){                     
-            if (dewar.shippingStatus == "processing"){
-                _this.updateStatus(dewar.shippingId, "at_ESRF");
-            } 
-            if (dewar.shippingStatus != "processing"){
-                _this.updateStatus(dewar.shippingId, "processing");
-            }      
-     });
-     
-    this.dewarListSelector.onSelectionChange.attach(function(sender, dewars){
-    });
-    
-	this.containerListEditor = new ContainerPrepareSpreadSheet({height : 600});
-}
-
-PrepareMainView.prototype.updateStatus = function(shippingId, status) {
-    var _this = this;
-    _this.dewarListSelector.panel.setLoading("Updating shipment Status");
-    var onStatusSuccess = function(sender, dewar) {     
-        EXI.mainStatusBar.showReady("Processing update successfully");
-        _this.dewarListSelector.panel.setLoading(false);
-        _this.load();
-    };
-    var onError = function(data){
-            EXI.setError(data);
-    };
-    
-    EXI.getDataAdapter({onSuccess : onStatusSuccess, onError : onError}).proposal.shipping.updateStatus(shippingId,status);
-};
-
-PrepareMainView.prototype.getPanel = function() {
-	this.panel =  Ext.create('Ext.panel.Panel', {
-           layout : 'hbox',
-            items : [
-                        this.dewarListSelector.getPanel(), 
-                        this.containerListEditor.getPanel()        
-            ]
-	});    
-    return this.panel;
-};
-
-PrepareMainView.prototype.load = function() {
-    var _this = this;
-    _this.panel.setTitle("Prepare Experiment");
-    _this.dewarListSelector.panel.setLoading();
-    var onSuccessProposal = function(sender, containers) {        
-        _this.containers = containers;
-        
-        _this.dewarListSelector.load(containers);
-        _this.dewarListSelector.panel.setLoading(false);
-        
-        /** Selecting containers that are processing */
-        _this.containerListEditor.load(_.filter(containers, function(e){return e.shippingStatus == "processing";}));
-        
-    };
-     var onError = function(sender, error) {        
-        EXI.setError("Ops, there was an error");
-        _this.dewarListSelector.panel.setLoading(false);
-    };
-    
-    EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-};
-
 /**
 * This class renders the steps and panels of every class used in the prepare experiment tab
 *
-* @class PrepareMainViewTest
+* @class PrepareMainView
 * @constructor
 */
-function PrepareMainViewTest(args) {
+function PrepareMainView(args) {
 	this.icon = '../images/icon/contacts.png';
 	this.queueGridList = [];
     
@@ -6216,96 +6051,6 @@ function PrepareMainViewTest(args) {
         _this.loadSampleChangerView.sampleChangerName = changerName;
     });
 
-    this.loadSampleChangerView.onSelectRow.attach(function(sender, row){
-        if (row) {
-            if (_this.selectedPuck){
-                _this.deselectPuck();
-            }
-            if (_this.selectedContainerId) {
-                if (_this.selectedContainerId == row.get('containerId')){
-                    _this.deselectRow();
-                    _this.loadSampleChangerView.cleanPreviewPanel();
-                } else {
-                    _this.deselectRow();
-                    _this.setSelectedRow(row);
-                }
-            } else {
-                _this.setSelectedRow(row);
-            }
-        }
-	});
-
-    this.loadSampleChangerView.onPuckSelected.attach(function(sender, puck){
-        if (_this.selectedContainerId) {
-            if (_this.selectedPuck) {
-                if (_this.selectedPuck == puck) {
-                    _this.returnToSelectionStatus();
-                } else {
-                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
-                }
-            } else {
-                _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
-            }
-        } else {
-            if (_this.selectedPuck) {
-                if (_this.selectedPuck == puck) {
-                    _this.returnToSelectionStatus();
-                } else {
-                    _this.deselectRow();
-                    _this.deselectPuck();
-                    _this.setSelectedPuck(puck);
-                }
-            } else {
-                _this.setSelectedPuck(puck);
-            }
-        }
-	});
-
-    this.loadSampleChangerView.onEmptyButtonClicked.attach(function(sender){
-        if (_this.selectedPuck){
-            _this.selectedPuck.emptyAll();
-            _this.drawSelectedPuck(_this.selectedPuck);
-        }
-        _this.loadSampleChangerView.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId," ");
-        _this.returnToSelectionStatus();
-    });
-};
-
-PrepareMainViewTest.prototype.setSelectedRow = function (row) {
-    this.loadSampleChangerView.containerListEditor.panel.getSelectionModel().select(row);
-    this.selectedContainerId = row.get('containerId');
-    this.selectedContainerCapacity = row.get('capacity');
-    this.drawSelectedPuckFromRecord(row);
-    this.loadSampleChangerView.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
-
-    if (!this.selectedPuck) {
-        var puckId = this.loadSampleChangerView.sampleChangerWidget.convertSampleChangerLocationToId(Number(row.get('sampleChangerLocation')));
-        if (puckId){
-            var puck = this.loadSampleChangerView.sampleChangerWidget.findPuckById(puckId);
-            this.setSelectedPuck(puck);
-        }
-    }
-};
-
-/**
-* Method executed once a puck from the sample changer widget is clicked.
-*
-* @method setSelectedPuck
-* @return 
-*/
-PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
-    this.selectedPuck = puck;
-    $("#" + puck.id).attr("class","puck-selected");
-    if (puck.isEmpty){
-        this.drawSelectedPuck(puck);
-    } else if (!this.selectedContainerId) {
-        for (var i = 0 ; i < this.loadSampleChangerView.containerListEditor.panel.store.data.length ; i++) {
-            var record = this.loadSampleChangerView.containerListEditor.panel.store.getAt(i);
-            if (record.get('containerId') == puck.containerId) {
-                this.setSelectedRow(record);
-            }
-        }
-    }
 };
 
 
@@ -6316,7 +6061,7 @@ PrepareMainViewTest.prototype.setSelectedPuck = function (puck) {
 * @method updateStatus
 * @return 
 */
-PrepareMainViewTest.prototype.updateStatus = function(shippingId, status) {
+PrepareMainView.prototype.updateStatus = function(shippingId, status) {
     var _this = this;
     _this.dewarListSelector.panel.setLoading("Updating shipment Status");
     var onStatusSuccess = function(sender, dewar) {             
@@ -6337,7 +6082,7 @@ PrepareMainViewTest.prototype.updateStatus = function(shippingId, status) {
 * @method manageButtons
 * @return 
 */
-PrepareMainViewTest.prototype.manageButtons = function () {
+PrepareMainView.prototype.manageButtons = function () {
     if (this.currentStep == 1) {
         $('#previous-button-div').hide();
         $('#next-button').attr("disabled", false); 
@@ -6363,7 +6108,7 @@ PrepareMainViewTest.prototype.manageButtons = function () {
 * @param {Integer} direction An integer that is positive for the next button and negative for the previous button
 * @return 
 */
-PrepareMainViewTest.prototype.changeStep = function (direction) {
+PrepareMainView.prototype.changeStep = function (direction) {
     this.currentStep += direction;
     location.href = "#/mx/prepare/main" + this.steps[this.currentStep-1];
 };
@@ -6374,7 +6119,7 @@ PrepareMainViewTest.prototype.changeStep = function (direction) {
 * @method manageStepButtons
 * @return 
 */
-PrepareMainViewTest.prototype.manageStepButtons = function () {
+PrepareMainView.prototype.manageStepButtons = function () {
     if (this.loadSampleChangerView.sampleChangerName == "") {
         $('#step-3').attr("disabled", true);
     } else {
@@ -6393,7 +6138,7 @@ PrepareMainViewTest.prototype.manageStepButtons = function () {
 * @method getPanel
 * @return 
 */
-PrepareMainViewTest.prototype.getPanel = function() {
+PrepareMainView.prototype.getPanel = function() {
     var _this = this;
 
     /** Main container where the steps are rendered */
@@ -6455,7 +6200,7 @@ PrepareMainViewTest.prototype.getPanel = function() {
 * @method getToolBar
 * @return The toolbar html containing the steps of the prepare experiment process
 */
-PrepareMainViewTest.prototype.getToolBar = function () {
+PrepareMainView.prototype.getToolBar = function () {
     var html = "";
 	dust.render("toolbar.prepare.template", [], function(err, out){
 		html = out;
@@ -6470,7 +6215,7 @@ PrepareMainViewTest.prototype.getToolBar = function () {
 * @method getButtons
 * @return The buttons html of the prepare experiment process.
 */
-PrepareMainViewTest.prototype.getButtons = function () {
+PrepareMainView.prototype.getButtons = function () {
     var html = "";
 	dust.render("buttons.prepare.template", [], function(err, out){
 		html = out;
@@ -6485,8 +6230,9 @@ PrepareMainViewTest.prototype.getButtons = function () {
 * @method load
 * @return 
 */
-PrepareMainViewTest.prototype.load = function() {
+PrepareMainView.prototype.load = function() {
     var _this = this; 
+    $('.notifyjs-corner').empty();    
     this.panel.setTitle("Prepare Experiment");
     this.container.removeAll();
 
@@ -6516,7 +6262,11 @@ PrepareMainViewTest.prototype.load = function() {
             if (beamlinesSelected.length > 1) {
                 $.notify("Warning: Multiple beamlines selected", "warn");
             } else if (beamlinesSelected.length == 1) {
-                _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+                if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
+                    _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+                } else {
+                    $.notify("Warning: Unknown beamline", "warn");
+                }
             }
 
             _this.sampleChangerSelector.panel.setLoading(false);
@@ -6530,143 +6280,7 @@ PrepareMainViewTest.prototype.load = function() {
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
     } else if (this.currentStep == 3) {
         this.container.add(this.loadSampleChangerView.getPanel());
-        this.loadSampleChangerView.containerListEditor.loadProcessingDewars();
-    }
-};
-
-/**
-* Takes care of deselecting a row in the loading step.
-*
-* @method deselectRow
-* @return 
-*/
-PrepareMainViewTest.prototype.deselectRow = function () {
-    this.loadSampleChangerView.containerListEditor.panel.getSelectionModel().deselectAll();
-    this.selectedContainerId = null;
-    this.selectedSampleCount = null;
-    this.loadSampleChangerView.sampleChangerWidget.allowAllPucks();
-}
-
-/**
-* Takes care of deselecting a puck in the loading step
-*
-* @method deselectPuck
-* @return 
-*/
-PrepareMainViewTest.prototype.deselectPuck = function () {
-    $("#" + this.selectedPuck.id).attr("class","puck");
-    this.selectedPuck = null; 
-};
-
-/**
-* Returns to the initial state
-*
-* @method returnToSelectionStatus
-* @return 
-*/
-PrepareMainViewTest.prototype.returnToSelectionStatus = function () {
-    this.deselectRow();
-    if (this.selectedPuck) {
-        this.deselectPuck();        
-    }
-    this.loadSampleChangerView.cleanPreviewPanel();
-};
-
-/**
-* Draws the selected puck on the preview panel
-*
-* @method drawSelectedPuck
-* @param {PuckWidget} puck The puck to be drawn
-* @return 
-*/
-PrepareMainViewTest.prototype.drawSelectedPuck = function (puck) {
-    var data = {
-        puckType : 1,
-        containerId : puck.containerId,
-        mainRadius : 70,
-        x : 130,
-        y : 10,
-        enableMouseOver : true
-    };
-    var puckContainer = new PuckWidgetContainer(data);
-    if (puck.capacity == 10) {
-        data.puckType = 2;
-        puckContainer = new PuckWidgetContainer(data);
-    }
-    
-    this.loadSampleChangerView.previewPuck(puckContainer, {
-                info : [{
-                    text : 'SC Location',
-                    value : this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
-                }]
-            }, "");
-};
-
-/**
-* Draws the selected row in puck form on the preview panel
-*
-* @method drawSelectedPuckFromRecord
-* @param {Integer} containerId The container Id of the container corresponding to the row selected
-* @param {Integer} capacity The capacity of the container corresponding to the row selected
-* @param {Integer} containerCode The container code of the row selected
-* @return 
-*/
-PrepareMainViewTest.prototype.drawSelectedPuckFromRecord = function (record) {
-    var _this = this;
-
-    var containerId = record.get('containerId');
-    var containerCode = record.get('containerCode');
-    var capacity = record.get('capacity');
-    var sampleChangerLocation = record.get('sampleChangerLocation');
-    function onSuccess (sender, samples) {
-        if (samples){
-            var data = {
-                puckType : 1,
-                containerId : containerId,
-                mainRadius : 70,
-                x : 130,
-                y : 10,
-                enableMouseOver : true
-            };
-            var puckContainer = new PuckWidgetContainer(data);
-            if (capacity == 10) {
-                data.puckType = 2;
-                puckContainer = new PuckWidgetContainer(data);
-            }
-            _this.loadSampleChangerView.previewPuck(puckContainer, {
-                info : [{
-                    text : 'Container',
-                    value : containerCode
-                },{
-                    text : 'Container Id',
-                    value : containerId
-                },{
-                    text : 'SC Location',
-                    value : sampleChangerLocation
-                }]
-            }, "EMPTY");
-            puckContainer.puckWidget.loadSamples(samples);
-        }
-    }
-
-    EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerId);
-};
-
-/**
-* Takes care of the process when a puck is selected after clicking a row, loading that puck with the selected container
-*
-* @method loadSampleChangerPuck
-* @param {PuckWidget} puck The puck of the sample changer widget to be loaded
-* @param {Integer} containerId The container Id of the container to be loaded
-* @return 
-*/
-PrepareMainViewTest.prototype.loadSampleChangerPuck = function (puck, containerId) {
-    if (puck.isEmpty){
-        this.returnToSelectionStatus();
-        var location = this.loadSampleChangerView.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id);
-        this.loadSampleChangerView.containerListEditor.updateSampleChangerLocation(containerId,location);
-    } else {
-        $.notify("Error: choose an empty puck", "error");
+        this.loadSampleChangerView.load();
     }
 };
 
@@ -6678,7 +6292,7 @@ PrepareMainViewTest.prototype.loadSampleChangerPuck = function (puck, containerI
 * @param {String} value The value of the key-value pair
 * @return 
 */
-PrepareMainViewTest.prototype.save = function (key, value) {
+PrepareMainView.prototype.save = function (key, value) {
     if (typeof(Storage) != 'undefined') {
         sessionStorage.setItem(key,value);
     }
@@ -6691,7 +6305,7 @@ PrepareMainViewTest.prototype.save = function (key, value) {
 * @param sampleChangerWidget The sample changer to be stored
 * @return 
 */
-PrepareMainViewTest.prototype.storeSampleChangerWidget = function (sampleChangerWidget) {
+PrepareMainView.prototype.storeSampleChangerWidget = function (sampleChangerWidget) {
     var puckData = sampleChangerWidget.getPuckData();
     this.save('puckData',JSON.stringify(puckData));
 };
@@ -6703,7 +6317,7 @@ PrepareMainViewTest.prototype.storeSampleChangerWidget = function (sampleChanger
 */
 function PreviewPanelView (args) {
     this.width = 400;
-    this.height = 265;
+    this.height = 300;
 
     if (args) {
         if (args.width) {
@@ -6713,6 +6327,14 @@ function PreviewPanelView (args) {
             this.height = args.height;
         }
     }
+
+    this.puckData = {
+                puckType : "Unipuck",
+                mainRadius : this.height*0.4,
+                xMargin : this.width/4 - this.height*0.4,
+                yMargin : 10,
+                enableMouseOver : true
+            };
 
     this.onEmptyButtonClicked = new Event(this);
 };
@@ -6729,14 +6351,15 @@ PreviewPanelView.prototype.getPanel = function () {
     this.infoPanel = Ext.create('Ext.panel.Panel', {
         // cls     : 'border-grid',
         width : this.width/2,
-        height : 50,
+        height : this.height/2,
+        border :2,
         items : []
     });
 
     this.instructionsButton = Ext.create('Ext.Button', {
         text: '',
         width: this.width/2,
-        height: 50,
+        height:  this.height/2,
         scale: 'large',
         style: {
             background: '#444444'
@@ -6751,16 +6374,14 @@ PreviewPanelView.prototype.getPanel = function () {
     });
 
     var infoContainer = Ext.create('Ext.panel.Panel', {
-        layout : 'hbox',
-        width : this.width,
-        height : 50,
+        layout : 'vbox',
+        width : this.width/2,
+        height : this.height,
         items : [this.infoPanel,this.instructionsButton]
     });
 
     this.previewPanel = Ext.create('Ext.panel.Panel', {
-        // cls     : 'border-grid',
-        title: 'Selected Puck',
-        width : this.width,
+        width : this.width/2,
         height : this.height,
         items : []
     });
@@ -6768,9 +6389,10 @@ PreviewPanelView.prototype.getPanel = function () {
     this.panel = Ext.create('Ext.panel.Panel', {
         margin : 5,
         cls : 'border-grid',
+        layout : 'hbox',
         width : this.width,
-        height : this.height + 50,
-        items : [this.previewPanel,infoContainer]
+        height : this.height,
+        items : [infoContainer, this.previewPanel ]
     });
 
     return this.panel;
@@ -6785,20 +6407,40 @@ PreviewPanelView.prototype.getPanel = function () {
 * @param {String} instructionsButtonText The text to be set on the button
 * @return
 */
-PreviewPanelView.prototype.loadPuck = function (puckContainer, data, instructionsButtonText) {
+PreviewPanelView.prototype.load = function (containerId, capacity, data, instructionsButtonText) {
     this.clean();
-    this.previewPanel.add(puckContainer.getPanel());
+    
     var html = "";
 	dust.render("info.grid.template", data, function(err, out){
 		html = out;
 	});
     this.infoPanel.removeAll();
     this.infoPanel.add({
-                            html : html,
-                            margin:6
+                            html    : html,
+                            margin  : 6
                     });
 
     this.instructionsButton.setText(instructionsButtonText);
+    this.puckData.containerId = containerId;
+    if (capacity == 10){
+        this.puckData.puckType = "Spinepuck";
+    } else {
+        this.puckData.puckType = "Unipuck";
+    }
+
+    // this.puckData.xMargin = this.width/2 - this.height*0.4;
+    var puckContainer = new PuckWidgetContainer(this.puckData);
+    this.previewPanel.add(puckContainer.getPanel());
+
+    function onSuccess (sender, samples) {
+        
+        if (samples.length > 0) {
+            puckContainer.puckWidget.loadSamples(samples);
+        }
+    }
+
+    EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerId);
+
 };
 
 /**
@@ -7992,6 +7634,7 @@ function SampleChangerWidget (args) {
 	this.radius = 200;
 	this.name = '';
 	this.onPuckSelected = new Event(this);
+	this.sampleChangerCapacity = 0; //This is set in each sample changer type
 
 	if (args) {
 		if (args.radius){
@@ -8026,17 +7669,17 @@ SampleChangerWidget.prototype.createPucks = function (puckType, n, initAlpha, di
 		}
 		var cx = dist*Math.sin(initAlpha + ang) + this.data.radius - rad;
 		var cy = -dist*Math.cos(initAlpha + ang) + this.data.radius - rad;
-		this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : puckId, mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+		this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : puckId, mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 		
 		if (args) {
 			if (args.dAlpha != null && args.dist != null){
 				cx = args.dist*Math.sin(initAlpha + ang + args.dAlpha) + this.data.radius - rad;
 				cy = -args.dist*Math.cos(initAlpha + ang + args.dAlpha) + this.data.radius - rad;
-				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-2", mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-2", mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 				
 				cx = args.dist*Math.sin(initAlpha + ang - args.dAlpha) + this.data.radius - rad;
 				cy = -args.dist*Math.cos(initAlpha + ang - args.dAlpha) + this.data.radius - rad;
-				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-1", mainRadius : rad, x : cx , y : cy, isLoading : this.isLoading}));
+				this.pucks[puckType].push(new PuckWidgetContainer({puckType : puckType, id : this.id + "-" + puckIndex + "-1", mainRadius : rad, xMargin : cx , yMargin : cy, isLoading : this.isLoading}));
 			}
 		}
 	}
@@ -8110,9 +7753,19 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 	for (puckIndex in _.keys(pucksToBeLoaded)) {
 		var puck = this.findPuckById(_.keys(pucksToBeLoaded)[puckIndex]);
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
+			var errorSamples = [];
+			for (var i = 0 ; i < pucksToBeLoaded[puck.id].length ; i++) {
+				var sample = pucksToBeLoaded[puck.id][i];
+				if (Number(sample.BLSample_location) > puck.capacity) {
+					errorSamples.push(sample);
+					errorPucks = _.union(errorPucks,[puck]);
+				}
+			}
+			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
-			$.notify("Capacity Error: Couldn't load the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			$.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
 			errorPucks.push(puck);
 		}
 	}
@@ -8210,7 +7863,7 @@ SampleChangerWidget.prototype.setClickListeners = function () {
 		var puck = allPucks[puckIndex];
 		$("#" + puck.puckWidget.id).css('cursor','pointer');
 		$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-			if (!sender.target.classList.contains('disabled')){
+			if (!sender.target.classList.contains('puck-disabled')){
 				_this.onPuckSelected.notify(_this.findPuckById(sender.target.id));
 			}
 		});
@@ -8229,7 +7882,8 @@ SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capaci
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
 		if (puck.capacity != capacity) {
-			$("#" + puck.puckWidget.id).addClass("disabled");
+			$("#" + puck.puckWidget.id).addClass("puck-disabled");
+			puck.puckWidget.disableAllCells();
 		}
 	}
 };
@@ -8244,7 +7898,8 @@ SampleChangerWidget.prototype.allowAllPucks = function () {
 	var allPucks = this.getAllPucks();
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
-		$("#" + puck.puckWidget.id).removeClass("disabled");
+		$("#" + puck.puckWidget.id).removeClass("puck-disabled");
+		puck.puckWidget.allowAllCells();
 	}
 };
 
@@ -8291,6 +7946,7 @@ function FlexHCDWidget (args) {
 	SampleChangerWidget.call(this,args);
 	
 	this.name = 'FlexHCD';
+	this.sampleChangerCapacity = 24;
 	this.initAlpha = -7*2*Math.PI/16;
 	this.data = {
 		radius : this.radius,
@@ -8300,8 +7956,8 @@ function FlexHCDWidget (args) {
 	};
 	
 	this.createStructure();
-	this.createPucks(1, this.data.cells/2, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
-	this.createPucks(2, this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Unipuck", this.data.cells/2, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Spinepuck", this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
 };
 
 FlexHCDWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
@@ -8337,16 +7993,35 @@ FlexHCDWidget.prototype.createStructure = function () {
 		this.data.lines.push(line);
 	}
 	
-	// var textR = this.data.radius/4;
-	// for (var i = 0 ; i < this.data.cells ; i++){
-	// 	var ang = i*2*Math.PI/this.data.cells;
-	// 	var textNumber = {
-	// 		text : i+1,
-	// 		x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
-	// 		y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius
-	// 	};
-	// 	this.data.text.push(textNumber);
-	// }
+	var textR = this.data.radius*0.31;
+	var textRBig = this.data.radius*0.94;
+	var dAlpha = Math.PI/16;
+	var currentNumber = 1;
+	var textSize = Math.round((15-7)*(this.data.radius-100)/(200-100) + 7);
+	for (var i = 0 ; i < this.data.cells ; i++){
+		var ang = i*2*Math.PI/this.data.cells;
+		this.data.text.push({
+			text : currentNumber,
+			x : textRBig*Math.sin(this.initAlpha + ang - dAlpha) + this.data.radius,
+			y : -textRBig*Math.cos(this.initAlpha + ang - dAlpha) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+		this.data.text.push({
+			text : currentNumber,
+			x : textRBig*Math.sin(this.initAlpha + ang + dAlpha) + this.data.radius,
+			y : -textRBig*Math.cos(this.initAlpha + ang + dAlpha) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+		this.data.text.push({
+			text : currentNumber,
+			x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
+			y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+	}
 };
 
 /**
@@ -8506,6 +8181,7 @@ PuckWidget.prototype.emptyAll = function () {
 		this.render(this.data.cells[cellIndex].location,true);
 	}
 	this.isEmpty = true;
+	this.containerId = 0;
 };
 
 /**
@@ -8655,6 +8331,7 @@ PuckWidget.prototype.focus = function (location, bool) {
 */
 PuckWidget.prototype.render = function (location) {
 	var cellIndex = this.findCellIndexById(this.id + "-" + location);
+        
 	switch (this.data.cells[cellIndex].state) {
 		case "FILLED":
 			$("#" + this.id + "-" + location).attr("class","cell_filled");
@@ -8701,38 +8378,69 @@ PuckWidget.prototype.findCellIndexById = function (id) {
 		}
 	}
 };
+
+/**
+* Adds the disabled class to each cell
+*
+* @method disableAllCells
+* @return
+*/
+PuckWidget.prototype.disableAllCells = function () {
+	for (var i = 0 ; i < this.data.cells.length ; i++) {
+		var cell = this.data.cells[i];
+		$("#" + cell.id).addClass("cell-disabled");
+	}
+};
+
+/**
+* Removes the disabled class to each cell
+*
+* @method allowAllCells
+* @return
+*/
+PuckWidget.prototype.allowAllCells = function () {
+	for (var i = 0 ; i < this.data.cells.length ; i++) {
+		var cell = this.data.cells[i];
+		$("#" + cell.id).removeClass("cell-disabled");
+	}
+};
 function PuckWidgetContainer(args) {
 	var _this = this;
 	
 	this.mouseOverCell = new Event(this);
 	this.mouseOutCell = new Event(this);
 	
-	this.x = 0;
-	this.y = 0;
-	
+	this.xMargin = 0;
+	this.yMargin = 0;
 	if (args){
 		if (args.puckType) {
+			if (args.puckType == "UniPuck" || args.puckType == "SpinePuck") {
+				debugger
+			}
 			switch (args.puckType) {
-				case 1:
+				case "Unipuck":
 					this.puckWidget = new UniPuckWidget(args);
 					this.capacity = 16;
 					break;
-				case 2:
+				case "Spinepuck":
 					this.puckWidget = new SpinePuckWidget(args);
 					this.capacity = 10;
 					break;
 			}
 		}
-		if (args.x){
-			this.x = args.x;
+		if (args.xMargin){
+			this.xMargin = args.xMargin;
 		}
-		if (args.y){
-			this.y = args.y;
+		if (args.yMargin){
+			this.yMargin = args.yMargin;
+		}
+		if (args.x) {
+			debugger
 		}
 	}
 	
 	if(!this.puckWidget) {
-		this.puckWidget = new SpineCellWidget(args);
+		this.puckWidget = new SpinePuckWidget(args);
 	}
 	
 	this.puckWidget.onClick.attach(function(sender, cell){
@@ -8755,8 +8463,8 @@ PuckWidgetContainer.prototype.getPanel = function () {
 	
 	this.panel =  Ext.create('Ext.panel.Panel', {
 			id: this.puckWidget.id + "-container",
-		   x: this.x,
-		   y: this.y,
+		   x: this.xMargin,
+		   y: this.yMargin,
 		   width : 2*this.puckWidget.data.mainRadius + 1,
 		   height : 2*this.puckWidget.data.mainRadius + 1,
 		//    cls:'border-grid',
@@ -8793,6 +8501,125 @@ PuckWidgetContainer.prototype.focus = function (location, bool) {
 
 
 /**
+* This class extends the SampleChangerWidget class for a RoboDiffWidget
+*
+* @class RoboDiffWidget
+* @constructor
+*/
+function RoboDiffWidget (args) {
+	
+	SampleChangerWidget.call(this,args);
+	
+	this.name = 'RoboDiff';
+	this.sampleChangerCapacity = 24;
+	this.initAlpha = -7*2*Math.PI/16;
+	this.data = {
+		radius : this.radius,
+		cells : 8,
+		lines : [],
+		text :[]
+	};
+	
+	this.createStructure();
+	this.createPucks("Spinepuck", this.data.cells, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+};
+
+RoboDiffWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
+RoboDiffWidget.prototype.createPucks = SampleChangerWidget.prototype.createPucks;
+RoboDiffWidget.prototype.getPanel = SampleChangerWidget.prototype.getPanel;
+RoboDiffWidget.prototype.load = SampleChangerWidget.prototype.load;
+RoboDiffWidget.prototype.getStructure = SampleChangerWidget.prototype.getStructure;
+RoboDiffWidget.prototype.findPuckById = SampleChangerWidget.prototype.findPuckById;
+RoboDiffWidget.prototype.getAllPucks = SampleChangerWidget.prototype.getAllPucks;
+RoboDiffWidget.prototype.render = SampleChangerWidget.prototype.render;
+RoboDiffWidget.prototype.setClickListeners = SampleChangerWidget.prototype.setClickListeners;
+RoboDiffWidget.prototype.disablePucksOfDifferentCapacity = SampleChangerWidget.prototype.disablePucksOfDifferentCapacity;
+RoboDiffWidget.prototype.allowAllPucks = SampleChangerWidget.prototype.allowAllPucks;
+RoboDiffWidget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
+RoboDiffWidget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
+RoboDiffWidget.prototype.loadSamples = SampleChangerWidget.prototype.loadSamples;
+RoboDiffWidget.prototype.emptyAllPucks = SampleChangerWidget.prototype.emptyAllPucks;
+
+/**
+* Creates the particular structure of the FlexHCD
+*
+* @method createStructure
+*/
+RoboDiffWidget.prototype.createStructure = function () {
+	for (var i = 0 ; i < this.data.cells/2 ; i++){
+		var ang = i*2*Math.PI/this.data.cells;
+		var line = {
+			x1 : this.data.radius*Math.sin(ang) + this.data.radius,
+			y1 : this.data.radius*Math.cos(ang) + this.data.radius,
+			x2 : -this.data.radius*Math.sin(ang) + this.data.radius,
+			y2 : -this.data.radius*Math.cos(ang) + this.data.radius
+		};
+		this.data.lines.push(line);
+	}
+
+	var textR = this.data.radius*0.31;
+	var textRBig = this.data.radius*0.94;
+	var dAlpha = Math.PI/16;
+	var currentNumber = 1;
+	var textSize = Math.round((15-7)*(this.data.radius-100)/(200-100) + 7);
+	for (var i = 0 ; i < this.data.cells ; i++){
+		var ang = i*2*Math.PI/this.data.cells;
+		this.data.text.push({
+			text : currentNumber,
+			x : textRBig*Math.sin(this.initAlpha + ang - dAlpha) + this.data.radius,
+			y : -textRBig*Math.cos(this.initAlpha + ang - dAlpha) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+		this.data.text.push({
+			text : currentNumber,
+			x : textRBig*Math.sin(this.initAlpha + ang + dAlpha) + this.data.radius,
+			y : -textRBig*Math.cos(this.initAlpha + ang + dAlpha) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+		this.data.text.push({
+			text : currentNumber,
+			x : textR*Math.sin(this.initAlpha + ang) + this.data.radius,
+			y : -textR*Math.cos(this.initAlpha + ang) + this.data.radius,
+			textSize : textSize
+		});
+		currentNumber++;
+	}
+};
+
+/**
+* Converts the idLocation to the corresponding location in the FlexHCD by convention
+*
+* @method convertIdToSampleChangerLocation
+* @return The corresponding location in the FlexHCD by convention
+*/
+RoboDiffWidget.prototype.convertIdToSampleChangerLocation = function (idLocation) {
+	var n = Number(idLocation.split("-")[1]);
+	var i = Number(idLocation.split("-")[2]);
+	return (n-1)*3 + i;
+};
+
+/**
+* Converts the sample changer location in a FlexHCD to the id of the puck
+*
+* @method convertSampleChangerLocationToId
+* @return The corresponding id of the puck in the given location
+*/
+RoboDiffWidget.prototype.convertSampleChangerLocationToId = function (sampleChangerLocation) {
+	if (sampleChangerLocation <= 24 && sampleChangerLocation > 0) {
+		var n = Math.floor(sampleChangerLocation/3) + 1;
+		var i = sampleChangerLocation % 3;
+		if (i == 0){
+			n--;
+			i = 3;
+		}
+		return this.id + "-" + n + "-" + i;
+	} else {
+		return null;
+	}
+};
+/**
 * This class renders a grid for selecting a sample changer and a panel containing the sample changer widget
 *
 * @class SampleChangerSelector
@@ -8814,11 +8641,19 @@ function SampleChangerSelector (args) {
 
     var SCtypes = {
         header : "Type (Sample Changer)",
-        values : ["FlexHCD","SC3"]
+        values : ["FlexHCD","SC3","RoboDiff"]
     };
+
+    this.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
+    var beamlinesGridData = [];
+    for (var i = 0 ; i < this.beamlines.length ; i++) {
+        var beamline = this.beamlines[i];
+        beamlinesGridData.push(beamline.name + " (" + beamline.sampleChangerType + ")");
+    }
+
     var beamlines = {
         header : "Beamlines",
-        values : EXI.credentialManager.getBeamlineNames()
+        values : beamlinesGridData
     };
 
     this.sampleChangerGrid = new BootstrapGrid({template : "bootstrap.grid.template"});
@@ -8835,7 +8670,8 @@ function SampleChangerSelector (args) {
     });
     this.beamlinesGrid.rowSelected.attach(function(sender,text){
         _this.sampleChangerGrid.deselectAll();
-        _this.sampleChangerWidget = _this.createSampleChanger(text);
+        var sampleChangerType = _.filter(_this.beamlines,{'name':text.split(" ")[0]})[0].sampleChangerType;
+        _this.sampleChangerWidget = _this.createSampleChanger(sampleChangerType);
         _this.addSampleChanger(_this.sampleChangerWidget);
     });
     this.onSampleChangerSelected = new Event(this);
@@ -8903,6 +8739,8 @@ SampleChangerSelector.prototype.createSampleChanger = function (changerName) {
     var sampleChangerWidget = new FlexHCDWidget(data);
     if (changerName == "SC3") {
         sampleChangerWidget = new SC3Widget(data);
+    } else if (changerName == "RoboDiff") {
+        sampleChangerWidget = new RoboDiffWidget(data);
     }
     sampleChangerWidget.render();
     return sampleChangerWidget;
@@ -8929,7 +8767,8 @@ SampleChangerSelector.prototype.addSampleChanger = function (sampleChangerWidget
 * @return
 */
 SampleChangerSelector.prototype.selectRowByBeamlineName = function (beamlineName) {
-    this.beamlinesGrid.selectRowByValue(beamlineName);
+    var sampleChangerType = _.filter(this.beamlines,{'name':beamlineName})[0].sampleChangerType;
+    this.beamlinesGrid.selectRowByValue(beamlineName + " (" + sampleChangerType + ")");
 };
 /**
 * This class extends the SampleChangerWidget class for a SC3
@@ -8942,6 +8781,7 @@ function SC3Widget (args) {
 	SampleChangerWidget.call(this,args);
 	
 	this.name = 'SC3';
+	this.sampleChangerCapacity = 5;
 	this.clockwise = -1;
 
 	this.data = {
@@ -8951,7 +8791,7 @@ function SC3Widget (args) {
 	};
 	
 	this.createStructure();
-	this.createPucks(2, this.data.cells, 0, this.data.radius/2, 0.8);
+	this.createPucks("Spinepuck", this.data.cells, 0, this.data.radius/2, 0.8);
 };
 
 SC3Widget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
@@ -9036,6 +8876,8 @@ SpinePuckWidget.prototype.render = PuckWidget.prototype.render;
 SpinePuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 SpinePuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
 SpinePuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
+SpinePuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
+SpinePuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
 
 /**
 * Parses the data
@@ -9077,6 +8919,8 @@ UniPuckWidget.prototype.render = PuckWidget.prototype.render;
 UniPuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 UniPuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
 UniPuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
+UniPuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
+UniPuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
 
 /**
 * Parses the data

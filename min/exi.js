@@ -1683,24 +1683,12 @@ ShippingExiController.prototype.init = function() {
 		});
 		
 		Path.map("#/shipping/:shippingId/main").to(function() {
-			var mainView = new ShippingMainViewTest();
-			EXI.addMainPanel(mainView);
-			mainView.load(this.params['shippingId']);
-		}).enter(this.setPageBackground);
-
-		Path.map("#/shipping/main").to(function() {
-			var mainView = new ShippingMainViewTest();
-			EXI.addMainPanel(mainView);
-			mainView.load();
-		}).enter(this.setPageBackground);
-
-		Path.map("#/shipping/:shippingId/main/old").to(function() {
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load(this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
-		Path.map("#/shipping/main/old").to(function() {
+		Path.map("#/shipping/main").to(function() {
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();
@@ -1788,7 +1776,7 @@ BootstrapGrid.prototype.selectRowByValue = function (value) {
     var rowIndex = this.data.values.indexOf(value);
     if (rowIndex >= 0) {
         $("#row-" + rowIndex + "-" + this.id).addClass('active-step').siblings().removeClass('active-step');
-        this.rowSelected.notify($("#row-" + rowIndex + "-" + this.id).innerText);
+        this.rowSelected.notify($("#row-" + rowIndex + "-" + this.id)[0].innerText);
     }
 };
 
@@ -4268,7 +4256,7 @@ ParcelGrid.prototype.load = function(shipment) {
    
 	for ( var i in this.dewars) {
 		var parcelForm = new ParcelPanelTest({
-			height : 500,
+			height : 370,
 			width : this.width - 40
 		});
 		this.panel.insert(parcelForm.getPanel());
@@ -4846,91 +4834,6 @@ ShipmentForm.prototype.getPanel = function() {
 function ShippingMainView() {
 	MainView.call(this);
 	var _this = this;
-	
-	/**
-	* 
-	* @property shipmentForm
-	*/
-	this.shipmentForm = new ShipmentForm();
-	this.shipmentForm.onSaved.attach(function(sender, shipment){
-		location.hash = "#/proposal/shipping/nav?nomain";
-	});
-	
-	/**
-	* 
-	* @property parcelGrid
-	*/
-	this.parcelGrid = new ParcelGrid({
-		height : 300
-	});
-}
-
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
-
-ShippingMainView.prototype.getContainer = function() {
-	this.tabPanel =  Ext.createWidget('tabpanel',
-			{
-				margin : 10,
-				defaults : {
-						anchor : '100%'
-				},
-				items : [
-				     		{
-							tabConfig : {
-								title : 'Delivery Details'
-							},
-							items : [ 
-							         	this.shipmentForm.getPanel()
-							]
-						},
-						{
-							tabConfig : {
-								id : this.id + "grid",
-								title : 'Parcels',
-								icon : '../images/icon/shipping.png'
-							},
-							items : [ 
-							         	this.parcelGrid.getPanel()
-							]
-						}
-					]
-			});
-
-	return this.tabPanel;
-
-};
-
-
-ShippingMainView.prototype.load = function(shippingId) {
-	var _this = this;
-	this.shippingId = shippingId;
-	
-	if (shippingId == null){
-		Ext.getCmp(this.id + "grid").disable(true);
-	}
-	this.panel.setTitle("Shipment");
-	if (shippingId != null){
-		this.panel.setLoading();
-		var onSuccess = function(sender, shipment){
-			_this.shipmentForm.load(shipment);
-			_this.parcelGrid.load(shipment);
-			_this.panel.setLoading(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
-	}
-};
-
-
-/**
-* This main class deals with the creation and edition of shipments
-*
-* @class ShippingMainView
-* @constructor
-*/
-function ShippingMainViewTest() {
-	MainView.call(this);
-	var _this = this;
 
     /**
 	* 
@@ -4949,7 +4852,7 @@ function ShippingMainViewTest() {
 	
 }
 
-ShippingMainViewTest.prototype.getPanel = function() {
+ShippingMainView.prototype.getPanel = function() {
 	
     this.panel =  Ext.create('Ext.panel.Panel', {
         layout: {
@@ -4967,7 +4870,7 @@ ShippingMainViewTest.prototype.getPanel = function() {
 };
 
 
-ShippingMainViewTest.prototype.load = function(shippingId) {
+ShippingMainView.prototype.load = function(shippingId) {
 	var _this = this;
 	this.shippingId = shippingId;
 	
@@ -5687,9 +5590,8 @@ ParcelPanelTest.prototype.addHeaderPanel = function() {
 					xtype 	: 'container',
 					width	: this.width - 50,
 					border : 1,
-					padding : 5,
+					padding : 1,
 					items 	: [	{html : html}
-				
 					]
 				}
 	);
@@ -5710,7 +5612,7 @@ ParcelPanelTest.prototype.render = function() {
                 cls 		: "border-grid",
                 margin 		: 10,
                 width       : this.width - 50,
-                height       : this.height - 250,
+                height       : 250,
                 autoScroll : true,
                 items       : []
             });
@@ -5877,18 +5779,12 @@ ParcelPanelTest.prototype.getPanel = function() {
 	var _this = this;
 
 	this.panel = Ext.create('Ext.panel.Panel', {
-        title       : 'Parcel',
 		cls 		: "border-grid",
 		margin 		: 10,
 		height 		: this.height,
 		width 		: this.width,
 		autoScroll	: false,
 		items 		: [],
-		// listeners : {
-		// 	afterrender : function(component, eOpts) {
-		// 				_this.render();
-		// 	}
-	    // }
 	});
 
     this.panel.addDocked({
@@ -6056,10 +5952,10 @@ function PuckParcelPanel(args) {
     this.width = 220;
     this.containerId = 0;
     this.code = "";
-    this.data = {puckType : 1, 
-                mainRadius : this.radius - 20, 
-                x : 20, 
-                y : 15, 
+    this.data = {puckType : "Unipuck", 
+                mainRadius : this.radius - 5, 
+                xMargin : this.width/2 - this.radius + 2.5, 
+                yMargin : 2.5, 
                 enableMouseOver : true
     };
 
@@ -6069,8 +5965,8 @@ function PuckParcelPanel(args) {
 		}
 		if (args.radius != null) {
 			this.radius = args.radius;
-            this.data.mainRadius = this.radius - 20;
-            this.data.x = this.width/2 - this.data.mainRadius;
+            this.data.mainRadius = this.radius - 5;
+            this.data.xMargin = this.width/2 - this.radius + 2.5;
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
@@ -6080,7 +5976,7 @@ function PuckParcelPanel(args) {
 		}
         if (args.capacity != null) {
 			if (args.capacity != 16) {
-                this.data.puckType = 2;
+                this.data.puckType = "Spinepuck";
             }
 		}
 	}
@@ -6103,18 +5999,16 @@ PuckParcelPanel.prototype.getPanel = function () {
     this.puckPanel = Ext.create('Ext.panel.Panel', {
         width : this.width,
         height : 2*this.radius,
-        // cls : 'border-grid',
         items : [this.puck.getPanel()]
 	});
 
     this.panel = Ext.create('Ext.panel.Panel', {
-        // cls : 'border-grid',
         width : this.width,
         height : 2*this.radius + 70,
         items : [{
                     html : this.getCodeHeader(),
                     margin : 5,
-                    x : this.data.x
+                    x : this.data.xMargin
                 },
                 this.puckPanel,
                 this.getButtons()]
@@ -6146,7 +6040,7 @@ PuckParcelPanel.prototype.load = function (samples) {
 */
 PuckParcelPanel.prototype.getCodeHeader = function () {
     var templateData = {info : [{
-                                    text : 'Code',
+                                    text : 'Code:',
                                     value : this.code
                                 }]
     }
@@ -6180,7 +6074,6 @@ PuckParcelPanel.prototype.getButtons = function () {
                 xtype: 'button',
                 margin : 5,
                 icon : '../images/icon/edit.png',
-                text : 'Edit',
                 handler : function(widget, e) {
                     var puckForm = new PuckForm({
                         width : Ext.getBody().getWidth() - 150
@@ -6214,8 +6107,8 @@ PuckParcelPanel.prototype.getButtons = function () {
             },{
                 xtype: 'button',
                 margin : 5,
+                cls:'btn-remove',
                 icon : '../images/icon/ic_highlight_remove_black_24dp.png',
-                text : 'Remove',
                 handler: function(){
 			    	function showResult(result){
 						if (result == "yes"){

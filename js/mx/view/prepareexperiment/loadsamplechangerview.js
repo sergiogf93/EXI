@@ -8,7 +8,7 @@ function LoadSampleChangerView (args) {
 
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 170;
+    this.widgetRadius = 185;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -18,14 +18,15 @@ function LoadSampleChangerView (args) {
         }
     };
 
+    this.warningRows = [];
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
-    this.containerListEditor = new ContainerPrepareSpreadSheetTest({height : 480,width : 600});
+    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
     this.previewPanelView = new PreviewPanelView({
-                                                        height : 120
+                                                        height : 100
                                                     });
     this.sampleChangerName = "";
     
@@ -95,9 +96,6 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     text : 'Container',
                                     value : row.get('containerCode')
                                 },{
-                                    text : 'Container Id',
-                                    value : row.get('containerId')
-                                },{
                                     text : 'SC Location',
                                     value : row.get('sampleChangerLocation')
                                 }]
@@ -112,7 +110,7 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
 */
 LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
     this.selectedPuck = puck;
-    $("#" + puck.id).attr("class","puck-selected");
+    $("#" + puck.id).addClass("puck-selected");
     if (puck.isEmpty){
         this.previewPuck(puck.containerId, puck.capacity, {
         info : [{
@@ -121,7 +119,8 @@ LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
         }]
     }, "EMPTY");
     } else if (!this.selectedContainerId) {
-        this.setSelectedRow(this.containerListEditor.getRowByContainerId(puck.containerId));
+        var rowsByContainerId = this.containerListEditor.getRowsByContainerId(puck.containerId);
+        this.setSelectedRow(rowsByContainerId[0]);
     }
 };
 
@@ -145,7 +144,7 @@ LoadSampleChangerView.prototype.deselectRow = function () {
 * @return 
 */
 LoadSampleChangerView.prototype.deselectPuck = function () {
-    $("#" + this.selectedPuck.id).attr("class","puck");
+    $("#" + this.selectedPuck.id).removeClass("puck-selected");
     this.selectedPuck = null; 
 };
 
@@ -214,42 +213,46 @@ LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
 
     this.sampleChangerWidget.emptyAllPucks();
+    this.warningRows = [];
     var filledContainers = {};
-    for (var i = 0 ; i < containers.length ; i++){
-        var container = containers[i];
-        if (container.sampleCount > 0){
-            if (container.sampleChangerLocation != " "){
-                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
-                if (puckId) {
-                    filledContainers[container.containerId] = puckId;
-                    var puck = this.sampleChangerWidget.findPuckById(puckId);
-                    if (puck.capacity != container.capacity){
-                        // $.notify("Warning: The container type of the container " + container.containerCode + " does not match with the container on that location.", "warn");
-                        this.containerListEditor.addClassToRow (container.containerId, "warning-row");
+
+    if (containers) {
+        for (var i = 0 ; i < containers.length ; i++){
+            var container = containers[i];
+            if (container.sampleCount > 0){
+                if (container.sampleChangerLocation != " "){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
+                    if (puckId) {
+                        filledContainers[container.containerId] = puckId;
+                        var puck = this.sampleChangerWidget.findPuckById(puckId);
+                        if (puck.capacity != container.capacity){
+                            this.warningRows.push(container.containerId);
+                        }
+                    } else {
+                        this.warningRows.push(container.containerId);
                     }
                 } else {
-                    // $.notify("Warning: The sample in the container " + container.containerCode + " has an incorrect location value for this type of sample changer.", "warn");
-                    this.containerListEditor.addClassToRow (container.containerId, "warning-row");
+                    this.warningRows.push(container.containerId);
                 }
-            } else {
-                // $.notify("Warning: The container " + container.containerCode + " has no sample changer location value.", "warn");
-                this.containerListEditor.addClassToRow (container.containerId, "warning-row");
             }
         }
-    }
         
-    if (!_.isEmpty(filledContainers)){
-        var onSuccess = function (sender, samples) {
-            var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
-            if (errorPucks.length > 0){
-                for (index in errorPucks) {
-                    var puck = errorPucks[index];
-                    _this.containerListEditor.addClassToRow (puck.containerId, "error-row");
+        
+        if (!_.isEmpty(filledContainers)){
+            var onSuccess = function (sender, samples) {
+                var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
+                if (errorPucks.length > 0){
+                    for (index in errorPucks) {
+                        var puck = errorPucks[index];
+                        $("#" + puck.id).addClass("puck-error");
+                    }
                 }
             }
-        }
 
-        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+            EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_.keys(filledContainers));
+        }
+    } else {
+        this.containerListEditor.loadProcessingDewars(this.sampleChangerWidget);
     }
 };
 

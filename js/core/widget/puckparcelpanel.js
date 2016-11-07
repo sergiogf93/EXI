@@ -5,25 +5,26 @@
 * @constructor
 */
 function PuckParcelPanel(args) {
-	this.radius = 200;
-    this.width = 220;
+    this.height = 220;
     this.containerId = 0;
     this.code = "";
-    this.data = {puckType : 1, 
-                mainRadius : this.radius - 5, 
-                x : this.width/2 - this.radius + 2.5, 
-                y : 2.5, 
+    this.data = {puckType : "Unipuck", 
+                mainRadius : this.height*0.3, 
+                xMargin : this.width/2 - this.height*0.3, 
+                yMargin : 2.5, 
                 enableMouseOver : true
     };
+    this.width = 2*this.data.mainRadius + 20;
 
 	if (args != null) {
+        if (args.height != null) {
+			this.height = args.height;
+            this.data.mainRadius = this.height*0.3;
+            this.width = 2*this.data.mainRadius + 20;
+            this.data.xMargin = this.width/2 - this.data.mainRadius;
+		}
         if (args.width != null) {
 			this.width = args.width;
-		}
-		if (args.radius != null) {
-			this.radius = args.radius;
-            this.data.mainRadius = this.radius - 5;
-            this.data.x = this.width/2 - this.radius + 2.5;
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
@@ -33,7 +34,7 @@ function PuckParcelPanel(args) {
 		}
         if (args.capacity != null) {
 			if (args.capacity != 16) {
-                this.data.puckType = 2;
+                this.data.puckType = "Spinepuck";
             }
 		}
 	}
@@ -55,17 +56,18 @@ PuckParcelPanel.prototype.getPanel = function () {
 
     this.puckPanel = Ext.create('Ext.panel.Panel', {
         width : this.width,
-        height : 2*this.radius,
+        height : 2*this.data.mainRadius + 5,
         items : [this.puck.getPanel()]
 	});
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        // cls : 'border-grid',
         width : this.width,
-        height : 2*this.radius + 70,
+        height : this.height,
         items : [{
                     html : this.getCodeHeader(),
                     margin : 5,
-                    x : this.data.x
+                    x : this.data.xMargin
                 },
                 this.puckPanel,
                 this.getButtons()]
@@ -125,7 +127,6 @@ PuckParcelPanel.prototype.getButtons = function () {
             pack: 'center'
         },
         width : this.width,
-        height : 40,
         items : [
                 {
                 xtype: 'button',

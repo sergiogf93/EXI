@@ -18,10 +18,10 @@ function PreviewPanelView (args) {
     }
 
     this.puckData = {
-                puckType : 1,
+                puckType : "Unipuck",
                 mainRadius : this.height*0.4,
-                x : this.width/2 - this.height*0.4,
-                y : 10,
+                xMargin : this.width/4 - this.height*0.4,
+                yMargin : 10,
                 enableMouseOver : true
             };
 
@@ -40,7 +40,7 @@ PreviewPanelView.prototype.getPanel = function () {
     this.infoPanel = Ext.create('Ext.panel.Panel', {
         // cls     : 'border-grid',
         width : this.width/2,
-        height : this.height/3*2,
+        height : this.height/2,
         border :2,
         items : []
     });
@@ -48,7 +48,7 @@ PreviewPanelView.prototype.getPanel = function () {
     this.instructionsButton = Ext.create('Ext.Button', {
         text: '',
         width: this.width/2,
-        height:  this.height/3,
+        height:  this.height/2,
         scale: 'large',
         style: {
             background: '#444444'
@@ -70,8 +70,7 @@ PreviewPanelView.prototype.getPanel = function () {
     });
 
     this.previewPanel = Ext.create('Ext.panel.Panel', {
-
-        width : this.width,
+        width : this.width/2,
         height : this.height,
         items : []
     });
@@ -113,14 +112,12 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
     this.instructionsButton.setText(instructionsButtonText);
     this.puckData.containerId = containerId;
     if (capacity == 10){
-        this.puckData.puckType = 2;
+        this.puckData.puckType = "Spinepuck";
     } else {
-        this.puckData.puckType = 1;
+        this.puckData.puckType = "Unipuck";
     }
 
-
-    /** margin? */
-    this.puckData.x = 10;
+    // this.puckData.xMargin = this.width/2 - this.height*0.4;
     var puckContainer = new PuckWidgetContainer(this.puckData);
     this.previewPanel.add(puckContainer.getPanel());
 
