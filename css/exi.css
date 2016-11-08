@@ -6,10 +6,6 @@
 
 /** Prepare experiment steps **/
 
-.error-row .x-grid-cell { 
-    background-color: #ffe2e2; 
-    color: #900; 
-}
 
 .warning-row .x-grid-cell { 
     background-color: #ffeaa5; 
@@ -106,7 +102,8 @@
 	cursor : no-drop !important;
 	fill-opacity : 0.2 !important;
 	stroke-opacity : 0.2 !important;
-	stroke-dasharray:3; 
+    
+	/*stroke-dasharray:3;*/ 
 }
 
 .puck {
@@ -115,14 +112,24 @@
 }
 
 .puck-selected {
-	stroke : #23eeff;
-	stroke-width : 3;
+	stroke : #99ff66;
+    stroke-opacity : 1!important;
+	stroke-width : 5 !important;
+    stroke-dasharray:0 !important;
 }
 
 .puck-error {
-	fill : red;
+	fill : #D8000C; 
 	stroke-width : 2;
 }
+
+
+.puck-error .x-grid-cell { 
+    background-color:#FFBABA;
+    color:  #D8000C; 
+}
+
+
 
 .cell_info_tooltip {
     border-radius: 5px;

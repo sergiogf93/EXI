@@ -145,7 +145,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                     var dewar = _this.dewars[i];
                     if (record.get('dewarId') != dewar.dewarId) {
                         if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
-                            return "error-row";
+                            return "puck-error";
                         }
                     }
                 }
