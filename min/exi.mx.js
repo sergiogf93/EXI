@@ -3667,7 +3667,11 @@ PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
         store: this.store,            
-        columns: this.getColumns()
+        columns: this.getColumns(),
+        disableSelection: true,
+        viewConfig : {
+            trackOver : false
+        }
     });
     return this.panel;
 };
@@ -3682,8 +3686,10 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
             hidden: false,
             renderer: function(grid, e, record) {
 
-                var data = record.data;                              
-                var html = "";               
+                var data = record.data;  
+                var nContainers = data.containerIds.length;
+
+                var html = "";          
                 
                 dust.render("plates.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                     html = html + out;
@@ -5256,7 +5262,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                     var dewar = _this.dewars[i];
                     if (record.get('dewarId') != dewar.dewarId) {
                         if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
-                            return "error-row";
+                            return "puck-error";
                         }
                     }
                 }
@@ -5579,11 +5585,11 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     ]                                         
                 },              
                  {      
-                        text: '#Dewars/#Parcels (#Samples)',     
+                        text: '#',     
                         flex: 1,
                         renderer : function(grid, e, record){
                             var stats =  _this.getStatsByDewarId(record.data.shippingId);
-                            return stats.dewars + " / " + stats.containers + " (" +  stats.samples + ")";
+                            return stats.dewars + " parcels / " + stats.containers + " containers (" +  stats.samples + " samples)";
                             
                         }
                 },
