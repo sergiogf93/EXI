@@ -1,3 +1,30 @@
+/** SAXS queue grid **/
+
+div.border-columns {
+	border: 1px solid #ccc;
+}
+
+div.border-right-columns {
+	border-right: 1px solid #ccc;
+}
+
+div.border-top-columns {
+	border-top: 1px solid #ccc;
+}
+
+.table-queue-grid-borderless td {
+    border-top: none !important;
+}
+
+img.border-img {
+	border : 1px solid #3892d3;
+}
+
+.col-centered{
+	float: none;
+	margin: 0 auto;
+}
+
 /** Shipping **/
 
 .btn-remove {
