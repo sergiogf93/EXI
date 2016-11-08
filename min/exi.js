@@ -1079,6 +1079,45 @@ ExiGenericController.prototype.notFound = function() {
 
 
 
+
+function MainView(args) {
+	this.id = BUI.id();
+	this.title = "New Tab";
+	this.closable = true; 
+	this.onSelectionChange = new Event(this);
+	this.onSelect = new Event(this);
+	this.onDeselect = new Event(this);
+	
+	//this.bodyStyle = {"background-color":"#FAFAFA"};
+    
+    if (args != null){
+        if (args.title != null){
+            this.title = args.title;
+        }
+    }
+
+}
+
+MainView.prototype.getContainer = function() {
+	return this.container;
+};
+
+MainView.prototype.getPanel = function() {
+	this.container = Ext.create('Ext.container.Container', {
+		xtype : 'container',
+		items : []
+	});
+
+	this.panel = Ext.create('Ext.panel.Panel', {
+		autoScroll : true,
+		title : this.title,
+		closable: this.closable,
+		icon : this.icon,
+		bodyStyle: this.bodyStyle, 
+		items :[this.getContainer() ]
+	});
+	return this.panel;
+};
 function AuthenticationManager(){
 	this.onSuccess = new Event(this);
 	this.onError = new Event(this);
@@ -1113,9 +1152,6 @@ AuthenticationManager.prototype.login = function(user, password, url){
 		username 	: user
 		
 	}).proposal.authentication.authenticate(user, password, url);
-	
-	
-	
 };
 
 function ExiController(){
@@ -1644,19 +1680,143 @@ ShippingExiController.prototype.init = function() {
 		});
 		
 		Path.map("#/shipping/:shippingId/main").to(function() {
-			var mainView = new ShippingMainView();
+			var mainView = new ShippingMainViewTest();
 			EXI.addMainPanel(mainView);
 			mainView.load(this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
 		Path.map("#/shipping/main").to(function() {
-			var mainView = new ShippingMainView();
+			var mainView = new ShippingMainViewTest();
 			EXI.addMainPanel(mainView);
 			mainView.load();
 		}).enter(this.setPageBackground);
 		
 };
 
+/**
+* Given a dustjs template and some data, it returns a panel containing a bootstrap grid
+*
+* @class BootstrapGrid
+* @return 
+*/
+function BootstrapGrid(args) {
+    this.id = BUI.id();
+    this.data = {};
+    this.width = 300;
+    this.height = 300;
+    this.template = "";
+    if (args) {
+        if (args.width) {
+            this.width = args.width;
+        }
+        if (args.height) {
+            this.height = args.height;
+        }
+        if (args.template) {
+            this.template = args.template;
+        }
+    }
+    
+    this.data.id = this.id;
+
+    this.rowSelected = new Event(this);
+}
+
+/**
+* Returns an EXT.panel.Panel containing the html of the grid and sets the click listeners
+*
+* @method getPanel
+* @return 
+*/
+BootstrapGrid.prototype.getPanel = function () {
+    var _this = this;
+
+    this.panel = Ext.create('Ext.panel.Panel', {
+        width : this.width,
+        autoScroll:true,
+        autoHeight :true,
+        maxHeight: this.height,
+        title : this.data.header,
+        items : [{html : this.getHTML()}]
+    });
+
+    this.panel.on('boxready', function() {
+        _this.setClickListeners();
+    });
+
+    return this.panel;
+};
+
+/**
+* Sets the click listeners
+*
+* @method setClickListeners
+* @return 
+*/
+BootstrapGrid.prototype.setClickListeners = function () {
+    var _this = this;
+
+    $('#bootstrap-table-' + this.id).unbind('click').on('click', '.clickable-row', function(event) {
+        $(this).addClass('active-step').siblings().removeClass('active-step');
+        _this.rowSelected.notify(event.target.innerText);
+    });
+
+};
+
+/**
+* Selects a row given its value
+*
+* @method selectRowByValue
+* @return 
+*/
+BootstrapGrid.prototype.selectRowByValue = function (value) {
+    var rowIndex = this.data.values.indexOf(value);
+    if (rowIndex >= 0) {
+        $("#row-" + rowIndex + "-" + this.id).addClass('active-step').siblings().removeClass('active-step');
+        this.rowSelected.notify($("#row-" + rowIndex + "-" + this.id)[0].innerText);
+    }
+};
+
+/**
+* Deselects all rows
+*
+* @method deselectAll
+* @return 
+*/
+BootstrapGrid.prototype.deselectAll = function () {
+    $('#bootstrap-table-' + this.id).find('.clickable-row').removeClass("active-step");
+};
+
+/**
+* Loads and returns the html code of the grid
+*
+* @method getPanel
+* @return 
+*/
+BootstrapGrid.prototype.getHTML = function () {
+    var html = "";
+	dust.render(this.template, this.data, function(err, out){
+		html = out;
+	});
+
+    return "<div id='bootstrap-grid-" + this.id + "'>" + html + "</div>";
+};
+
+/**
+* Loads the data of the grid
+*
+* @method load
+* @return 
+*/
+BootstrapGrid.prototype.load = function (data) {
+    this.data = data;
+    this.data.id = this.id;
+    if ($("#bootstrap-grid" + this.id).length) {
+        this.panel.setTitle(data.header);
+        $("#bootstrap-grid" + this.id).html(this.getHTML());
+        this.setClickListeners();
+    }
+};
 function MainMenu(args) {
 	this.id = BUI.id();
 	this.loginButtonId = 'loginButton' + this.id;
@@ -2086,6 +2246,44 @@ ListView.prototype.getPanel = function(){
 	    });
 	return this.panel; 
 };
+
+
+
+/**
+* AddressListView displays the address (labcontact information) as list on the navigation panels
+*
+* @class AddressListView
+* @constructor
+*/
+function AddressListView(){
+	this.title = "Addresses";
+	this.sorters = [{property : 'cardName', direction: 'ASC'}];
+	ListView.call(this);
+}
+
+AddressListView.prototype.getPanel = ListView.prototype.getPanel;
+AddressListView.prototype.load = ListView.prototype.load;
+AddressListView.prototype.getFields = ListView.prototype.getFields;
+AddressListView.prototype.getColumns = ListView.prototype.getColumns;
+
+AddressListView.prototype.getFilter = function(value){
+	return [{property : "cardName", value : value, anyMatch : true}];
+};
+
+/**
+* Calls to the dust template in order to render to puck in HTML
+*
+* @class getRow
+* @constructor
+*/
+AddressListView.prototype.getRow = function(record){
+	var html = "";
+	dust.render("address.listview", record.data, function(err, out){
+        	html = out;
+     	});
+	return html;
+};
+
 
 
 
@@ -2543,16 +2741,51 @@ CredentialManager.prototype.getTechniqueByBeamline = function(beamlineName){
 
 };
 
-/** Returns an string with the name of all the beamlines **/
-CredentialManager.prototype.getBeamlines = function(){
+/**
+*  Returns an string with the name of all the beamlines
+*
+* @method getBeamlineNames
+* @return 
+*/
+CredentialManager.prototype.getBeamlineNames = function(){   
 	var connections = this.getConnections();
-  var beamlines = [];
+    var beamlines = [];
 	for (var i = 0; i < connections.length; i++) {
-      $.merge(beamlines, connections[i].beamlines.MX);
-      $.merge(beamlines, connections[i].beamlines.SAXS);
+      beamlines =_.concat(_.keys(_.keyBy(connections[i].beamlines.SAXS, "name")), _.keys(_.keyBy(connections[i].beamlines.MX, "name")))      
 	}
 	return beamlines;
+};
 
+/**
+*  Returns an array with all the configuration for every beamline
+*
+* @method getBeamlines
+* @return 
+*/
+CredentialManager.prototype.getBeamlines = function(){   
+	var connections = this.getConnections();
+    var beamlines = [];
+	for (var i = 0; i < connections.length; i++) {
+      beamlines =_.concat(connections[i].beamlines.SAXS, connections[i].beamlines.MX);     
+	}
+	return beamlines;
+};
+
+
+/**
+*  Returns an array with the name of all the beamlines of the selected technique
+*
+* @method getBeamlinesByTechnique
+* @param technique [MX, SAXS]
+* @return 
+*/
+CredentialManager.prototype.getBeamlinesByTechnique = function(technique){   
+	var connections = this.getConnections();
+    var beamlines = [];
+	for (var i = 0; i < connections.length; i++) {        
+        beamlines =_.concat(connections[i].beamlines[technique]);     
+	}
+	return beamlines;
 };
 
 CredentialManager.prototype.getConnections = function(){
@@ -3956,12 +4189,16 @@ ContainerSpreadSheet.prototype.load = function(puck){
 */
 function ParcelGrid(args) {
 	this.height = 100;
+	this.width = 100;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
 
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
+		}
+		if (args.width != null) {
+			this.width = args.width;
 		}
 		if (args.btnEditVisible != null) {
 			this.btnEditVisible = args.btnEditVisible;
@@ -4007,7 +4244,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			_this.panel.setLoading();
 			dewar["sessionId"] = dewar.firstExperimentId;
 			dewar["shippingId"] = _this.shipment.shippingId;
-			var adapter = new DataAdapter();
+			
 			var onSuccess = function(sender, shipment) {				
 				_this.panel.setLoading(false);
 			};			
@@ -4016,9 +4253,9 @@ ParcelGrid.prototype.load = function(shipment) {
    
 	for ( var i in this.dewars) {
 		var parcelForm = new ParcelPanel({
-			height : 340
+			height : 275,
+			width : this.width - 40
 		});
-		
 		this.panel.insert(parcelForm.getPanel());
 		parcelForm.load(this.dewars[i]);
 		parcelForm.onSavedClick.attach(onSaved);
@@ -4074,12 +4311,13 @@ ParcelGrid.prototype.edit = function(dewar) {
 
 ParcelGrid.prototype.getPanel = function() {
 	var _this = this;
-
+	
 	this.panel = Ext.create('Ext.panel.Panel', {
 		cls : 'border-grid',
-		height : 800,
-		autoScroll : true
-
+		width : this.width,
+		autoScroll:true,
+        autoHeight :true,
+        maxHeight: this.height
 	});
 
 	this.panel.addDocked({
@@ -4122,6 +4360,7 @@ function PuckForm(args) {
 		
 	});*/
 	
+	this.onRemoved = new Event(this);
 	this.onSaved = new Event(this);
 }
 
@@ -4192,7 +4431,8 @@ PuckForm.prototype.removePuck = function() {
 	var _this = this;
 	this.panel.setLoading();
 	var onSuccess = function(sender, data){
-		
+		_this.panel.setLoading(false);
+        _this.onRemoved.notify(containerId);
 	};
 	var containerId = this.puck.containerId;
 	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
@@ -4216,7 +4456,7 @@ PuckForm.prototype.save = function() {
 	var onSuccess = function(sender, puck){
 		_this.panel.setLoading(false);
 		_this.load(puck);
-		_this.onSaved.notify();
+		_this.onSaved.notify(puck);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.puck.containerId, this.puck.containerId, this.puck.containerId, puck);
 };
@@ -4325,10 +4565,14 @@ PuckForm.prototype.getPanel = function() {
  */
 function ShipmentForm(args) {
 	this.id = BUI.id();
+	this.width = 600;
 
 	if (args != null) {
 		if (args.creationMode != null) {
 			this.creationMode = args.creationMode;
+		}
+		if (args.width != null) {
+			this.width = args.width;
 		}
 	}
 	
@@ -4526,22 +4770,31 @@ ShipmentForm.prototype.getPanel = function() {
 
 	if (this.panel == null) {
 		this.panel = Ext.create('Ext.form.Panel', {
+			layout: 'hbox',
+			width : this.width,
+			margin : 10,
 			bodyPadding : 5,
 			cls : 'border-grid',
 			buttons : buttons,
 			items : [ 
 						{
-		      					xtype : 'requiredtextfield',
-		      					fieldLabel : 'Name',
-		      					allowBlank : false,
-		      					labelWidth : 200,
-		      					width : 400,
-		      					margin : "10 20 0 10",
-		      					name : 'shippingName',
-		      					id : _this.id + 'shippingName',
-		      					value : '',
-				        },
-		        		this.sessionComboBox,
+							xtype : 'container',
+							layout: 'vbox',
+							items: [
+										{
+												xtype : 'requiredtextfield',
+												fieldLabel : 'Name',
+												allowBlank : false,
+												labelWidth : 200,
+												width : 400,
+												margin : "10 20 0 10",
+												name : 'shippingName',
+												id : _this.id + 'shippingName',
+												value : '',
+										},
+										this.sessionComboBox
+							]
+						},
 					    {
 		    					xtype : 'textareafield',
 		    					name : 'comments',
@@ -4552,8 +4805,14 @@ ShipmentForm.prototype.getPanel = function() {
 		    					margin : "10 20 0 10",
 		    					width : 500,
 						},
-    	          		this.labContactsSendingCombo,
-        	          	this.labContactsReturnCombo
+						{
+							xtype : 'container',
+							layout: 'vbox',
+							items: [
+										this.labContactsSendingCombo,
+										this.labContactsReturnCombo
+							]
+						}
 		]
 		});
 	}
@@ -4572,59 +4831,39 @@ ShipmentForm.prototype.getPanel = function() {
 function ShippingMainView() {
 	MainView.call(this);
 	var _this = this;
-	
-	/**
+
+    /**
 	* 
 	* @property shipmentForm
 	*/
-	this.shipmentForm = new ShipmentForm();
+    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = "#/proposal/shipping/nav?nomain";
 	});
-	
-	/**
+
+    /**
 	* 
 	* @property parcelGrid
 	*/
-	this.parcelGrid = new ParcelGrid({
-		height : 300
-	});
+	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 200});
+	
 }
 
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
+ShippingMainView.prototype.getPanel = function() {
+	
+    this.panel =  Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'vbox',
+            align: 'center'
+        },
+        cls : 'border-grid',
+        items : [
+                    this.shipmentForm.getPanel(),
+                    this.parcelGrid.getPanel()
+        ]
+	});
 
-ShippingMainView.prototype.getContainer = function() {
-	this.tabPanel =  Ext.createWidget('tabpanel',
-			{
-				margin : 10,
-				defaults : {
-						anchor : '100%'
-				},
-				items : [
-				     		{
-							tabConfig : {
-								title : 'Delivery Details'
-							},
-							items : [ 
-							         	this.shipmentForm.getPanel()
-							]
-						},
-						{
-							tabConfig : {
-								id : this.id + "grid",
-								title : 'Parcels',
-								icon : '../images/icon/shipping.png'
-							},
-							items : [ 
-							         	this.parcelGrid.getPanel()
-							]
-						}
-					]
-			});
-
-	return this.tabPanel;
-
+    return this.panel;
 };
 
 
@@ -4647,6 +4886,69 @@ ShippingMainView.prototype.load = function(shippingId) {
 	}
 };
 
+/**
+* This main class deals with the creation and edition of shipments
+*
+* @class ShippingMainViewTest
+* @constructor
+*/
+function ShippingMainViewTest() {
+	MainView.call(this);
+	var _this = this;
+
+    /**
+	* 
+	* @property shipmentForm
+	*/
+    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
+	this.shipmentForm.onSaved.attach(function(sender, shipment){
+		location.hash = "#/proposal/shipping/nav?nomain";
+	});
+
+    /**
+	* 
+	* @property parcelGrid
+	*/
+	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 200});
+	
+}
+
+ShippingMainViewTest.prototype.getPanel = function() {
+	
+    this.panel =  Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'vbox',
+            align: 'center'
+        },
+        cls : 'border-grid',
+        items : [
+                    this.shipmentForm.getPanel(),
+                    this.parcelGrid.getPanel()
+        ]
+	});
+
+    return this.panel;
+};
+
+
+ShippingMainViewTest.prototype.load = function(shippingId) {
+	var _this = this;
+	this.shippingId = shippingId;
+	
+	if (shippingId == null){
+		Ext.getCmp(this.id + "grid").disable(true);
+	}
+	this.panel.setTitle("Shipment");
+	if (shippingId != null){
+		this.panel.setLoading();
+		var onSuccess = function(sender, shipment){
+			_this.shipmentForm.load(shipment);
+			_this.parcelGrid.load(shipment);
+			_this.panel.setLoading(false);
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	}
+};
 function WelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 	MainView.call(this);
@@ -4677,14 +4979,17 @@ WelcomeMainView.prototype.load = function() {
 };
 
 function AuthenticationForm(){
+    this.singleSite =false;
+    this.siteURL = null;
+    this.icon = null;
 	this.onAuthenticate = new Event(this);
 }
 AuthenticationForm.prototype.show = function(){
 	this.window = Ext.create('Ext.window.Window', {
-	    title: 'Authentication <span style="FONT-SIZE:9PX;color:red;">[INTRANET ONLY]</span>',
+	    title: 'Login',
 	    height: 250,
 	    closable :  false,
-	    width: 400,
+	    width: 450,
 	    modal : true,
 	    layout: 'fit',
 	    items: [
@@ -4694,64 +4999,144 @@ AuthenticationForm.prototype.show = function(){
 	this.window.show();
 };
 
+
+AuthenticationForm.prototype.getAuthenticationForm = function(){         
+     if (ExtISPyB.sites){
+        if (ExtISPyB.sites.length > 1){
+             var sites = Ext.create('Ext.data.Store', {
+                fields: ['name', 'url', 'exiUrl'],
+                data : ExtISPyB.sites
+            });
+            
+            return    {
+                        xtype: 'container',
+                        layout: 'vbox',
+                        items: [
+                        {
+                            xtype: 'textfield',
+                            fieldLabel: 'User',
+                            name: 'user',
+                            margin : '10 0 0 10',
+                            allowBlank: false
+                        }, 
+                        {
+                            xtype: 'textfield',
+                            fieldLabel: 'Password',
+                            margin : '10 0 0 10',
+                            name: 'password',
+                            allowBlank: false,
+                            inputType : 'password'
+                        },{
+                            xtype : 'combo',
+                            fieldLabel: 'Choose site',
+                            name: 'site',
+                            store : sites,
+                            allowBlank: false,
+                            valueField : 'url',
+                            displayField : 'name',
+                            margin : '10 0 0 10'
+	                    }    
+                        ]
+                    }
+        }
+     }
+    
+    
+     
+    return    {
+                xtype: 'container',
+                layout: 'vbox',
+                items: [
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'User',
+                    name: 'user',
+                    margin : '30 0 0 10',
+                    allowBlank: false
+                }, 
+                {
+                    xtype: 'textfield',
+                    fieldLabel: 'Password',
+                    margin : '10 0 0 10',
+                    name: 'password',
+                    allowBlank: false,
+                    inputType : 'password'
+                }    
+                ]
+  };                  
+     
+};
+
+
+AuthenticationForm.prototype.getIconForm = function(){    
+        if (this.singleSite)
+                    return {
+                            xtype   : 'image',
+                            src     : this.site.icon,
+                            width   : 75,
+                            height  : 75,
+                            margin  : '30 0 0 10'
+                            
+                        };
+};
+
+
 AuthenticationForm.prototype.getPanel = function(){
 	var _this = this;
-	var sites = Ext.create('Ext.data.Store', {
-	    fields: ['name', 'url', 'exiUrl'],
-	    data : ExtISPyB.sites
-	});
-	
+   
+
+    if (ExtISPyB.sites){
+        if (ExtISPyB.sites.length == 1){                                         
+            /** Only a single site so we can show the icon */
+            this.singleSite = true;
+            this.siteURL = ExtISPyB.sites[0].url;  
+            this.site = ExtISPyB.sites[0];
+            this.icon = ExtISPyB.sites[0].icon;                                                            
+        }
+    }
+    
 	return Ext.create('Ext.form.Panel', {
 	    bodyPadding: 5,
-	    width: 350,
-	    layout: 'anchor',
-       
+	    width: 370,
+	    layout: 'vbox',       
 	    defaults: {
 	        anchor: '90%'
 	    },
 	    // The fields
 	    defaultType: 'textfield',
-	    items: [{
-	        fieldLabel: 'User',
-	        name: 'user',
-	        margin : '10 0 0 10',
-	        allowBlank: false
-	    },{
-	        fieldLabel: 'Password',
-	        margin : '10 0 0 10',
-	        name: 'password',
-	        allowBlank: false,
-	        inputType : 'password'
-	    },{
-	    	xtype : 'combo',
-	        fieldLabel: 'Choose site',
-	        name: 'site',
-	        store : sites,
-	        allowBlank: false,
-	        valueField : 'url',
-	        displayField : 'name',
-	        margin : '10 0 0 10'
-	    }],
-
+	    items: [
+                        {
+                            xtype: 'container',
+                            layout: 'hbox',
+                            items: [
+                                    this.getIconForm(),              
+                                    this.getAuthenticationForm()]
+                        }                                           
+        ],
 	    buttons: [ {
 	        text: 'Login',
 	        formBind: true,
 	        disabled: true,
 	        handler: function() {
-	        	var form = this.up('form').getForm();
-	        	
+	        	var form = this.up('form').getForm();	        	
 	        	var exiUrl;
 	        	var properties = null;
+                
+                 if (!_this.singleSite){
+                    _this.siteURL = form.getFieldValues().site;
+                }
+                
 	        	for (var i =0; i< ExtISPyB.sites.length; i++){
-	        		if (ExtISPyB.sites[i].url == form.getFieldValues().site){
+	        		if (ExtISPyB.sites[i].url == _this.siteURL){
 	        			properties = ExtISPyB.sites[i];
-	        		}
-	        		
+	        		}	        		
 	        	}
+               
+                
 	        	_this.onAuthenticate.notify({
 	        		user : form.getFieldValues().user, 
 	        		password : form.getFieldValues().password, 
-	        		site : form.getFieldValues().site,
+	        		site : _this.siteURL,
 	        		exiUrl : properties.exiUrl,
 	        		properties : properties
 	        	});
@@ -5107,6 +5492,7 @@ function ParcelPanel(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.pucksPanelHeight = 200;
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -5130,40 +5516,91 @@ function ParcelPanel(args) {
 */
 ParcelPanel.prototype.addHeaderPanel = function() {
 	var html = "No information";
-	dust.render("parcelformsummary", this.dewar, function(err, out){
+	dust.render("parcel.header.shipping.template", this.dewar, function(err, out){
 		html = out;
     });
-	this.panel.insert(
+    
+	this.panel.add(0,
 				{
+					// cls : 'border-grid',
 					xtype 	: 'container',
-					width	: 200,
+					// width	: this.width - 50,
 					border : 1,
-					padding : 20,
-					items 	: [	{html : html}
-				
-					]
+					padding : 1,
+					items : {
+						xtype : 'container',
+						layout : 'hbox',
+						items : _.concat(this._getTopButtons(),
+											{html : html, margin : 12})
+					}
 				}
 	);
 };
 
 ParcelPanel.prototype.render = function() {
+    var _this = this;
+
 	var dewar = this.dewar;
 	this.panel.removeAll();
-
 	this.addHeaderPanel();
 	
 	if (dewar != null){
 		if (dewar.containerVOs != null){
+
+            var pucksPanel = Ext.create('Ext.panel.Panel', {
+                layout      : 'hbox',
+                cls 		: "border-grid",
+                margin: '0 0 0 6px',
+                width       : this.width - 15,
+                height       : this.pucksPanelHeight + 20,
+                autoScroll : true,
+                items       : []
+            });
+
+            this.panel.add(pucksPanel);
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
+            var puckPanelsMap = {};
+            var containerIds = [];
+            
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				/** Adding the puck layout **/
-				var puckPanel = new PuckPanel({height : 200});
-				this.panel.insert(puckPanel.getPanel());
-				puckPanel.load(container);
-				
+                var puckPanel = new PuckParcelPanel({height : this.pucksPanelHeight , containerId : container.containerId, capacity : container.capacity, code : container.code});
+                puckPanel.onPuckRemoved.attach(function (sender, containerId) {
+                    _.remove(_this.dewar.containerVOs, {containerId: containerId});
+                    _this.load(_this.dewar);
+                });
+                puckPanel.onPuckSaved.attach(function (sender, puck) {
+                    _.remove(_this.dewar.containerVOs, {containerId: puck.containerId});
+                    _this.dewar.containerVOs.push(puck);
+                    _this.load(_this.dewar);
+                });
+                puckPanelsMap[container.containerId] = puckPanel;
+                containerIds.push(container.containerId);
+                pucksPanel.insert(puckPanel.getPanel());
 			}
+            
+            if (!_.isEmpty(puckPanelsMap)) {
+                
+                var onSuccess = function (sender, samples) {
+                    if (samples) {
+                        var samplesMap = {};
+                        for (var i = 0 ; i < samples.length ; i++) {
+                            var sample = samples[i];
+                            if (samplesMap[sample.Container_containerId]){
+                                samplesMap[sample.Container_containerId].push(sample);
+                            } else {
+                                samplesMap[sample.Container_containerId] = [sample];
+                            }
+                        }
+                        _.each(samplesMap, function(samples, containerId) {
+                            puckPanelsMap[containerId].load(samples);
+                        });
+                    }
+                }
+
+                EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
+            }
 		}
 	}
 };
@@ -5222,6 +5659,7 @@ ParcelPanel.prototype.showCaseForm = function() {
 						text : 'Save',
 						handler : function() {
 							_this.onSavedClick.notify(caseForm.getDewar());
+                            _this.render();
 							window.close();
 						}
 					}, {
@@ -5239,22 +5677,26 @@ ParcelPanel.prototype._getTopButtons = function() {
 	var actions = [];
 	
 	
-	actions.push(this.code);
-	actions.push(this.status);
-	actions.push(this.storageCondition);
+	// actions.push(this.code);
+	// actions.push(this.status);
+	// actions.push(this.storageCondition);
 	
-	actions.push(Ext.create('Ext.Action', {
+	actions.push(Ext.create('Ext.Button', {
 		icon : '../images/icon/edit.png',
 		text : 'Edit',
+		cls : 'x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left',
+		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
 					_this.showCaseForm();
 		}
 	}));
 	
-	actions.push(Ext.create('Ext.Action', {
+	actions.push(Ext.create('Ext.Button', {
 		icon : '../images/print.png',
 		text : 'Print Labels',
+		cls : 'x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left',
+		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
 			var dewarId = _this.dewar.dewarId;
@@ -5264,9 +5706,11 @@ ParcelPanel.prototype._getTopButtons = function() {
 		}
 	}));
 	
-	actions.push(Ext.create('Ext.Action', {
+	actions.push(Ext.create('Ext.Button', {
 		icon : '../images/icon/add.png',
 		text : 'Add puck',
+		cls : 'x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left',
+		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
 			_this.addPuckToDewar();
@@ -5279,50 +5723,24 @@ ParcelPanel.prototype._getTopButtons = function() {
 
 ParcelPanel.prototype.getPanel = function() {
 	var _this = this;
+
 	this.panel = Ext.create('Ext.panel.Panel', {
-		layout 		: 'hbox',
 		cls 		: "border-grid",
 		margin 		: 10,
 		height 		: this.height,
+		width 		: this.width,
 		autoScroll	: true,
 		items 		: [],
-		listeners : {
-			afterrender : function(component, eOpts) {
-						_this.render();
-			}
-	    }
-//	,
-//		toolbar : [ {
-//						text : 'Save',
-//						handler : function() {
-//								var adapter = new DataAdapter();
-//								_this.panel.setLoading();
-//								var dewar = caseForm.getDewar();
-//								var onSuccess = (function(sender, shipment) {
-//									_this.load(shipment);
-//									window.close();
-//									_this.panel.setLoading(false);
-//								});
-//								dewar["sessionId"] = dewar.firstExperimentId;
-//								dewar["shippingId"] = _this.shipment.shippingId;
-//								EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
-//						}
-//					}, 
-//					{
-//							text : 'Cancel',
-//							handler : function() {
-//								window.close();
-//							}
-//					}]
 	});
-	
-	this.panel.addDocked({
-		id 		: _this.id + 'tbar',
-		height 	: 45,
-		xtype 	: 'toolbar',
-		items 	: _this._getTopButtons(),
-		cls 	: 'exi-top-bar'
-	});
+
+    // this.panel.addDocked({
+	// 	id 		: _this.id + 'tbar',
+	// 	height 	: 45,
+	// 	xtype 	: 'toolbar',
+	// 	items 	: _this._getTopButtons(),
+	// 	cls 	: 'exi-top-bar'
+	// });
+
 	return this.panel;
 };
 
@@ -5469,6 +5887,214 @@ ProposalGrid.prototype.getPanel = function() {
 
 
 
+/**
+* Renders a panel that contains a puck widget and two buttons
+*
+* @class PuckParcelPanel
+* @constructor
+*/
+function PuckParcelPanel(args) {
+    this.height = 220;
+    this.containerId = 0;
+    this.code = "";
+    this.data = {puckType : "Unipuck", 
+                mainRadius : this.height*0.3, 
+                xMargin : this.width/2 - this.height*0.3, 
+                yMargin : 2.5, 
+                enableMouseOver : true
+    };
+    this.width = 2*this.data.mainRadius + 20;
+
+	if (args != null) {
+        if (args.height != null) {
+			this.height = args.height;
+            this.data.mainRadius = this.height*0.3;
+            this.width = 2*this.data.mainRadius + 20;
+            this.data.xMargin = this.width/2 - this.data.mainRadius;
+		}
+        if (args.width != null) {
+			this.width = args.width;
+		}
+        if (args.containerId != null) {
+			this.containerId = args.containerId;
+		}
+        if (args.code != null) {
+			this.code = args.code;
+		}
+        if (args.capacity != null) {
+			if (args.capacity != 16) {
+                this.data.puckType = "Spinepuck";
+            }
+		}
+	}
+
+    this.onPuckRemoved = new Event(this);
+    this.onPuckSaved = new Event(this);
+	
+};
+
+/**
+* Returns the panel containing the puck and the buttons
+*
+* @class load
+* @return The panel containing the puck and the buttons
+*/
+PuckParcelPanel.prototype.getPanel = function () {
+
+    this.puck = new PuckWidgetContainer(this.data);
+
+    this.puckPanel = Ext.create('Ext.panel.Panel', {
+        width : this.width,
+        height : 2*this.data.mainRadius + 5,
+        items : [this.puck.getPanel()]
+	});
+
+    this.panel = Ext.create('Ext.panel.Panel', {
+        // cls : 'border-grid',
+        width : this.width,
+        height : this.height,
+        items : [{
+                    html : this.getCodeHeader(),
+                    margin : 5,
+                    x : this.data.xMargin
+                },
+                this.puckPanel,
+                this.getButtons()]
+	});
+
+    return this.panel;
+};
+
+/**
+* Loads the puck with the given samples
+*
+* @class load
+* @return
+*/
+PuckParcelPanel.prototype.load = function (samples) {
+    this.puck = new PuckWidgetContainer(this.data);
+    this.puckPanel.removeAll();
+    this.puckPanel.add(this.puck.getPanel());
+    
+    this.puck.loadSamples(samples);
+    this.containerId = this.puck.puckWidget.containerId;
+};
+
+/**
+* Returns a panel with the buttons
+*
+* @class getCodeHeader
+* @return The html of the code header
+*/
+PuckParcelPanel.prototype.getCodeHeader = function () {
+    var templateData = {info : [{
+                                    text : 'Code:',
+                                    value : this.code
+                                }]
+    }
+    var html = "";
+    dust.render("info.grid.template", templateData, function(err, out){
+		html = out;
+	});
+    return html;
+};
+
+
+/**
+* Returns a panel with the buttons
+*
+* @class getButtons
+* @return A panel with the buttons
+*/
+PuckParcelPanel.prototype.getButtons = function () {
+    var _this = this;
+
+    this.buttons = Ext.create('Ext.panel.Panel', {
+        layout: {
+            type: 'hbox',
+            align: 'middle',
+            pack: 'center'
+        },
+        width : this.width,
+        items : [
+                {
+                xtype: 'button',
+                margin : 5,
+                icon : '../images/icon/edit.png',
+                handler : function(widget, e) {
+                    var puckForm = new PuckForm({
+                        width : Ext.getBody().getWidth() - 150
+                    });
+
+                    puckForm.onRemoved.attach(function(sender, containerId){
+                        _this.onPuckRemoved.notify(containerId);
+                        window.close();
+                    });
+                    puckForm.onSaved.attach(function(sender, puck){
+                        _this.onPuckSaved.notify(puck);
+                        window.close();
+                    });
+                    var window = Ext.create('Ext.window.Window', {
+                            title: 'Edit Puck',
+                            height: 700,
+                            width: Ext.getBody().getWidth() - 100,
+                            modal : true,
+                            resizable : true,
+                            layout: 'fit',
+                            items: puckForm.getPanel()
+                    }).show();
+
+                    if (_this.containerId != null){
+                        var onSuccess = function(sender, puck){
+                            puckForm.load(puck);
+                        };
+                        EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(_this.containerId,_this.containerId,_this.containerId);
+                    }
+                }
+            },{
+                xtype: 'button',
+                margin : 5,
+                cls:'btn-remove',
+                icon : '../images/icon/ic_highlight_remove_black_24dp.png',
+                handler: function(){
+			    	function showResult(result){
+						if (result == "yes"){
+							_this.removePuck();							
+						}
+			    	}
+					  Ext.MessageBox.show({
+				           title:'Remove',
+				           msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
+				           buttons: Ext.MessageBox.YESNO,
+				           fn: showResult,
+				           animateTarget: 'mb4',
+				           icon: Ext.MessageBox.QUESTION
+				       });
+			    }
+            }
+        ]
+	});
+
+    return this.buttons;
+};
+
+/**
+* Removes the puck from the database
+*
+* @class removePuck
+* @return 
+*/
+PuckParcelPanel.prototype.removePuck = function() {
+	var _this = this;
+	this.panel.setLoading();
+	var onSuccess = function(sender, data){
+		_this.panel.setLoading(false);
+        _this.onPuckRemoved.notify(_this.containerId);
+	};
+	var containerId = this.containerId;
+	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
+	
+};
 function SessionGrid(args) {
 	this.height = 500;
 	this.tbar = false;
@@ -5571,12 +6197,13 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     }
                     _this.filterByBeamline(_this.beamlineFilter);
     };
-            
+
+        
     for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
         items.push({           
                 xtype: 'checkbox',
-                boxLabel : EXI.credentialManager.getBeamlines()[i],
-                name : EXI.credentialManager.getBeamlines()[i],
+                boxLabel : EXI.credentialManager.getBeamlines()[i].name,
+                name : EXI.credentialManager.getBeamlines()[i].name,
                 handler : myHandler 
             
         });

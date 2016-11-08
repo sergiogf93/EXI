@@ -100,6 +100,7 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     }
                     _this.filterByBeamline(_this.beamlineFilter);
     };
+
         
     for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
         items.push({           
