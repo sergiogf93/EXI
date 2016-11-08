@@ -1,6 +1,6 @@
 var ExtISPyB ={
-   version : '0.9.1',
-   release_date : '2016/10/05',
+   version : '0.9.5',
+   release_date : '2016/11/08',
    
    spaceGroups : ["P1","P2","P21","C2","P21212","P212121","P222","P2221","C222",
                     "C2221","I212121","I222","F222","P4","P41","P41212","P4122","P42","P4212","P422",
@@ -60,7 +60,10 @@ var ExtISPyB ={
          exiUrl:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
-               'BM29'
+               {
+		   name : 'BM29',
+		   sampleChangerType : ''
+   	       }
             ],
             MX:[
                { 
