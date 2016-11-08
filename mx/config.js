@@ -54,59 +54,111 @@ var ExtISPyB ={
 
    },
    sites:[
-      {
+        {
          name:'ESRF',
+         description : 'European Synchroton Radiation Facility',
+         icon : '../images/site/esrf.png',
          url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          exiUrl:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
-               'BM29'
+               {
+                name : 'BM29',
+                sampleChangerType : ''
+   	       }
             ],
             MX:[
-               "ID23-1","ID23-2","ID29","ID30A-1","ID30A-2","ID30A-3","ID30B","BM14U","BM30A"
+               { 
+                   name : "ID23-1",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID23-2",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID29",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID30A-1",
+                   sampleChangerType : 'RoboDiff'
+               },
+               { 
+                   name : "ID30A-2",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID30A-3",
+                   sampleChangerType : 'FlexHCD'
+               },
+               { 
+                   name : "ID30B",
+                   sampleChangerType : 'FlexHCD'
+               },
+               { 
+                   name : "BM14U",
+                   sampleChangerType : 'FlexHCD'
+               },
+               { 
+                   name : "BM30A",
+                   sampleChangerType : 'FlexHCD'
+               }                                             
             ]
          }
-      },
-      {
-         name:'EMBL',
-         url:'http://ispyb.embl-hamburg.de/ispyb/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               'P12'
-            ],
-            MX:[
-               "P13", "P14"
-            ]
-         }
-      },
+      }/*,    
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
-         // exiUrl:'http://lindemaria:8080/extispyb-ws/rest',
+         icon : '../images/site/dev.esrf.png',
 		 exiUrl:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
-               'BM29'
+               {
+		   name : 'BM29',
+		   sampleChangerType : ''
+   	       }
             ],
             MX:[
-               "ID23-1","ID23-2","ID29","ID30A-1","ID30A-2","ID30A-3","ID30B","BM14U","BM30A"
+               { 
+                   name : "ID23-1",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID23-2",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID29",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID30A-1",
+                   sampleChangerType : 'RoboDiff'
+               },
+               { 
+                   name : "ID30A-2",
+                   sampleChangerType : 'SC3'
+               },
+               { 
+                   name : "ID30A-3",
+                   sampleChangerType : 'FlexHCD'
+               },
+               { 
+                   name : "ID30B",
+                   sampleChangerType : 'FlexHCD'
+               },
+               { 
+                   name : "BM14U",
+                   sampleChangerType : 'FlexHCD'
+               },
+               { 
+                   name : "BM30A",
+                   sampleChangerType : 'FlexHCD'
+               }                                             
             ]
          }
-      },
-	  {
-         name:'LOCAL (only for developers)',
-         url:'http://localhost:8080/ispyb/ispyb-ws/rest',
-         exiUrl:'http://localhost:8080/ispyb/ispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               'BM29'
-            ],
-            MX:[
-               "ID23-1","ID23-2","ID29","ID30A-1","ID30A-2","ID30A-3","ID30B","BM14U","BM30A"
-            ]
-         }
-      }
+      }*/
    ]
 };
 

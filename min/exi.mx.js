@@ -3054,6 +3054,8 @@ MXDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     }  
                 }
                 
+               
+                
                 
                 
             });

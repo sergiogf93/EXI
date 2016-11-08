@@ -100,12 +100,12 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     }
                     _this.filterByBeamline(_this.beamlineFilter);
     };
-            
+        
     for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
         items.push({           
                 xtype: 'checkbox',
-                boxLabel : EXI.credentialManager.getBeamlines()[i],
-                name : EXI.credentialManager.getBeamlines()[i],
+                boxLabel : EXI.credentialManager.getBeamlines()[i].name,
+                name : EXI.credentialManager.getBeamlines()[i].name,
                 handler : myHandler 
             
         });
