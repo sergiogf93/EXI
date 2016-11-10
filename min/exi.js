@@ -2780,6 +2780,7 @@ CredentialManager.prototype.getBeamlines = function(){
 * @return 
 */
 CredentialManager.prototype.getBeamlinesByTechnique = function(technique){   
+	debugger
 	var connections = this.getConnections();
     var beamlines = [];
 	for (var i = 0; i < connections.length; i++) {        
