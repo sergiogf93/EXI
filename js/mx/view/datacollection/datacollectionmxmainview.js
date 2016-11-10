@@ -10,8 +10,8 @@ function DataCollectionMxMainView() {
 	var _this = this;
 	
 	this.genericDataCollectionPanel = new MXDataCollectionGrid();
-    this.energyScanGrid = new EnergyScanGrid();
-    this.xfeScanGrid = new XFEScanGrid();
+        this.energyScanGrid = new EnergyScanGrid();
+        this.xfeScanGrid = new XFEScanGrid();
 }
 
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -119,8 +119,9 @@ DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
             }
         }
         Ext.getCmp(this.id + "_dataCollectionTab").setTitle(data.length + " Data Collections");
-	
-        this.genericDataCollectionPanel.load(data);
+	    if (data){            
+            this.genericDataCollectionPanel.load(data.reverse());
+        }
         return;	
     }
      Ext.getCmp(this.id + "_dataCollectionTab").setDisabled(true);

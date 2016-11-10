@@ -32,7 +32,4 @@ AuthenticationManager.prototype.login = function(user, password, url){
 		username 	: user
 		
 	}).proposal.authentication.authenticate(user, password, url);
-	
-	
-	
 };

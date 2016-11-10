@@ -2,15 +2,55 @@ function DataCollectionGrid(args) {
 
     this.store = Ext.create('Ext.data.Store', {
             fields: ["dataCollectionGroup"]
-        });
-
-    if (args) {
-        if (args.mxDataCollectionGrid) {
-            this.mxDataCollectionGrid = args.mxDataCollectionGrid;
-        }
-    }
+     });
 }
     
+/**
+* By using Jquery sets lazy loading of the thumbnails
+*
+* @method loadMagnifiers
+* @return {dataCollectionGroup} Array of data collections
+*/
+DataCollectionGrid.prototype.loadMagnifiers = function(dataCollectionGroup){
+     for (var i = 0; i < dataCollectionGroup.length; i++) {
+            var elementId = dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
+            $('#' + elementId).Lazy();
+     }
+};
+
+/**
+* Loads the store and load the maginifiers
+*
+* @method load
+* @return {dataCollectionGroup} Array of data collections
+*/
+DataCollectionGrid.prototype.load = function(dataCollectionGroup){
+    try{
+        this.store.loadData(dataCollectionGroup);
+        this.loadMagnifiers(dataCollectionGroup);
+    }
+    catch(e){
+        console.log(e);
+    }
+};
+
+DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
+    var _this = this;
+    this.panel = Ext.create('Ext.grid.Panel', {
+        border: 1,        
+        store: this.store,       
+        disableSelection: true,
+        columns: this.getColumns(),
+        viewConfig: {
+            enableTextSelection: true,
+            stripeRows: false
+        }
+    });
+
+    return this.panel;
+};
+
+
 /**
 * Parses statistics and return the best one
 *

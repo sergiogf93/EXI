@@ -1,90 +1,89 @@
 function ConfirmShipmentView(args) {
 
+    this.sampleChangerName = "";
+    if (typeof(Storage) != "undefined"){
+        var sampleChangerName = sessionStorage.getItem("sampleChangerName");
+        if (sampleChangerName){
+            this.sampleChangerName = sampleChangerName;
+        }
+    }
+
     this.sampleChangerWidget = null;
     this.selectedPuck = null;
 
 }
 
 ConfirmShipmentView.prototype.getPanel = function () {
+    var _this = this;
 
-    this.puckPreviewPanel = Ext.create('Ext.panel.Panel', {
-        cls     : 'border-grid',
-        title: 'Selected Puck',
-        width : 300,
-        height : 265,
-        margin : 60,
+    this.pucksList = Ext.create('Ext.panel.Panel', {
+        cls     : 'rounded-border',
+        title: 'Sample Changer',
+        width : 600,
+        height : 490,
+        margin : 5,
+        autoScroll:true,
         items : []
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
+        height : 500,
         layout: {
             type: 'hbox',
             align: 'center',
             pack: 'center'
         },
-        margin : 20,
-        items : [this.puckPreviewPanel],
+        margin : 5,
+        items : [this.pucksList],
 			
 	});
+
+    this.panel.on('boxready', function(){
+        if (_this.sampleChangerName) {
+            _this.loadSampleChanger(_this.sampleChangerName)
+        }
+    });
+    
 	
 	return this.panel;
 
 }
 
-ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerWidget) {
+ConfirmShipmentView.prototype.loadSampleChanger = function (sampleChangerName) {
+    var _this = this;
+    var data = {
+        radius : 200,
+        isLoading : false
+    };
+    var sampleChangerWidget = null;
+    if (sampleChangerName == "FlexHCD") {
+        sampleChangerWidget = new FlexHCDWidget(data);
+    } else if (sampleChangerName == "SC3") {
+        sampleChangerWidget = new SC3Widget(data);
+    }
     this.sampleChangerWidget = sampleChangerWidget;
     this.panel.insert(0,sampleChangerWidget.getPanel());
-    this.sampleChangerWidget.render();
-    this.setClickListeners();
-}
-
-ConfirmShipmentView.prototype.setClickListeners = function () {
-    var _this = this;
-	for (puckType in this.sampleChangerWidget.pucks) {
-		for (puckIndex in this.sampleChangerWidget.pucks[puckType]){
-			var puck = this.sampleChangerWidget.pucks[puckType][puckIndex];
-			$("#" + puck.puckWidget.id).css('cursor','pointer');
-			$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-                _this.selectPuck(_this.sampleChangerWidget.findPuckById(sender.target.id));
-			});
-		}
-	}
-}
-
-ConfirmShipmentView.prototype.selectPuck = function (puck) {
-    if (this.selectedPuck) {
-        if (this.selectedPuck == puck) {
-            $("#" + this.selectedPuck.id).attr("class","puck");
-            this.puckPreviewPanel.removeAll();
-            this.selectedPuck = null;
-        } else {
-            $("#" + this.selectedPuck.id).attr("class","puck");
-            this.puckPreviewPanel.removeAll();
-            this.selectedPuck = puck;
-            $("#" + this.selectedPuck.id).attr("class","puck-selected");
-        this.drawSelectedPuck(puck);
+    if (typeof(Storage) != "undefined"){
+        var puckData = sessionStorage.getItem("puckData");
+        if (puckData){
+            this.sampleChangerWidget.load(JSON.parse(puckData));
         }
-    } else {
-        this.selectedPuck = puck;
-        $("#" + this.selectedPuck.id).attr("class","puck-selected");
-        this.drawSelectedPuck(puck);
     }
+    this.sampleChangerWidget.render();
+    // this.sampleChangerWidget.setClickListeners();
+    
+
+    this.sampleChangerWidget.onPuckSelected.attach(function(sender,puck){
+        _this.selectPuck(puck);
+    });
+
+    this.loadPucksList(this.sampleChangerWidget);
 }
 
-ConfirmShipmentView.prototype.drawSelectedPuck = function (puck) {
-    var data = {
-        puckType : 1,
-        containerId : puck.containerId,
-        mainRadius : 100,
-        x : 50,
-        y : 10,
-        enableMouseOver : true
-    };
-    var puckContainer = new PuckWidgetContainer(data);
-    if (puck.capacity == 10) {
-        data.puckType = 2;
-        puckContainer = new PuckWidgetContainer(data);
-    }
-    this.puckPreviewPanel.add(puckContainer.getPanel());
-    puckContainer.puckWidget.load(puck.data.cells);
+ConfirmShipmentView.prototype.loadPucksList = function (sampleChangerWidget) {
+    var html = "";
+	dust.render("confirm.table.prepare.template", {pucks : Object.values(sampleChangerWidget.getPuckData())}, function(err, out){
+		html = out;
+	});
+    this.pucksList.add({html : html});
 }

@@ -1,29 +1,30 @@
 /**
 * Displays the plates of the data collections by session or acronym of the protein
 *
-* @class MXDataCollectionGrid
+* @class PlatesDataCollectionGrid
 * @constructor
 */
 function PlatesDataCollectionGrid(args) {
-    DataCollectionGrid.call(this,args);
+    
 }
-
-PlatesDataCollectionGrid.prototype._getAutoprocessingStatistics = DataCollectionGrid.prototype._getAutoprocessingStatistics;
-
 
 PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
     var _this = this;
+    this.store = Ext.create('Ext.data.Store', {
+            fields: ["dataCollectionGroup"]
+    });
+        
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
-        store: this.store,               
-        columns: this.getColumns(),      
-        listeners: {
-            viewready: function() {             
-            }
+        store: this.store,            
+        columns: this.getColumns(),
+        disableSelection: true,
+        viewConfig : {
+            trackOver : false
         }
     });
     return this.panel;
-}
+};
 
 PlatesDataCollectionGrid.prototype.getColumns = function() {
     var _this = this;
@@ -35,12 +36,10 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
             hidden: false,
             renderer: function(grid, e, record) {
 
-                var data = record.data;                              
-                var html = "";
+                var data = record.data;  
+                var nContainers = data.containerIds.length;
 
-                if (data.autoProcIntegrationId){
-                    data.resultsCount = _.uniq(data.autoProcIntegrationId.replace(/ /g,'').split(",")).length;
-                }
+                var html = "";          
                 
                 dust.render("plates.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                     html = html + out;
@@ -98,7 +97,7 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                     var tree = $("<div ><div id='a' style='height:" + (pucksPanelHeight)+"px;'>" + html + "</div></div>");
                     for (id in data.containerIds){
                         var containerIdNumber = Number(data.containerIds[id]);
-                        var container = _.filter(_this.mxDataCollectionGrid.dataCollectionGroup,{"Container_containerId" : containerIdNumber});
+                        var container = _.filter(_this.dataCollectionGroup,{"Container_containerId" : containerIdNumber});
                         
                         if(container){
                             var dataCollectionIds = {};
@@ -160,18 +159,23 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
     return columns;
 };
 
-PlatesDataCollectionGrid.prototype.reloadPlates = function(data, filtered) {
-    var selected = {};
-    if (filtered) {
-        for (sample in data){
-            if (selected[data[sample].Container_containerId] == null){
-                selected[data[sample].Container_containerId] = [data[sample].BLSample_location];
-            } else {
-                selected[data[sample].Container_containerId].push(data[sample].BLSample_location);
-            }
+PlatesDataCollectionGrid.prototype.select = function(selectedDataCollectionGroup) {      
+    var selected = {};   
+    for (sample in selectedDataCollectionGroup){
+        if (selected[selectedDataCollectionGroup[sample].Container_containerId] == null){
+            selected[selectedDataCollectionGroup[sample].Container_containerId] = [selectedDataCollectionGroup[sample].BLSample_location];
+        } else {
+            selected[selectedDataCollectionGroup[sample].Container_containerId].push(selectedDataCollectionGroup[sample].BLSample_location);
         }
-    }
-    
-    var containerIds =_.filter(Object.keys(_.keyBy(data, "Container_containerId")), function(element){return isNumber(element);});                                                      
-    this.mxDataCollectionGrid.reloadData([{containerIds : containerIds, selected : selected}]);
-}
+    }                                                                      
+    this.store.loadData([{containerIds : this.getContainersId(this.dataCollectionGroup), selected : selected}]);
+};
+
+PlatesDataCollectionGrid.prototype.getContainersId = function(dataCollectionGroup) {         
+   return _.filter(Object.keys(_.keyBy(dataCollectionGroup, "Container_containerId")), function(element){return isNumber(element);});                                                              
+};
+
+PlatesDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
+    this.dataCollectionGroup = dataCollectionGroup;    
+    this.store.loadData([{containerIds:  this.getContainersId(this.dataCollectionGroup), selected :{}}]);
+};
