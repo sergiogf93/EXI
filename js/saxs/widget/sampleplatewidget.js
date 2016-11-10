@@ -83,15 +83,7 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 };
 
 SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
-	var _this = this;
-
-	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
-	this.windowContainerId = windowContainerId;
-	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
-		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
-		return;
-	}
-
+	debugger
 	this.onVertexUp = new Event(this);
 	this.samplePlate = samplePlate;
 	this.experiment = experiment;
@@ -101,13 +93,8 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 	var rows = this.samplePlate.platetype3VO.rowCount;
 	var columns = this.samplePlate.platetype3VO.columnCount;
 
-	this.network = new NetworkWidget({
-		targetId : targetId
-	});
-	var dataset = new GraphDataset();
-	var formatter = new NetworkDataSetFormatter({
-		defaultFormat : {
-			type : "LineEdgeNetworkFormatter",
+	var formatter = {
+			// type : "LineEdgeNetworkFormatter",
 			'fill-opacity' : 1,
 			fill : this.wellColor,
 			'stroke-width' : this.strokeWidth,
@@ -118,64 +105,145 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			title : {
 				fontSize : this.fontSize,
 				fill : "#000000"
-			}
-		}
-	}, null, {
-		labeled : false,
-		height : this.height,
-		width : this.width,
-       
-		right : this.width,
-		backgroundColor : this.backgroundColor,
-		balanceNodes : false,
-		nodesMaxSize : 12,
-		nodesMinSize : 2
-	});
+			},
+			labeled : false,
+			height : this.height,
+			width : this.width,
+		
+			right : this.width,
+			backgroundColor : this.backgroundColor,
+			balanceNodes : false,
+			nodesMaxSize : 12,
+			nodesMinSize : 2
+		};
 
-	formatter.dataBind(dataset);
-	var layout = new LayoutDataset();
-	layout.dataBind(dataset);
-	this.network.draw(dataset, formatter, layout);
+	var nodes = [];
+	var nodeRadius = Math.min(this.width/columns,this.height/rows)/2;
+	nodeRadius = Math.min(nodeRadius, formatter.nodesMaxSize);
+	nodeRadius = Math.max(nodeRadius, formatter.nodesMinSize);
 
 	for ( var i = 1; i <= rows; i++) {
 		for ( var j = 1; j <= columns; j++) {
-			this.network.getDataset().addNode("", {
-				row : i,
-				column : j
+			var factor = 0.7;
+			nodes.push({
+							radius 		: 	nodeRadius*factor,
+							x 			: 	(j-1)*2*nodeRadius + nodeRadius,
+							y 			: 	(i-1)*2*nodeRadius + nodeRadius,
+							row 		: 	i,
+							column 		: 	j
 			});
-
-			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
-				if (j < 9) {
-					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
-				} else {
-					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
-				}
-			}
-
 		}
 	}
 
-	/** EVENT WHEN USER CLICK ON A WELL **/
-	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
-		_this.onVertexUp.notify({
-			samplePlate : _this.samplePlate,
-			row : _this.network.getDataset().getVertexById(nodeId).args.row,
-			column : _this.network.getDataset().getVertexById(nodeId).args.column
-
-		});
-	});
-
-	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
-	});
-
-	this.relayout(this.network, rows, columns);
-	this.fillSimulator(this.experiment.getSamples());
-
-	if (this.showBorderLabels) {
-		this.drawBorders();
+	var templateData = {
+							id 			: 	this.id,
+							nodes 		: 	nodes,
+							formatter 	: 	formatter
 	}
 
-};
+	var html = "";
+	dust.render("sample.plate.template", templateData, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$("#" + this.targetId).html(html);
+
+}
+
+// SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
+// 	var _this = this;
+// 	debugger
+// 	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
+// 	this.windowContainerId = windowContainerId;
+// 	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
+// 		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
+// 		return;
+// 	}
+
+// 	this.onVertexUp = new Event(this);
+// 	this.samplePlate = samplePlate;
+// 	this.experiment = experiment;
+
+// 	this.targetId = targetId;
+
+// 	var rows = this.samplePlate.platetype3VO.rowCount;
+// 	var columns = this.samplePlate.platetype3VO.columnCount;
+
+// 	this.network = new NetworkWidget({
+// 		targetId : targetId
+// 	});
+// 	var dataset = new GraphDataset();
+// 	var formatter = new NetworkDataSetFormatter({
+// 		defaultFormat : {
+// 			type : "LineEdgeNetworkFormatter",
+// 			'fill-opacity' : 1,
+// 			fill : this.wellColor,
+// 			'stroke-width' : this.strokeWidth,
+// 			'stroke-opacity' : 1,
+           
+// 			stroke : "#000000",
+// 			size : this.nodeSize,
+// 			title : {
+// 				fontSize : this.fontSize,
+// 				fill : "#000000"
+// 			}
+// 		}
+// 	}, null, {
+// 		labeled : false,
+// 		height : this.height,
+// 		width : this.width,
+       
+// 		right : this.width,
+// 		backgroundColor : this.backgroundColor,
+// 		balanceNodes : false,
+// 		nodesMaxSize : 12,
+// 		nodesMinSize : 2
+// 	});
+
+// 	formatter.dataBind(dataset);
+// 	var layout = new LayoutDataset();
+// 	layout.dataBind(dataset);
+// 	this.network.draw(dataset, formatter, layout);
+
+// 	for ( var i = 1; i <= rows; i++) {
+// 		for ( var j = 1; j <= columns; j++) {
+// 			this.network.getDataset().addNode("", {
+// 				row : i,
+// 				column : j
+// 			});
+
+// 			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
+// 				if (j < 9) {
+// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
+// 				} else {
+// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
+// 				}
+// 			}
+
+// 		}
+// 	}
+
+// 	/** EVENT WHEN USER CLICK ON A WELL **/
+// 	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
+// 		_this.onVertexUp.notify({
+// 			samplePlate : _this.samplePlate,
+// 			row : _this.network.getDataset().getVertexById(nodeId).args.row,
+// 			column : _this.network.getDataset().getVertexById(nodeId).args.column
+
+// 		});
+// 	});
+
+// 	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
+// 	});
+
+// 	this.relayout(this.network, rows, columns);
+// 	this.fillSimulator(this.experiment.getSamples());
+
+// 	if (this.showBorderLabels) {
+// 		this.drawBorders();
+// 	}
+
+// };
 
 SamplePlateWidget.prototype.drawBorders = function() {
 	var xArray = {};
