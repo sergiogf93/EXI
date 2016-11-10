@@ -82,13 +82,32 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 	}
 };
 
+SamplePlateWidget.prototype.load = function (experiment) {
+	for (var i = 0 ; i < experiment.getSamples().length ; i++) {
+		var specimen = experiment.getSamples()[i];
+		if (specimen.samplePlateName.substring(0,20) == this.samplePlate.platetype3VO.name) {
+			var nodeId = this.id + "-node-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+			var color = experiment.getSpecimenColorByBufferId(specimen.specimenId);
+			if (specimen.macromolecule3VO != null) {
+				color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
+			}
+			$("#" + nodeId).attr("fill",color);
+			if (specimen.measurements && specimen.measurements.length > 0) {
+				if (specimen.measurements[0].run3VO.runId != null) {
+					$("#" + this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber).attr("visibility","visible");
+				}
+			}
+		}
+	}
+}
+
 SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
-	debugger
 	this.onVertexUp = new Event(this);
 	this.samplePlate = samplePlate;
 	this.experiment = experiment;
 
 	this.targetId = targetId;
+	$("#" + this.targetId).append( "<div id='" + this.targetId + "-div-svg" + "'></div>" );
 
 	var rows = this.samplePlate.platetype3VO.rowCount;
 	var columns = this.samplePlate.platetype3VO.columnCount;
@@ -118,26 +137,59 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 		};
 
 	var nodes = [];
-	var nodeRadius = Math.min(this.width/columns,this.height/rows)/2;
+	var text = [];
+	var margin = 10;
+	var nodeRadius = Math.min((this.width-margin)/columns,(this.height-margin)/rows)/2;
 	nodeRadius = Math.min(nodeRadius, formatter.nodesMaxSize);
 	nodeRadius = Math.max(nodeRadius, formatter.nodesMinSize);
 
+	var horizontalMargin = ((this.width-margin) - 2*nodeRadius*columns)/(columns + 1);
+	var verticalMargin = ((this.height-margin) - 2*nodeRadius*rows)/(rows + 1);
+
 	for ( var i = 1; i <= rows; i++) {
 		for ( var j = 1; j <= columns; j++) {
-			var factor = 0.7;
+			var factor = 0.8;
+			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
+				if (j >= 9) {
+					factor = 1.0;
+				} else {
+					factor = 0.6;
+				}
+			}
+			var squareSide = Math.min(horizontalMargin,verticalMargin) + 2*nodeRadius*factor;
+
 			nodes.push({
 							radius 		: 	nodeRadius*factor,
-							x 			: 	(j-1)*2*nodeRadius + nodeRadius,
-							y 			: 	(i-1)*2*nodeRadius + nodeRadius,
+							x 			: 	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
+							y 			: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin,
 							row 		: 	i,
-							column 		: 	j
+							column 		: 	j,
+							xSquare 	:	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin - squareSide/2 ,
+							ySquare		: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin - squareSide/2,
+							squareSide	:	squareSide
 			});
+			if (j == 1) {
+				var letter = ["A","B","C","D","E","F","G","H"][i-1];
+				text.push({
+							text 	:	letter,
+							x		:	Math.max(horizontalMargin,nodeRadius) / 2,
+							y 		: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin + this.fontSize/2
+				});
+			}
+			if (i == rows) {
+				text.push({
+							text 	:	j,
+							x		:	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
+							y 		: 	this.height
+				});
+			}
 		}
 	}
 
 	var templateData = {
 							id 			: 	this.id,
 							nodes 		: 	nodes,
+							text		:	text,
 							formatter 	: 	formatter
 	}
 
@@ -146,7 +198,9 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 		html = html + out;
 	});
 	
-	$("#" + this.targetId).html(html);
+	$("#" + this.targetId + "-div-svg").html(html);
+
+	this.load(this.experiment);
 
 }
 

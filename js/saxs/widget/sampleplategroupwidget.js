@@ -53,7 +53,7 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 				width		: (this.width/3) - 5, 
 				height		: this.heightPlates + 10 , 
 				nodeSize	: this.nodeSize, 
-				fontSize	: 0, 
+				fontSize	: 8, 
 				strokeWidth	: 1.5
 			});
 
