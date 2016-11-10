@@ -20,7 +20,7 @@ function MeasurementGrid(args) {
 	
 	this.id = BUI.id();
 
-	this.height = 500;
+	this.height = 600;
 	this.width = 900;
 
 	this.maxWidth = 1200;
@@ -63,19 +63,11 @@ function MeasurementGrid(args) {
 		direction : 'ASC'
 	} ];
 	
-//	this.selModel = Ext.create('Ext.selection.RowModel', {
-//		allowDeselect : true,
-//		mode : 'MULTI',
-//		listeners : {
-//			selectionchange : function(sm, selections) {
-//				var selected = [];
-//				for (var i = 0; i < selections.length; i++) {
-//					selected.push(selections[i].raw);
-//				}
-//				_this.onSelected.notify(selected);
-//			}
-//		}
-//	});
+	// this.store = Ext.create('Ext.data.Store', {
+	// 	fields : [ 'macromoleculeId', 'name', 'acronym', 'comments' ],
+	// 	data : [],
+	// 	sorters : this.sorter
+	// });
 	
 	
 	if (args != null) {
@@ -168,77 +160,58 @@ function MeasurementGrid(args) {
 	this.onExperimentChanged = new Event(this);
 }
 
+// MeasurementGrid.prototype.edit = function(macromolecule) {
+// 	var _this = this;
+// 	var window = new MacromoleculeWindow();
+// 	window.onSave.attach(function(sender) {
+// //		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
+// //		_this.onMacromoleculesChanged.notify();
+// 	});
+// 	window.draw(macromolecule);
+// };
 
+// MeasurementGrid.prototype.deselectAll = function() {
+// 	this.grid.getSelectionModel().deselectAll();
+// };
 
+// MeasurementGrid.prototype.selectById = function(macromoleculeId) {
+// 	this.grid.getSelectionModel().deselectAll();
+// 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
+// 		var item = this.grid.getStore().data.items[i].raw;
+// 		if (item.macromoleculeId == macromoleculeId) {
+// 			this.grid.getSelectionModel().select(i);
+// 		}
+// 	}
+// };
 
-
-MeasurementGrid.prototype.edit = function(macromolecule) {
-	var _this = this;
-	var window = new MacromoleculeWindow();
-	window.onSave.attach(function(sender) {
-//		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
-//		_this.onMacromoleculesChanged.notify();
-	});
-	window.draw(macromolecule);
-};
-
-//MeasurementGrid.prototype.getTbar = function() {
-//	var _this = this;
-//	var actions = [];
-//
-//	actions.push(Ext.create('Ext.Action', {
-//		icon: '../images/icon/add.png',
-//		text : 'Add',
-//		disabled : false,
-//		handler : function(widget, event) {
-//			_this.edit();
-//		}
-//	}));
-//	actions.push("->");
-//	actions.push(Ext.create('Ext.Action', {
-//		icon : '../images/icon/refresh.png',
-//		text : 'Update From SMIS',
-//		tooltip : "Retrieve all the macromolecules of your proposal from SMIS database",
-//		disabled : false,
-//		handler : function(widget, event) {
-//			_this.grid.setLoading("Connecting to SMIS");
-//			var adapter = new BiosaxsDataAdapter();
-//			adapter.onSuccess.attach(function(sender, data) {
-//				BIOSAXS.proposal.setMacromolecules(data.macromolecules);
-//				_this.refresh(BIOSAXS.proposal.macromolecules);
-//				_this.grid.setLoading(false);
-//			});
-//			adapter.onError.attach(function(sender, data) {
-//				_this.grid.setLoading(false);
-//			});
-//			adapter.updateDataBaseFromSMIS();
-//		}
-//	}));
-//	return actions;
-//};
-
-MeasurementGrid.prototype.deselectAll = function() {
-	this.grid.getSelectionModel().deselectAll();
-};
-
-MeasurementGrid.prototype.selectById = function(macromoleculeId) {
-	this.grid.getSelectionModel().deselectAll();
-	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
-		var item = this.grid.getStore().data.items[i].raw;
-		if (item.macromoleculeId == macromoleculeId) {
-			this.grid.getSelectionModel().select(i);
-		}
-	}
-};
-
-MeasurementGrid.prototype.load = function(data) {
-	this.store.loadData(data, false);
-};
-
-MeasurementGrid.prototype.loadExperiment = function(experiment) {
+MeasurementGrid.prototype.load = function(experiment) {
 	this.experimentList = new ExperimentList([ experiment ]);
 	var data = this._prepareData(this.experimentList.getMeasurements(), this.experimentList);
-	this.load(data);
+
+	for (var i=0 ; i < data.length ; i++){
+		data[i].samplePlateLetter = BUI.getSamplePlateLetters()[data[i].bufferSampleplateposition3VO.rowNumber - 1];
+	}
+
+	data.sort(function (a,b){
+		return a.measurementId - b.measurementId;
+	});
+
+	var html = "";
+	dust.render("measurement.grid.template", {rows : data, id : this.id,  height : this.height}, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	// this.store.loadData(data, false);
+};
+
+MeasurementGrid.prototype.getPanel = function(){
+    var _this = this;
+
+	return {
+		html : '<div id="' + this.id + '">This is a test</div>',
+		autoScroll : false
+	}
 };
 
 MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
@@ -306,479 +279,472 @@ MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
 /**
  * @key name of the columns mathing the this.editor[key]
  */
-MeasurementGrid.prototype._getEditor = function(key) {
-	if (this.editor != null){
-		if (this.editor[key] != null) {
-			return this.editor[key];
-		}
-	}
-	return null;
-};
+// MeasurementGrid.prototype._getEditor = function(key) {
+// 	if (this.editor != null){
+// 		if (this.editor[key] != null) {
+// 			return this.editor[key];
+// 		}
+// 	}
+// 	return null;
+// };
 
-MeasurementGrid.prototype.getColumns = function() {
-	var _this = this;
-	var columns = [{
-			text : 'Order',
-			dataIndex : 'priority',
-			flex : 0.3,
-			hidden : _this.isPriorityColumnHidden,
-			sortable : true,
-			hidden : true
-		},
-		{
-			text : 'Run Number',
-			dataIndex : 'code',
-			flex : 0.5,
-			hidden : true,
-			sortable : true
-		},
-		{
-			text : 'Specimen',
-			columns : [
+// MeasurementGrid.prototype.getColumns = function() {
+// 	var _this = this;
+// 	var columns = [{
+// 			text : 'Order',
+// 			dataIndex : 'priority',
+// 			flex : 0.3,
+// 			hidden : _this.isPriorityColumnHidden,
+// 			sortable : true,
+// 			hidden : true
+// 		},
+// 		{
+// 			text : 'Run Number',
+// 			dataIndex : 'code',
+// 			flex : 0.5,
+// 			hidden : true,
+// 			sortable : true
+// 		},
+// 		{
+// 			text : 'Specimen',
+// 			columns : [
 
-					{
-						text : '',
-						dataIndex : 'macromoleculeId',
-						flex : 1,
-						hidden : true,
-						sortable : true
-					},
-					{
-						text : 'Macromolecule',
-						dataIndex : 'acronym',
-						flex : 1,
-						sortable : true
-					},
-					{
-						text : 'Conc. ',
-						dataIndex : 'concentration',
-						flex : 1,
-						sortable : true
-					},
-					{
-						text : '',
-						dataIndex : 'bufferId',
-						flex : 1,
-						hidden : true,
-						sortable : true
-					},
-					{
-						text : 'Buffer',
-						dataIndex : 'buffer_acronym',
-						flex : 1,
-						renderer : function(val, y, sample) {
-							if (sample.data.bufferSampleplateposition3VO != null) {
-								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
-										+ sample.data.bufferSampleplate.slotPositionColumn + ", "
-										+ BUI.getSamplePlateLetters()[sample.data.bufferSampleplateposition3VO.rowNumber - 1] + "-"
-										+ sample.data.bufferSampleplateposition3VO.columnNumber + "]</span>";
-							}
-							return val;
-						},
-						sortable : true
-					}, {
-						text : 'Position',
-						flex : 1,
-						hidden : true,
-					} ]
-		},
-		{
-			text : 'Parameters',
-			columns : [
-					{
-						text : 'Ex. Flow. time (s)',
-						dataIndex : 'extraFlowTime',
-						flex : 1,
-						hidden : true,
-					},
-					{
-						text : 'Exp. Temp.',
-						dataIndex : 'exposureTemperature',
-						flex : 1,
-						sortable : true,
-						editor : this._getEditor("exposureTemperature")
-					},
-					{
-						text : 'Vol. Load',
-						dataIndex : 'volumeToLoad',
-						flex : 0.5,
-						hidden : false,
-						editor : this._getEditor("volumeToLoad"),
-					},
-					{
-						text : 'Volume in Well',
-						dataIndex : 'volume',
-						hidden : true,
-						editor : this._getEditor("volume"),
-						flex : 1
-					},
-					{
-						text : 'Trans.',
-						dataIndex : 'transmission',
-						flex : 1,
-						editor : this._getEditor("transmission"),
-					},
-					{
-						text : 'Wait T.',
-						dataIndex : 'waitTime',
-						editor : this._getEditor("waitTime"),
-						flex : 0.5
-					},
-					{
-						text : 'Flow',
-						dataIndex : 'flow',
-						editor : this._getEditor("flow"),
-						flex : 0.3
-					},
-					{
-						text : 'Viscosity',
-						dataIndex : 'viscosity',
-						tooltip : 'The viscosity of a fluid is a measure of its resistance to gradual deformation by shear stress or tensile stress. For liquids, it corresponds to the informal notion of "thickness"',
-						editor : this._getEditor("viscosity"),
-						flex : 0.5
-					} ]
-		}, {
-			text : 'Status',
-			dataIndex : 'status',
-//			width : 50,
-			flex : 1,
-			hidden : _this.isStatusColumnHidden,
-			renderer : function(val, record, r){
-				if (val != null){
-					return "<span style='font-weight: bold;'>" + val +"</span>"
-				}
-			}
-		}, {
-			text : 'Time',
-			dataIndex : 'time',
-			flex : 1,
-			hidden : _this.isTimeColumnHidden,
-		}, {
-			text : 'Energy',
-			dataIndex : 'energy',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Real Exp. Temp.(C)',
-			flex : 1,
-			dataIndex : 'expExposureTemperature',
-			hidden : true
-		}, {
-			text : 'Storage Temp.(C)',
-			flex : 1,
-			dataIndex : 'storageTemperature',
-			hidden : true
-		}, {
-			text : 'Time/Frame (s)',
-			flex : 1,
-			dataIndex : 'timePerFrame',
-			hidden : true
-		}, {
-			text : 'Radiation Relative',
-			dataIndex : 'radiationRelative',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Radiation Absolute',
-			dataIndex : 'radiationAbsolute',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Comments',
-			dataIndex : 'comments',
-			flex : 1,
-			hidden : true,
-			editor : this._getEditor("comments")
+// 					{
+// 						text : '',
+// 						dataIndex : 'macromoleculeId',
+// 						flex : 1,
+// 						hidden : true,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : 'Macromolecule',
+// 						dataIndex : 'acronym',
+// 						flex : 1,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : 'Conc. ',
+// 						dataIndex : 'concentration',
+// 						flex : 1,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : '',
+// 						dataIndex : 'bufferId',
+// 						flex : 1,
+// 						hidden : true,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : 'Buffer',
+// 						dataIndex : 'buffer_acronym',
+// 						flex : 1,
+// 						renderer : function(val, y, sample) {
+// 							if (sample.data.bufferSampleplateposition3VO != null) {
+// 								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
+// 										+ sample.data.bufferSampleplate.slotPositionColumn + ", "
+// 										+ BUI.getSamplePlateLetters()[sample.data.bufferSampleplateposition3VO.rowNumber - 1] + "-"
+// 										+ sample.data.bufferSampleplateposition3VO.columnNumber + "]</span>";
+// 							}
+// 							return val;
+// 						},
+// 						sortable : true
+// 					}, {
+// 						text : 'Position',
+// 						flex : 1,
+// 						hidden : true,
+// 					} ]
+// 		},
+// 		{
+// 			text : 'Parameters',
+// 			columns : [
+// 					{
+// 						text : 'Ex. Flow. time (s)',
+// 						dataIndex : 'extraFlowTime',
+// 						flex : 1,
+// 						hidden : true,
+// 					},
+// 					{
+// 						text : 'Exp. Temp.',
+// 						dataIndex : 'exposureTemperature',
+// 						flex : 1,
+// 						sortable : true,
+// 						editor : this._getEditor("exposureTemperature")
+// 					},
+// 					{
+// 						text : 'Vol. Load',
+// 						dataIndex : 'volumeToLoad',
+// 						flex : 0.5,
+// 						hidden : false,
+// 						editor : this._getEditor("volumeToLoad"),
+// 					},
+// 					{
+// 						text : 'Volume in Well',
+// 						dataIndex : 'volume',
+// 						hidden : true,
+// 						editor : this._getEditor("volume"),
+// 						flex : 1
+// 					},
+// 					{
+// 						text : 'Trans.',
+// 						dataIndex : 'transmission',
+// 						flex : 1,
+// 						editor : this._getEditor("transmission"),
+// 					},
+// 					{
+// 						text : 'Wait T.',
+// 						dataIndex : 'waitTime',
+// 						editor : this._getEditor("waitTime"),
+// 						flex : 0.5
+// 					},
+// 					{
+// 						text : 'Flow',
+// 						dataIndex : 'flow',
+// 						editor : this._getEditor("flow"),
+// 						flex : 0.3
+// 					},
+// 					{
+// 						text : 'Viscosity',
+// 						dataIndex : 'viscosity',
+// 						tooltip : 'The viscosity of a fluid is a measure of its resistance to gradual deformation by shear stress or tensile stress. For liquids, it corresponds to the informal notion of "thickness"',
+// 						editor : this._getEditor("viscosity"),
+// 						flex : 0.5
+// 					} ]
+// 		}, {
+// 			text : 'Status',
+// 			dataIndex : 'status',
+// //			width : 50,
+// 			flex : 1,
+// 			hidden : _this.isStatusColumnHidden,
+// 			renderer : function(val, record, r){
+// 				if (val != null){
+// 					return "<span style='font-weight: bold;'>" + val +"</span>"
+// 				}
+// 			}
+// 		}, {
+// 			text : 'Time',
+// 			dataIndex : 'time',
+// 			flex : 1,
+// 			hidden : _this.isTimeColumnHidden,
+// 		}, {
+// 			text : 'Energy',
+// 			dataIndex : 'energy',
+// 			flex : 1,
+// 			hidden : true
+// 		}, {
+// 			text : 'Real Exp. Temp.(C)',
+// 			flex : 1,
+// 			dataIndex : 'expExposureTemperature',
+// 			hidden : true
+// 		}, {
+// 			text : 'Storage Temp.(C)',
+// 			flex : 1,
+// 			dataIndex : 'storageTemperature',
+// 			hidden : true
+// 		}, {
+// 			text : 'Time/Frame (s)',
+// 			flex : 1,
+// 			dataIndex : 'timePerFrame',
+// 			hidden : true
+// 		}, {
+// 			text : 'Radiation Relative',
+// 			dataIndex : 'radiationRelative',
+// 			flex : 1,
+// 			hidden : true
+// 		}, {
+// 			text : 'Radiation Absolute',
+// 			dataIndex : 'radiationAbsolute',
+// 			flex : 1,
+// 			hidden : true
+// 		}, {
+// 			text : 'Comments',
+// 			dataIndex : 'comments',
+// 			flex : 1,
+// 			hidden : true,
+// 			editor : this._getEditor("comments")
 
-		}, 
-		{
-			id : _this.id + 'buttonRemoveSample',
-			text : '',
-			hidden : !_this.removeBtnEnabled,
-			flex : 1,
-//			sortable : false,
-			renderer : function(value, metaData, record, rowIndex, colIndex, store) {
-//				return "asdsad"
-				if (record.data.macromoleculeId != null) {
-					if (_this.removeBtnEnabled) {
-						return BUI.getRedButton('REMOVE');
-					}
-				}
-			}
-		}
-//		{
-//			xtype : 'actioncolumn',
-//			text : 'Remove',
-//			flex : 1,
-//			sortable : false,
-//			editable : false,
-//			items : [{
-//			         	icon : '../images/icon/ic_delete_black_24dp.png',
-//		                tooltip: 'Remove',
-//		                handler: function(grid, rowIndex, colIndex) {
-//		                    grid.getStore().removeAt(rowIndex);
-//		                }
-//			}
-//			]
-//		} 
-		];
-	return columns;
-};
+// 		}, 
+// 		{
+// 			id : _this.id + 'buttonRemoveSample',
+// 			text : '',
+// 			hidden : !_this.removeBtnEnabled,
+// 			flex : 1,
+// //			sortable : false,
+// 			renderer : function(value, metaData, record, rowIndex, colIndex, store) {
+// //				return "asdsad"
+// 				if (record.data.macromoleculeId != null) {
+// 					if (_this.removeBtnEnabled) {
+// 						return BUI.getRedButton('REMOVE');
+// 					}
+// 				}
+// 			}
+// 		}
+// //		{
+// //			xtype : 'actioncolumn',
+// //			text : 'Remove',
+// //			flex : 1,
+// //			sortable : false,
+// //			editable : false,
+// //			items : [{
+// //			         	icon : '../images/icon/ic_delete_black_24dp.png',
+// //		                tooltip: 'Remove',
+// //		                handler: function(grid, rowIndex, colIndex) {
+// //		                    grid.getStore().removeAt(rowIndex);
+// //		                }
+// //			}
+// //			]
+// //		} 
+// 		];
+// 	return columns;
+// };
 
 
 /**
  * If updateRowEnabled returns an array with Ext.grid.plugin.RowEditing
  */
-MeasurementGrid.prototype._getPlugins = function() {
-	var _this = this;
-	var plugins = [];
-	if (this.updateRowEnabled) {
-		plugins.push(Ext.create('Ext.grid.plugin.RowEditing', {
-			clicksToEdit : 1,
-			listeners : {
-				validateedit : function(grid, e) {
-					/** Setting values * */
-					for ( var key in _this.editor) {
-						e.record.data[key] = e.newValues[key];
-					}
-					/** Comments are always updatable* */
-					e.record.data.comments = e.newValues.comments;
+// MeasurementGrid.prototype._getPlugins = function() {
+// 	var _this = this;
+// 	var plugins = [];
+// 	if (this.updateRowEnabled) {
+// 		plugins.push(Ext.create('Ext.grid.plugin.RowEditing', {
+// 			clicksToEdit : 1,
+// 			listeners : {
+// 				validateedit : function(grid, e) {
+// 					/** Setting values * */
+// 					for ( var key in _this.editor) {
+// 						e.record.data[key] = e.newValues[key];
+// 					}
+// 					/** Comments are always updatable* */
+// 					e.record.data.comments = e.newValues.comments;
 					
-					var onSuccess = (function(sender, measurement) {
-						_this.onMeasurementChanged.notify(measurement);
-						_this.grid.setLoading(false);
-					});
-					_this.grid.setLoading();
-					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.saveMeasurement(e.record.data);
-				}
-			}
-		}));
-	}
-	return plugins;
-};
+// 					var onSuccess = (function(sender, measurement) {
+// 						_this.onMeasurementChanged.notify(measurement);
+// 						_this.grid.setLoading(false);
+// 					});
+// 					_this.grid.setLoading();
+// 					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.saveMeasurement(e.record.data);
+// 				}
+// 			}
+// 		}));
+// 	}
+// 	return plugins;
+// };
 
 
-/** Returns the grid **/
-MeasurementGrid.prototype.getPanel = function() {
-	var _this = this;
 
-	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'macromoleculeId', 'name', 'acronym', 'comments' ],
-		data : [],
-		sorters : this.sorter
-	});
+// MeasurementGrid.prototype.getPanel = function() {
+// 	var _this = this;
 
-
-	if (this.multiselect) {
-		this.selModel = Ext.create('Ext.selection.CheckboxModel', {
-			multiSelect : this.multiselect,
-			listeners : {
-				selectionchange : function(sm, selections) {
-					var macromolecules = [];
-					for ( var i = 0; i < selections.length; i++) {
-						macromolecules.push(selections[i].raw);
-					}
-					_this.onSelected.notify(macromolecules);
-				}
-			}
-		});
-	}
+// 	if (this.multiselect) {
+// 		this.selModel = Ext.create('Ext.selection.CheckboxModel', {
+// 			multiSelect : this.multiselect,
+// 			listeners : {
+// 				selectionchange : function(sm, selections) {
+// 					var macromolecules = [];
+// 					for ( var i = 0; i < selections.length; i++) {
+// 						macromolecules.push(selections[i].raw);
+// 					}
+// 					_this.onSelected.notify(macromolecules);
+// 				}
+// 			}
+// 		});
+// 	}
 	
-	 var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
-	        clicksToEdit: 1,
-	        autoCancel: true
-	    });
+// 	 var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+// 	        clicksToEdit: 1,
+// 	        autoCancel: true
+// 	    });
 	  
-	 var bbar = {};
-		try {
-			bbar = Ext.create('Ext.ux.StatusBar', {
-				id : _this.id + 'basic-statusbar',
-				defaultText : 'Ready',
-				text : 'Ready',
-				iconCls : 'x-status-valid',
-				items : []
-			});
-		} catch (exp) {
-			console.log("bbar error");
-		}
+// 	 var bbar = {};
+// 		try {
+// 			bbar = Ext.create('Ext.ux.StatusBar', {
+// 				id : _this.id + 'basic-statusbar',
+// 				defaultText : 'Ready',
+// 				text : 'Ready',
+// 				iconCls : 'x-status-valid',
+// 				items : []
+// 			});
+// 		} catch (exp) {
+// 			console.log("bbar error");
+// 		}
 		
 		
-	this.grid = Ext.create('Ext.grid.Panel', {
-		id : this.id,
-		title : this.title,
-		plugins : this._getPlugins(),
-		margin : this.margin,
-		store : this.store,
-		height : this.height,
-		maxHeight : this.maxHeight,
-		columns : this.getColumns(),
-		bbar : bbar,
-		tbar :  this._getMenu(),
-		cls : 'border-grid',
-		viewConfig : {
-			stripeRows : true,
-			getRowClass : function(record, index, rowParams, store) {
-				if (record.data.status == "DONE") {
-					return 'green-row';
-				}
-			},
-			listeners : {
-				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-				},
-				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-					if (td.innerHTML.indexOf("REMOVE") != -1){
-						grid.getStore().removeAt(rowIndex);
+// 	this.grid = Ext.create('Ext.grid.Panel', {
+// 		id : this.id,
+// 		title : this.title,
+// 		plugins : this._getPlugins(),
+// 		margin : this.margin,
+// 		store : this.store,
+// 		height : this.height,
+// 		maxHeight : this.maxHeight,
+// 		columns : this.getColumns(),
+// 		bbar : bbar,
+// 		tbar :  this._getMenu(),
+// 		cls : 'border-grid',
+// 		viewConfig : {
+// 			stripeRows : true,
+// 			getRowClass : function(record, index, rowParams, store) {
+// 				if (record.data.status == "DONE") {
+// 					return 'green-row';
+// 				}
+// 			},
+// 			listeners : {
+// 				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+// 				},
+// 				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+// 					if (td.innerHTML.indexOf("REMOVE") != -1){
+// 						grid.getStore().removeAt(rowIndex);
 					
 						
-						if (record.data.measurementId != null) {
-							/** For testing * */
-							grid.setLoading("ISPyB: Removing measurement");
-							var onSuccess = (function(sender, data) {
-								grid.setLoading(false);
-								/**
-								 * We get and refresh experiment
-								 * because specimens has changed *
-								 */
-								var onExperimentRetrievedSuccess =  (function(sender, experiment) {
-									_this.onRemoved.notify(experiment);
-									_this._showStatusBarReady('Ready');
-								});
-								EXI.getDataAdapter({onSuccess : onExperimentRetrievedSuccess}).saxs.experiment.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
-								_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
-							});
-							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.removeMeasurement(record.data);
-						}
-					}
-				}
+// 						if (record.data.measurementId != null) {
+// 							/** For testing **/
+// 							grid.setLoading("ISPyB: Removing measurement");
+// 							var onSuccess = (function(sender, data) {
+// 								grid.setLoading(false);
+// 								/**
+// 								 * We get and refresh experiment
+// 								 * because specimens has changed */
+								 
+// 								var onExperimentRetrievedSuccess =  (function(sender, experiment) {
+// 									_this.onRemoved.notify(experiment);
+// 									_this._showStatusBarReady('Ready');
+// 								});
+// 								EXI.getDataAdapter({onSuccess : onExperimentRetrievedSuccess}).saxs.experiment.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
+// 								_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
+// 							});
+// 							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.removeMeasurement(record.data);
+// 						}
+// 					}
+// 				}
 
-			}
-		}
-	});
-	return this.grid;
-};
+// 			}
+// 		}
+// 	});
+// 	return this.grid;
+// };
 
 /**
  * Set status bar to ready (ok icon)
  * 
  * @msg message to be displayed on the bar
  */
-MeasurementGrid.prototype._showStatusBarReady = function(msg) {
-	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
-	statusBar.setStatus({
-		text : msg,
-		iconCls : 'x-status-valid',
-		clear : false
-	});
-};
+// MeasurementGrid.prototype._showStatusBarReady = function(msg) {
+// 	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
+// 	statusBar.setStatus({
+// 		text : msg,
+// 		iconCls : 'x-status-valid',
+// 		clear : false
+// 	});
+// };
 
 /**
  * Set status bar to busy (refreshing icon)
  * 
  * @msg message to be displayed on the bar
  */
-MeasurementGrid.prototype._showStatusBarBusy = function(msg) {
-	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
-	statusBar.setStatus({
-		text : msg,
-		iconCls : 'x-status-busy',
-		clear : false
-	});
-};
+// MeasurementGrid.prototype._showStatusBarBusy = function(msg) {
+// 	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
+// 	statusBar.setStatus({
+// 		text : msg,
+// 		iconCls : 'x-status-busy',
+// 		clear : false
+// 	});
+// };
 
 /** Opens WizardWidget for adding new measurements * */
-MeasurementGrid.prototype._openAddMeasurementWindow = function(measurements, experiments) {
-	var _this = this;
-	var wizardWidget = new WizardWidget({
-		windowMode : true,
-		width : 1200
-	});
-	wizardWidget.onFinished.attach(function(sender, result) {
-		_this.grid.setLoading();
-		wizardWidget.window.close();
-		var onSuccess = (function(sender, data) {
-			_this.onExperimentChanged.notify(data);
-			_this.grid.setLoading(false);
+// MeasurementGrid.prototype._openAddMeasurementWindow = function(measurements, experiments) {
+// 	var _this = this;
+// 	var wizardWidget = new WizardWidget({
+// 		windowMode : true,
+// 		width : 1200
+// 	});
+// 	wizardWidget.onFinished.attach(function(sender, result) {
+// 		_this.grid.setLoading();
+// 		wizardWidget.window.close();
+// 		var onSuccess = (function(sender, data) {
+// 			_this.onExperimentChanged.notify(data);
+// 			_this.grid.setLoading(false);
 			
-		});
-		wizardWidget.current.setLoading("ISPyB: Adding measurements");
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
-	});
+// 		});
+// 		wizardWidget.current.setLoading("ISPyB: Adding measurements");
+// 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
+// 	});
 
-	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers(), {
-		noNext : true
-	}));
-};
+// 	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers(), {
+// 		noNext : true
+// 	}));
+// };
 
-MeasurementGrid.prototype._getMenu = function() {
-	var _this = this;
-	if (this.tbar) {
+// MeasurementGrid.prototype._getMenu = function() {
+// 	var _this = this;
+// 	if (this.tbar) {
 
-		var items = [];
-		if (_this.addBtnEnable) {
-			items.push({
-				icon: '../images/icon/add.png',
-				text : 'Add',
-				handler : function() {
-					_this._openAddMeasurementWindow();
-				}
-			});
-		}
+// 		var items = [];
+// 		if (_this.addBtnEnable) {
+// 			items.push({
+// 				icon: '../images/icon/add.png',
+// 				text : 'Add',
+// 				handler : function() {
+// 					_this._openAddMeasurementWindow();
+// 				}
+// 			});
+// 		}
 
 
-		if (_this.sortingBtnEnable) {
-			var split = Ext.create('Ext.button.Split', {
-				text : 'Sort by',
-				icon: '../images/icon/sort.png',
-				handler : function() {
-				},
-				menu : new Ext.menu.Menu({
-					items : [
-					{
-						text : 'First Created First Measured',
-						handler : function() {
-							_this._sortBy("FIFO");
-						}
-					}, "-", {
-						text : 'Default',
-						handler : function() {
-							_this._sortBy("DEFAULT");
-						}
-					} ]
-				})
-			});
-			items.push(split);
-		}
+// 		if (_this.sortingBtnEnable) {
+// 			var split = Ext.create('Ext.button.Split', {
+// 				text : 'Sort by',
+// 				icon: '../images/icon/sort.png',
+// 				handler : function() {
+// 				},
+// 				menu : new Ext.menu.Menu({
+// 					items : [
+// 					{
+// 						text : 'First Created First Measured',
+// 						handler : function() {
+// 							_this._sortBy("FIFO");
+// 						}
+// 					}, "-", {
+// 						text : 'Default',
+// 						handler : function() {
+// 							_this._sortBy("DEFAULT");
+// 						}
+// 					} ]
+// 				})
+// 			});
+// 			items.push(split);
+// 		}
 
-		if (_this.collapseBtnEnable) {
-			items.push({
-				text : 'Collapse buffers',
-				enableToggle : true,
-				scope : this,
-				toggleHandler : function(item, pressed) {
-					this.collapsed = pressed;
-					this.grid.getStore().loadData(this._prepareData(this.measurements, this.experiments), false);
-				},
-				pressed : this.collapsed
-			});
-		}
+// 		if (_this.collapseBtnEnable) {
+// 			items.push({
+// 				text : 'Collapse buffers',
+// 				enableToggle : true,
+// 				scope : this,
+// 				toggleHandler : function(item, pressed) {
+// 					this.collapsed = pressed;
+// 					this.grid.getStore().loadData(this._prepareData(this.measurements, this.experiments), false);
+// 				},
+// 				pressed : this.collapsed
+// 			});
+// 		}
 
-		var tb = Ext.create('Ext.toolbar.Toolbar', {
-			cls : 'exi-top-bar',
-			 height : 45,
-			items : items
-		});
-		return tb;
-	}
-	return null;
-};
+// 		var tb = Ext.create('Ext.toolbar.Toolbar', {
+// 			cls : 'exi-top-bar',
+// 			 height : 45,
+// 			items : items
+// 		});
+// 		return tb;
+// 	}
+// 	return null;
+// };
 
-MeasurementGrid.prototype._sortBy = function(sort) {
-	var _this = this;
-	var adapter = new DataAdapter();
-	var onSuccess = (function(sender, data) {
-		_this.onExperimentChanged.notify(data);
-		_this.grid.setLoading(false);
-	});
-	_this.grid.setLoading("Sorting");
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
-};
+// MeasurementGrid.prototype._sortBy = function(sort) {
+// 	var _this = this;
+// 	var adapter = new DataAdapter();
+// 	var onSuccess = (function(sender, data) {
+// 		_this.onExperimentChanged.notify(data);
+// 		_this.grid.setLoading(false);
+// 	});
+// 	_this.grid.setLoading("Sorting");
+// 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
+// };

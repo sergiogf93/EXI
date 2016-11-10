@@ -1,7 +1,7 @@
 function ExperimentMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
-	this.experimentHeaderForm = new ExperimentHeaderForm();
+	// this.experimentHeaderForm = new ExperimentHeaderForm();
 	var _this = this;
 	/** Viscosity **/
 	var storeViscosity = Ext.create('Ext.data.Store', {
@@ -115,11 +115,81 @@ function ExperimentMainView() {
 			direction : 'ASC'
 		} ]
 	});
+
+	this.activePanel = this.queueGrid;
 	
 	
 }
 
 ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+ExperimentMainView.prototype.getToolBar = function() {
+    var _this = this;
+    function onMenuClicked(widget){
+        if (_this.activePanel != widget){
+            _this.activePanel = widget;
+			_this.load(_this.experimentId);
+        }
+    }
+
+    var menu =  Ext.create('Ext.menu.Menu', {     
+        items: [{
+            text: 'Online Data Analysis',
+            handler: function(){
+                onMenuClicked(_this.queueGrid);
+            }
+        },{
+            text: 'Measurements',            
+            handler: function(){
+                onMenuClicked(_this.measurementGrid);
+            }
+        },{
+            text: 'Sample Plate Setup',            
+            handler: function(){
+                onMenuClicked(_this.specimenWidget);
+            }
+        }]
+   });
+    return Ext.create('Ext.toolbar.Toolbar', {
+        width: 500,
+        items: [
+           {
+                text:'View',
+                iconCls: 'bmenu',  // <-- icon
+                menu : menu  // assign menu by instance
+            }
+        ]
+    });
+};
+
+ExperimentMainView.prototype.getContainer = function() {
+
+	this.container = Ext.create('Ext.container.Container',{
+		layout : 'fit',
+		height : 700,
+		padding : 20,
+		style : {
+			borderColor : 'gray',
+			borderStyle : 'solid',
+			borderWidth : '1px',
+			'background-color' : 'white' 
+		},
+		items : [this.activePanel.getPanel()]
+	});
+
+	return Ext.create('Ext.panel.Panel', {
+	    margin : 30,
+		bodyStyle : {
+			"background-color" : "#E6E6E6" 
+		},
+		tbar : this.getToolBar(),
+	    items: [this.container]
+	});
+};
+
+
+
+
 
 ExperimentMainView.prototype.getSelected = function() {
 	var selected = [];
@@ -210,43 +280,29 @@ ExperimentMainView.prototype.getTabs = function() {
 };
 
 
-ExperimentMainView.prototype.getContainer = function() {
-	return Ext.create('Ext.container.Container', {
-	    layout: {
-	        type: 'anchor'
-	    },
-	    defaults : {
-			anchor : '100%',
-			hideEmptyLabel : false },
-	    margin : 30,
-		bodyStyle : {
-			"background-color" : "#E6E6E6" 
-		},
-	    items: [
-	            this.experimentHeaderForm.getPanel(),
-	            this.getTabs()
-	    ]
-	});
-};
+
 
 
 
 ExperimentMainView.prototype.load = function(experimentId) {
 	var _this = this;
+	_this.experimentId = experimentId;
+	_this.container.removeAll();
+	_this.container.add(_this.activePanel.getPanel());
 	_this.panel.setLoading();
-	_this.queueGrid.panel.setLoading();
 	var onSuccess = function(sender, experiments){
 		_this.experiment = new Experiment(experiments[0]);
-		_this.experimentHeaderForm.load(_this.experiment);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.specimenWidget.refresh(_this.experiment);
+		_this.activePanel.load(_this.experiment);
+		// _this.experimentHeaderForm.load(_this.experiment);
+		// _this.measurementGrid.loadExperiment(_this.experiment);
+		// _this.specimenWidget.refresh(_this.experiment);
 		_this.panel.setTitle(experiments[0].name);
 		_this.panel.setLoading(false);	
-		var onSuccess = function(sender, data){
-			_this.queueGrid.load(data);
-			_this.queueGrid.panel.setLoading(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		// var onSuccess = function(sender, data){
+		// 	_this.queueGrid.load(data);
+		// 	// _this.queueGrid.setLoading(false);
+		// };
+		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experimentId);
 };

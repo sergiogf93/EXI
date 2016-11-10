@@ -5,7 +5,7 @@ function QueueGrid(args) {
 	this.onSelect = new Event();
 
 	this.maxHeight = 600;
-	this.imgWidth = 150;
+	this.imgWidth = 77;
 	
 	this.id = BUI.id();
 	this.title = 'Data Collections';
@@ -51,65 +51,10 @@ function QueueGrid(args) {
 	this.onSelectionChange = new Event();
 	this.onDeselect = new Event(this);
 	this.onSelect = new Event(this);
+
 }
 
-QueueGrid.prototype.getSorters = function() {
-	return {};
-};
 
-QueueGrid.prototype.getSelected = function() {
-	return this.selected;
-};
-
-
-QueueGrid.prototype.getSelectedData = function() {
-	var elements = this.panel.getSelectionModel().selected.items;
-	var data = [];
-	for (var i = 0; i < elements.length; i++) {
-		data.push(elements[i].data);
-	}
-	return data;
-};
-
-
-
-
-QueueGrid.prototype.getFields = function() {
-	return [ 'experimentId', 'subtractionId', 'macromoleculeAcronym', 'priorityLevelId', 'code', 'exposureTemperature', 'concentration' ];
-};
-
-QueueGrid.prototype.getRunHTML = function(sample) {
-	var dataCollectionId = sample.data.dataCollectionId;
-	var table = document.createElement("table");
-	if (this.key[dataCollectionId] != null) {
-
-		this.key[dataCollectionId].sort(function(a, b) {
-			return b.measurementId - a.measurementId;
-		});
-
-		for (i in this.key[dataCollectionId]) {
-			var specimen = this.key[dataCollectionId][i];
-			var tr = document.createElement("tr");
-			var td = document.createElement("td");
-			if (specimen.measurementCode != null){
-				if (specimen.macromoleculeId == null) {
-					td.setAttribute("style", "padding-top:1px;width:130px;color:gray;");
-					td.appendChild(document.createTextNode("# " + specimen.measurementCode));
-				} else {
-					td.setAttribute("style", "padding-top:1px;width:130px;font-weight:bold;");
-					td.appendChild(document.createTextNode("# " + specimen.measurementCode));
-				}
-			}
-			else{
-				td.appendChild(document.createTextNode(" - "));
-			}
-			tr.appendChild(td);
-			table.appendChild(tr);
-		}
-
-	}
-	return "<table>" + table.innerHTML + "</table>";
-};
 
 QueueGrid.prototype.getPercentage = function(averaged, total) {
 	
@@ -142,54 +87,6 @@ QueueGrid.prototype.getPercentage = function(averaged, total) {
 			text : averaged + " / " + total};
 };
 
-QueueGrid.prototype.getFramesHTML = function(sample) {
-	var dataCollectionId = sample.data.dataCollectionId;
-	var table = document.createElement("table");
-	if (this.key[dataCollectionId] != null) {
-
-		this.key[dataCollectionId].sort(function(a, b) {
-			return b.measurementId - a.measurementId;
-		});
-
-		for (i in this.key[dataCollectionId]) {
-			var specimen = this.key[dataCollectionId][i];
-			var tr = document.createElement("tr");
-			var td = document.createElement("td");
-			if (specimen.macromoleculeId == null) {
-				td.setAttribute("style", "width:130px;color:gray;");
-				td.appendChild(document.createTextNode(specimen.bufferAcronym));
-			} else {
-				td.setAttribute("style", "width:130px;font-weight:bold;");
-				td.appendChild(document.createTextNode(specimen.macromoleculeAcronym));
-			}
-			tr.appendChild(td);
-			
-			tr.appendChild(this.getPercentage(specimen.framesMerge, specimen.framesCount));
-
-			var td = document.createElement("td");
-			var a = document.createElement("a");
-			if (specimen.macromoleculeId == null) {
-				a.setAttribute("href", BUI.getZipURLByAverageId(specimen.mergeId, specimen.measurementCode));
-			} else {
-				a.setAttribute("href", BUI.getZipURLBySubtractionId(specimen.subtractionId, specimen.measurementCode));
-			}
-
-			tr.appendChild(td);
-
-			table.appendChild(tr);
-		}
-
-	}
-	return "<table>" + table.innerHTML + "</table>";
-};
-
-QueueGrid.prototype.getHTMLTable = function(items) {
-	var html = "";
-	for (var i = 0; i < items.length; i++) {
-			html = html + "<tr><td class='key_subgrid'>" + items[i].key + "</td><td class='value_subgrid'>" + items[i].value + "</td></tr>";
-	}
-	return "<table>" + html + "</table>";
-};
 
 QueueGrid.prototype.getImage = function(sample, name) {
 	if (sample.subtractionId != null) {
@@ -198,166 +95,153 @@ QueueGrid.prototype.getImage = function(sample, name) {
 	}
 };
 
-QueueGrid.prototype.getColumns = function() {
-    var _this = this;
-    var columns = [
-        {
-            flex: 1.5,
-            hidden: false,
-            renderer: function(grid, e, record) {
-				
-				var dataCollectionId = Number(record.data);
-				var currentDataCollection = _this.dataByDataCollectionId[dataCollectionId];                      
-				var html = "";
 
-				var codes = [];
-				var macromoleculeInfo = [];
-				var averages = [];
-				var expTemp = currentDataCollection[0].exposureTemperature + " C";
+QueueGrid.prototype.parseData = function(data) {
+	var templateData = {rows : [], id : this.id, height : this.maxHeight};
+	if (!_.isEmpty(data)) {
+		for (var i = 0 ; i < _.keys(data).length ; i++) {
+			var dataCollectionId = _.keys(data)[i];
+			var currentDataCollection = data[dataCollectionId];                      
+			var html = "";
 
-				var rg = "NA";
-				var points = "NA";
-				if (currentDataCollection[0].rg != null) {
-					rg = Number(currentDataCollection[0].rg).toFixed(_this.decimals);
-					points = currentDataCollection[0].firstPointUsed + " - " + currentDataCollection[0].lastPointUsed + " (" + (currentDataCollection[0].lastPointUsed - currentDataCollection[0].firstPointUsed) + ")";
-				}	
-				var I0 = "NA";
-				if (currentDataCollection[0].I0 != null){
-					var I0 = Number(currentDataCollection[0].I0).toFixed(_this.decimals-1);
-					var I0Stdev = Number(Number(currentDataCollection[0].I0Stdev).toFixed(_this.decimals)).toExponential();
+			var codes = [];
+			var macromoleculeInfo = [];
+			var averages = [];
+			var expTemp = currentDataCollection[0].exposureTemperature + " C";
+
+			var rg = "NA";
+			var points = "NA";
+			if (currentDataCollection[0].rg != null) {
+				rg = Number(currentDataCollection[0].rg).toFixed(this.decimals);
+				points = currentDataCollection[0].firstPointUsed + " - " + currentDataCollection[0].lastPointUsed + " (" + (currentDataCollection[0].lastPointUsed - currentDataCollection[0].firstPointUsed) + ")";
+			}	
+			var I0 = "NA";
+			if (currentDataCollection[0].I0 != null){
+				var I0 = Number(currentDataCollection[0].I0).toFixed(this.decimals-2);
+				var I0Stdev = Number(Number(currentDataCollection[0].I0Stdev).toFixed(this.decimals)).toExponential();
+			}
+
+			var rgGnom = "NA";
+			if (currentDataCollection[0].rgGnom != null) {
+				rgGnom = Number(currentDataCollection[0].rgGnom).toFixed(this.decimals);
+			}	
+			var total = "NA";
+			if (currentDataCollection[0].total != null) {
+				total = Number(currentDataCollection[0].total).toFixed(this.decimals);
+			}
+			var dmax = "NA";
+			if (currentDataCollection[0].dmax != null) {
+				dmax = Number(currentDataCollection[0].dmax).toFixed(this.decimals);
+			}
+
+			var volumePorod = "NA";
+			var mmvolest = "NA";
+			if (currentDataCollection[0].volumePorod != null) {
+				volumePorod = Number(currentDataCollection[0].volumePorod).toFixed(this.decimals);
+				mmvolest = Number(currentDataCollection[0].volumePorod / 2).toFixed(1) + " - "
+										+ Number(currentDataCollection[0].volumePorod / 1.5).toFixed(1);
+			}
+
+			var scattering = "";
+			var kratky = "";
+			var density = "";
+			var guinier = "";
+			
+
+			for (var j = 0 ; j < currentDataCollection.length ; j++) {
+				var experiment = currentDataCollection[j];
+				var concentration = "";
+
+				codes.push(experiment.code);
+				if (experiment.concentration != 0) {
+					concentration = Number(experiment.concentration).toFixed(this.decimals-1);
 				}
-
-				var rgGnom = "NA";
-				if (currentDataCollection[0].rgGnom != null) {
-					rgGnom = Number(currentDataCollection[0].rgGnom).toFixed(_this.decimals);
-				}	
-				var total = "NA";
-				if (currentDataCollection[0].total != null) {
-					total = Number(currentDataCollection[0].total).toFixed(_this.decimals);
+				if (experiment.macromoleculeId != null) {
+					scattering = this.getImage(experiment,"scattering");
+					kratky = this.getImage(experiment,"kratky");
+					density = this.getImage(experiment,"density");
+					guinier = this.getImage(experiment,"guinier");
 				}
-				var dmax = "NA";
-				if (currentDataCollection[0].dmax != null) {
-					dmax = Number(currentDataCollection[0].dmax).toFixed(_this.decimals);
+				var macromoleculeAcronym = experiment.macromoleculeAcronym;
+				if (macromoleculeAcronym == null) {
+					macromoleculeAcronym = "";
 				}
-
-				var volumePorod = "NA";
-				var mmvolest = "NA";
-				if (currentDataCollection[0].volumePorod != null) {
-					volumePorod = Number(currentDataCollection[0].volumePorod).toFixed(_this.decimals);
-					mmvolest = Number(currentDataCollection[0].volumePorod / 2).toFixed(1) + " - "
-											+ Number(currentDataCollection[0].volumePorod / 1.5).toFixed(1);
-				}
-
-				var scattering = "";
-				var kratky = "";
-				var density = "";
-				var guinier = "";
-				
-
-				for (var i = 0 ; i < currentDataCollection.length ; i++) {
-					var experiment = currentDataCollection[i];
-					var concentration = "";
-
-					codes.push(experiment.code);
-					if (experiment.concentration != 0) {
-						concentration = Number(experiment.concentration).toFixed(_this.decimals-1)  + " mg/ml";
-					}
-					if (experiment.macromoleculeId != null) {
-						scattering = _this.getImage(currentDataCollection[0],"scattering");
-						kratky = _this.getImage(currentDataCollection[0],"kratky");
-						density = _this.getImage(currentDataCollection[0],"density");
-						guinier = _this.getImage(currentDataCollection[0],"guinier");
-					}
-					var macromoleculeAcronym = experiment.macromoleculeAcronym;
-					if (macromoleculeAcronym == null) {
-						macromoleculeAcronym = "";
-					}
-					macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
-					averages.push(_this.getPercentage(experiment.framesMerge,experiment.framesCount));
-				}
-				
-				var templateData = {
-										codes : codes,
-										macromoleculeInfo : macromoleculeInfo,
-										averages : averages,
-										expTemp : expTemp,
-										rg : rg,
-										points : points,
-										I0 : I0,
-										I0Stdev : I0Stdev,
-										rgGnom : rgGnom,
-										total : total,
-										dmax : dmax,
-										volumePorod : volumePorod,
-										mmvolest : mmvolest,
-										scattering : scattering,
-										kratky : kratky,
-										density : density,
-										guinier : guinier,
-										imgWidth : _this.imgWidth
-									};
+				macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
+				averages.push(this.getPercentage(experiment.framesMerge,experiment.framesCount));
+			}
+			
+			templateData.rows.push({
+									codes : codes,
+									macromoleculeInfo : macromoleculeInfo,
+									averages : averages,
+									expTemp : expTemp,
+									rg : rg,
+									points : points,
+									I0 : I0,
+									I0Stdev : I0Stdev,
+									rgGnom : rgGnom,
+									total : total,
+									dmax : dmax,
+									volumePorod : volumePorod,
+									mmvolest : mmvolest,
+									scattering : scattering,
+									kratky : kratky,
+									density : density,
+									guinier : guinier,
+									imgWidth : this.imgWidth
+								});
+		}
+	}
 	
-				dust.render("queue.grid.template", templateData, function(err, out) {                                                                       
-                    html = html + out;
-                });
-				
-				return html;
-            }
-        }      
-    ];
-    return columns;
+	return templateData;
 };
 
-QueueGrid.prototype.load = function(data) {
-	if (data != null) {
-		this.key = {};
-		this.dataByDataCollectionId = {};
-		var byDataCollectionId = _.keyBy(data,'dataCollectionId');
-		for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
-			var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
-			this.dataByDataCollectionId[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
+QueueGrid.prototype.load = function(experiment) {
+	var _this = this;
+
+	this.setLoading();
+
+	var onSuccess = function(sender, data){
+		if (data != null) {
+			_this.key = {};
+			_this.dataByDataCollectionId = {};
+			var byDataCollectionId = _.keyBy(data,'dataCollectionId');
+			for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
+				var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
+				_this.dataByDataCollectionId[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
+			}
+			// this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
+			
+			var templateData = _this.parseData(_this.dataByDataCollectionId);
+
+			var html = "";
+			dust.render("queue.grid.template", templateData, function(err, out) {                                                                                               
+				html = html + out;
+			});
+			
+			$('#' + _this.id).hide().html(html).fadeIn('fast');
+
+			_this.attachCallBackAfterRender();
 		}
-		this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
-	} else {
-		this.store.load();
-	}
+	};
+
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+};
+
+QueueGrid.prototype.setLoading = function(){
+	$('#' + this.id).html("Loading...");
 };
 
 QueueGrid.prototype.getPanel = function(){
     var _this = this;
 
-	this.store = Ext.create('Ext.data.Store', {
-            fields: ["experimentGroup"]
-     });
-
-	var header = Ext.create('Ext.panel.Panel', {
-		items : [{html : _this.getHeader()}]
-	})
-
-    this.grid = Ext.create('Ext.grid.Panel', {
-		dataIndex: 'experimentGroup',
-		dataIndex: 'experimentGroup',
-        store: this.store,  
-        id: this.id,     
-        disableSelection: true,
-        columns: this.getColumns(),
-		hideHeaders: true,
-        viewConfig: {
-            enableTextSelection: true,
-            stripeRows: false,
-			trackOver : false
-        }
-    });
-
-	this.panel = Ext.create('Ext.panel.Panel', {
-        border: 1,        
-		items : [header, this.grid]
-	})
-
-    return this.panel;
+	return {
+		html : '<div id="' + this.id + '">This is a test</div>',
+		autoScroll : false
+	}
 };
 
-QueueGrid.prototype.getHeader = function () {
+QueueGrid.prototype.getHeader = function() {
 	var html = "";
 	dust.render("queue.grid.header.template", [], function(err, out) {                                                                       
 		html = html + out;
@@ -365,23 +249,29 @@ QueueGrid.prototype.getHeader = function () {
 	return html;
 }
 
-QueueGrid.prototype.onDataReductionButtonClicked = function(record) {
-	var adapter = new DataAdapter();
-	var dataReductionForm = new DataReductionForm({});
+/**
+* Attaches the events to lazy load to the images. Images concerned are with the class queue-img
+*
+* @method attachCallBackAfterRender
+*/
+QueueGrid.prototype.attachCallBackAfterRender = function() {
+    
+    var _this = this;
+    
+    var nodeWithScroll = document.getElementById("xx");
+	
+    var lazy = {
+            bind: 'event',
+            /** !!IMPORTANT this is the parent node which contains the scroll **/
+            appendScroll: nodeWithScroll,
+            beforeLoad: function(element) {
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
+            },           
+            onFinishedAll: function() {
+                EXI.mainStatusBar.showReady();
+            }
+    };
+       
+    var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
 
-	Ext.create('Ext.window.Window', {
-		title : 'Data Reduction',
-		height : 540,
-		width : 1000,
-		modal : true,
-		items : [ dataReductionForm.getPanel() ]
-	}).show();
-
-	dataReductionForm.panel.setLoading();
-	adapter.onSuccess.attach(function(sender, subtractions) {
-		dataReductionForm.refresh(subtractions);
-		dataReductionForm.panel.setLoading(false);
-	});
-	adapter.getSubtractionsBySubtractionIdList([ record.subtractionId ]);
 };
-

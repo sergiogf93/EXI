@@ -35,7 +35,7 @@ function SpecimenWidget(args){
 	
 	this.specimenGrid.onSpecimenChanged.attach(function(sender, specimen) {
 		_this.experiment.setSpecimenById(specimen);
-		_this.refresh(_this.experiment);
+		_this.load(_this.experiment);
 	});
 
 	this.specimenGrid.onSelected.attach(function(sender, specimens) {
@@ -58,7 +58,7 @@ function SpecimenWidget(args){
 	
 	
 	this.samplePlateGroupWidget.onExperimentChanged.attach(function(sender, json) {
-		_this.refresh(new Experiment(json));
+		_this.load(new Experiment(json));
 	});
 
 	this.samplePlateGroupWidget.onClick.attach(function(sender, args) {
@@ -113,7 +113,7 @@ function SpecimenWidget(args){
 					if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
 							((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
 						var onSuccess = (function(sender, data) {
-							_this.refresh(new Experiment(data));
+							_this.load(new Experiment(data));
 							_this.samplePlateGroupWidget.panel.setLoading(false);
 							
 							_this.onExperimentChanged.notify(experiment);
@@ -163,7 +163,7 @@ SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
 };
 
 
-SpecimenWidget.prototype.refresh = function(experiment){
+SpecimenWidget.prototype.load = function(experiment){
 	this.experiment = experiment;
 	
 	/** Removing all components **/
