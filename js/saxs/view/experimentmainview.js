@@ -116,8 +116,9 @@ function ExperimentMainView() {
 		} ]
 	});
 
+	this.queueGridVersion2 = new QueueGridTest();
+
 	this.activePanel = this.queueGrid;
-	
 	
 }
 
@@ -137,6 +138,11 @@ ExperimentMainView.prototype.getToolBar = function() {
             text: 'Online Data Analysis',
             handler: function(){
                 onMenuClicked(_this.queueGrid);
+            }
+        },{
+            text: 'Online Data Analysis (v2)',            
+            handler: function(){
+                onMenuClicked(_this.queueGridVersion2);
             }
         },{
             text: 'Measurements',            

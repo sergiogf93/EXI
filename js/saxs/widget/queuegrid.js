@@ -198,35 +198,57 @@ QueueGrid.prototype.parseData = function(data) {
 
 QueueGrid.prototype.load = function(experiment) {
 	var _this = this;
-
+	
 	this.setLoading();
+	_this.key = {};
+	if (experiment.experimentId) {
+		var onSuccess = function(sender, data){
+			if (data != null) {
 
-	var onSuccess = function(sender, data){
-		if (data != null) {
-			_this.key = {};
-			_this.dataByDataCollectionId = {};
-			var byDataCollectionId = _.keyBy(data,'dataCollectionId');
-			for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
-				var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
-				_this.dataByDataCollectionId[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
+				_this.dataByDataCollectionId = _this.parseDataById(data);
+
+				_this.render(_this.dataByDataCollectionId);
 			}
-			// this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
-			
-			var templateData = _this.parseData(_this.dataByDataCollectionId);
+		};
 
-			var html = "";
-			dust.render("queue.grid.template", templateData, function(err, out) {                                                                                               
-				html = html + out;
-			});
-			
-			$('#' + _this.id).hide().html(html).fadeIn('fast');
-
-			_this.attachCallBackAfterRender();
-		}
-	};
-
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+	} else {
+		_this.dataByDataCollectionId = _this.parseDataById(experiment);
+		this.render(_this.dataByDataCollectionId);
+	}
 };
+
+QueueGrid.prototype.render = function(data) {
+	
+	var templateData = this.parseData(data);
+
+	var html = "";
+	dust.render("queue.grid.template", templateData, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+
+	this.attachCallBackAfterRender();
+}
+
+QueueGrid.prototype.parseDataById = function (data) {
+	var parsed = {};
+	data.sort(function (a,b){
+		return a.measurementId - b.measurementId;
+	});
+	var byDataCollectionId = _.keyBy(data,'dataCollectionId');
+	for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
+		var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
+		parsed[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
+	}
+	return parsed;
+}
+
+QueueGrid.prototype.filter = function(key, value) {
+	var filtered = _.filter(this.dataByDataCollectionId,function(o) {return o[0]["bufferAcronym"] == value});
+	this.render(this.parseDataById([].concat.apply([], filtered)));
+}
 
 QueueGrid.prototype.setLoading = function(){
 	$('#' + this.id).html("Loading...");
@@ -236,7 +258,7 @@ QueueGrid.prototype.getPanel = function(){
     var _this = this;
 
 	return {
-		html : '<div id="' + this.id + '">This is a test</div>',
+		html : '<div id="' + this.id + '"></div>',
 		autoScroll : false
 	}
 };

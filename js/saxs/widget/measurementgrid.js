@@ -160,29 +160,6 @@ function MeasurementGrid(args) {
 	this.onExperimentChanged = new Event(this);
 }
 
-// MeasurementGrid.prototype.edit = function(macromolecule) {
-// 	var _this = this;
-// 	var window = new MacromoleculeWindow();
-// 	window.onSave.attach(function(sender) {
-// //		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
-// //		_this.onMacromoleculesChanged.notify();
-// 	});
-// 	window.draw(macromolecule);
-// };
-
-// MeasurementGrid.prototype.deselectAll = function() {
-// 	this.grid.getSelectionModel().deselectAll();
-// };
-
-// MeasurementGrid.prototype.selectById = function(macromoleculeId) {
-// 	this.grid.getSelectionModel().deselectAll();
-// 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
-// 		var item = this.grid.getStore().data.items[i].raw;
-// 		if (item.macromoleculeId == macromoleculeId) {
-// 			this.grid.getSelectionModel().select(i);
-// 		}
-// 	}
-// };
 
 MeasurementGrid.prototype.load = function(experiment) {
 	this.experimentList = new ExperimentList([ experiment ]);
@@ -275,6 +252,31 @@ MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
 	}
 	return data;
 };
+
+// MeasurementGrid.prototype.edit = function(macromolecule) {
+// 	var _this = this;
+// 	var window = new MacromoleculeWindow();
+// 	window.onSave.attach(function(sender) {
+// //		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
+// //		_this.onMacromoleculesChanged.notify();
+// 	});
+// 	window.draw(macromolecule);
+// };
+
+// MeasurementGrid.prototype.deselectAll = function() {
+// 	this.grid.getSelectionModel().deselectAll();
+// };
+
+// MeasurementGrid.prototype.selectById = function(macromoleculeId) {
+// 	this.grid.getSelectionModel().deselectAll();
+// 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
+// 		var item = this.grid.getStore().data.items[i].raw;
+// 		if (item.macromoleculeId == macromoleculeId) {
+// 			this.grid.getSelectionModel().select(i);
+// 		}
+// 	}
+// };
+
 
 /**
  * @key name of the columns mathing the this.editor[key]

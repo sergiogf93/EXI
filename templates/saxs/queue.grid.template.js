@@ -1,9 +1,9 @@
 <div class="container-fluid persist-header">
     <div class="row text-center">
-        <div class="col-sm-8 ">
+        <div class="col-sm-8 " style="padding:0px;">
             <div class="container-fluid">
                 <div class="row ">
-                    <div class="col-sm-1 queue-border-top-columns queue-border-left-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;width:4.166666666%">
+                    <div class="col-sm-1 queue-border-top-columns queue-border-left-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;width:4.166666666%; padding:0;">
                         <div>&nbsp;</div>
                         Run
                         <div>&nbsp;</div>
@@ -64,8 +64,8 @@
             </div>
         </div>
 
-        <div class="col-sm-4">
-            <div class="col-sm-3 queue-border-top-columns queue-border-left-columns  queue-border-right-columns" style="border-bottom: 2px solid #ccc;">
+        <div class="col-sm-4"  style="padding:0px;">
+            <div class="col-sm-3 queue-border-top-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;">
                 <div>&nbsp;</div>
                 Scattering
                 <div>&nbsp;</div>
@@ -91,11 +91,11 @@
 
 <div id="{id}-scrollable" style="display: block; height: {height}px; overflow-y: auto">
     {#rows}
-    <div class="container-fluid">
+    <div class="container-fluid queue-border-bottom-columns" style="padding-top:10px; padding-bottom:10px;">
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-sm-8"  style="padding:0px;">
                 <div class="container-fluid">
-                    <div class="row text-center queue-border-bottom-columns">
+                    <div class="row text-center">
                         <div class="col-sm-1" style="width:4.166666666%; padding:0;">
                             <table class="table queue-small-padding-table table-queue-grid-borderless">
                                 <tbody>
@@ -108,7 +108,7 @@
                         <div class="col-sm-2" style="width:20.833333333%">
                             <div class="row">
                                 <div class="col-sm-8">
-                                    <table class="table queue-small-padding-table table-queue-grid-borderless" style="margin:0;">
+                                    <table class="table queue-small-padding-table table-queue-grid-borderless">
                                         <tbody>
                                             {#.macromoleculeInfo}
                                                 <tr><td>{@eq key=acronym value=""}&nbsp;{:else}<b>{.acronym}</b> {.concentration} <span style='font-size:9px;color:gray'>  mg/ml</span>{/eq}</td></tr>
@@ -138,7 +138,7 @@
                                 <div class="col-sm-4" >
                                     <span {@eq key=points value="NA"}class='notavailablefield'>NA{:else}>{.points}{/eq}</span>
                                 </div>
-                                <div class="col-sm-4" style="padding:0;">
+                                <div class="col-sm-4">
                                     <span {@eq key=I0 value="NA"}class='notavailablefield'>NA</span>{:else}>{.I0}</span><span style='font-size:10px'> &#177; {.I0Stdev}</span>{/eq}
                                 </div>
                             </div>
@@ -169,7 +169,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4"  style="padding:0px;">
                 <div class="container-fluid">
                     <div class="row ">
                         <div class="col-sm-3 ">

@@ -1,4 +1,21 @@
+/** SAXS sample plate widget **/
+
+.plate-square {
+	stroke : black;
+	stroke-width : 1;
+}
+
+.plate-square-selected {
+	stroke : #23eeff !important;
+	stroke-width : 2 !important;
+}
+
 /** SAXS queue grid **/
+
+.queue-small-padding-table { 
+	margin-bottom: 2px;
+	margin-top: 5px;
+}
 
 .queue-small-padding-table>tbody>tr>td { 
 	padding: 2px;

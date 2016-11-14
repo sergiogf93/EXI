@@ -33,6 +33,8 @@ function SamplePlateWidget(args) {
 	this.showFullName = false;
 	this.showLabels = false;
 
+	this.enableClick = true;
+
 	if (args != null) {
 		if (args.showBorderLabels != null) {
 			this.showBorderLabels = args.showBorderLabels;
@@ -67,14 +69,19 @@ function SamplePlateWidget(args) {
 		if (args.strokeWidth != null) {
 			this.strokeWidth = args.strokeWidth;
 		}
+		if (args.enableClick != null) {
+			this.enableClick = args.enableClick;
+		}
 	}
+
+	this.onNodeSelected = new Event(this);
 
 	/** this is the ids[specimenId] = nodeId **/
 	this.ids = {};
 	this.onVertexUp = new Event(this);
 	this.selectedSVGNodes = [];
 	this.markedSpecimenId = {};
-}
+};
 
 SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) {
 	if (document.getElementById(this.targetId) != null) {
@@ -85,8 +92,8 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 SamplePlateWidget.prototype.load = function (experiment) {
 	for (var i = 0 ; i < experiment.getSamples().length ; i++) {
 		var specimen = experiment.getSamples()[i];
-		if (specimen.samplePlateName.substring(0,20) == this.samplePlate.platetype3VO.name) {
-			var nodeId = this.id + "-node-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+		if (specimen.sampleplateposition3VO.samplePlateId == this.samplePlate.samplePlateId) {
+			var nodeId = this.id + "-node-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber;
 			var color = experiment.getSpecimenColorByBufferId(specimen.specimenId);
 			if (specimen.macromolecule3VO != null) {
 				color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
@@ -94,12 +101,12 @@ SamplePlateWidget.prototype.load = function (experiment) {
 			$("#" + nodeId).attr("fill",color);
 			if (specimen.measurements && specimen.measurements.length > 0) {
 				if (specimen.measurements[0].run3VO.runId != null) {
-					$("#" + this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber).attr("visibility","visible");
+					$("#" + this.id + "-square-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber).attr("visibility","visible");
 				}
 			}
 		}
 	}
-}
+};
 
 SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
 	this.onVertexUp = new Event(this);
@@ -136,7 +143,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			nodesMinSize : 2
 		};
 
-	var nodes = [];
+	this.nodes = [];
 	var text = [];
 	var margin = 10;
 	var nodeRadius = Math.min((this.width-margin)/columns,(this.height-margin)/rows)/2;
@@ -158,7 +165,9 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			}
 			var squareSide = Math.min(horizontalMargin,verticalMargin) + 2*nodeRadius*factor;
 
-			nodes.push({
+			this.nodes.push({
+							nodeId 		:	this.id + "-node-" + i + "-" + j,
+							squareId 	:	this.id + "-square-" + i + "-" + j,
 							radius 		: 	nodeRadius*factor,
 							x 			: 	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
 							y 			: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin,
@@ -188,9 +197,10 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 
 	var templateData = {
 							id 			: 	this.id,
-							nodes 		: 	nodes,
+							nodes 		: 	this.nodes,
 							text		:	text,
-							formatter 	: 	formatter
+							formatter 	: 	formatter,
+							enableClick	:	this.enableClick
 	}
 
 	var html = "";
@@ -200,9 +210,48 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 	
 	$("#" + this.targetId + "-div-svg").html(html);
 
+	if (this.enableClick){
+		this.attachClickListeners();
+	}
+
 	this.load(this.experiment);
 
-}
+};
+
+SamplePlateWidget.prototype.attachClickListeners = function (row, column) {
+	var _this = this;
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		$("#" + node.nodeId).unbind('click').click(function(sender){
+			_this.onNodeSelected.notify({
+										samplePlate : _this.samplePlate,
+										node : _this.getNodeById(sender.target.id)
+									});
+		});
+	}
+};
+
+SamplePlateWidget.prototype.getNodeById = function (id) {
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		if (node.nodeId == id) {
+			return node;
+		}
+	}
+	return;
+};
+
+SamplePlateWidget.prototype.clearSelection = function() {
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		$("#" + node.squareId).removeClass("plate-square-selected");
+	}
+};
+
+SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
+	var squareId = this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+	$("#" + squareId).addClass("plate-square-selected");
+};
 
 // SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
 // 	var _this = this;
@@ -361,21 +410,21 @@ SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
 	}
 };
 
-SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
-	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
-	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
-	var svg = this.network.graphCanvas._svg;
-	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
-};
+// SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
+// 	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
+// 	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
+// 	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
+// 	var svg = this.network.graphCanvas._svg;
+// 	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
+// };
 
-SamplePlateWidget.prototype.clearSelection = function() {
-	var svg = this.network.graphCanvas._svg;
-	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
-		svg.removeChild(this.selectedSVGNodes[i]);
-	}
-	this.selectedSVGNodes = [];
-};
+// SamplePlateWidget.prototype.clearSelection = function() {
+// 	var svg = this.network.graphCanvas._svg;
+// 	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
+// 		svg.removeChild(this.selectedSVGNodes[i]);
+// 	}
+// 	this.selectedSVGNodes = [];
+// };
 
 SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	var vertices = this.network.getDataset().getVertices();
