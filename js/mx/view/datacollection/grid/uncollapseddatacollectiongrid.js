@@ -125,7 +125,7 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
 * @param {Integer} dataCollectionId 
 * @method displayWorkflowsTab
 */
-UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionId) {
+UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId) {
   var onSuccess = function(sender, data){                       
         /** Parsing data */
        var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
@@ -223,7 +223,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
-       console.log(parsed);
+      
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
@@ -233,8 +233,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
     };                    
-                    
-    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
+                                    
+    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionGroupId(dataCollectionGroupId);
+    //EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
 };
 
 /**
@@ -345,8 +346,8 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                 }
                 
                   if (target.startsWith("#ph")){                           
-                    var dataCollectionId = target.slice(4);
-                    _this.displayPhasingTab(target, dataCollectionId);              
+                    var dataCollectionGroupId = target.slice(4);
+                    _this.displayPhasingTab(target, dataCollectionGroupId);              
                    
                 }
             });
