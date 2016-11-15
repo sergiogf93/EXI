@@ -22,7 +22,7 @@ function QueueGridTest(args) {
 
 QueueGridTest.prototype.load = function(experiment){
     var _this = this;
-    debugger
+    
     try{
         if (experiment.experimentId){
             var onSuccess = function(sender, data){
@@ -76,8 +76,8 @@ QueueGridTest.prototype.getPanel = function (dataCollectionGroup) {
 };
 
 QueueGridTest.prototype.filter = function(key, value) {
-	var filtered = _.filter(this.dataByDataCollectionId,function(o) {return o[0]["bufferAcronym"] == value});
-	this.render(this.parseDataById([].concat.apply([], filtered)));
+    var filtered = _.filter(this.dataByDataCollectionId,function(o) {return o[0]["bufferAcronym"] == value});
+    this.store.loadData(_.keys(_.keyBy([].concat.apply([], filtered),'dataCollectionId')));
 }
 
 

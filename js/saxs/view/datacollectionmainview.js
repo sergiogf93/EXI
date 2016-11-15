@@ -4,7 +4,7 @@ function DataCollectionMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGridTest({
+	this.grid = new QueueGrid({
 		positionColumnsHidden : true,
 		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
 		sorters : [ {
