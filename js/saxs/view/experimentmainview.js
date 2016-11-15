@@ -107,7 +107,7 @@ function ExperimentMainView() {
 	});
 
 	
-	this.queueGrid = new QueueGrid({
+	this.queueGrid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
 //		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
 		sorters : [ {

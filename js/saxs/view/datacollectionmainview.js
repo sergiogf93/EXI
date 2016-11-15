@@ -4,9 +4,10 @@ function DataCollectionMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGrid({
+	this.grid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
 		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
+		padding : 40,
 		sorters : [ {
 			property : 'macromoleculeAcronym',
 			direction : 'ASC' } ] });

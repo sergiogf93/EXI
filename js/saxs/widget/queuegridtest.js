@@ -7,18 +7,19 @@
 function QueueGridTest(args) {
     this.id = BUI.id();
 
-    this.decimals = 3;
+    QueueGrid.call(this,args);
     this.imgWidth = 130;
-    this.dataByDataCollectionId = {};
 
     this.store = Ext.create('Ext.data.Store', {
             fields: ["experiment"]
      });
-
-    this.onSelectionChange = new Event();
-    this.onDeselect = new Event(this);
-    this.onSelect = new Event(this);
 }
+
+QueueGridTest.prototype.getPercentage = QueueGrid.prototype.getPercentage;
+QueueGridTest.prototype.getImage = QueueGrid.prototype.getImage;
+QueueGridTest.prototype.parseDataById = QueueGrid.prototype.parseDataById;
+QueueGridTest.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCallBackAfterRender;
+
 
 QueueGridTest.prototype.load = function(experiment){
     var _this = this;
@@ -29,7 +30,7 @@ QueueGridTest.prototype.load = function(experiment){
                 if (data != null) {
                     _this.dataByDataCollectionId = _this.parseDataById(data);
                     _this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
-                    _this.attachCallBackAfterRender();
+                    _this.attachCallBackAfterRender(document.getElementById(_this.id + "-body").childNodes[0]);
                 }
             };
 
@@ -44,19 +45,6 @@ QueueGridTest.prototype.load = function(experiment){
         console.log(e);
     }
 };
-
-QueueGridTest.prototype.parseDataById = function (data) {
-	var parsed = {};
-	data.sort(function (a,b){
-		return a.measurementId - b.measurementId;
-	});
-	var byDataCollectionId = _.keyBy(data,'dataCollectionId');
-	for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
-		var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
-		parsed[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
-	}
-	return parsed;
-}
 
 QueueGridTest.prototype.getPanel = function (dataCollectionGroup) {
     var _this = this;
@@ -196,69 +184,4 @@ QueueGridTest.prototype.getColumns = function() {
     ];
 
     return columns;
-};
-
-QueueGridTest.prototype.getPercentage = function(averaged, total) {
-	
-	var color = "green";
-	if (averaged == null){
-		averaged = "NA";
-		color = "orange";
-	}
-	if (total == null){
-		total = "NA";
-		color = "orange";
-	}
-	
-	if ((averaged != "NA")&(total != "NA")){
-		if (averaged/total >= 0.3){
-			color = "orange";
-		}
-		if (averaged/total > 0.7){
-			color = "#BCF5A9";
-		}
-		
-		if (averaged/total < 0.3){
-			color = "red";
-		}
-		
-		
-	}
-	
-	return {color : color,
-			text : averaged + " / " + total};
-};
-
-QueueGridTest.prototype.getImage = function(sample, name) {
-	if (sample.subtractionId != null) {
-		var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.subtractionId, name);
-		return url;
-	}
-};
-
-/**
-* Attaches the events to lazy load to the images. Images concerned are with the class queue-img
-*
-* @method attachCallBackAfterRender
-*/
-QueueGridTest.prototype.attachCallBackAfterRender = function() {
-    
-    var _this = this;
-    
-    var nodeWithScroll = document.getElementById(_this.id + "-body").childNodes[0];
-    
-    var lazy = {
-            bind: 'event',
-            /** !!IMPORTANT this is the parent node which contains the scroll **/
-            appendScroll: nodeWithScroll,
-            beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
-            },           
-            onFinishedAll: function() {
-                EXI.mainStatusBar.showReady();
-            }
-    };
-       
-    var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
-
 };
