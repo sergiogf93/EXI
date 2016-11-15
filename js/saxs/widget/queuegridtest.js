@@ -126,7 +126,6 @@ QueueGridTest.prototype.getColumns = function() {
                 var density = "";
                 var guinier = "";
                 var concentration = "";
-                var macromoleculeAcronym = "";
 
                 for (var j = 0 ; j < currentDataCollection.length ; j++) {
                     var experiment = currentDataCollection[j];
@@ -140,16 +139,17 @@ QueueGridTest.prototype.getColumns = function() {
                         density = _this.getImage(experiment,"density");
                         guinier = _this.getImage(experiment,"guinier");
                     }
+                    var macromoleculeAcronym = "";
                     if (experiment.macromoleculeAcronym != null) {
                         macromoleculeAcronym = experiment.macromoleculeAcronym;
                     }
-                    macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
+                    // macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
                     // averages.push(_this.getPercentage(experiment.framesMerge,experiment.framesCount));
 
-                    codes.push({code : experiment.code, average : _this.getPercentage(experiment.framesMerge,experiment.framesCount)});
+                    codes.push({code : experiment.code, acronym : macromoleculeAcronym, average : _this.getPercentage(experiment.framesMerge,experiment.framesCount)});
                 }                      
                 
-                
+                debugger
 
                 var templateData = {
 									codes : codes,
@@ -170,7 +170,8 @@ QueueGridTest.prototype.getColumns = function() {
 									kratky : kratky,
 									density : density,
 									guinier : guinier,
-									imgWidth : _this.imgWidth
+									imgWidth : _this.imgWidth,
+                                    creationDate : currentDataCollection[0].creationDate
 								};
 
                 dust.render("queue.grid.test.template", templateData, function(err, out) {                                                                       

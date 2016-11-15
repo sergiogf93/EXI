@@ -1,61 +1,61 @@
-<div class="container-fluid persist-header">
-    <div class="row text-center">
+<div class="container-fluid persist-header" >
+    <div class="row text-center" style="border : 1px solid #ccc;">
         <div class="col-sm-8 " style="padding:0px;">
             <div class="container-fluid">
-                <div class="row ">
-                    <div class="col-sm-1 queue-border-top-columns queue-border-left-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;width:4.166666666%; padding:0;">
+                <div class="row">
+                    <div class="col-sm-1  queue-border-right-columns" style="width:4.166666666%; padding:0;">
                         <div>&nbsp;</div>
                         Run
                         <div>&nbsp;</div>
                     </div> 
-                    <div class="col-sm-2 queue-border-top-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;width:20.833333333%">
+                    <div class="col-sm-2  queue-border-right-columns" style="width:20.833333333%">
                         <div>&nbsp;</div>
                         Frames <span style='font-size:10px;'>(Average/Total)</span>
                         <div>&nbsp;</div>
                     </div> 
-                    <div class="col-sm-1 queue-border-top-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;">
+                    <div class="col-sm-1 queue-border-right-columns" >
                         <div>&nbsp;</div>
                         Exp. Temp.
                         <div>&nbsp;</div>
                     </div>
-                    <div class="col-sm-3 queue-border-top-columns queue-border-right-columns">
+                    <div class="col-sm-3  queue-border-right-columns">
                         <div>&nbsp;</div>
                         Guinier
                         <div class="row text-center">
-                            <div class="col-sm-4 queue-border-top-columns queue-border-bottom-columns queue-border-right-columns">
+                            <div class="col-sm-4 queue-border-top-columns queue-border-right-columns">
                                 Rg
                             </div>
-                            <div class="col-sm-4 queue-border-top-columns queue-border-bottom-columns queue-border-right-columns">
+                            <div class="col-sm-4 queue-border-top-columns queue-border-right-columns">
                                 Points
                             </div>
-                            <div class="col-sm-4 queue-border-top-columns queue-border-bottom-columns">
+                            <div class="col-sm-4 queue-border-top-columns ">
                                 I0
                             </div>
                         </div>
                     </div> 
-                    <div class="col-sm-3 queue-border-top-columns queue-border-right-columns">
+                    <div class="col-sm-3 queue-border-right-columns">
                         <div>&nbsp;</div>
                         Gnom
                         <div class="row text-center">
-                            <div class="col-sm-4 queue-border-top-columns queue-border-bottom-columns queue-border-right-columns">
+                            <div class="col-sm-4 queue-border-top-columns queue-border-right-columns">
                                 Rg
                             </div>
-                            <div class="col-sm-4 queue-border-top-columns queue-border-bottom-columns queue-border-right-columns">
+                            <div class="col-sm-4 queue-border-top-columns queue-border-right-columns">
                                 Total
                             </div>
-                            <div class="col-sm-4 queue-border-top-columns queue-border-bottom-columns">
+                            <div class="col-sm-4 queue-border-top-columns ">
                                 D<sub>max</sub>
                             </div>
                         </div>
                     </div> 
-                    <div class="col-sm-2 queue-border-top-columns queue-border-right-columns">
+                    <div class="col-sm-2 queue-border-right-columns">
                         <div>&nbsp;</div>
                         Porod
                         <div class="row text-center">
-                            <div class="col-sm-6 queue-border-top-columns queue-border-bottom-columns queue-border-right-columns">
+                            <div class="col-sm-6 queue-border-top-columns  queue-border-right-columns">
                                 Volume
                             </div>
-                            <div class="col-sm-6 queue-border-top-columns queue-border-bottom-columns" style='font-size:7px;'>
+                            <div class="col-sm-6 queue-border-top-columns" style='font-size:7px;'>
                                 MM Vol. est.
                             </div>
                         </div>
@@ -64,51 +64,61 @@
             </div>
         </div>
 
-        <div class="col-sm-4"  style="padding:0px;">
-            <div class="col-sm-3 queue-border-top-columns queue-border-right-columns" style="border-bottom: 2px solid #ccc;">
+        <div class="col-sm-3"  style="padding:0px;">
+            <div class="col-sm-3  queue-border-right-columns" >
                 <div>&nbsp;</div>
                 Scattering
                 <div>&nbsp;</div>
             </div> 
-            <div class="col-sm-3 queue-border-top-columns queue-border-right-columns " style="border-bottom: 2px solid #ccc;">
+            <div class="col-sm-3 queue-border-right-columns " >
                 <div>&nbsp;</div>
                 Kratky.
                 <div>&nbsp;</div>
             </div> 
-            <div class="col-sm-3 queue-border-top-columns queue-border-right-columns " style="border-bottom: 2px solid #ccc;">
+            <div class="col-sm-3  queue-border-right-columns " >
                 <div>&nbsp;</div>
                 Density 
                 <div>&nbsp;</div>
             </div> 
-            <div class="col-sm-3 queue-border-top-columns queue-border-right-columns " style="border-bottom: 2px solid #ccc;">
+            <div class="col-sm-3 queue-border-right-columns " >
                 <div>&nbsp;</div>
-                Guinier.
+                Guinier
                 <div>&nbsp;</div>
             </div>
+        </div>
+
+        <div class="col-sm-1"  style="padding:0px;">
+            <div>&nbsp;</div>
+            Advanced
+            <div>&nbsp;</div>
         </div>
     </div>
 </div>  
 
-<div id="{id}-scrollable" style="display: block; height: {height}px; overflow-y: auto">
+<div id="{id}-scrollable" style="display: block; height: {height}px; overflow-y: scroll">
     {#rows}
     <div class="container-fluid queue-border-bottom-columns" style="padding-top:10px; padding-bottom:10px;">
         <div class="row">
-            <div class="col-sm-8"  style="padding:0px;">
+            <div class="col-sm-8"  style="padding-left:0px;padding-right:0px;padding-bottom:0px;padding-top:10px;">
                 <div class="container-fluid">
                     <div class="row text-center">
-                        <div class="col-sm-1" style="width:4.166666666%; padding:0;">
-                            <table class="table queue-small-padding-table table-queue-grid-borderless">
-                                <tbody>
-                                    {#.codes}
-                                        <tr><td># {.}</td></tr>
-                                    {/.codes}
-                                </tbody>
-                            </table>
+                        <div class="col-sm-1 " style="width:4.166666666%; padding:0;">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table class="table queue-small-padding-table table-queue-grid-borderless">
+                                        <tbody>
+                                            {#.codes}
+                                                <tr><td># {.}</td></tr>
+                                            {/.codes}
+                                        </tbody>
+                                    </table>
+                                </div> 
+                            </div> 
                         </div> 
-                        <div class="col-sm-2" style="width:20.833333333%">
+                        <div class="col-sm-2 " style="width:20.833333333%">
                             <div class="row">
                                 <div class="col-sm-8">
-                                    <table class="table queue-small-padding-table table-queue-grid-borderless">
+                                    <table class="table  queue-small-padding-table table-queue-grid-borderless">
                                         <tbody>
                                             {#.macromoleculeInfo}
                                                 <tr><td>{@eq key=acronym value=""}&nbsp;{:else}<b>{.acronym}</b> {.concentration} <span style='font-size:9px;color:gray'>  mg/ml</span>{/eq}</td></tr>
@@ -117,10 +127,10 @@
                                     </table>
                                 </div> 
                                 <div class="col-sm-4">
-                                    <table class="table queue-small-padding-table table-queue-grid-borderless">
+                                    <table class="table  queue-small-padding-table table-queue-grid-borderless">
                                         <tbody>
                                             {#.averages}
-                                                <tr><td style="background-color:{.color};font-size:9px;">{.text}</td></tr>
+                                                <tr><td style="background-color:{.color};">{.text}</td></tr>
                                             {/.averages}
                                         </tbody>
                                     </table>
@@ -169,7 +179,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4"  style="padding:0px;">
+            <div class="col-sm-3"  style="padding:0px;">
                 <div class="container-fluid">
                     <div class="row ">
                         <div class="col-sm-3 ">
@@ -194,6 +204,77 @@
                         </div> 
                     </div>
                 </div>
+            </div>
+            <div class="col-sm-1 text-center"  style="padding:0px;">
+                <table class="table queue-small-padding-table table-queue-grid-borderless">
+                    <tbody>
+                            <tr>
+                                <td>
+                                    {?dataReduction}
+                                        <button class="btn-green" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {:else}
+                                        <button class="btn-blue" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    {/dataReduction}
+                                        <span class="submit-text"> Data Reduction</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {?abinitio}
+                                        <button class="btn-green" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {:else}
+                                        <button class="btn-blue" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    {/abinitio}
+                                        <span class="submit-text"> Abinitio</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {?fit}
+                                        <button class="btn-green" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {:else}
+                                        <button class="btn-blue" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    {/fit}
+                                        <span class="submit-text"> Fit</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {?superposition}
+                                        <button class="btn-green" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {:else}
+                                        <button class="btn-blue" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    {/superposition}
+                                        <span class="submit-text"> Superposition</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {?rigidBody}
+                                        <button class="btn-green" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    {:else}
+                                        <button class="btn-blue" type="submit" style="font-size:9px;width:90px; height:15px">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    {/rigidBody}
+                                        <span class="submit-text"> Rigid Body</span>
+                                    </button>
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

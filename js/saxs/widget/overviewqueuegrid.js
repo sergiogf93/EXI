@@ -1,7 +1,7 @@
 function OverviewQueueGrid(args) {
 //	this.height = Ext.getBody().getHeight() - 500;
 	QueueGrid.call(this,args);
-    this.imgWidth = 77;
+    this.imgWidth = 200;
 
 }
 
@@ -65,6 +65,11 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 			var density = "";
 			var guinier = "";
 			
+            var dataReduction = false;
+            var abinitio = false;
+            var fit = false;
+            var superposition = false;
+            var rigidBody = false;
 
 			for (var j = 0 ; j < currentDataCollection.length ; j++) {
 				var experiment = currentDataCollection[j];
@@ -73,6 +78,21 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 				codes.push(experiment.code);
 				if (experiment.concentration != 0) {
 					concentration = Number(experiment.concentration).toFixed(this.decimals-1);
+                    if (experiment.runCreationDate) {
+                        dataReduction = true;
+                    }
+                    if (experiment.abinitioCount != 0) {
+                        abinitio = true;
+                    }
+                    if (experiment.fitCount != 0) {
+                        fit = true;
+                    }
+                    if (experiment.superpositionCount != 0) {
+                        superposition = true;
+                    }
+                    if (experiment.rigidbodyCount != 0) {
+                        rigidBody = true;
+                    }
 				}
 				if (experiment.macromoleculeId != null) {
 					scattering = this.getImage(experiment,"scattering");
@@ -106,7 +126,12 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 									kratky : kratky,
 									density : density,
 									guinier : guinier,
-									imgWidth : this.imgWidth
+									imgWidth : this.imgWidth,
+                                    dataReduction : dataReduction,
+                                    abinitio : abinitio,
+                                    fit : fit,
+                                    superposition : superposition,
+                                    rigidBody : rigidBody,
 								});
 		}
 	}

@@ -7,12 +7,9 @@
                         Run #{#codes}{.code}{@sep}, {/sep}{/codes}
                      </kbd>                              
                 </span>
-                <span style="padding-left:5px;">
-                    <b>Acronym:</b> {macromoleculeAcronym} {concentration} <span style='font-size:9px;color:gray'>  mg/ml</span>
-                </span>
-                <div>
-                    <b>Exp. Temp.:</b> {.expTemp}
-                </div>
+                <span style='color:blue;padding-left : 10px'>
+                    {creationDate}
+                </span> 
             </div>
         </div>
         <br />
@@ -25,22 +22,31 @@
                                 <div class="row">
                                     <div class="col-sm-3">
                                         <table class="table">
-                                            <tr>
-                                                <td>Frames <span style='font-size:10px;'></span></td>
-                                            </tr>
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" colspan="2">Frames</span></th>
+                                                </tr>
+                                            </thead>
                                             {#codes}
                                                 <tr>
                                                     <td>#{.code}</td>
+                                                    <td>{@ne key=acronym value=""}<b>{.acronym}</b> {concentration} <span style='font-size:9px;color:gray'>  mg/ml</span>{/ne}</td>
                                                     <td class="text-center" style="background-color:{.average.color};font-size:9px;">{.average.text}</td>
                                                 </tr>
                                             {/codes}
+                                                <tr>
+                                                    <td>Exp. Temp.</td>
+                                                    <td class='column_parameter_value'>{.expTemp}</td>
+                                                </tr>
                                         </table>
                                     </div>
                                     <div class="col-sm-3">
                                         <table class="table">
-                                            <tr>
-                                                <td>Guinier</td>
-                                            </tr>
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" colspan="2">Guinier</span></th>
+                                                </tr>
+                                            </thead>
                                             <tr>
                                                 <td>Rg</td>
                                                 <td class='column_parameter_value'>
@@ -63,9 +69,11 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <table class="table">
-                                            <tr>
-                                                <td>Gnom</td>
-                                            </tr>
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" colspan="2">Gnom</span></th>
+                                                </tr>
+                                            </thead>
                                             <tr>
                                                 <td>Rg</td>
                                                 <td class='column_parameter_value'>
@@ -88,9 +96,11 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <table class="table">
-                                            <tr>
-                                                <td>Porod</td>
-                                            </tr>
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center" colspan="2">Porod</span></th>
+                                                </tr>
+                                            </thead>
                                             <tr>
                                                 <td>Volume</td>
                                                 <td class='column_parameter_value'>
@@ -113,22 +123,22 @@
                                 <div class="row">
                                     <div class="col-sm-3">
                                         <a href="{.scattering}" data-lightbox="{.scattering}" data-title="Scattering">
-                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.scattering}" style="display: block;"  height="{.imgWidth}px" width="{.imgWidth}px"/></center>
+                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.scattering}" style="display: block; border : 1px solid #3892d3;"  height="{.imgWidth}px" width="{.imgWidth}px"/></center>
                                         </a>
                                     </div>
                                     <div class="col-sm-3">
                                         <a href="{.kratky}" data-lightbox="{.kratky}" data-title="Kratky">
-                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.kratky}" style="display: block;"  height="{.imgWidth}px" width="{.imgWidth}px"/></center>
+                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.kratky}" style="display: block; border : 1px solid #3892d3;"  height="{.imgWidth}px" width="{.imgWidth}px"/></center>
                                         </a> 
                                     </div>
                                     <div class="col-sm-3">
                                         <a href="{.density}" data-lightbox="{.density}" data-title="Density">
-                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.density}" style="display: block;" height="{.imgWidth}px" width="{.imgWidth}px"/></center>
+                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.density}" style="display: block; border : 1px solid #3892d3;" height="{.imgWidth}px" width="{.imgWidth}px"/></center>
                                         </a>
                                     </div>
                                     <div class="col-sm-3">
                                         <a href="{.guinier}" data-lightbox="{.guinier}" data-title="Guinier">
-                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.guinier}" style="display: block;" height="{.imgWidth}px" width="{.imgWidth}px" /></center>
+                                            <center><img alt="Image not found" class="img-responsive queue-img" src="{.guinier}" style="display: block; border : 1px solid #3892d3;" height="{.imgWidth}px" width="{.imgWidth}px" /></center>
                                         </a> 
                                     </div>
                                 </div>
