@@ -8,6 +8,7 @@ function PuckForm(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.disableSave = false;
 	
 	if (args != null) {
 		if (args.height != null) {
@@ -15,6 +16,9 @@ function PuckForm(args) {
 		}
 		if (args.width != null) {
 			this.width = args.width;
+		}
+		if (args.disableSave != null) {
+			this.disableSave = args.disableSave;
 		}
 	}
 
@@ -88,6 +92,7 @@ PuckForm.prototype.getToolBar = function() {
 	            text: 'Save',
 	            width : 100,
 	            height : 30,
+				disabled : this.disableSave,
 	            handler : function(){
 	            	_this.save();
 	            }

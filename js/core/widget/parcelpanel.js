@@ -10,6 +10,7 @@ function ParcelPanel(args) {
 	this.height = 500;
 	this.width = 500;
 	this.pucksPanelHeight = 200;
+	this.shippingId = 0;
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -20,6 +21,9 @@ function ParcelPanel(args) {
 		}
 		if (args.width != null) {
 			this.width = args.width;
+		}
+		if (args.shippingId != null) {
+			this.shippingId = args.shippingId;
 		}
 	}
 	
@@ -82,7 +86,7 @@ ParcelPanel.prototype.render = function() {
             
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-                var puckPanel = new PuckParcelPanel({height : this.pucksPanelHeight , containerId : container.containerId, capacity : container.capacity, code : container.code});
+                var puckPanel = new PuckParcelPanel({height : this.pucksPanelHeight , containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
                 puckPanel.onPuckRemoved.attach(function (sender, containerId) {
                     _.remove(_this.dewar.containerVOs, {containerId: containerId});
                     _this.load(_this.dewar);

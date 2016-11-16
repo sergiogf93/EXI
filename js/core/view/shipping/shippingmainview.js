@@ -2,7 +2,7 @@
 /**
 * This main class deals with the creation and edition of shipments
 *
-* @class ShippingMainView
+* @class ShippingMainViewTest
 * @constructor
 */
 function ShippingMainView() {

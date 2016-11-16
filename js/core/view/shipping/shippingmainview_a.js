@@ -2,10 +2,10 @@
 /**
 * This main class deals with the creation and edition of shipments
 *
-* @class ShippingMainViewTest
+* @class ShippingMainView
 * @constructor
 */
-function ShippingMainViewTest() {
+function ShippingMainView_A() {
 	MainView.call(this);
 	var _this = this;
 
@@ -26,7 +26,7 @@ function ShippingMainViewTest() {
 	
 }
 
-ShippingMainViewTest.prototype.getPanel = function() {
+ShippingMainView.prototype.getPanel = function() {
 	
     this.panel =  Ext.create('Ext.panel.Panel', {
         layout: {
@@ -44,7 +44,7 @@ ShippingMainViewTest.prototype.getPanel = function() {
 };
 
 
-ShippingMainViewTest.prototype.load = function(shippingId) {
+ShippingMainView.prototype.load = function(shippingId) {
 	var _this = this;
 	this.shippingId = shippingId;
 	

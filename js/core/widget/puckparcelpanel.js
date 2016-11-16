@@ -7,6 +7,8 @@
 function PuckParcelPanel(args) {
     this.height = 220;
     this.containerId = 0;
+    this.shippingId = 0;
+    this.withoutCollection = true;
     this.code = "";
     this.data = {puckType : "Unipuck", 
                 mainRadius : this.height*0.3, 
@@ -28,6 +30,9 @@ function PuckParcelPanel(args) {
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
+		}
+        if (args.shippingId != null) {
+			this.shippingId = args.shippingId;
 		}
         if (args.code != null) {
 			this.code = args.code;
@@ -87,8 +92,15 @@ PuckParcelPanel.prototype.load = function (samples) {
     this.puckPanel.removeAll();
     this.puckPanel.add(this.puck.getPanel());
     
-    this.puck.loadSamples(samples);
-    this.containerId = this.puck.puckWidget.containerId;
+    if (samples.length > 0){
+        this.puck.loadSamples(samples);
+        this.containerId = this.puck.puckWidget.containerId;
+        // this.shippingId = samples[0].Shipping_shippingId;
+    }
+    var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+    if (withoutCollection.length < samples.length) {
+        this.withoutCollection = false;
+    }
 };
 
 /**
@@ -133,34 +145,36 @@ PuckParcelPanel.prototype.getButtons = function () {
                 margin : 5,
                 icon : '../images/icon/edit.png',
                 handler : function(widget, e) {
-                    var puckForm = new PuckForm({
-                        width : Ext.getBody().getWidth() - 150
-                    });
+                    location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit"
+                    // var puckForm = new PuckForm({
+                    //     width : Ext.getBody().getWidth() - 150,
+                    //     disableSave : !_this.withoutCollection
+                    // });
 
-                    puckForm.onRemoved.attach(function(sender, containerId){
-                        _this.onPuckRemoved.notify(containerId);
-                        window.close();
-                    });
-                    puckForm.onSaved.attach(function(sender, puck){
-                        _this.onPuckSaved.notify(puck);
-                        window.close();
-                    });
-                    var window = Ext.create('Ext.window.Window', {
-                            title: 'Edit Puck',
-                            height: 700,
-                            width: Ext.getBody().getWidth() - 100,
-                            modal : true,
-                            resizable : true,
-                            layout: 'fit',
-                            items: puckForm.getPanel()
-                    }).show();
+                    // puckForm.onRemoved.attach(function(sender, containerId){
+                    //     _this.onPuckRemoved.notify(containerId);
+                    //     window.close();
+                    // });
+                    // puckForm.onSaved.attach(function(sender, puck){
+                    //     _this.onPuckSaved.notify(puck);
+                    //     window.close();
+                    // });
+                    // var window = Ext.create('Ext.window.Window', {
+                    //         title: 'Edit Puck',
+                    //         height: 700,
+                    //         width: Ext.getBody().getWidth() - 100,
+                    //         modal : true,
+                    //         resizable : true,
+                    //         layout: 'fit',
+                    //         items: puckForm.getPanel()
+                    // }).show();
 
-                    if (_this.containerId != null){
-                        var onSuccess = function(sender, puck){
-                            puckForm.load(puck);
-                        };
-                        EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(_this.containerId,_this.containerId,_this.containerId);
-                    }
+                    // if (_this.containerId != null){
+                    //     var onSuccess = function(sender, puck){
+                    //         puckForm.load(puck);
+                    //     };
+                    //     EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(_this.containerId,_this.containerId,_this.containerId);
+                    // }
                 }
             },{
                 xtype: 'button',
