@@ -65,7 +65,7 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
 				var rows = _this.containerSpreadSheet.parseTableData();
 				var columnIndex = _.findIndex(_this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
 				for (var i = 0; i < rows.length; i++) {
-					_this.containerSpreadSheet.spreadSheet.setDataAtCell(rows[i].location-1,columnIndex,_this.getEditCrystalFormLink());
+					_this.containerSpreadSheet.spreadSheet.setDataAtCell(rows[i].location-1,columnIndex,_this.getEditCrystalFormLink(i));
 				}
 			}
         }
@@ -237,6 +237,7 @@ PuckFormView.prototype.save = function() {
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
-PuckFormView.prototype.getEditCrystalFormLink = function () {
-	return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/editCrystalForm'>Edit Crystal Form</a>";
+PuckFormView.prototype.getEditCrystalFormLink = function (location) {
+	var sampleId = this.puck.sampleVOs[location].blSampleId;
+	return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
 }

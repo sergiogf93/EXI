@@ -94,10 +94,10 @@ ShippingExiController.prototype.init = function() {
 			mainView.load(this.params['containerId'],this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
-		Path.map("#/shipping/:shippingId/containerId/:containerId/editCrystalForm").to(function() {
+		Path.map("#/shipping/:shippingId/containerId/:containerId/sampleId/:sampleId/editCrystalForm").to(function() {
 			var mainView = new CrystalFormView();
 			EXI.addMainPanel(mainView);
-			mainView.load(this.params['containerId'],this.params['shippingId']);
+			mainView.load(this.params['containerId'],this.params['sampleId'],this.params['shippingId']);
 		}).enter(this.setPageBackground);
 		
 };
