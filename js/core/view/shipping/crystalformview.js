@@ -11,6 +11,8 @@ function CrystalFormView (args) {
 			this.containerId = args.containerId;
 		}
 	}
+
+    this.uploaderWidget = new UploaderWidget();
 }
 
 
@@ -18,11 +20,49 @@ function CrystalFormView (args) {
 CrystalFormView.prototype.getPanel = function(){
     var _this = this;
 
-	return {
-		html : '<div id="' + this.id + '"></div>',
-		autoScroll : false,
-        padding : this.padding
-	}
+    this.panel = Ext.create('Ext.panel.Panel', {
+        buttons : this.getToolBar(),
+        items : [
+            {
+                html : '<div id="' + this.id + '" ></div>',
+            },
+            this.uploaderWidget.getForm(),
+            {
+                xtype : 'button',
+                margin: '0 0 0 2',
+                text: 'Test',
+                handler: function() {
+                    window.open('#/shipping/edv','_newtab');
+                    // var edv = new ElectronDensityViewer();
+                    // var window = Ext.create('Ext.window.Window', {
+                    //         title: 'Elecyton Density Viewer',
+                    //         height: Ext.getBody().getHeight() - 100,
+                    //         width: Ext.getBody().getWidth() - 100,
+                    //         modal : true,
+                    //         resizable : true,
+                    //         layout: 'fit',
+                    //         items: edv.getPanel()
+                    // }).show();
+                }
+            }
+        ]
+    });
+
+    return this.panel;
+};
+
+CrystalFormView.prototype.getToolBar = function() {
+	var _this = this;
+	return [
+            {
+	            text: 'Return to shipment',
+	            width : 200,
+	            height : 30,
+	            handler : function () {
+                    location.href = "#/shipping/" + _this.shippingId + "/main";
+                }
+	        }
+	];
 };
 
 CrystalFormView.prototype.load = function(containerId, sampleId, shippingId){
@@ -30,6 +70,7 @@ CrystalFormView.prototype.load = function(containerId, sampleId, shippingId){
     this.containerId = containerId;
     this.sampleId = sampleId;
     this.shippingId = shippingId;
+    this.panel.setTitle("Shipment");
 
     var onSuccess = function (sender, puck) {
         if (puck){
@@ -41,9 +82,10 @@ CrystalFormView.prototype.load = function(containerId, sampleId, shippingId){
                 dust.render("crystal.form.template", _this.sample, function(err, out) {                                                                       
                     html = html + out;
                 });
-
-                $("#" + this.id).html(html);
-
+                
+                $('#' + _this.id).hide().html(html).fadeIn('fast');
+                $('#' + _this.id).css("padding",_this.padding);
+                _this.panel.doLayout();
             }
         }
     }

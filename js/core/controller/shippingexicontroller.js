@@ -99,5 +99,10 @@ ShippingExiController.prototype.init = function() {
 			EXI.addMainPanel(mainView);
 			mainView.load(this.params['containerId'],this.params['sampleId'],this.params['shippingId']);
 		}).enter(this.setPageBackground);
+
+		Path.map("#/shipping/edv").to(function() {
+			var mainView = new ElectronDensityViewer();
+			EXI.addMainPanel(mainView);
+		}).enter(this.setPageBackground);
 		
 };

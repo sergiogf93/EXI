@@ -54,60 +54,7 @@ var ExtISPyB ={
 
    },
    sites:[
-        {
-         name:'ESRF',
-         description : 'European Synchroton Radiation Facility',
-         icon : '../images/site/esrf.png',
-         url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
-         exiUrl:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               {
-                name : 'BM29',
-                sampleChangerType : ''
-   	       }
-
-            ],
-            MX:[
-               { 
-                   name : "ID23-1",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID23-2",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID29",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID30A-1",
-                   sampleChangerType : 'RoboDiff'
-               },
-               { 
-                   name : "ID30A-2",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID30A-3",
-                   sampleChangerType : 'FlexHCD'
-               },
-               { 
-                   name : "ID30B",
-                   sampleChangerType : 'FlexHCD'
-               },
-               { 
-                   name : "BM14U",
-                   sampleChangerType : 'FlexHCD'
-               },
-               { 
-                   name : "BM30A",
-                   sampleChangerType : 'FlexHCD'
-               }                                             
-            ]
-         }
-      }/*,    
+          
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
@@ -160,7 +107,7 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      }*/
+      }
    ]
 };
 

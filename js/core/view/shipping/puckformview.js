@@ -22,7 +22,7 @@ function PuckFormView(args) {
 	var _this = this;
 	
 	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
-	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100});
+	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 450});
 	
 	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
 		
@@ -38,6 +38,7 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
     this.shippingId = shippingId;
     this.containerId = containerId;
     this.containerSpreadSheet.setLoading(true);
+	this.panel.setTitle("Shipment");
 
     var onSuccess = function(sender, puck){
         _this.puck = puck;
@@ -155,7 +156,6 @@ PuckFormView.prototype.getPanel = function() {
 PuckFormView.prototype.getToolBar = function() {
 	var _this = this;
 	return [
-	        
 			{
 			    text: 'Remove',
 			    width : 100,
@@ -176,14 +176,7 @@ PuckFormView.prototype.getToolBar = function() {
 				           icon: Ext.MessageBox.QUESTION
 				       });
 			    }
-			},{
-	            text: 'Return to shipment',
-	            width : 200,
-	            height : 30,
-	            handler : function () {
-                    _this.returnToShipment();
-                }
-	        },
+			},
 	        "->",
 	        {
 	            text: 'Save',
@@ -194,6 +187,14 @@ PuckFormView.prototype.getToolBar = function() {
 	            handler : function(){
 	            	_this.save();
 	            }
+	        },
+			{
+	            text: 'Return to shipment',
+	            width : 200,
+	            height : 30,
+	            handler : function () {
+                    _this.returnToShipment();
+                }
 	        }
 	];
 };
