@@ -24,7 +24,6 @@ function SampleChangerSelector (args) {
     };
 
     this.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
-    debugger
     var beamlinesGridData = [];
     for (var i = 0 ; i < this.beamlines.length ; i++) {
         var beamline = this.beamlines[i];
