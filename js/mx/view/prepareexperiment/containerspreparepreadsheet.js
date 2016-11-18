@@ -233,9 +233,17 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
         this.sampleChangerWidget = sampleChangerWidget;
     }
     var data = [];
+    var preSelectedBeamline = null;
+    if (typeof(Storage) != "undefined"){
+        var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
+    }
     //Parse data
     for (dewar in dewars) {
         if (dewars[dewar].sampleCount > 0){
+            var beamlineName = dewars[dewar].beamlineName;
+            if (preSelectedBeamline) {
+                beamlineName = preSelectedBeamline;
+            }
             var containerType = "Unipuck";
             if (dewars[dewar].capacity){
                 if (dewars[dewar].capacity == 10) {
@@ -248,7 +256,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                 containerCode : dewars[dewar].containerCode,
                 containerType : containerType,
                 sampleCount : dewars[dewar].sampleCount,
-                beamlineName : dewars[dewar].beamlineName,
+                beamlineName : beamlineName,
                 sampleChangerLocation : dewars[dewar].sampleChangerLocation,
                 dewarId : dewars[dewar].dewarId,
                 containerId : dewars[dewar].containerId,
@@ -269,7 +277,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
 */
 ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
-
+    debugger
     var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
 
     for (var i = 0 ; i < recordsByContainerId.length ; i++) {

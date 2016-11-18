@@ -107,7 +107,7 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      }/*,    
+      },    
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
@@ -160,7 +160,7 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      }*/
+      }
    ]
 };
 

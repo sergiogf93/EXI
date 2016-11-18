@@ -33,6 +33,9 @@ img.border-img {
 
 /** Prepare experiment steps **/
 
+.step-btn {
+	pointer-events: none !important;
+}
 
 .warning-row .x-grid-cell { 
     background-color: #ffeaa5; 

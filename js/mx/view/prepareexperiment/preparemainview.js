@@ -19,7 +19,7 @@ function PrepareMainView(args) {
         }
     }
 
-    this.steps = ["","/selectSampleChanger","/loadSampleChanger","/confirm"];
+    this.steps = ["","/selectSampleChanger","/loadSampleChanger"];
 
     this.height = 550;
     this.width = 1300;
@@ -48,6 +48,14 @@ function PrepareMainView(args) {
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
+
+    this.sampleChangerSelector.onRowSelected.attach(function(sender,beamline){
+        if (beamline) {
+            _this.save("selectedBeamline", beamline);
+        } else {
+            _this.removeFromStorage("selectedBeamline");
+        }
+    });
 
     this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
         $('#next-button').attr("disabled", false);
@@ -128,18 +136,18 @@ PrepareMainView.prototype.changeStep = function (direction) {
 * @method manageStepButtons
 * @return 
 */
-PrepareMainView.prototype.manageStepButtons = function () {
-    if (this.loadSampleChangerView.sampleChangerName == "") {
-        $('#step-3').attr("disabled", true);
-    } else {
-        $('#step-3').attr("disabled", false);
-    }
-    for (var i = 1 ; i <= 4 ; i++){
-        if (i == this.currentStep){
-            $('#step-' + i).addClass('active-step');
-        }
-    }
-};
+// PrepareMainView.prototype.manageStepButtons = function () {
+//     if (this.loadSampleChangerView.sampleChangerName == "") {
+//         $('#step-3').attr("disabled", true);
+//     } else {
+//         $('#step-3').attr("disabled", false);
+//     }
+//     for (var i = 1 ; i <= 4 ; i++){
+//         if (i == this.currentStep){
+//             $('#step-' + i).addClass('active-step');
+//         }
+//     }
+// };
 
 /**
 * Loads a Ext.panel.panel constaining a Ext.panel.Panel that will render the steps inside and sets the click events for the buttons
@@ -186,16 +194,16 @@ PrepareMainView.prototype.getPanel = function() {
                 _this.changeStep(-1);             
             }
         });
-        $('.step-btn').unbind('click').click(function (sender){
-            if(sender.target.getAttribute("disabled") != "disabled"){
-                if (_this.loadSampleChangerView.sampleChangerWidget){
-                    _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
-                }
-                var direction = Number(sender.target.innerHTML) - _this.currentStep;
-                _this.changeStep(direction);
-            }
-        });
-        _this.manageStepButtons();
+        // $('.step-btn').unbind('click').click(function (sender){
+        //     if(sender.target.getAttribute("disabled") != "disabled"){
+        //         if (_this.loadSampleChangerView.sampleChangerWidget){
+        //             _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
+        //         }
+        //         var direction = Number(sender.target.innerHTML) - _this.currentStep;
+        //         _this.changeStep(direction);
+        //     }
+        // });
+        // _this.manageStepButtons();
         _this.manageButtons();
     });
         
@@ -304,6 +312,19 @@ PrepareMainView.prototype.load = function() {
 PrepareMainView.prototype.save = function (key, value) {
     if (typeof(Storage) != 'undefined') {
         sessionStorage.setItem(key,value);
+    }
+}
+
+/**
+* Removes a key-value pair on the session storage
+*
+* @method removeFromStorage
+* @param {String} key The key of the key-value pair
+* @return 
+*/
+PrepareMainView.prototype.removeFromStorage = function (key) {
+    if (typeof(Storage) != 'undefined') {
+        sessionStorage.removeItem(key);
     }
 }
 
