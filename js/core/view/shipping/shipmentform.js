@@ -7,6 +7,7 @@
 function ShipmentForm(args) {
 	this.id = BUI.id();
 	this.width = 600;
+	this.padding = 20;
 
 	if (args != null) {
 		if (args.creationMode != null) {
@@ -50,31 +51,13 @@ ShipmentForm.prototype.draw = function(targetId) {
 ShipmentForm.prototype.load = function(shipment) {
 	this.shipment = shipment;
 	var _this = this;
-	Ext.getCmp(_this.id + "shippingName").setValue(shipment.shippingName);
-	Ext.getCmp(_this.id + "comments").setValue(shipment.comments);
-	if (shipment.sendingLabContactVO != null) {
-		this.labContactsSendingCombo.setValue(shipment.sendingLabContactVO.labContactId);
-	}
+	
+    var html = "";
+    dust.render("shipping.form.template", [], function(err, out){
+		html = out;
+	});
 
-	
-	if (shipment.returnLabContactVO == null) {
-		this.labContactsReturnCombo.setValue(0);
-	}
-	else{
-		if (shipment.returnLabContactVO.labContactId == shipment.sendingLabContactVO.labContactId){
-			this.labContactsReturnCombo.setValue(-1);
-		}
-		else{
-			this.labContactsReturnCombo.setValue(shipment.returnLabContactVO.labContactId);
-		}
-	}
-	
-	if (shipment.sessions != null){
-		if (shipment.sessions.length > 0){
-			var session = shipment.sessions[0];
-			this.sessionComboBox.setValue(session.sessionId);
-		}
-	}
+    $('#' + _this.id).hide().html(html).fadeIn('fast');
 
 };
 
@@ -147,117 +130,15 @@ ShipmentForm.prototype._saveShipment = function() {
 };
 
 ShipmentForm.prototype.getPanel = function() {
-	var _this = this;
-	var required = '<span style="color:red;font-weight:bold" data-qtip="Required">*</span>';
-	var buttons = [];
 
-	if (_this.creationMode) {
-		buttons.push({
-			text : 'Create',
-			scope : this,
-			handler : function() {
-				_this._saveShipment();
-			}
-		});
-	} else {
-		buttons.push({
-			text : 'Save',
-			scope : this,
-			handler : function() {
-				_this._saveShipment();
-			}
-		});
+    this.panel =  {
+                    html : '<div id="' + this.id + '" class="border-grid"></div>',
+                    autoScroll : false,
+					padding : this.padding,
+					width : this.width
+                };
 
-	}
-
-	this.labContactForSendingStore = Ext.create('Ext.data.Store', {
-		fields : [ 'cardName', 'labContactId' ],
-		sorters : 'cardName'
-	});
-
-	this.labContactForReturnStore = Ext.create('Ext.data.Store', {
-		fields : [ 'cardName', 'labContactId' ]
-		
-	});
-
-	this.labContactsSendingCombo = Ext.create('Ext.form.ComboBox', {
-		id : _this.id + "shipmentform_sendingLabContactId",
-		fieldLabel : 'Shipping Card to ESRF',
-		afterLabelTextTpl : required,
-		store : this.labContactForSendingStore,
-		queryMode : 'local',
-		labelWidth : 200,
-		width : 600,
-		margin : '10 0 0 10',
-		displayField : 'cardName',
-		valueField : 'labContactId'
-	});
-
-	this.labContactsReturnCombo = Ext.create('Ext.form.ComboBox', {
-		id : _this.id + "returnLabContactId",
-		fieldLabel : 'Shipping Card to HOME',
-		afterLabelTextTpl : required,
-		store : this.labContactForReturnStore,
-		queryMode : 'local',
-		margin : '10 0 0 10',
-		labelWidth : 200,
-		width : 600,
-		displayField : 'cardName',
-		valueField : 'labContactId'
-	});
-
-	
-    this.sessionComboBox =  BIOSAXS_COMBOMANAGER.getComboSessions(EXI.proposalManager.getSessions(), {margin: '10 0 0 10', width: 400, labelWidth: 200});
-
-	if (this.panel == null) {
-		this.panel = Ext.create('Ext.form.Panel', {
-			layout: 'hbox',
-			width : this.width,
-			margin : 10,
-			bodyPadding : 5,
-			cls : 'border-grid',
-			buttons : buttons,
-			items : [ 
-						{
-							xtype : 'container',
-							layout: 'vbox',
-							items: [
-										{
-												xtype : 'requiredtextfield',
-												fieldLabel : 'Name',
-												allowBlank : false,
-												labelWidth : 200,
-												width : 400,
-												margin : "10 20 0 10",
-												name : 'shippingName',
-												id : _this.id + 'shippingName',
-												value : '',
-										},
-										this.sessionComboBox
-							]
-						},
-					    {
-		    					xtype : 'textareafield',
-		    					name : 'comments',
-		    					id : _this.id + 'comments',
-		    					fieldLabel : 'Comments',
-		    					value : '',
-		    					labelWidth : 200,
-		    					margin : "10 20 0 10",
-		    					width : 500,
-						},
-						{
-							xtype : 'container',
-							layout: 'vbox',
-							items: [
-										this.labContactsSendingCombo,
-										this.labContactsReturnCombo
-							]
-						}
-		]
-		});
-	}
-	this.fillStores();
 	return this.panel;
+
 };
 
