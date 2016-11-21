@@ -262,6 +262,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 		data = data.slice(0, capacity);
 	}
 	this.containerSpreadSheet.spreadSheet.loadData(data);
+	// this.load(this.containerId,this.shippingId);
 };
 
 /**

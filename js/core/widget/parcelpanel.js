@@ -86,7 +86,6 @@ ParcelPanel.prototype.render = function() {
             
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				debugger
                 var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight , containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
                 containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
                     _.remove(_this.dewar.containerVOs, {containerId: containerId});
