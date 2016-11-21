@@ -101,20 +101,27 @@ PrepareMainView.prototype.updateStatus = function(shippingId, status) {
 */
 PrepareMainView.prototype.manageButtons = function () {
     if (this.currentStep == 1) {
-        $('#previous-button-div').hide();
+        $('#previous-button').hide();
         $('#next-button').attr("disabled", false); 
     } else {
-        $('#previous-button-div').show();
+        $('#previous-button').show();
     }
     if (this.currentStep == 2) {
         $('#next-button').attr("disabled", true);
     }
     if (this.currentStep < 3) {
-        $('#next-button-div').show();  
-        $('#done-button-div').hide();
+        $('#next-button').show();  
+        $('#done-button').hide();
     }
     if (this.currentStep == 3) {
-        $('#next-button-div').hide();
+        $('#next-button').hide();
+    }
+    for (var i = 1 ; i <= 3 ; i++){
+        if (i == this.currentStep) {
+            $('#step-' + i).addClass('active-step');
+        } else {
+            $('#step-' + i).removeClass('active-step');
+        }
     }
 };
 
@@ -171,6 +178,7 @@ PrepareMainView.prototype.getPanel = function() {
     );
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+        buttons : this.getButtons(),
         layout: {
             type: 'vbox',
             align: 'center'
@@ -179,31 +187,22 @@ PrepareMainView.prototype.getPanel = function() {
         height : this.height + 200,
         // cls : 'border-grid',
         items : [
-                    this.getToolBar(), this.container,  this.getButtons()
+                    this.getToolBar(), this.container,
+                    //   this.getButtons()
         ]
 	});
 
     this.panel.on('boxready', function() {
-        $('#next-button').unbind('click').click(function (sender){
-            if (_this.currentStep < 4) {
-                _this.changeStep(1);
-            }
-        });
-        $('#previous-button').unbind('click').click(function (sender){
-            if (_this.currentStep > 0) {
-                _this.changeStep(-1);             
-            }
-        });
-        // $('.step-btn').unbind('click').click(function (sender){
-        //     if(sender.target.getAttribute("disabled") != "disabled"){
-        //         if (_this.loadSampleChangerView.sampleChangerWidget){
-        //             _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
-        //         }
-        //         var direction = Number(sender.target.innerHTML) - _this.currentStep;
-        //         _this.changeStep(direction);
+        // $('#next-button').unbind('click').click(function (sender){
+        //     if (_this.currentStep < 4) {
+        //         _this.changeStep(1);
         //     }
         // });
-        // _this.manageStepButtons();
+        // $('#previous-button').unbind('click').click(function (sender){
+        //     if (_this.currentStep > 0) {
+        //         _this.changeStep(-1);             
+        //     }
+        // });
         _this.manageButtons();
     });
         
@@ -232,14 +231,44 @@ PrepareMainView.prototype.getToolBar = function () {
 * @method getButtons
 * @return The buttons html of the prepare experiment process.
 */
-PrepareMainView.prototype.getButtons = function () {
-    var html = "";
-	dust.render("buttons.prepare.template", [], function(err, out){
-		html = out;
-	});
+// PrepareMainView.prototype.getButtons = function () {
+//     var html = "";
+// 	dust.render("buttons.prepare.template", [], function(err, out){
+// 		html = out;
+// 	});
 
-    return {html : html, margin : 10};
-}
+//     return {html : html, margin : 10};
+// }
+
+PrepareMainView.prototype.getButtons = function() {
+	var _this = this;
+    
+	return [
+			{
+			    text: 'Previous',
+			    cls : 'btn btn-lg btn-success',
+                id : 'previous-button',
+                margin : '0 0 0 300',
+			    handler : function(){
+			    	if (_this.currentStep > 0) {
+                        _this.changeStep(-1);             
+                    }
+			    }
+			},
+	        "->",
+	        {
+			    text: 'Next',
+			    cls : 'btn btn-lg btn-success',
+                id : 'next-button',
+                margin : '0 300 0 0',
+			    handler : function(){
+			    	if (_this.currentStep < 4) {
+                        _this.changeStep(1);
+                    }
+			    }
+            }
+	];
+};
 
 /**
 * Loads the container according to the current step.
