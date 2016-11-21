@@ -5240,10 +5240,10 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 readOnly: true
             },
             { 
-                header : 'Beamline',
+                header : 'Selected Beamline',
                 dataIndex: 'beamlineName',
                 type: 'dropdown',			        	 								
-                flex: 0.6,
+                flex: 1,
                 source: EXI.credentialManager.getBeamlineNames()
             },
             {
@@ -5350,9 +5350,17 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
         this.sampleChangerWidget = sampleChangerWidget;
     }
     var data = [];
+    var preSelectedBeamline = null;
+    if (typeof(Storage) != "undefined"){
+        var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
+    }
     //Parse data
     for (dewar in dewars) {
         if (dewars[dewar].sampleCount > 0){
+            var beamlineName = dewars[dewar].beamlineName;
+            if (preSelectedBeamline) {
+                beamlineName = preSelectedBeamline;
+            }
             var containerType = "Unipuck";
             if (dewars[dewar].capacity){
                 if (dewars[dewar].capacity == 10) {
@@ -5365,7 +5373,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                 containerCode : dewars[dewar].containerCode,
                 containerType : containerType,
                 sampleCount : dewars[dewar].sampleCount,
-                beamlineName : dewars[dewar].beamlineName,
+                beamlineName : beamlineName,
                 sampleChangerLocation : dewars[dewar].sampleChangerLocation,
                 dewarId : dewars[dewar].dewarId,
                 containerId : dewars[dewar].containerId,
@@ -5386,7 +5394,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
 */
 ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
-
+    debugger
     var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
 
     for (var i = 0 ; i < recordsByContainerId.length ; i++) {
@@ -6017,7 +6025,7 @@ function PrepareMainView(args) {
         }
     }
 
-    this.steps = ["","/selectSampleChanger","/loadSampleChanger","/confirm"];
+    this.steps = ["","/selectSampleChanger","/loadSampleChanger"];
 
     this.height = 550;
     this.width = 1300;
@@ -6046,6 +6054,14 @@ function PrepareMainView(args) {
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
+
+    this.sampleChangerSelector.onRowSelected.attach(function(sender,beamline){
+        if (beamline) {
+            _this.save("selectedBeamline", beamline);
+        } else {
+            _this.removeFromStorage("selectedBeamline");
+        }
+    });
 
     this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
         $('#next-button').attr("disabled", false);
@@ -6126,18 +6142,18 @@ PrepareMainView.prototype.changeStep = function (direction) {
 * @method manageStepButtons
 * @return 
 */
-PrepareMainView.prototype.manageStepButtons = function () {
-    if (this.loadSampleChangerView.sampleChangerName == "") {
-        $('#step-3').attr("disabled", true);
-    } else {
-        $('#step-3').attr("disabled", false);
-    }
-    for (var i = 1 ; i <= 4 ; i++){
-        if (i == this.currentStep){
-            $('#step-' + i).addClass('active-step');
-        }
-    }
-};
+// PrepareMainView.prototype.manageStepButtons = function () {
+//     if (this.loadSampleChangerView.sampleChangerName == "") {
+//         $('#step-3').attr("disabled", true);
+//     } else {
+//         $('#step-3').attr("disabled", false);
+//     }
+//     for (var i = 1 ; i <= 4 ; i++){
+//         if (i == this.currentStep){
+//             $('#step-' + i).addClass('active-step');
+//         }
+//     }
+// };
 
 /**
 * Loads a Ext.panel.panel constaining a Ext.panel.Panel that will render the steps inside and sets the click events for the buttons
@@ -6184,16 +6200,16 @@ PrepareMainView.prototype.getPanel = function() {
                 _this.changeStep(-1);             
             }
         });
-        $('.step-btn').unbind('click').click(function (sender){
-            if(sender.target.getAttribute("disabled") != "disabled"){
-                if (_this.loadSampleChangerView.sampleChangerWidget){
-                    _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
-                }
-                var direction = Number(sender.target.innerHTML) - _this.currentStep;
-                _this.changeStep(direction);
-            }
-        });
-        _this.manageStepButtons();
+        // $('.step-btn').unbind('click').click(function (sender){
+        //     if(sender.target.getAttribute("disabled") != "disabled"){
+        //         if (_this.loadSampleChangerView.sampleChangerWidget){
+        //             _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
+        //         }
+        //         var direction = Number(sender.target.innerHTML) - _this.currentStep;
+        //         _this.changeStep(direction);
+        //     }
+        // });
+        // _this.manageStepButtons();
         _this.manageButtons();
     });
         
@@ -6302,6 +6318,19 @@ PrepareMainView.prototype.load = function() {
 PrepareMainView.prototype.save = function (key, value) {
     if (typeof(Storage) != 'undefined') {
         sessionStorage.setItem(key,value);
+    }
+}
+
+/**
+* Removes a key-value pair on the session storage
+*
+* @method removeFromStorage
+* @param {String} key The key of the key-value pair
+* @return 
+*/
+PrepareMainView.prototype.removeFromStorage = function (key) {
+    if (typeof(Storage) != 'undefined') {
+        sessionStorage.removeItem(key);
     }
 }
 
@@ -8670,7 +8699,7 @@ function SampleChangerSelector (args) {
 
     this.sampleChangerGrid = new BootstrapGrid({template : "bootstrap.grid.template"});
     this.sampleChangerGrid.load(SCtypes);
-    this.beamlinesGrid = new BootstrapGrid({template : "bootstrap.grid.template"});
+    this.beamlinesGrid = new BootstrapGrid({template : "bootstrap.grid.template", height : 1000});
     this.beamlinesGrid.load(beamlines);
 
     this.sampleChangerWidget = null;
@@ -8679,13 +8708,17 @@ function SampleChangerSelector (args) {
         _this.beamlinesGrid.deselectAll();
         _this.sampleChangerWidget = _this.createSampleChanger(text);
         _this.addSampleChanger(_this.sampleChangerWidget);
+        _this.onRowSelected.notify();
     });
     this.beamlinesGrid.rowSelected.attach(function(sender,text){
         _this.sampleChangerGrid.deselectAll();
         var sampleChangerType = _.filter(_this.beamlines,{'name':text.split(" ")[0]})[0].sampleChangerType;
         _this.sampleChangerWidget = _this.createSampleChanger(sampleChangerType);
         _this.addSampleChanger(_this.sampleChangerWidget);
+        _this.onRowSelected.notify(text.split(" ")[0]);
     });
+
+    this.onRowSelected = new Event(this);
     this.onSampleChangerSelected = new Event(this);
 };
 
@@ -8724,7 +8757,7 @@ SampleChangerSelector.prototype.getPanel = function() {
                         cls : 'border-grid',
                         margin : 20,
                         items: [
-                                    this.sampleChangerGrid.getPanel(),
+                                    // this.sampleChangerGrid.getPanel(),
                                     this.beamlinesGrid.getPanel()
                         ]
                     },

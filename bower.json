@@ -31,7 +31,7 @@
     "jquery-lazy": "~0.6.1",
     "dygraphs": "*",
     "qunit": "~1.22.0",
-    "ispyb-js-api": "*",
+    "ispyb-js-api": "latest",
     "vis": "^4.15.0",
     "Snap.svg": "snap.svg#^0.4.1",
     "pathjs-amd": "^0.10.0",
