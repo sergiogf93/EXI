@@ -123,10 +123,10 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 readOnly: true
             },
             { 
-                header : 'Beamline',
+                header : 'Selected Beamline',
                 dataIndex: 'beamlineName',
                 type: 'dropdown',			        	 								
-                flex: 0.6,
+                flex: 1,
                 source: EXI.credentialManager.getBeamlineNames()
             },
             {
