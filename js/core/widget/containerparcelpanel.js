@@ -1,15 +1,16 @@
 /**
 * Renders a panel that contains a puck widget and two buttons
 *
-* @class PuckParcelPanel
+* @class ContainerParcelPanel
 * @constructor
 */
-function PuckParcelPanel(args) {
+function ContainerParcelPanel(args) {
     this.height = 220;
     this.containerId = 0;
     this.shippingId = 0;
     this.withoutCollection = true;
     this.code = "";
+    this.type = "Puck";
     this.data = {puckType : "Unipuck", 
                 mainRadius : this.height*0.3, 
                 xMargin : this.width/2 - this.height*0.3, 
@@ -37,6 +38,9 @@ function PuckParcelPanel(args) {
         if (args.code != null) {
 			this.code = args.code;
 		}
+        if (args.type != null) {
+			this.type = args.type;
+		}
         if (args.capacity != null) {
 			if (args.capacity != 16) {
                 this.data.puckType = "Spinepuck";
@@ -44,25 +48,27 @@ function PuckParcelPanel(args) {
 		}
 	}
 
-    this.onPuckRemoved = new Event(this);
-    this.onPuckSaved = new Event(this);
+    this.onContainerRemoved = new Event(this);
+    this.onContainerSaved = new Event(this);
 	
 };
 
 /**
-* Returns the panel containing the puck and the buttons
+* Returns the panel containing the container and the buttons
 *
 * @class load
-* @return The panel containing the puck and the buttons
+* @return The panel containing the container and the buttons
 */
-PuckParcelPanel.prototype.getPanel = function () {
+ContainerParcelPanel.prototype.getPanel = function () {
+    this.container = new ContainerWidget(this.data);
+    if (this.type == "Puck"){
+        this.container = new PuckWidgetContainer(this.data);
+    }
 
-    this.puck = new PuckWidgetContainer(this.data);
-
-    this.puckPanel = Ext.create('Ext.panel.Panel', {
+    this.containerPanel = Ext.create('Ext.panel.Panel', {
         width : this.width,
         height : 2*this.data.mainRadius + 5,
-        items : [this.puck.getPanel()]
+        items : [this.container.getPanel()]
 	});
 
     this.panel = Ext.create('Ext.panel.Panel', {
@@ -74,7 +80,7 @@ PuckParcelPanel.prototype.getPanel = function () {
                     margin : 5,
                     x : this.data.xMargin
                 },
-                this.puckPanel,
+                this.containerPanel,
                 this.getButtons()]
 	});
 
@@ -82,19 +88,17 @@ PuckParcelPanel.prototype.getPanel = function () {
 };
 
 /**
-* Loads the puck with the given samples
+* Loads the container with the given samples
 *
 * @class load
 * @return
 */
-PuckParcelPanel.prototype.load = function (samples) {
-    this.puck = new PuckWidgetContainer(this.data);
-    this.puckPanel.removeAll();
-    this.puckPanel.add(this.puck.getPanel());
-    
+ContainerParcelPanel.prototype.load = function (samples) {
+    this.containerPanel.removeAll();
+    this.containerPanel.add(this.container.getPanel());
     if (samples.length > 0){
-        this.puck.loadSamples(samples);
-        this.containerId = this.puck.puckWidget.containerId;
+        this.container.loadSamples(samples);
+        this.containerId = this.container.containerId;
         // this.shippingId = samples[0].Shipping_shippingId;
     }
     var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
@@ -109,7 +113,7 @@ PuckParcelPanel.prototype.load = function (samples) {
 * @class getCodeHeader
 * @return The html of the code header
 */
-PuckParcelPanel.prototype.getCodeHeader = function () {
+ContainerParcelPanel.prototype.getCodeHeader = function () {
     var templateData = {info : [{
                                     text : 'Code:',
                                     value : this.code
@@ -129,7 +133,7 @@ PuckParcelPanel.prototype.getCodeHeader = function () {
 * @class getButtons
 * @return A panel with the buttons
 */
-PuckParcelPanel.prototype.getButtons = function () {
+ContainerParcelPanel.prototype.getButtons = function () {
     var _this = this;
 
     this.buttons = Ext.create('Ext.panel.Panel', {
@@ -152,11 +156,11 @@ PuckParcelPanel.prototype.getButtons = function () {
                     // });
 
                     // puckForm.onRemoved.attach(function(sender, containerId){
-                    //     _this.onPuckRemoved.notify(containerId);
+                    //     _this.onContainerRemoved.notify(containerId);
                     //     window.close();
                     // });
                     // puckForm.onSaved.attach(function(sender, puck){
-                    //     _this.onPuckSaved.notify(puck);
+                    //     _this.onContainerSaved.notify(puck);
                     //     window.close();
                     // });
                     // var window = Ext.create('Ext.window.Window', {
@@ -209,12 +213,12 @@ PuckParcelPanel.prototype.getButtons = function () {
 * @class removePuck
 * @return 
 */
-PuckParcelPanel.prototype.removePuck = function() {
+ContainerParcelPanel.prototype.removePuck = function() {
 	var _this = this;
 	this.panel.setLoading();
 	var onSuccess = function(sender, data){
 		_this.panel.setLoading(false);
-        _this.onPuckRemoved.notify(_this.containerId);
+        _this.onContainerRemoved.notify(_this.containerId);
 	};
 	var containerId = this.containerId;
 	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );

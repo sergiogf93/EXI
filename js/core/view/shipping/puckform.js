@@ -152,8 +152,8 @@ PuckForm.prototype.containerTypeChanged = function(capacity) {
 		data = data.slice(0, capacity);
 	}
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-
 };
+
 
 PuckForm.prototype.getPanel = function() {
 	var _this =this;

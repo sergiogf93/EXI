@@ -6,11 +6,9 @@ function PuckWidgetContainer(args) {
 	
 	this.xMargin = 0;
 	this.yMargin = 0;
+	this.containerId = 0;
 	if (args){
 		if (args.puckType) {
-			if (args.puckType == "UniPuck" || args.puckType == "SpinePuck") {
-				debugger
-			}
 			switch (args.puckType) {
 				case "Unipuck":
 					this.puckWidget = new UniPuckWidget(args);
@@ -27,9 +25,6 @@ function PuckWidgetContainer(args) {
 		}
 		if (args.yMargin){
 			this.yMargin = args.yMargin;
-		}
-		if (args.x) {
-			debugger
 		}
 	}
 	
@@ -85,7 +80,12 @@ PuckWidgetContainer.prototype.load = function (data) {
 }
 
 PuckWidgetContainer.prototype.loadSamples = function (samples) {
-	this.puckWidget.loadSamples(samples);
+	if (samples){
+		if (samples.length > 0){
+			this.containerId = samples[0].Container_containerId; 
+			this.puckWidget.loadSamples(samples);
+		}
+	}
 }
 
 PuckWidgetContainer.prototype.focus = function (location, bool) {

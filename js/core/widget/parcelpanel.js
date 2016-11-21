@@ -9,7 +9,7 @@ function ParcelPanel(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
-	this.pucksPanelHeight = 200;
+	this.containersPanelHeight = 200;
 	this.shippingId = 0;
 
 	this.isSaveButtonHidden = false;
@@ -68,40 +68,41 @@ ParcelPanel.prototype.render = function() {
 	if (dewar != null){
 		if (dewar.containerVOs != null){
 
-            var pucksPanel = Ext.create('Ext.panel.Panel', {
+            var containersPanel = Ext.create('Ext.panel.Panel', {
                 layout      : 'hbox',
                 cls 		: "border-grid",
-                margin: '0 0 0 6px',
+                margin		: '0 0 0 6px',
                 width       : this.width - 15,
-                height       : this.pucksPanelHeight + 20,
-                autoScroll : true,
+				height    	: this.containersPanelHeight + 20,
+                autoScroll 	: true,
                 items       : []
             });
 
-            this.panel.add(pucksPanel);
+            this.panel.add(containersPanel);
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
-            var puckPanelsMap = {};
+            var containerPanelsMap = {};
             var containerIds = [];
             
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-                var puckPanel = new PuckParcelPanel({height : this.pucksPanelHeight , containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
-                puckPanel.onPuckRemoved.attach(function (sender, containerId) {
+				debugger
+                var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight , containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
+                containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
                     _.remove(_this.dewar.containerVOs, {containerId: containerId});
                     _this.load(_this.dewar);
                 });
-                puckPanel.onPuckSaved.attach(function (sender, puck) {
-                    _.remove(_this.dewar.containerVOs, {containerId: puck.containerId});
-                    _this.dewar.containerVOs.push(puck);
+                containerParcelPanel.onContainerSaved.attach(function (sender, containerVO) {
+                    _.remove(_this.dewar.containerVOs, {containerId: containerVO.containerId});
+                    _this.dewar.containerVOs.push(containerVO);
                     _this.load(_this.dewar);
                 });
-                puckPanelsMap[container.containerId] = puckPanel;
+                containerPanelsMap[container.containerId] = containerParcelPanel;
                 containerIds.push(container.containerId);
-                pucksPanel.insert(puckPanel.getPanel());
+                containersPanel.insert(containerParcelPanel.getPanel());
 			}
             
-            if (!_.isEmpty(puckPanelsMap)) {
+            if (!_.isEmpty(containerPanelsMap)) {
                 
                 var onSuccess = function (sender, samples) {
                     if (samples) {
@@ -115,7 +116,7 @@ ParcelPanel.prototype.render = function() {
                             }
                         }
                         _.each(samplesMap, function(samples, containerId) {
-                            puckPanelsMap[containerId].load(samples);
+                            containerPanelsMap[containerId].load(samples);
                         });
                     }
                 }
@@ -138,17 +139,29 @@ ParcelPanel.prototype.load = function(dewar) {
 };
 
 /**
-* It inserts a new puck into the dewar and reloads the widget
+* It inserts a new container into the dewar and reloads the widget
 *
-* @method addPuckToDewar
+* @method addContainerToDewar
 */
-ParcelPanel.prototype.addPuckToDewar = function() {
+ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	var _this = this;
-	var onSuccess = function(sender, puck){
-		_this.dewar.containerVOs.push(puck);
-		_this.load(_this.dewar);
+	
+	var onSuccess = function(sender, container){
+		container.code = containerVO.code;
+		_this.dewar.containerVOs.push(container);
+		
+		var onSaveSuccess = function (sender) {
+			_this.load(_this.dewar);
+		}
+		var onError = function(sender,error) {
+			EXI.setError(error.responseText);
+			_this.load(_this.dewar);
+		};
+		
+		EXI.getDataAdapter({onSuccess : onSaveSuccess, onError : onError}).proposal.shipping.saveContainer(_this.shippingId, _this.dewar.dewarId, container.containerId, container);		
 	};
-	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.addPuck(this.dewar.dewarId, this.dewar.dewarId);
+	
+	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.addContainer(this.shippingId, this.dewar.dewarId, containerVO.type, containerVO.capacity);
 };
 
 /**
@@ -181,6 +194,41 @@ ParcelPanel.prototype.showCaseForm = function() {
 						handler : function() {
 							_this.onSavedClick.notify(caseForm.getDewar());
                             _this.render();
+							window.close();
+						}
+					}, {
+						text : 'Cancel',
+						handler : function() {
+							window.close();
+						}
+					} ]
+	});
+	window.show();
+};
+
+/**
+* It displays a window with an adding container form
+*
+* @method showAddContainerForm
+*/
+ParcelPanel.prototype.showAddContainerForm = function() {
+	var _this = this;
+	/** Opens a window with the cas form **/
+	var addContainerForm = new AddContainerForm();
+	var window = Ext.create('Ext.window.Window', {
+	    title: 'Container',
+	    height: 450,
+	    width: 600,
+	    modal : true,
+	    layout: 'fit',
+	    items: [
+	            	addContainerForm.getPanel(_this.dewar)
+	    ],
+	    buttons : [ {
+						text : 'Save',
+						handler : function() {
+							_this.addContainerToDewar(addContainerForm.getContainer());
+							_this.render();
 							window.close();
 						}
 					}, {
@@ -229,12 +277,13 @@ ParcelPanel.prototype._getTopButtons = function() {
 	
 	actions.push(Ext.create('Ext.Button', {
 		icon : '../images/icon/add.png',
-		text : 'Add puck',
+		text : 'Add container',
 		cls : 'x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left',
 		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
-			_this.addPuckToDewar();
+			// _this.addContainerToDewar();
+			_this.showAddContainerForm();
 		}
 	}));
 	

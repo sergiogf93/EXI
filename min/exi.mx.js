@@ -8084,7 +8084,6 @@ function PuckWidget(args){
 	this.initSelected = {};
 	this.isLoading = true;
 	this.capacity = 10;
-	
 	this.isUnipuck = false;
 	this.isEmpty = true;
 	
@@ -8207,9 +8206,10 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
+		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
-		if (dataCollectionIds != null && dataCollectionIds.length > 0){
+		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
 			state = "COLLECTED";
 		}
 		var selected = false;
@@ -8424,11 +8424,9 @@ function PuckWidgetContainer(args) {
 	
 	this.xMargin = 0;
 	this.yMargin = 0;
+	this.containerId = 0;
 	if (args){
 		if (args.puckType) {
-			if (args.puckType == "UniPuck" || args.puckType == "SpinePuck") {
-				debugger
-			}
 			switch (args.puckType) {
 				case "Unipuck":
 					this.puckWidget = new UniPuckWidget(args);
@@ -8445,9 +8443,6 @@ function PuckWidgetContainer(args) {
 		}
 		if (args.yMargin){
 			this.yMargin = args.yMargin;
-		}
-		if (args.x) {
-			debugger
 		}
 	}
 	
@@ -8503,7 +8498,12 @@ PuckWidgetContainer.prototype.load = function (data) {
 }
 
 PuckWidgetContainer.prototype.loadSamples = function (samples) {
-	this.puckWidget.loadSamples(samples);
+	if (samples){
+		if (samples.length > 0){
+			this.containerId = samples[0].Container_containerId; 
+			this.puckWidget.loadSamples(samples);
+		}
+	}
 }
 
 PuckWidgetContainer.prototype.focus = function (location, bool) {

@@ -59,15 +59,12 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
                 _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
             } else {
                 _this.containerSpreadSheet.setRenderCrystalFormColumn(false);
-            }
+			}
+			_this.containerSpreadSheet.setContainerType(puck.containerType);
             _this.containerSpreadSheet.load(puck);
             _this.containerSpreadSheet.setLoading(false);
 			if (_this.containerSpreadSheet.renderCrystalFormColumn) {
-				var rows = _this.containerSpreadSheet.parseTableData();
-				var columnIndex = _.findIndex(_this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
-				for (var i = 0; i < rows.length; i++) {
-					_this.containerSpreadSheet.spreadSheet.setDataAtCell(rows[i].location-1,columnIndex,_this.getEditCrystalFormLink(i));
-				}
+				_this.setValuesForEditCrystalColumn();
 			}
         }
 
@@ -81,13 +78,13 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
 
 PuckFormView.prototype.getPanel = function() {
 	var _this =this;
-	var capacityCombo = BIOSAXS_COMBOMANAGER.getComboPuckType({margin : '10 0 10 5', labelWidth : 100, width : 250});
-	capacityCombo.on('select', function(capacityCombo, record){
-		var capacity = record[0].data.value;
+
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250});
+	this.capacityCombo.onSelected.attach(function (sender, data) {
+		var capacity = data.capacity;
 		_this.containerTypeChanged(capacity);
 	});
-	
-	this.capacityCombo = capacityCombo;
+
 	this.panel = Ext.create('Ext.panel.Panel', {
 		buttons : this.getToolBar(),
 		items : [ 
@@ -112,7 +109,7 @@ PuckFormView.prototype.getPanel = function() {
 																margin : '0 0 0 5',
 																labelWidth : 100
 														},
-														this.capacityCombo,
+														this.capacityCombo.getPanel(),
                                                         {
 																xtype: 'textfield',
 																id : this.id + 'puck_beamline',
@@ -222,7 +219,8 @@ PuckFormView.prototype.save = function() {
 	var puck = this.containerSpreadSheet.getPuck();
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
-	puck.capacity = _this.capacityCombo.getValue();
+	puck.capacity = _this.capacityCombo.getSelectedCapacity();
+	puck.containerType = _this.capacityCombo.getSelectedType();
 	
     var onError = function(sender, error){
 		_this.panel.setLoading(false);
@@ -235,6 +233,7 @@ PuckFormView.prototype.save = function() {
 		// _this.onSaved.notify(puck);
         // _this.returnToShipment();
 	};
+	debugger
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
@@ -242,3 +241,38 @@ PuckFormView.prototype.getEditCrystalFormLink = function (location) {
 	var sampleId = this.puck.sampleVOs[location].blSampleId;
 	return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
 }
+
+/**
+ * When container type has changed from SPINE|| UNIPUCK || PLATE
+ * 
+ * We make the spreadsheet longer and the platelayout is rendered again
+ */
+PuckFormView.prototype.containerTypeChanged = function(capacity) {
+	this.puck.capacity = capacity;
+	this.containerSpreadSheet.setContainerType(this.capacityCombo.getTypeByCapacity(capacity));
+	var data = this.containerSpreadSheet.spreadSheet.getData();
+	if (data.length < capacity){
+		var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+		for (var i = data.length + 1; i<= capacity; i++){
+			data.push([i]);
+			this.containerSpreadSheet.setDataAtCell(i-1,columnIndex,"");
+		}
+	}
+	else{
+		data = data.slice(0, capacity);
+	}
+	this.containerSpreadSheet.spreadSheet.loadData(data);
+};
+
+/**
+ * When container type has changed from SPINE|| UNIPUCK || PLATE
+ * Updates the values for the edit crystal column
+ */
+PuckFormView.prototype.setValuesForEditCrystalColumn = function(capacity) {
+	var rows = this.containerSpreadSheet.parseTableData();
+	var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+	for (var i = 0; i < rows.length; i++) {
+		this.containerSpreadSheet.setDataAtCell(rows[i].location-1,columnIndex,this.getEditCrystalFormLink(i));
+	}
+};
+				

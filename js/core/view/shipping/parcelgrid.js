@@ -26,6 +26,10 @@ function ParcelGrid(args) {
 		}
 	}
 
+	this.shipment = "";
+	this.dewars = {};
+	this.parcelForms = [];
+
 	/** Events **/
 	this.onSuccess = new Event(this);
 	this.onAdd = new Event(this);
