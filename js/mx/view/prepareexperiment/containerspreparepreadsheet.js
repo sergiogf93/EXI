@@ -277,7 +277,6 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
 */
 ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
-    debugger
     var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
 
     for (var i = 0 ; i < recordsByContainerId.length ; i++) {
