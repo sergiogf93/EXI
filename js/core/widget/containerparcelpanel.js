@@ -47,7 +47,7 @@ function ContainerParcelPanel(args) {
             }
 		}
 	}
-
+    
     this.onContainerRemoved = new Event(this);
     this.onContainerSaved = new Event(this);
 	
@@ -147,6 +147,7 @@ ContainerParcelPanel.prototype.getButtons = function () {
                 {
                 xtype: 'button',
                 margin : 5,
+                cls:'btn-xs',
                 icon : '../images/icon/edit.png',
                 handler : function(widget, e) {
                     location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit"
@@ -154,7 +155,7 @@ ContainerParcelPanel.prototype.getButtons = function () {
             },{
                 xtype: 'button',
                 margin : 5,
-                cls:'btn-remove',
+                cls:'btn-remove btn-xs',
                 icon : '../images/icon/ic_highlight_remove_black_24dp.png',
                 handler: function(){
 			    	function showResult(result){

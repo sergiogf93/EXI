@@ -78,7 +78,7 @@ ParcelGrid.prototype.load = function(shipment) {
 	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
 	for ( var i in this.dewars) {
 		var parcelPanel = new ParcelPanel({
-			height : 275,
+			height : 200,
 			width : this.width - 60,
 			shippingId : this.shipment.shippingId,
 			index : i+1

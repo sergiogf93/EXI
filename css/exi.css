@@ -1,3 +1,9 @@
+/** Shipment **/
+
+.table.valign-middle-rows tbody>tr>td{
+    vertical-align: middle;
+}
+
 /** SAXS queue grid **/
 
 div.border-columns {

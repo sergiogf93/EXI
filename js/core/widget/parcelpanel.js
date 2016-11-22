@@ -10,7 +10,7 @@ function ParcelPanel(args) {
 	this.height = 500;
 	this.width = 500;
 	this.index = 0;
-	this.containersPanelHeight = 200;
+	this.containersPanelHeight = 400;
 	this.shippingId = 0;
 
 	this.isSaveButtonHidden = false;
@@ -19,6 +19,7 @@ function ParcelPanel(args) {
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
+			this.containersPanelHeight = this.height*0.9;
 		}
 		if (args.width != null) {
 			this.width = args.width;
@@ -136,12 +137,72 @@ ParcelPanel.prototype.load = function(dewar) {
 		/** Rendering pucks **/
 		this.dewar.index = this.index;
 		var html = "";
-		dust.render("parcel.panel.template", {dewar : this.dewar, height : this.height, width : this.width}, function(err, out){
+		dust.render("parcel.panel.template", {id : this.id, dewar : this.dewar, height : this.height, width : this.width}, function(err, out){
 			html = out;
 		});
 		
 		$('#' + this.id).hide().html(html).fadeIn('fast');
 		this.panel.doLayout();
+
+		if (dewar != null){
+			if (dewar.containerVOs != null){
+
+				var containersPanel = Ext.create('Ext.panel.Panel', {
+					layout      : 'hbox',
+					cls 		: "border-grid",
+					margin		: '10 0 0 0',
+					width       : this.width*8/12,
+					height    	: this.containersPanelHeight,
+					autoScroll 	: false,
+					items       : [],
+					renderTo	: Ext.get(this.id + "-container-panel-div"),
+				});
+
+				/** Sorting container by id **/
+				dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
+				var containerPanelsMap = {};
+				var containerIds = [];
+				
+				for (var i = 0; i< dewar.containerVOs.length; i++){
+					var container = dewar.containerVOs[i];
+					var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight , containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
+					containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
+						_.remove(_this.dewar.containerVOs, {containerId: containerId});
+						_this.load(_this.dewar);
+					});
+					containerParcelPanel.onContainerSaved.attach(function (sender, containerVO) {
+						_.remove(_this.dewar.containerVOs, {containerId: containerVO.containerId});
+						_this.dewar.containerVOs.push(containerVO);
+						_this.load(_this.dewar);
+					});
+					containerPanelsMap[container.containerId] = containerParcelPanel;
+					containerIds.push(container.containerId);
+					containersPanel.insert(containerParcelPanel.getPanel());
+				}
+				
+				if (!_.isEmpty(containerPanelsMap)) {
+					
+					var onSuccess = function (sender, samples) {
+						if (samples) {
+							var samplesMap = {};
+							for (var i = 0 ; i < samples.length ; i++) {
+								var sample = samples[i];
+								if (samplesMap[sample.Container_containerId]){
+									samplesMap[sample.Container_containerId].push(sample);
+								} else {
+									samplesMap[sample.Container_containerId] = [sample];
+								}
+							}
+							_.each(samplesMap, function(samples, containerId) {
+								containerPanelsMap[containerId].load(samples);
+							});
+						}
+					}
+
+					EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
+				}
+			}
+		}
 	}
 	catch(e){
 		console.log(e);
@@ -307,7 +368,7 @@ ParcelPanel.prototype.getPanel = function() {
 		margin 		: 10,
 		height 		: this.height,
 		width 		: this.width,
-		autoScroll	: true,
+		autoScroll	: false,
 		items :	[{
 					html : '<div id="' + this.id + '"></div>',
 					autoScroll : false,
