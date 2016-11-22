@@ -61,9 +61,17 @@ ShipmentEditForm.prototype.getShipment = function() {
 
 ShipmentEditForm.prototype.saveShipment = function() {
 	var _this = this;
+
+	var sendingAddressCardName = $("#" + this.id + "-to").val();
+	var returnAddressCardName = $("#" + this.id + "-from").val();
+
+	var labContacts = EXI.proposalManager.getLabcontacts();
+	var sendingAddress = _.filter(labContacts,{cardName : sendingAddressCardName})[0];
+	$.extend(labContacts, [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
+	var returnAddress = _.filter(labContacts,{cardName : returnAddressCardName})[0];
 	
-	var sendingAddressId = $("#" + this.id + "-to").val();
-	var returnAddressId = $("#" + this.id + "-from").val();
+	var sendingAddressId = sendingAddress.labContactId;
+	var returnAddressId = returnAddress.labContactId;
 	
 	if (sendingAddressId == null) {
 		BUI.showError("User contact information for shipping to beamline is mandatory");
@@ -80,7 +88,6 @@ ShipmentEditForm.prototype.saveShipment = function() {
 		returnAddressId = -1;
 	}
 
-	var sendingAddress = $("#" + this.id + "-to").val();
 	var json = {
 		shippingId : shippingId,
 		name : $("#" + this.id + "-name").val(),
@@ -92,7 +99,7 @@ ShipmentEditForm.prototype.saveShipment = function() {
 		billingReference : sendingAddress.billingReference,
 		dewarAvgCustomsValue : sendingAddress.dewarAvgCustomsValue,
 		dewarAvgTransportValue :sendingAddress.dewarAvgTransportValue,
-		comments : Ext.getCmp(_this.id + "comments").getValue(),
+		comments : $("#" + this.id + "-comments").val(),
 		sessionId : this.sessionComboBox.getValue()
 	};
 
