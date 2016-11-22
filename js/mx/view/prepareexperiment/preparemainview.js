@@ -58,7 +58,7 @@ function PrepareMainView(args) {
     });
 
     this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
-        $('#next-button').attr("disabled", false);
+        Ext.getCmp("next-button").enable();
         $('#step-3').attr("disabled", false);
         _this.sampleChangerName = changerName;
         _this.save('sampleChangerName', changerName);
@@ -101,20 +101,20 @@ PrepareMainView.prototype.updateStatus = function(shippingId, status) {
 */
 PrepareMainView.prototype.manageButtons = function () {
     if (this.currentStep == 1) {
-        $('#previous-button').hide();
-        $('#next-button').attr("disabled", false); 
+        Ext.getCmp("previous-button").hide();
+        Ext.getCmp("next-button").enable(); 
     } else {
-        $('#previous-button').show();
+        Ext.getCmp("previous-button").show();
     }
     if (this.currentStep == 2) {
-        $('#next-button').attr("disabled", true);
+        Ext.getCmp("next-button").disable();
     }
     if (this.currentStep < 3) {
-        $('#next-button').show();  
+        Ext.getCmp("next-button").show();  
         $('#done-button').hide();
     }
     if (this.currentStep == 3) {
-        $('#next-button').hide();
+        Ext.getCmp("next-button").hide();
     }
     for (var i = 1 ; i <= 3 ; i++){
         if (i == this.currentStep) {
@@ -261,7 +261,7 @@ PrepareMainView.prototype.getButtons = function() {
 			    cls : 'btn btn-lg btn-success',
                 id : 'next-button',
                 margin : '0 300 0 0',
-			    handler : function(){
+			    handler : function(a,b,c){
 			    	if (_this.currentStep < 4) {
                         _this.changeStep(1);
                     }

@@ -138,7 +138,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         ],
         viewConfig: {
             getRowClass: function(record, index, rowParams, store) {
-                if (record.get('sampleChangerLocation') == " ") {
+                if (record.get('sampleChangerLocation') == "" || record.get('sampleChangerLocation') == " ") {
                     return "warning-row";
                 }
                 for (var i = 0 ; i < _this.dewars.length ; i++){
@@ -228,6 +228,7 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
 * @return
 */
 ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+    debugger
     this.dewars = dewars;
     if (sampleChangerWidget){
         this.sampleChangerWidget = sampleChangerWidget;

@@ -71,7 +71,7 @@ function LoadSampleChangerView (args) {
                 }]
             }, "");
         }
-        _this.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId," ");
+        _this.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId,"");
         _this.returnToSelectionStatus();
     });
 };
@@ -220,8 +220,9 @@ LoadSampleChangerView.prototype.load = function (containers) {
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
             if (container.sampleCount > 0){
-                if (container.sampleChangerLocation != " "){
-                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
+                var sampleChangerLocation = container.sampleChangerLocation;
+                if (sampleChangerLocation != ""){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
                     if (puckId) {
                         filledContainers[container.containerId] = puckId;
                         var puck = this.sampleChangerWidget.findPuckById(puckId);
