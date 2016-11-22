@@ -6,8 +6,10 @@
 * @constructor
 */
 function ParcelGrid(args) {
+	this.id = BUI.id();
 	this.height = 100;
 	this.width = 100;
+	this.padding = 10;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
 
@@ -17,6 +19,9 @@ function ParcelGrid(args) {
 		}
 		if (args.width != null) {
 			this.width = args.width;
+		}
+		if (args.padding != null) {
+			this.padding = args.padding;
 		}
 		if (args.btnEditVisible != null) {
 			this.btnEditVisible = args.btnEditVisible;
@@ -28,7 +33,6 @@ function ParcelGrid(args) {
 
 	this.shipment = "";
 	this.dewars = {};
-	this.parcelForms = [];
 
 	/** Events **/
 	this.onSuccess = new Event(this);
@@ -39,14 +43,14 @@ function ParcelGrid(args) {
 ParcelGrid.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
-	return [(Ext.create('Ext.Action', {
+	return (Ext.create('Ext.Action', {
 		icon : '../images/icon/add.png',
-		text : 'Add New Parcel',
+		text : 'Add',
 		disabled : false,
 		handler : function(widget, event) {
 			_this.edit();
 		}
-	}))];
+	}));
 };
 
 ParcelGrid.prototype.load = function(shipment) {
@@ -54,7 +58,6 @@ ParcelGrid.prototype.load = function(shipment) {
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
 
-	this.parcelForms = [];
 
 	this.panel.removeAll();
 
@@ -72,17 +75,17 @@ ParcelGrid.prototype.load = function(shipment) {
 			};			
 			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
     }
-   
+	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
 	for ( var i in this.dewars) {
-		var parcelForm = new ParcelPanel({
+		var parcelPanel = new ParcelPanel({
 			height : 275,
-			width : this.width - 40,
-			shippingId : this.shipment.shippingId
+			width : this.width - 60,
+			shippingId : this.shipment.shippingId,
+			index : i+1
 		});
-		this.panel.insert(parcelForm.getPanel());
-		parcelForm.load(this.dewars[i]);
-		parcelForm.onSavedClick.attach(onSaved);
-		this.parcelForms.push(parcelForm);
+		this.panel.insert(parcelPanel.getPanel());
+		parcelPanel.load(this.dewars[i]);
+		parcelPanel.onSavedClick.attach(onSaved);
 	}
 };
 
@@ -140,13 +143,21 @@ ParcelGrid.prototype.getPanel = function() {
 		width : this.width,
 		autoScroll:true,
         autoHeight :true,
-        maxHeight: this.height
+        maxHeight: this.height,
+		padding : this.padding
 	});
 
 	this.panel.addDocked({
 		height : 45,
 		xtype : 'toolbar',
-		items : _this._getTopButtons(),
+		items : [
+					{
+						xtype : 'label',
+						text : 'Content (* Parcels)',
+						id : this.id + "-label"
+					},
+					_this._getTopButtons()
+				],
 		cls : 'exi-top-bar'
 	});
 

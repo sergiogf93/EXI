@@ -4,12 +4,12 @@
             <div class="col-md-7" style="padding:0px">
                 <label class="col-md-1 col-form-label">Name:</label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text"  readonly>
+                    <input class="form-control" type="text" value="{shipment.shippingName}" readonly>
                 </div>
                 
                 <label class="col-md-1 col-form-label" >Beamline: </label>
                 <div class="col-md-3">
-                    <input class="form-control" type="text" readonly>
+                    <input class="form-control" type="text" value="{.beamlineName}" readonly>
                 </div>
                 
                 <label class="col-md-1 col-form-label">Date:</label>
@@ -20,7 +20,7 @@
             <div class="col-md-5" style="padding:0px">
                 <label class="col-md-2 col-form-label">Comments:</label>
                 <div class="col-md-10">
-                    <textarea class="form-control" rows="3"  readonly></textarea>
+                    <textarea class="form-control" rows="3" readonly>{shipment.comments}</textarea>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
                     <div class="col-md-9">
                         <select class="form-control"  readonly>
                             {#to}
-                            <option>{.cardName}</option>
+                            <option {@eq key="{.cardName}" value="{shipment.sendingLabContactVO.cardName}"}selected{/eq}>{.cardName}</option>
                             {/to}
                         </select>
                     </div>
@@ -42,7 +42,7 @@
                     <div class="col-md-9">
                         <select class="form-control"  readonly>
                             {#from}
-                            <option>{.cardName}</option>
+                            <option {@eq key="{.cardName}" value="{shipment.returnLabContactVO.cardName}"}selected{/eq}>{.cardName}</option>
                             {/from}
                         </select>
                     </div>

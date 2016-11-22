@@ -9,6 +9,7 @@ function ParcelPanel(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.index = 0;
 	this.containersPanelHeight = 200;
 	this.shippingId = 0;
 
@@ -21,6 +22,9 @@ function ParcelPanel(args) {
 		}
 		if (args.width != null) {
 			this.width = args.width;
+		}
+		if (args.index != null) {
+			this.index = args.index;
 		}
 		if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
@@ -130,7 +134,14 @@ ParcelPanel.prototype.load = function(dewar) {
 	this.dewar = dewar;
 	try {
 		/** Rendering pucks **/
-		this.render();
+		this.dewar.index = this.index;
+		var html = "";
+		dust.render("parcel.panel.template", {dewar : this.dewar, height : this.height, width : this.width}, function(err, out){
+			html = out;
+		});
+		
+		$('#' + this.id).hide().html(html).fadeIn('fast');
+		this.panel.doLayout();
 	}
 	catch(e){
 		console.log(e);
@@ -291,24 +302,19 @@ ParcelPanel.prototype._getTopButtons = function() {
 
 
 ParcelPanel.prototype.getPanel = function() {
-	var _this = this;
-
-	this.panel = Ext.create('Ext.panel.Panel', {
+	this.panel = Ext.create("Ext.panel.Panel",{
 		cls 		: "border-grid",
 		margin 		: 10,
 		height 		: this.height,
 		width 		: this.width,
 		autoScroll	: true,
-		items 		: [],
+		items :	[{
+					html : '<div id="' + this.id + '"></div>',
+					autoScroll : false,
+					padding : this.padding,
+					width : this.width
+				}]
 	});
-
-    // this.panel.addDocked({
-	// 	id 		: _this.id + 'tbar',
-	// 	height 	: 45,
-	// 	xtype 	: 'toolbar',
-	// 	items 	: _this._getTopButtons(),
-	// 	cls 	: 'exi-top-bar'
-	// });
 
 	return this.panel;
 };

@@ -7,7 +7,7 @@
 function ShipmentForm(args) {
 	this.id = BUI.id();
 	this.width = 600;
-	this.padding = 20;
+	this.padding = 10;
 
 	if (args != null) {
 		if (args.creationMode != null) {
@@ -29,7 +29,7 @@ ShipmentForm.prototype.load = function(shipment) {
 	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
     var html = "";
-    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData}, function(err, out){
+    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : shipment.sessions[0].beamlineName, shipment : shipment}, function(err, out){
 		html = out;
 	});
 
@@ -57,6 +57,11 @@ ShipmentForm.prototype.edit = function(dewar) {
 	var _this = this;
 	var shippingEditForm = new ShipmentEditForm();
 
+	shippingEditForm.onSaved.attach(function (sender, shipment) {
+		_this.load(shipment);
+		window.close();
+	});
+
 	var window = Ext.create('Ext.window.Window', {
 		title : 'Shipment',
 		height : 450,
@@ -67,8 +72,7 @@ ShipmentForm.prototype.edit = function(dewar) {
 		buttons : [ {
 				text : 'Save',
 				handler : function() {
-					var shipment = shippingEditForm.getShipment();
-					window.close();
+					shippingEditForm.saveShipment();
 				}
 			}, {
 				text : 'Cancel',
@@ -78,6 +82,7 @@ ShipmentForm.prototype.edit = function(dewar) {
 			} ]
 	}).show();
 
+	shippingEditForm.load(this.shipment);
 };
 
 // ShipmentForm.prototype.fillStores = function() {
