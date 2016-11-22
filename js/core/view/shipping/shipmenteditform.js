@@ -61,7 +61,7 @@ ShipmentEditForm.prototype.getShipment = function() {
 
 ShipmentEditForm.prototype.saveShipment = function() {
 	var _this = this;
-
+debugger
 	var sendingAddressCardName = $("#" + this.id + "-to").val();
 	var returnAddressCardName = $("#" + this.id + "-from").val();
 
@@ -87,7 +87,7 @@ ShipmentEditForm.prototype.saveShipment = function() {
 	if (returnAddressId == "Same as for shipping to beamline"){
 		returnAddressId = -1;
 	}
-
+	
 	var json = {
 		shippingId : shippingId,
 		name : $("#" + this.id + "-name").val(),
