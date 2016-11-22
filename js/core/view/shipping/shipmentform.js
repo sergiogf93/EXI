@@ -52,12 +52,18 @@ ShipmentForm.prototype.load = function(shipment) {
 	this.shipment = shipment;
 	var _this = this;
 	
+	var toData = EXI.proposalManager.getLabcontacts();
+	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
+
     var html = "";
-    dust.render("shipping.form.template", [], function(err, out){
+    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData}, function(err, out){
 		html = out;
 	});
 
     $('#' + _this.id).hide().html(html).fadeIn('fast');
+	$("#" + currentId).unbind('click').click(function(sender){
+		_this.edit();
+	});
 
 };
 
@@ -142,3 +148,17 @@ ShipmentForm.prototype.getPanel = function() {
 
 };
 
+ShipmentForm.prototype.edit = function(dewar) {
+	var _this = this;
+	var shippingEditForm = new ShipmentEditForm();
+
+	var window = Ext.create('Ext.window.Window', {
+		title : 'Shipment',
+		height : 450,
+		width : 600,
+		modal : true,
+		layout : 'fit',
+		items : [ shippingEditForm.getPanel() ]
+	}).show();
+
+};

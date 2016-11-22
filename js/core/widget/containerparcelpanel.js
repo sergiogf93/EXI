@@ -150,35 +150,6 @@ ContainerParcelPanel.prototype.getButtons = function () {
                 icon : '../images/icon/edit.png',
                 handler : function(widget, e) {
                     location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit"
-                    // var puckForm = new PuckForm({
-                    //     width : Ext.getBody().getWidth() - 150,
-                    //     disableSave : !_this.withoutCollection
-                    // });
-
-                    // puckForm.onRemoved.attach(function(sender, containerId){
-                    //     _this.onContainerRemoved.notify(containerId);
-                    //     window.close();
-                    // });
-                    // puckForm.onSaved.attach(function(sender, puck){
-                    //     _this.onContainerSaved.notify(puck);
-                    //     window.close();
-                    // });
-                    // var window = Ext.create('Ext.window.Window', {
-                    //         title: 'Edit Puck',
-                    //         height: 700,
-                    //         width: Ext.getBody().getWidth() - 100,
-                    //         modal : true,
-                    //         resizable : true,
-                    //         layout: 'fit',
-                    //         items: puckForm.getPanel()
-                    // }).show();
-
-                    // if (_this.containerId != null){
-                    //     var onSuccess = function(sender, puck){
-                    //         puckForm.load(puck);
-                    //     };
-                    //     EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(_this.containerId,_this.containerId,_this.containerId);
-                    // }
                 }
             },{
                 xtype: 'button',
