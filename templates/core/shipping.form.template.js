@@ -7,7 +7,7 @@
                     <input class="form-control" type="text"  readonly>
                 </div>
                 
-                <label class="col-md-1 col-form-label">Beamline: </label>
+                <label class="col-md-1 col-form-label" >Beamline: </label>
                 <div class="col-md-3">
                     <input class="form-control" type="text" readonly>
                 </div>
