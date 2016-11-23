@@ -233,7 +233,7 @@ PuckFormView.prototype.save = function() {
 		// _this.onSaved.notify(puck);
         // _this.returnToShipment();
 	};
-	debugger
+	
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 

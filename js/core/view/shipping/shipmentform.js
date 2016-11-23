@@ -29,7 +29,11 @@ ShipmentForm.prototype.load = function(shipment) {
 	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
     var html = "";
-    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : shipment.sessions[0].beamlineName, shipment : shipment}, function(err, out){
+	var beamlineName = "";
+	if (shipment.sessions.length > 0){
+		beamlineName = shipment.sessions[0].beamlineName;
+	}
+    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : beamlineName, shipment : shipment}, function(err, out){
 		html = out;
 	});
 
