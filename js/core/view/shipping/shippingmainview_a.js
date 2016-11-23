@@ -48,9 +48,6 @@ ShippingMainView.prototype.load = function(shippingId) {
 	var _this = this;
 	this.shippingId = shippingId;
 	
-	if (shippingId == null){
-		Ext.getCmp(this.id + "grid").disable(true);
-	}
 	this.panel.setTitle("Shipment");
 	if (shippingId != null){
 		this.panel.setLoading();

@@ -38,39 +38,60 @@ function ParcelPanel(args) {
 ParcelPanel.prototype.load = function(dewar) {
 	var _this = this;
 	this.dewar = dewar;
-	try {
-		/** Loading the template **/
-		this.dewar.index = this.index;
-		var html = "";
-		dust.render("parcel.panel.template", {id : this.id, dewar : this.dewar, height : this.height, width : this.width}, function(err, out){
-			html = out;
-		});
-		
-		/** Setting click listeners **/		
-		$('#' + this.id).hide().html(html).fadeIn("fast");
-		this.panel.doLayout();
 
-		$("#" + this.id + "-edit-button").click(function () {
-			_this.showCaseForm();
-		});
+	/** Loading the template **/
+	var html = "";
+	dust.render("parcel.panel.template", {id : this.id, index : this.index, height : this.height, width : this.width}, function(err, out){
+		html = out;
+	});
+	
+	/** Setting click listeners **/		
+	$('#' + this.id).hide().html(html).fadeIn("fast");
+	this.panel.doLayout();
 
-		$("#" + this.id + "-print-button").click(function () {
-			var dewarId = _this.dewar.dewarId;
-			var url = EXI.getDataAdapter().proposal.shipping.getDewarLabelURL(dewarId, dewarId);
-			location.href = url;
-			return;
-		});
+	$("#" + this.id + "-edit-button").click(function () {
+		_this.showCaseForm();
+	});
 
-		$("#" + this.id + "-add-button").click(function () {
-			_this.showAddContainerForm();
-		});
+	$("#" + this.id + "-print-button").click(function () {
+		var dewarId = _this.dewar.dewarId;
+		var url = EXI.getDataAdapter().proposal.shipping.getDewarLabelURL(dewarId, dewarId);
+		location.href = url;
+		return;
+	});
 
-		/** Rendering pucks **/
-		this.renderPucks(dewar);
-	}
-	catch(e){
-		console.log(e);
-	}
+	$("#" + this.id + "-add-button").click(function () {
+		_this.showAddContainerForm();
+	});
+
+	this.containersPanel = Ext.create('Ext.panel.Panel', {
+		id			: this.id + "-containers-panel",
+		layout      : 'hbox',
+		cls 		: "border-grid",
+		margin		: this.height*0.05 + ' 0 0 0',
+		width       : this.width*8/12 - 30,
+		height    	: this.containersPanelHeight,
+		autoScroll 	: false,
+		items       : [],
+		renderTo	: this.id + "-container-panel-div",
+	});
+
+	/** Set parameters **/
+	this.renderShipmentParameters(dewar);
+
+	/** Rendering pucks **/
+	this.renderPucks(dewar);
+};
+
+ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
+	var html = "";
+	dust.render("parcel.panel.parameter.table.template", {dewar : dewar}, function(err, out){
+		html = out;
+	});
+	
+	/** Setting click listeners **/		
+	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
+	this.panel.doLayout();
 };
 
 ParcelPanel.prototype.renderPucks = function (dewar) {
@@ -79,19 +100,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 	if (dewar != null){
 		if (dewar.containerVOs != null){
 
-			$("#" + this.id + "-container-panel-div").append("<div id='" + this.id + "-container-panel-renderer'></div>");
-
-			var containersPanel = Ext.create('Ext.panel.Panel', {
-					layout      : 'hbox',
-					cls 		: "border-grid",
-					margin		: this.height*0.05 + ' 0 0 0',
-					width       : this.width*8/12 - 30,
-					height    	: this.containersPanelHeight,
-					autoScroll 	: false,
-					items       : [],
-					renderTo	: this.id + "-container-panel-renderer",
-				});
-
+			this.containersPanel.removeAll();
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
 			var containerPanelsMap = {};
@@ -102,7 +111,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight , containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
-					_this.load(_this.dewar);
+					_this.renderPucks(_this.dewar);
 				});
 				containerParcelPanel.onContainerSaved.attach(function (sender, containerVO) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerVO.containerId});
@@ -111,7 +120,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				});
 				containerPanelsMap[container.containerId] = containerParcelPanel;
 				containerIds.push(container.containerId);
-				containersPanel.insert(containerParcelPanel.getPanel());
+				this.containersPanel.insert(containerParcelPanel.getPanel());
 			}
 			
 			if (!_.isEmpty(containerPanelsMap)) {
@@ -152,11 +161,11 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 		_this.dewar.containerVOs.push(container);
 		
 		var onSaveSuccess = function (sender) {
-			_this.load(_this.dewar);
+			_this.renderPucks(_this.dewar);
 		}
 		var onError = function(sender,error) {
 			EXI.setError(error.responseText);
-			_this.load(_this.dewar);
+			_this.renderPucks(_this.dewar);
 		};
 		
 		EXI.getDataAdapter({onSuccess : onSaveSuccess, onError : onError}).proposal.shipping.saveContainer(_this.shippingId, _this.dewar.dewarId, container.containerId, container);		
@@ -194,8 +203,8 @@ ParcelPanel.prototype.showCaseForm = function() {
 						text : 'Save',
 						handler : function() {
 							_this.onSavedClick.notify(caseForm.getDewar());
-                            _this.load(_this.dewar);
 							window.close();
+                            _this.renderShipmentParameters(_this.dewar);
 						}
 					}, {
 						text : 'Cancel',
@@ -229,8 +238,6 @@ ParcelPanel.prototype.showAddContainerForm = function() {
 						text : 'Save',
 						handler : function() {
 							_this.addContainerToDewar(addContainerForm.getContainer());
-							// debugger
-							// Ext.getCmp(_this.id + "-container-panel-div").destroy();
 							_this.renderPucks(_this.dewar);
 							window.close();
 						}

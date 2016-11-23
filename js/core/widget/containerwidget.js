@@ -23,7 +23,7 @@ function ContainerWidget(args) {
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
-			this.templateData.width = 2*args.mainRadius;
+			this.templateData.height = 2*args.mainRadius;
 			this.templateData.r = args.mainRadius/5;
 		}
 	}
