@@ -35,7 +35,6 @@ DataCollectionGrid.prototype.load = function(dataCollectionGroup){
 };
 
 DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
-    var _this = this;
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
         store: this.store,       

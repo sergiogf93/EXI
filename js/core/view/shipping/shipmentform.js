@@ -30,10 +30,13 @@ ShipmentForm.prototype.load = function(shipment) {
 
     var html = "";
 	var beamlineName = "";
+	var startDate = "";
 	if (shipment.sessions.length > 0){
 		beamlineName = shipment.sessions[0].beamlineName;
+		startDate = moment(shipment.sessions[0].startDate).format("DD/MM/YYYY");
 	}
-    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : beamlineName, shipment : shipment}, function(err, out){
+	
+    dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
 		html = out;
 	});
 
@@ -45,16 +48,14 @@ ShipmentForm.prototype.load = function(shipment) {
 };
 
 ShipmentForm.prototype.getPanel = function() {
-
     this.panel =  {
-                    html : '<div id="' + this.id + '" class="border-grid"></div>',
+                    html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					padding : this.padding,
 					width : this.width
                 };
 
 	return this.panel;
-
 };
 
 ShipmentForm.prototype.edit = function(dewar) {

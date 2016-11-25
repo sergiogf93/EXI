@@ -2,13 +2,14 @@ function ContainerWidget(args) {
     this.id = BUI.id();
 	
     this.templateData = {
-                            id          : this.id,
-                            xmargin     : 0,
-                            ymargin     : 0,
-                            mainRadius  : 50,
-                            width       : 100,
-                            height      : 100,
-                            r           : 20
+                            id          	: this.id,
+                            xmargin     	: 0,
+                            ymargin     	: 0,
+                            mainRadius  	: 50,
+                            width       	: 100,
+                            height      	: 100,
+                            r           	: 20,
+							enableMainClick : false
                         };
 	this.containerId = 0;
     this.samples = null;
@@ -20,6 +21,9 @@ function ContainerWidget(args) {
 		if (args.yMargin){
 			this.templateData.yMargin = args.yMargin;
 		}
+		if (args.enableMainClick != null){
+			this.templateData.enableMainClick = args.enableMainClick;
+		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
@@ -27,6 +31,8 @@ function ContainerWidget(args) {
 			this.templateData.r = args.mainRadius/5;
 		}
 	}
+
+	this.onClick = new Event(this);
 };
 
 ContainerWidget.prototype.getPanel = function () {
@@ -53,6 +59,14 @@ ContainerWidget.prototype.getPanel = function () {
 			],
 			
 	});
+
+	this.panel.on('boxready', function() {
+        if(_this.templateData.enableMainClick) {
+			$("#" + _this.id).unbind('click').click(function(sender){
+				_this.onClick.notify(sender.target.id);
+			});
+		}
+    });
 	
 	return this.panel;
 	

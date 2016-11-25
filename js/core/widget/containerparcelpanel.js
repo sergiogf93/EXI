@@ -14,22 +14,25 @@ function ContainerParcelPanel(args) {
     this.code = "";
     this.type = "Puck";
     this.data = {puckType : "Unipuck", 
-                mainRadius : this.height*factor, 
-                xMargin : this.width/2 - this.height*factor, 
+                mainRadius : this.height*0.9/2, 
+                xMargin : this.width/2 - this.height*0.9/2, 
                 yMargin : 2.5, 
-                enableMouseOver : true
+                enableMouseOver : true,
+                enableClick : true,
+                enableMainClick : true
     };
     this.width = 2*this.data.mainRadius + 20;
 
 	if (args != null) {
         if (args.height != null) {
 			this.height = args.height;
-            this.data.mainRadius = this.height*factor;
+            this.data.mainRadius = this.height*0.9/2;
             this.width = 2*this.data.mainRadius + 20;
             this.data.xMargin = this.width/2 - this.data.mainRadius;
 		}
         if (args.width != null) {
 			this.width = args.width;
+            this.data.xMargin = this.width/2 - this.data.mainRadius;
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
@@ -68,9 +71,40 @@ ContainerParcelPanel.prototype.getPanel = function () {
         this.container = new PuckWidgetContainer(this.data);
     }
 
+    this.container.onClick.attach(function (sender, id) {
+        var code = _this.code;
+        if (code == "") {
+            code = "-";
+        }
+        Ext.Msg.show({
+            title: 'Container',
+            msg: '<b>Code:</b> ' + code + "</br></br> Select one of the options below:",
+            width: 300,
+            closable: false,
+            buttons: Ext.Msg.YESNOCANCEL,
+            buttonText: {
+                yes: 'Edit',
+                no: 'Remove',
+                cancel: 'Cancel'
+            },
+            multiline: false,
+            fn: function(buttonValue, inputText, showConfig) {
+                switch (buttonValue) {
+                    case "yes":
+                        location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";                            
+                        break;
+                    case "no":
+                        _this.removeButtonClicked();
+                        break;
+                }
+            }
+        });
+    });
+
     var containerPanelHeight = 2*this.data.mainRadius + 5;
 
     this.containerPanel = Ext.create('Ext.panel.Panel', {
+        // cls : 'border-grid',
         width : this.width,
         height : containerPanelHeight,
         items : [this.container.getPanel()]
@@ -80,20 +114,8 @@ ContainerParcelPanel.prototype.getPanel = function () {
         // cls : 'border-grid',
         width : this.width,
         height : this.height,
-        items : [{
-                    html : this.getCodeHeader(),
-                    margin : 5,
-                    height : (this.height - containerPanelHeight)/4,
-                    x : this.data.mainRadius/5
-                },
+        items : [
                 this.containerPanel,
-                // this.getButtons()
-                {
-                    html : this.getButtons(),
-                    margin : 5,
-                    height : (this.height - containerPanelHeight)/2,
-                    x : this.data.mainRadius/5
-                }
                 ]
 	});
 
@@ -102,19 +124,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
             location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";
         });
         $("#" + _this.id + "-remove-button").click(function(){
-            function showResult(result){
-                if (result == "yes"){
-                    _this.removePuck();							
-                }
-            }
-                Ext.MessageBox.show({
-                    title:'Remove',
-                    msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
-                    buttons: Ext.MessageBox.YESNO,
-                    fn: showResult,
-                    animateTarget: 'mb4',
-                    icon: Ext.MessageBox.QUESTION
-                });
+            _this.removeButtonClicked();
         });
     });
 
@@ -142,85 +152,6 @@ ContainerParcelPanel.prototype.load = function (samples) {
 };
 
 /**
-* Returns a panel with the buttons
-*
-* @class getCodeHeader
-* @return The html of the code header
-*/
-ContainerParcelPanel.prototype.getCodeHeader = function () {
-    var templateData = {info : [{
-                                    text : 'Code:',
-                                    value : this.code,
-                                    textSize : this.height*0.07
-                                }]
-    }
-    var html = "";
-    dust.render("info.grid.template", templateData, function(err, out){
-		html = out;
-	});
-    return html;
-};
-
-
-/**
-* Returns a panel with the buttons
-*
-* @class getButtons
-* @return A panel with the buttons
-*/
-ContainerParcelPanel.prototype.getButtons = function () {
-    var _this = this;
-
-    var html = "";
-    dust.render("container.parcel.buttons.template", {id : this.id}, function(err, out){
-		html = out;
-	});
-    return html;
-
-    // this.buttons = Ext.create('Ext.panel.Panel', {
-    //     layout: {
-    //         type: 'hbox',
-    //         align: 'middle',
-    //         pack: 'center'
-    //     },
-    //     width : this.width,
-    //     items : [
-    //             {
-    //             xtype: 'button',
-    //             margin : 5,
-    //             cls:'btn-xs',
-    //             // icon : '../images/icon/edit.png',
-    //             handler : function(widget, e) {
-    //                 location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit"
-    //             }
-    //         },{
-    //             xtype: 'button',
-    //             margin : 5,
-    //             cls:'btn-remove btn-xs',
-    //             // icon : '../images/icon/ic_highlight_remove_black_24dp.png',
-    //             handler: function(){
-	// 		    	function showResult(result){
-	// 					if (result == "yes"){
-	// 						_this.removePuck();							
-	// 					}
-	// 		    	}
-	// 				  Ext.MessageBox.show({
-	// 			           title:'Remove',
-	// 			           msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
-	// 			           buttons: Ext.MessageBox.YESNO,
-	// 			           fn: showResult,
-	// 			           animateTarget: 'mb4',
-	// 			           icon: Ext.MessageBox.QUESTION
-	// 			       });
-	// 		    }
-    //         }
-    //     ]
-	// });
-
-    // return this.buttons;
-};
-
-/**
 * Removes the puck from the database
 *
 * @class removePuck
@@ -236,4 +167,21 @@ ContainerParcelPanel.prototype.removePuck = function() {
 	var containerId = this.containerId;
 	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
 	
+};
+
+ContainerParcelPanel.prototype.removeButtonClicked = function () {
+    var _this = this;
+    function showResult(result){
+        if (result == "yes"){
+            _this.removePuck();							
+        }
+    }
+    Ext.MessageBox.show({
+        title:'Remove',
+        msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
+        buttons: Ext.MessageBox.YESNO,
+        fn: showResult,
+        animateTarget: 'mb4',
+        icon: Ext.MessageBox.QUESTION
+    });
 };

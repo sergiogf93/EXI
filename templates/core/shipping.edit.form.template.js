@@ -14,7 +14,11 @@
     <div class="form-group row">
         <label class="col-md-2 col-form-label">Date:</label>
         <div class="col-md-10">
-            <input id="{id}-date" class="form-control" type="text">
+            <select id="{id}-date" class="form-control">
+                {#sessions}
+                <option value={.sessionId} {@eq key="{.BLSession_startDate}" value="{startDate}"}selected{/eq}>{.BLSession_startDate}</option>
+                {/sessions}
+            </select>
         </div>
     </div>
     <div class="form-group row">
@@ -28,7 +32,7 @@
         <div class="col-md-10">
             <select id="{id}-to" class="form-control">
                 {#to}
-                <option {@eq key="{.cardName}" value="{shipment.sendingLabContactVO.cardName}"}selected{/eq}>{.cardName}</option>
+                <option value={.labContactId} {@eq key="{.cardName}" value="{shipment.sendingLabContactVO.cardName}"}selected{/eq}>{.cardName}</option>
                 {/to}
             </select>
         </div>
@@ -38,7 +42,7 @@
         <div class="col-md-10">
             <select id="{id}-from" class="form-control">
                 {#from}
-                <option {@eq key="{.cardName}" value="{shipment.returnLabContactVO.cardName}"}selected{/eq}>{.cardName}</option>
+                <option value={.labContactId} {@eq key="{.cardName}" value="{shipment.returnLabContactVO.cardName}"}selected{/eq}>{.cardName}</option>
                 {/from}
             </select>
         </div>

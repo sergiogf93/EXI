@@ -1,5 +1,6 @@
 function AddContainerForm(args) {
     this.id = BUI.id();
+    var _this = this;
 
     this.width = 600;
     this.height = 200;
@@ -17,6 +18,28 @@ function AddContainerForm(args) {
 	}
 
     this.containerTypeComboBox = new ContainerTypeComboBox();
+    this.stockSolutionsGrid = new StockSolutionsGrid({width : this.width*0.95});
+
+    this.containerTypeComboBox.onSelected.attach(function (sender,selection){
+        _this.container = null;
+        if (selection.type == "STOCK SOLUTION") {
+            _this.addStockSolutionsList();
+            Ext.getCmp(_this.id + "-save-button").disable();
+        } else {
+            if (_this.stockSolutionsGrid.panel){
+                _this.panel.remove(_this.stockSolutionsGrid.panel);
+            }
+            Ext.getCmp(_this.id + "-save-button").enable();
+        }
+    });
+
+    this.stockSolutionsGrid.onSelected.attach(function (sender, stockSolution) {
+        _this.container = stockSolution;
+        Ext.getCmp(_this.id + "-save-button").enable();
+    });
+
+    this.onSave = new Event(this);
+    this.onCancel = new Event(this);
 }
 
 AddContainerForm.prototype.getPanel = function(dewar) {
@@ -26,6 +49,7 @@ AddContainerForm.prototype.getPanel = function(dewar) {
 //			cls : 'border-grid',
 //			margin : 10,
         padding : 10,
+        buttons : this.getButtons(),
         items : [ {
                         xtype : 'container',
                         margin : "2 2 2 2",
@@ -50,14 +74,37 @@ AddContainerForm.prototype.getPanel = function(dewar) {
             ]
         } ]
     });
-	// this.refresh(dewar);
 	return this.panel;
 };
 
+AddContainerForm.prototype.getButtons = function () {
+    var _this = this;
+    return [ {
+                text : 'Save',
+                id : this.id + "-save-button",
+                handler : function() {
+                    _this.onSave.notify(_this.getContainer());
+                }
+            }, {
+                text : 'Cancel',
+                handler : function() {
+                    _this.onCancel.notify();
+                }
+            } ]
+}
+
 AddContainerForm.prototype.getContainer = function () {
-    this.container = {};
-    this.container.code = Ext.getCmp(this.id + "container_code").getValue();
-    this.container.type = this.containerTypeComboBox.getSelectedType();
-    this.container.capacity = this.containerTypeComboBox.getSelectedCapacity();
+    if (!this.container){
+        this.container = {};
+        this.container.code = Ext.getCmp(this.id + "container_code").getValue();
+        this.container.containerType = this.containerTypeComboBox.getSelectedType();
+        this.container.capacity = this.containerTypeComboBox.getSelectedCapacity();
+    }
     return this.container;
+}
+
+AddContainerForm.prototype.addStockSolutionsList = function () {
+    var stockSolutions = _.filter(EXI.proposalManager.getStockSolutions(),{"boxId" : null});
+    this.panel.insert(this.stockSolutionsGrid.getPanel());
+    this.stockSolutionsGrid.load(stockSolutions);
 }

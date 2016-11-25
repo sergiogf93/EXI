@@ -21,7 +21,8 @@ function ContainerTypeComboBox(args) {
                     {"type":"UNIPUCK", "capacity":16},
                     {"type":"SPINE", "capacity":10},
                     {"type":"PLATE", "capacity":96},
-                    {"type":"OTHER", "capacity":1}
+                    {"type":"OTHER", "capacity":1},
+                    {"type":"STOCK SOLUTION"}
                 ]
 
     this.onSelected = new Event(this);

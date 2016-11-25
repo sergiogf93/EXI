@@ -1,5 +1,6 @@
-<table class="table valign-middle-rows" style="height:{height}px;">
+<table class="table valign-middle-rows small-padding-rows" style="height:{height}px;margin:0px;font-size: 9px;">
     <tr>
+        <td rowspan="4" style="background-color:#ddd;width:100px;"><span style="font-size: 20px;">#{dewar.index}</span></td>
         <td >Code: </td>
         <td class="column_parameter_value">{dewar.code}</td>
     </tr>
@@ -11,8 +12,8 @@
         <td>Storage: </td>
         <td class="column_parameter_value">{dewar.storageLocation}</td>
     </tr>
-    <tr valign="middle">
+    {!<tr valign="middle">
         <td>Comments: </td>
         <td class="column_parameter_value">{dewar.comments}</td>
-    </tr>              
+    </tr>!}           
 </table>

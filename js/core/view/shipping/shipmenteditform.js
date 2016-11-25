@@ -27,7 +27,13 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
     var html = "";
-    dust.render("shipping.edit.form.template", {id : this.id, to : toData, from : fromData, beamlineName : shipment.sessions[0].beamlineName, shipment : shipment}, function(err, out){
+	var beamlineName = "";
+	var startDate = "";
+	if (shipment.sessions.length > 0){
+		beamlineName = shipment.sessions[0].beamlineName;
+		startDate = shipment.sessions[0].startDate;
+	}
+    dust.render("shipping.edit.form.template", {id : this.id, sessions : EXI.proposalManager.getSessions(), to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
 		html = out;
 	});
 	
@@ -49,36 +55,11 @@ ShipmentEditForm.prototype.getPanel = function(dewar) {
 	return this.panel;
 };
 
-// ShipmentEditForm.prototype.getShipment = function() {
-// 	var name = $("#" + this.id + "-name").val();
-// 	var beamline = $("#" + this.id + "-beamline").val();
-// 	var date = $("#" + this.id + "-date").val();
-// 	var comments = $("#" + this.id + "-comments").val();
-// 	var toData = $("#" + this.id + "-to").val();
-// 	var fromData = $("#" + this.id + "-from").val();
-// 	return {
-// 				name		: name,
-// 				beamline 	: beamline,
-// 				date 		: date,
-// 				comments 	: comments,
-// 				to 			: toData,
-// 				from 		: fromData
-// 			};
-// };
-
 ShipmentEditForm.prototype.saveShipment = function() {
 	var _this = this;
 
-	var sendingAddressCardName = $("#" + this.id + "-to").val();
-	var returnAddressCardName = $("#" + this.id + "-from").val();
-
-	var labContacts = EXI.proposalManager.getLabcontacts();
-	var sendingAddress = _.filter(labContacts,{cardName : sendingAddressCardName})[0];
-	$.extend(labContacts, [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
-	var returnAddress = _.filter(labContacts,{cardName : returnAddressCardName})[0];
-	
-	var sendingAddressId = sendingAddress.labContactId;
-	var returnAddressId = returnAddress.labContactId;
+	var sendingAddressId = $("#" + this.id + "-to").val();
+	var returnAddressId = $("#" + this.id + "-from").val();
 	
 	if (sendingAddressId == null) {
 		BUI.showError("User contact information for shipping to beamline is mandatory");
@@ -95,6 +76,7 @@ ShipmentEditForm.prototype.saveShipment = function() {
 		returnAddressId = -1;
 	}
 	
+	var sendingAddress = (EXI.proposalManager.getLabcontactById(sendingAddressId));
 	var json = {
 		shippingId : this.shipment.shippingId,
 		name : $("#" + this.id + "-name").val(),
@@ -107,7 +89,7 @@ ShipmentEditForm.prototype.saveShipment = function() {
 		dewarAvgCustomsValue : sendingAddress.dewarAvgCustomsValue,
 		dewarAvgTransportValue :sendingAddress.dewarAvgTransportValue,
 		comments : $("#" + this.id + "-comments").val(),
-		sessionId : this.shipment.sessions[0].sessionId
+		sessionId : $("#" + this.id + "-date").val()
 	};
 
 	var onSuccess = function(sender, shipment) {

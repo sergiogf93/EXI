@@ -1,14 +1,11 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-1 border-right-columns" style="height:{height}px;text-align:center;background-color:#ddd;">
-            <span style="line-height:{height}px; font-size: 20px;">#{index}</span>
+        <div id="{id}-parameters-div" class="col-md-2" style="height:{height}px;text-align:center;padding:0px;">
         </div>
-        <div id="{id}-parameters-div" class="col-md-2" style="height:{height}px;">
-        </div>
-        <div id="{id}-container-panel-div" class="col-md-8">
+        <div id="{id}-container-panel-div" class="col-md-9">
         </div>
         <div class="col-md-1" style="background-color:#ddd;">
-            <table class="table valign-middle-rows" style="height:{height}px;">
+            <table class="table valign-middle-rows small-padding-rows" style="height:{height}px;margin:0px;">
                 <tr>
                     <td>
                         <a id="{id}-add-button" class="btn btn-xs">
@@ -32,5 +29,8 @@
                 </tr>
             </table>
         </div>
+    </div>
+    <div id="{id}-comments">
+
     </div>
 </div>
