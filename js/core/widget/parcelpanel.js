@@ -153,6 +153,12 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				containerRows[Math.floor(i/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
 			
+			/**  */
+			var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewar.dewarId);
+			for (var i = 0; i< stockSolutions.length; i++){
+					console.log(stockSolutions[i]);
+			}
+
 			if (!_.isEmpty(containerPanelsMap)) {
 				
 				var onSuccess = function (sender, samples) {
