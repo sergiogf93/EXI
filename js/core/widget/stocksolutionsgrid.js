@@ -22,7 +22,9 @@ function StockSolutionsGrid(args) {
 StockSolutionsGrid.prototype.getPanel = function () {
     var _this = this;
     this.store = Ext.create('Ext.data.Store', {
-            fields: ["stockSolutions"]
+        storeId:'stockSolutionsGridStore',
+        fields: ["acronym","buffer","concentration","volume"],
+        data: []
     });
 
     this.panel = Ext.create('Ext.grid.Panel', {
@@ -30,52 +32,57 @@ StockSolutionsGrid.prototype.getPanel = function () {
         border: 1,        
         store: this.store,       
         disableSelection: false,
-        columns: this.getColumns(),
-        viewConfig: {
-            enableTextSelection: true,
-            stripeRows: false
+        flex:0.5,
+        columns: [
+                    {
+                        header: 'Acronym',
+                        dataIndex: 'acronym',
+                        type: 'text',
+                        flex: 1,
+                        readOnly: true
+                    },
+                    {
+                        header: 'Buffer',
+                        dataIndex: 'buffer',
+                        type: 'text',
+                        flex: 1,
+                        readOnly: true
+                    },
+                    {
+                        header: 'Concentration (mg/ml)',
+                        dataIndex: 'concentration',
+                        type: 'text',
+                        flex: 1,
+                        readOnly: true
+                    },
+                    {
+                        header: 'Volume (&#956l)',
+                        dataIndex: 'volume',
+                        type: 'text',
+                        flex: 1,
+                        readOnly: true
+                    }
+        ],
+        listeners : {
+            itemclick: function(grid, record, item, index, e) {
+                _this.onSelected.notify(record);
+            }
         }
     });
-
-    this.panel.on('select', function(grid, record){
-		_this.onSelected.notify(record.data);
-	});
 
     return this.panel;
 }
 
 StockSolutionsGrid.prototype.load = function (stockSolutions) {
     this.stockSolutions = stockSolutions;
-    this.store.loadData(stockSolutions);
-}
-
-StockSolutionsGrid.prototype.getColumns = function () {
-    var _this = this;
-    var columns = [
-        {
-            dataIndex: 'stockSolutions',
-            name: 'stockSolutions',
-            flex: 1.5,
-            hidden: false,
-            renderer: function(grid, e, record) {
-                var data = {
-                                macromolecule       : EXI.proposalManager.getMacromoleculeById(record.data.macromoleculeId).acronym,
-                                buffer              : EXI.proposalManager.getBufferById(record.data.bufferId).acronym,
-                                storageTemperature  : record.data.storageTemperature,
-                                acronym             : record.data.name,
-                                concentration       : record.data.concentration,
-                                volume              : record.data.volume
-                            };
-                
-                var html = "";
-                dust.render("stock.solutions.grid.template", data, function (err, out) {
-                    html = out;
-                });
-                
-                return html;
-            }
-        }
-    ];
-
-    return columns;
+    var data = [];
+    for (var i=0 ; i < stockSolutions.length ; i++) {
+        data.push({
+            acronym         : stockSolutions[i].name,
+            buffer          : EXI.proposalManager.getBufferById(stockSolutions[i].bufferId).acronym,
+            concentration   : stockSolutions[i].concentration,
+            volume          : stockSolutions[i].volume
+        });
+    }
+    this.store.loadData(data);
 }
