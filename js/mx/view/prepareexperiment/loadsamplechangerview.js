@@ -57,7 +57,7 @@ function LoadSampleChangerView (args) {
 	});
 
     this.containerListEditor.onLoaded.attach(function(sender, containers){
-        $('.notifyjs-corner').empty();        
+        // $('.notifyjs-corner').empty();  
         _this.load(containers);
     });
 
@@ -100,6 +100,8 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     value : row.get('sampleChangerLocation')
                                 }]
         }, "EMPTY");
+    this.sampleChangerWidget.enablePuck(this.selectedPuck);
+        
 };
 
 /**
@@ -134,7 +136,7 @@ LoadSampleChangerView.prototype.deselectRow = function () {
     this.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
-    this.sampleChangerWidget.allowAllPucks();
+    this.sampleChangerWidget.enableAllPucks();
 }
 
 /**

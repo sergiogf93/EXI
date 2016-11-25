@@ -44,16 +44,16 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         width  : this.width,
         flex    : 0.5,
         columns: [
-            /*{
-                dataIndex: 'rowIndex',
-                sortable : false,
-                autoSizeColumn: true,
-                // other config you need..
-                renderer : function(value, metaData, record, rowIndex)
-                {
-                    return rowIndex+1;
-                }
-            },*/
+            // {
+            //     dataIndex: 'rowIndex',
+            //     sortable : false,
+            //     autoSizeColumn: true,
+            //     // other config you need..
+            //     renderer : function(value, metaData, record, rowIndex)
+            //     {
+            //         return rowIndex+1;
+            //     }
+            // },
             {
                 header: 'Shipment',
                 dataIndex: 'shippingName',
@@ -143,7 +143,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 }
                 for (var i = 0 ; i < _this.dewars.length ; i++){
                     var dewar = _this.dewars[i];
-                    if (record.get('dewarId') != dewar.dewarId) {
+                    if (record.get('dewarId') != dewar.dewarId && dewar.sampleCount > 0) {
                         if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
                             return "puck-error";
                         }
@@ -228,7 +228,6 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
 * @return
 */
 ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
-    debugger
     this.dewars = dewars;
     if (sampleChangerWidget){
         this.sampleChangerWidget = sampleChangerWidget;
@@ -238,6 +237,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     if (typeof(Storage) != "undefined"){
         var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
     }
+    var emptyDewars = false;
     //Parse data
     for (dewar in dewars) {
         if (dewars[dewar].sampleCount > 0){
@@ -263,8 +263,15 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                 containerId : dewars[dewar].containerId,
                 capacity : dewars[dewar].capacity
             });
+        } else {
+            emptyDewars = true;
         }
     }
+
+    // if (emptyDewars){
+        // $.notify("Warning: Some of the dewars have no samples on them.", "warn");
+    // }
+
     this.store.loadData(data);
 };
 
