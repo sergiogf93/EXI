@@ -139,18 +139,21 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 				if (Number(sample.BLSample_location) > puck.capacity) {
 					errorSamples.push(sample);
 					errorPucks = _.union(errorPucks,[puck]);
+					$("#" + puck.id).addClass("puck-error");
 				}
 				if (sample.Dewar_dewarId != currentDewar) {
 					errorPucks = _.union(errorPucks,[puck]);
+					$("#" + puck.id).addClass("puck-error");
 				}
 			}
 			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
-			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
 			// $.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
 			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
 			errorPucks.push(puck);
+			$("#" + puck.id).addClass("puck-error");
 		}
+		puck.loadSamples(pucksToBeLoaded[puck.id]);
 	}
 	return errorPucks;
 };
@@ -304,6 +307,20 @@ SampleChangerWidget.prototype.enableAllPucks = function () {
 SampleChangerWidget.prototype.enablePuck = function (puck) {
 	$("#" + puck.id).removeClass("puck-disabled");
 	puck.allowAllCells();
+};
+
+/**
+* Removes the class style class to all pucks
+*
+* @method removeClassToAllPucks
+*/
+SampleChangerWidget.prototype.removeClassToAllPucks = function (className) {
+	var allPucks = this.getAllPucks();
+	for (puckIndex in allPucks) {
+		var puck = allPucks[puckIndex];
+		$("#" + puck.puckWidget.id).removeClass(className);
+		puck.puckWidget.allowAllCells();
+	}
 };
 
 /**

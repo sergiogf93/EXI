@@ -100,8 +100,10 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     value : row.get('sampleChangerLocation')
                                 }]
         }, "EMPTY");
-    this.sampleChangerWidget.enablePuck(this.selectedPuck);
-        
+    
+    if (this.selectedPuck) {
+        this.sampleChangerWidget.enablePuck(this.selectedPuck);
+    }
 };
 
 /**
@@ -114,12 +116,15 @@ LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
     this.selectedPuck = puck;
     $("#" + puck.id).addClass("puck-selected");
     if (puck.isEmpty){
+        if (!this.selectedContainerId) {
+            this.selectedContainerId = puck.containerId;
+        }
         this.previewPuck(puck.containerId, puck.capacity, {
-        info : [{
-            text : 'SC Location',
-            value : this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
-        }]
-    }, "EMPTY");
+                info : [{
+                    text : 'SC Location',
+                    value : this.sampleChangerWidget.convertIdToSampleChangerLocation(puck.id)
+                }]
+            }, "EMPTY");
     } else if (!this.selectedContainerId) {
         var rowsByContainerId = this.containerListEditor.getRowsByContainerId(puck.containerId);
         this.setSelectedRow(rowsByContainerId[0]);
@@ -245,10 +250,12 @@ LoadSampleChangerView.prototype.load = function (containers) {
             var onSuccess = function (sender, samples) {
                 var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
                 if (errorPucks.length > 0){
-                    for (index in errorPucks) {
-                        var puck = errorPucks[index];
-                        $("#" + puck.id).addClass("puck-error");
-                    }
+                    // for (index in errorPucks) {
+                    //     var puck = errorPucks[index];
+                    //     $("#" + puck.id).addClass("puck-error");
+                    // }
+                } else {
+                    _this.sampleChangerWidget.removeClassToAllPucks("puck-error");
                 }
             }
 
