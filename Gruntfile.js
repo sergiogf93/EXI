@@ -212,7 +212,7 @@ module.exports = function(grunt) {
   
   /** TASKS */
   grunt.task.registerTask('doc', ['yuidoc:compile']);
-  grunt.task.registerTask('report', ['plato:prod']);
+  grunt.task.registerTask('report', ['plato:all','plato:saxs','plato:mx']);
   grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' ,  'concat:prod', 'uglify:prod', 'cssmin:prod', 'yuidoc:compile']);
   grunt.task.registerTask('dev', ['dustjs','includeSource:dev', 'cssmin:prod', 'wiredep']);
   

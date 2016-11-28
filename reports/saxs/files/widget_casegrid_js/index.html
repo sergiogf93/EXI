@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">604</p>
+      <p class="stat">603</p>
     </div>
   </div>
   <div class="row historical">
@@ -318,7 +318,6 @@ CaseGrid.prototype._getColumns = function() {
 			flex : 0.5,
 			renderer : function(grid, opts, record){
 				var deserialized = JSON.parse(record.data.serialized);
-				debugger
 				var dewarId = deserialized[0].Dewar_dewarId;
 				var items = [];
 				
