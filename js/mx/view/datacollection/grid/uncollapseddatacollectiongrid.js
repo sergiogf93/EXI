@@ -140,15 +140,25 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
                    return _.filter(keys, function(e){return e!= "null";});
                }
+               /*function getMap(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "map"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }
+                function getPDB(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "pdb"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }*/
                var node = {};
                node = ({
-                   spaceGroup      : spaceGroup,
-                   prepare         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
-                   sub             : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
-                   phasing         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
-                   model           : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
-                   downloadCSV     : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                   spaceGroup       : spaceGroup,
+                   prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
+                   sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
+                   phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                   model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
+                   downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                   //map              : getMap(stepsBySpaceGroup),
+                   //pdb              : getPDB(stepsBySpaceGroup)
                    
                });
                
@@ -165,6 +175,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                }
                
                function getNodeByPhasingStep(node, stepsBySpaceGroup, step){
+                   
                    var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : step});
                    node["metrics"] = [];
                    if (modelBuildingSteps){
@@ -175,10 +186,32 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                             if (modelBuildingSteps[z].metric){                                                        
                                 toBePushed = getMetrics(modelBuildingSteps[z]);
                             }  
+                            
+                            /* Opening uglymol with:
+                                    1) pdb file
+                                    2) map1 as first map file
+                                    3) map2 as second map file
+                                    */           
+                            var pdbUrl = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( modelBuildingSteps[z].pdb);
+                            if ( modelBuildingSteps[0].map != null){
+                                var mapsArr = modelBuildingSteps[z].map.split(",");
+                                if (mapsArr.length == 2){
+                                    var mapUrl1 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[0]);
+                                    var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
+                                    toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
+                                }
+                            }
+                            
+                             
+                   
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
                    node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
+                   
+                 
+           
+                 
                    return node;         
                }
                

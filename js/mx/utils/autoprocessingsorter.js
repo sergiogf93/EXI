@@ -25,10 +25,10 @@ AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName, rmerg
                      return rmerge1 - rmerge2;
                  }
                  else{
-                     return 1;
+                     return -1;
                  }
              }
-             return -1;
+             return 1;
              
          }
          return space2 -  space1;
