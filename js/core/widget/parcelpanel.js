@@ -192,23 +192,35 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	var _this = this;
 	
-	var onSuccess = function(sender, container){
-		container.code = containerVO.code;
-		_this.dewar.containerVOs.push(container);
+	if (containerVO.containerType == "STOCK SOLUTION"){
+		var stockSolution = EXI.proposalManager.getStockSolutionById(containerVO.data.stockSolutionId);
+		stockSolution.boxId = this.dewar.dewarId;
+		stockSolution.name  = containerVO.code;
 		
-		var onSaveSuccess = function (sender) {
-			_this.renderPucks(_this.dewar);
-		}
-		var onError = function(sender,error) {
-			EXI.setError(error.responseText);
-			_this.renderPucks(_this.dewar);
+		var onSuccess = function(sender, container){
+			
 		};
 		
-		EXI.getDataAdapter({onSuccess : onSaveSuccess, onError : onError}).proposal.shipping.saveContainer(_this.shippingId, _this.dewar.dewarId, container.containerId, container);		
-	};
-	
-	// EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveContainer(this.shippingId, this.dewar.dewarId, containerId, puck)
-	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.addContainer(this.shippingId, this.dewar.dewarId, containerVO.containerType, containerVO.capacity);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
+	} else {
+		var onSuccess = function(sender, container){
+			container.code = containerVO.code;
+			_this.dewar.containerVOs.push(container);
+			
+			var onSaveSuccess = function (sender) {
+				_this.renderPucks(_this.dewar);
+			}
+			var onError = function(sender,error) {
+				EXI.setError(error.responseText);
+				_this.renderPucks(_this.dewar);
+			};
+			
+			EXI.getDataAdapter({onSuccess : onSaveSuccess, onError : onError}).proposal.shipping.saveContainer(_this.shippingId, _this.dewar.dewarId, container.containerId, container);		
+		};
+
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.addContainer(this.shippingId, this.dewar.dewarId, containerVO.containerType, containerVO.capacity);
+		
+	}	
 };
 
 /**

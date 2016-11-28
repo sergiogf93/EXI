@@ -81,7 +81,8 @@ StockSolutionsGrid.prototype.load = function (stockSolutions) {
             acronym         : stockSolutions[i].name,
             buffer          : EXI.proposalManager.getBufferById(stockSolutions[i].bufferId).acronym,
             concentration   : stockSolutions[i].concentration,
-            volume          : stockSolutions[i].volume
+            volume          : stockSolutions[i].volume,
+            stockSolutionId : stockSolutions[i].stockSolutionId
         });
     }
     this.store.loadData(data);

@@ -5,6 +5,7 @@ function AddContainerForm(args) {
     this.width = 600;
     this.height = 200;
 	this.showTitle = true;
+    this.container = {};
 	if (args != null) {
 		if (args.showTitle != null) {
 			this.showTitle = args.showTitle;
@@ -21,7 +22,7 @@ function AddContainerForm(args) {
     this.stockSolutionsGrid = new StockSolutionsGrid({width : this.width*0.95});
 
     this.containerTypeComboBox.onSelected.attach(function (sender,selection){
-        _this.container = null;
+        _this.container = {};
         if (selection.type == "STOCK SOLUTION") {
             _this.addStockSolutionsList();
             Ext.getCmp(_this.id + "-save-button").disable();
@@ -35,6 +36,7 @@ function AddContainerForm(args) {
 
     this.stockSolutionsGrid.onSelected.attach(function (sender, stockSolution) {
         _this.container = stockSolution;
+        _this.container.containerType = "STOCK SOLUTION";
         Ext.getCmp(_this.id + "-save-button").enable();
     });
 
@@ -94,12 +96,9 @@ AddContainerForm.prototype.getButtons = function () {
 }
 
 AddContainerForm.prototype.getContainer = function () {
-    if (!this.container){
-        this.container = {};
-        this.container.code = Ext.getCmp(this.id + "container_code").getValue();
-        this.container.containerType = this.containerTypeComboBox.getSelectedType();
-        this.container.capacity = this.containerTypeComboBox.getSelectedCapacity();
-    }
+    this.container.code = Ext.getCmp(this.id + "container_code").getValue();
+    this.container.containerType = this.containerTypeComboBox.getSelectedType();
+    this.container.capacity = this.containerTypeComboBox.getSelectedCapacity();    
     return this.container;
 }
 
