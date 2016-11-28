@@ -43,7 +43,8 @@
     "exi-ui-utils": "*",
     "bootstrap-year-calendar": "^1.1.0",
     "notifyjs": "^0.4.2",
-    "three.js": "threejs#*"
+    "three.js": "threejs#*",
+    "leapjs": "^0.6.4"
   },
   "devDependencies": {
     "uglymol": "^0.1.0"
