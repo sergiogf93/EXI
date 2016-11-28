@@ -63,8 +63,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r82/three.min.js"></script>
   <script src="uglymol.js"></script>
 
-  <script src="../bower_components/jquery/dist/jquery.js"></script>
-  
+  <script src="src/jquery.js"></script>
 
 </head>
 <body style="background-color: black">
@@ -77,20 +76,34 @@
   <footer id="help"></footer>
   <div id="inset"></div>
   <script>
-    $.urlParam = function(name){
-        var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-        if (results==null){
+    /*$.urlParam = function(key){
+        var urlSplit = window.location.href.split("/");
+        for(var i = 0 ; i < urlSplit.length ; i++){
+            if (urlSplit[i] == key) {
+                return urlSplit[i+1];
+            }
+        }
         return null;
-        }
-        else{
-        return results[1] || 0;
-        }
     }
     console.log($.urlParam('pdb'));
-    
+    */
+     function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+debugger
+console.log(getParameterByName("pdb"));
+console.log(getParameterByName("map1"));
+console.log(getParameterByName("map2"));
+
     V = new UM.Viewer({viewer: "viewer", hud: "hud", help: "help"});
-    V.load_pdb("https://wwws.esrf.fr/ispyb/ispyb-ws/rest/6de9bda4fd183136d06983c8080c08170908e1ee/proposal/OPID231/mx/phasing/phasingprogramattachmentid/117179/download");
-    V.load_ccp4_maps("https://wwws.esrf.fr/ispyb/ispyb-ws/rest/6de9bda4fd183136d06983c8080c08170908e1ee/proposal/OPID231/mx/phasing/phasingprogramattachmentid/117180/download","https://wwws.esrf.fr/ispyb/ispyb-ws/rest/6de9bda4fd183136d06983c8080c08170908e1ee/proposal/OPID231/mx/phasing/phasingprogramattachmentid/117181/download");
+    V.load_pdb(getParameterByName("pdb"));
+    V.load_ccp4_maps(getParameterByName("map1"), getParameterByName("map2"));
   </script>
 </body>
 </html>

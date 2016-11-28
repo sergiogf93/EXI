@@ -31,9 +31,9 @@
                      <li class="disabled"><a data-toggle="tab">Workflow</a></li>
                 {/gt}
                 {@gt key=hasPhasing   value="0"}
-                    <li><a data-toggle="tab" href="#ph_{.DataCollection_dataCollectionId}">Phasing</a></li>
+                    <li><a data-toggle="tab" href="#ph_{.DataCollection_dataCollectionGroupId}">Phasing  <span class="badge" style='background-color:#337ab7;'>{.hasPhasing}</span></a></li>
                {:else}
-                     <li class="disabled"><a data-toggle="tab">Phasing</a></li>
+                     {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
                 {/gt}
              
             </ul>
@@ -256,10 +256,10 @@
             </div>
           {/gt} 
           {@gt key=hasPhasing   value=0}
-            <div id="ph_{.DataCollection_dataCollectionId}" class="tab-pane fade">
+            <div id="ph_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
                 <div class="container-fluid">
                 <div class="row">
-                        <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionId}">
+                        <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionGroupId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>
                     </div>

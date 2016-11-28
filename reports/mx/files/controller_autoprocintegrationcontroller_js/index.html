@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">134.29</p>
+      <p class="stat">130.41</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">44</p>
+      <p class="stat">61</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">8.23</p>
+      <p class="stat">9.96</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.28</p>
+      <p class="stat">0.47</p>
     </div>
   </div>
 </div>
@@ -121,11 +121,28 @@ AutoprocIntegrationController.prototype.init = function() {
 	var _this = this;
 	var listView;	
     
-	Path.map(&quot;#/autoprocintegration/datacollection/:datacollectionId/main&quot;).to(function() {
-        EXI.hideNavigationPanel();
+	Path.map(&quot;#/autoprocintegration/datacollection/:datacollectionId/main&quot;).to(function() {        
 		var mainView = new AutoProcIntegrationMainView();
 		EXI.addMainPanel(mainView);
-		mainView.load(this.params[&#039;datacollectionId&#039;]);
+		mainView.panel.setLoading(true);
+        
+        var listPanel = new AutoProcIntegrationListView();        
+        EXI.addNavigationPanel(listPanel);
+        
+        listPanel.onSelect.attach(function(sender, selected){           
+            mainView.load(selected);            
+        });
+         /** Load view for autoprocessing */
+        var onSuccess2 = function(sender, data){
+            mainView.load(data[0]);
+            console.log(data[0]);
+            mainView.panel.setLoading(false);            
+            listPanel.load(data[0]);
+        };
+        EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(this.params[&#039;datacollectionId&#039;]);
+    
+    
+    
 	}).enter(this.setPageBackground);
 
 	Path.map(&quot;#/autoprocintegration/datacollection/:datacollectionId/files&quot;).to(function() {
