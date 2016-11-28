@@ -29,6 +29,7 @@ module.exports = function(grunt) {
 				 'min/exi.js' 		            : [ "js/dust/**/*js", "js/core/**/*js"],  
                  'min/exi.mx.js' 		        : ["js/mx/**/*js"], 
                  'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],  
+				 'min/exi.viewer.js' 		    : ["js/viewer/**/*js"],
                  'min/exi.test.js' 		        : ["js/test/**/*js"],               				
 				 'min/bower_components.min.js'  : [ 
 								                    "bower_components/jquery/dist/jquery.min.js",
@@ -68,7 +69,13 @@ module.exports = function(grunt) {
                                             'min/exi.saxs.js',
                                             'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
-				                   		   ],                           
+				                   		   ],
+					'min/exi.viewer.min.js': [				 
+				                   		    'min/exi.js', 
+                                            'min/exi.viewer.js',
+                                            'min/exi.test.js',
+				                   		    'min/precompiled.templates.min.js'
+				                   		   ], 
                   'min/lightbox.js' 		: [				 
 				                   		    'bower_components/lightbox2/dist/js/lightbox.js'
 				                   		    
@@ -106,7 +113,7 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js', 'js/viewer/**/*.js']
 	},
     plato: {
                   all : {
@@ -148,6 +155,19 @@ module.exports = function(grunt) {
                             'reports/saxs': ['js/saxs/**/*.js'],                           
                     }
                 },
+				viewer: {
+                    options : {
+                    complexity : {
+                        logicalor : true,
+                        switchcase : true,
+                        forin : true,
+                        trycatch : true
+                    }
+                    },
+                    files: {
+                            'reports/viewer': ['js/viewer/**/*.js'],                           
+                    }
+                },
                 core: {
                     options : {
                     complexity : {
@@ -172,6 +192,8 @@ module.exports = function(grunt) {
 		    	  		'saxs/dev.html': 'saxs/index.tpl.html'
 		      },{
 		    	  		'mx/dev.html'  : 'mx/index.tpl.html'
+		      },{
+		    	  		'viewer/dev.html'  : 'viewer/index.tpl.html'
 		      }]
 		}
 	},
@@ -186,7 +208,7 @@ module.exports = function(grunt) {
 	},
 	 wiredep: {
 	      target: {
-	                    src: ['mx/dev.html', 'saxs/dev.html'], // point to your HTML file.
+	                    src: ['mx/dev.html', 'saxs/dev.html', 'viewer/dev.html'], // point to your HTML file.
 	      }
 	},
 	dustjs: {

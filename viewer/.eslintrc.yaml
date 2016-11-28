@@ -1,0 +1,26 @@
+root: true
+env:
+  node: true
+  browser: true
+  es6: true  # includes Float32Array
+parserOptions:
+  ecmaVersion: 5
+  sourceType: 'module'
+extends: ['eslint:recommended', 'google']
+rules:
+  # eslint@3.9.0 started enforcing indention of continuation lines for array
+  # we stick with 3.8.1 for now
+  indent: [1, 2, {'SwitchCase': 1, 'outerIIFEBody': 0}]
+  brace-style: [2, '1tbs', {'allowSingleLine': true}]
+  space-before-function-paren: [2, {'anonymous': 'always', 'named': 'never'}]
+  curly: [2, 'multi-line', 'consistent']
+  spaced-comment: 0  # comments are spaced, but not commented out code
+  object-curly-spacing: 0
+  operator-linebreak: [2, 'after', {'overrides': {':': 'ignore'}}]
+  camelcase: 0
+  linebreak-style: 0  # \r\n is ok in a working copy, but not in the repo
+  require-jsdoc: 0
+  no-console: 0
+  # not using es6 yet
+  no-var: 0
+  prefer-spread: 0
