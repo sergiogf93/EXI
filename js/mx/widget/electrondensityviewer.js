@@ -32,7 +32,7 @@ ElectronDensityViewer.prototype.load = function(){
     dust.render("electron.density.viewer.template", _this.sample, function(err, out) {                                                                       
         html = html + out;
     });
-    debugger
+    
     $(document.body).html(html);
     // $('#' + _this.id).hide().html(html).fadeIn('fast');
 
