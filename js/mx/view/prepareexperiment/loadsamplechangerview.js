@@ -228,7 +228,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
             var container = containers[i];
             if (container.sampleCount > 0){
                 var sampleChangerLocation = container.sampleChangerLocation;
-                if (sampleChangerLocation != ""){
+                if (sampleChangerLocation != "" && sampleChangerLocation != null){
                     var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
                     if (puckId) {
                         filledContainers[container.containerId] = puckId;

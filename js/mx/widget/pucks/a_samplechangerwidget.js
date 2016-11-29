@@ -145,6 +145,11 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 					errorPucks = _.union(errorPucks,[puck]);
 					$("#" + puck.id).addClass("puck-error");
 				}
+				if (sample.BLSample_location == ""){
+					errorSamples.push(sample);
+					errorPucks = _.union(errorPucks,[puck]);
+					$("#" + puck.id).addClass("puck-error");
+				}
 			}
 			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 		} else {
