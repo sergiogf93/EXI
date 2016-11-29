@@ -63,8 +63,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r82/three.min.js"></script>
   <script src="uglymol.js"></script>
 
-  <script src="src/jquery.js"></script>
-
 </head>
 <body style="background-color: black">
   <div id="viewer"></div>
@@ -76,17 +74,6 @@
   <footer id="help"></footer>
   <div id="inset"></div>
   <script>
-    /*$.urlParam = function(key){
-        var urlSplit = window.location.href.split("/");
-        for(var i = 0 ; i < urlSplit.length ; i++){
-            if (urlSplit[i] == key) {
-                return urlSplit[i+1];
-            }
-        }
-        return null;
-    }
-    console.log($.urlParam('pdb'));
-    */
      function getParameterByName(name, url) {
             if (!url) url = window.location.href;
             name = name.replace(/[\[\]]/g, "\\$&");
@@ -96,7 +83,6 @@
             if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
-debugger
 console.log(getParameterByName("pdb"));
 console.log(getParameterByName("map1"));
 console.log(getParameterByName("map2"));
