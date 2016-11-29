@@ -138,8 +138,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         ],
         viewConfig: {
             getRowClass: function(record, index, rowParams, store) {
-                debugger
-                if (record.get('sampleChangerLocation') == "" || record.get('sampleChangerLocation') == " ") {
+                if (record.get('sampleChangerLocation') == "" || record.get('sampleChangerLocation') == " " || record.get('sampleChangerLocation') == null ) {
                     return "warning-row";
                 }
                 for (var i = 0 ; i < _this.dewars.length ; i++){

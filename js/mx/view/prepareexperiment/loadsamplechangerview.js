@@ -348,7 +348,9 @@ LoadSampleChangerView.prototype.getPanel = function () {
 */
 LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
     this.previewPanelView.clean();
-    this.verticalPanel.remove(this.previewPanelView.panel);
+    if(this.previewPanelView.panel.body){
+        this.verticalPanel.remove(this.previewPanelView.panel);
+    }
 };
 
 /**
