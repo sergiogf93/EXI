@@ -29,7 +29,7 @@
                   <th >Multiplicity</th>
                   <th >Completeness</th>
                   <th >I/Sigma</th>
-                  <th >Rmeas</th>
+                  <th >Rmeas</th> 
                   <th >Rmerge</th>
                   <th >Rpim</th>
                   <th >cc(1/2)</th>
@@ -37,7 +37,12 @@
                </tr>
             </thead>
             {#.}
-            <tr>
+           
+            {@lt key=innerShell.rMerge value=10}
+                <tr style='background-color:#e6ffe6;'>
+            {:else}
+                <tr style='background-color:#ffddcc;'>
+            {/lt}
                <td  >#{.rank}</td>
                <td  ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/main'>{.v_datacollection_processingPrograms}</a></td>
                <td  >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
@@ -58,7 +63,7 @@
                   <span class='overallshell'>{.overall.resolutionLimitLow}-{.overall.resolutionLimitHigh} </span> 
                   <span class='outershell'>{.outerShell.resolutionLimitLow}-{.outerShell.resolutionLimitHigh}</span>
                </td>
-               <td >
+               <td >               
                   <span class='innershell'>{.innerShell.multiplicity} </span>
                   <span class='overallshell'>{.overall.multiplicity}</span> 
                   <span class='outershell'>{.outerShell.multiplicity}</span>
@@ -66,7 +71,13 @@
                <td ><span class='innershell'>{.innerShell.completeness} </span><span class='overallshell'>{.overall.completeness}</span> <span class='outershell'>{.outerShell.completeness}</span></td>
                <td ><span class='innershell'>{.innerShell.meanIOverSigI} </span><span class='overallshell'>{.overall.meanIOverSigI}</span> <span class='outershell'>{.outerShell.meanIOverSigI}</span></td>
                <td ><span class='innershell'>{.innerShell.rMeasAllIPlusIMinus} </span><span class='overallshell'>{.overall.rMeasAllIPlusIMinus}</span> <span class='outershell'>{.outerShell.rMeasAllIPlusIMinus}</span></td>
-               <td ><span class='innershell'>{.innerShell.rMerge} </span><span class='overallshell'>{.overall.rMerge}</span> <span class='outershell'>{.outerShell.rMerge}</span></td>
+               <td >
+               {@lt key=innerShell.rMerge value=10}
+                    <span class='innershell'>{.innerShell.rMerge} </span>
+                {:else}
+                    <span class='innershell' style='font-weight:700;color:red;'>{.innerShell.rMerge} </span>
+                {/lt}
+               <span class='overallshell'>{.overall.rMerge}</span> <span class='outershell'>{.outerShell.rMerge}</span></td>
                <td ><span class='innershell'>{.innerShell.rPimWithinIPlusIMinus} </span><span class='overallshell'>{.overall.rPimWithinIPlusIMinus}</span> <span class='outershell'>{.outerShell.rPimWithinIPlusIMinus}</span></td>
                <td ><span class='innershell'>{.innerShell.ccHalf} </span><span class='overallshell'>{.overall.ccHalf}</span> <span class='outershell'>{.outerShell.ccHalf}</span></td>
                <td ><a href='{.downloadFilesUrl}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a></td>
