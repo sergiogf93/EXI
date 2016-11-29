@@ -77,15 +77,20 @@ ShippingExiController.prototype.init = function() {
 		});
 		
 		Path.map("#/shipping/:shippingId/main").to(function() {
-			var mainView = new ShippingMainView();
+			var mainView = new ShippingMainViewTest();
 			EXI.addMainPanel(mainView);
 			mainView.load(this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
 		Path.map("#/shipping/main").to(function() {
-			var mainView = new ShippingMainView();
+			var mainView = new ShippingMainViewTest();
 			EXI.addMainPanel(mainView);
 			mainView.load();
 		}).enter(this.setPageBackground);
+
 		
+		Path.map("#/shipping/edv").to(function() {
+			var mainView = new ElectronDensityViewer();
+			EXI.addMainPanel(mainView);
+		}).enter(this.setPageBackground);
 };

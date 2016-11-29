@@ -113,7 +113,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         });
 
     }
-
+    
     /** Convert from map to array */
     var ids = _.map(data, 'autoProcId');
     var result = [];
@@ -121,18 +121,56 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         result.push(data[ids[i]]);
     }
 
-    function sortByBest(a, b) {
+    /** filter by rMerge < 10 */    
+    var sorted = _.filter(result, function(o) {
+            if (o.overall){
+                if (o.overall.rMerge){                    
+                    if (Number(o.overall.rMerge) < 5.2){
+                        return true;
+                    }
+                }
+            }
+            return false        
+     });
+    
+    if (sorted.length == 0){
+        sorted = results;
+    }
+    
+    function sortByHighestSymmetry(a, b) {
         var spaceGroupA = a.spaceGroup.replace(/\s/g, "");
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");              
+        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");         
+        if (spaceGroupA == spaceGroupB){
+            if (a.overall){
+                if (b.overall){
+                    if (a.overall.rMerge){
+                        if (b.overall.rMerge){
+                            if (!isNaN(Number(a.overall.rMerge))){
+                                if (!isNaN(Number(b.overall.rMerge))){
+                                    return Number(a.overall.rMerge) > Number(b.overall.rMerge);
+                                }           
+                                else{
+                                    return false;
+                                }                     
+                            }
+                            else{
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }             
         return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
     }
 
-    var sorted = result.sort(sortByBest).reverse();    
+    
+    sorted = sorted.sort(sortByHighestSymmetry).reverse();    
     /** Add new attribute for ranking order */
     for ( i = 0; i < sorted.length; i++) {
         sorted[i]["rank"] = i + 1;
     }
-
+    
     return sorted;
 };
 

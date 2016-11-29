@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 			  files : {
 				 'min/exi.js' 		            : [ "js/dust/**/*js", "js/core/**/*js"],  
                  'min/exi.mx.js' 		        : ["js/mx/**/*js"], 
-                 'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],  
+                 'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],
                  'min/exi.test.js' 		        : ["js/test/**/*js"],               				
 				 'min/bower_components.min.js'  : [ 
 								                    "bower_components/jquery/dist/jquery.min.js",
@@ -68,7 +68,7 @@ module.exports = function(grunt) {
                                             'min/exi.saxs.js',
                                             'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
-				                   		   ],                           
+				                   		   ],
                   'min/lightbox.js' 		: [				 
 				                   		    'bower_components/lightbox2/dist/js/lightbox.js'
 				                   		    
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js', 'js/viewer/**/*.js']
 	},
     plato: {
                   all : {
@@ -146,6 +146,10 @@ module.exports = function(grunt) {
                     },
                     files: {
                             'reports/saxs': ['js/saxs/**/*.js'],                           
+                    }
+                },
+                    files: {
+                            'reports/viewer': ['js/viewer/**/*.js'],                           
                     }
                 },
                 core: {
@@ -212,7 +216,7 @@ module.exports = function(grunt) {
   
   /** TASKS */
   grunt.task.registerTask('doc', ['yuidoc:compile']);
-  grunt.task.registerTask('report', ['plato:prod']);
+  grunt.task.registerTask('report', ['plato:all','plato:saxs','plato:mx']);
   grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' ,  'concat:prod', 'uglify:prod', 'cssmin:prod', 'yuidoc:compile']);
   grunt.task.registerTask('dev', ['dustjs','includeSource:dev', 'cssmin:prod', 'wiredep']);
   

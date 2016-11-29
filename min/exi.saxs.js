@@ -4107,8 +4107,6 @@ BufferForm.prototype.getPanel = function() {
 		layout : 'vbox',
 		buttons : this.getToolBar(),
 		cls : 'border-grid',
-//		margin : '10 0 0 20',
-		layout : 'vbox',
 		items : [ 
 		         {
 						xtype : 'container',
@@ -4604,7 +4602,6 @@ CaseGrid.prototype._getColumns = function() {
 			flex : 0.5,
 			renderer : function(grid, opts, record){
 				var deserialized = JSON.parse(record.data.serialized);
-				debugger
 				var dewarId = deserialized[0].Dewar_dewarId;
 				var items = [];
 				
@@ -14638,7 +14635,8 @@ QueueGrid.prototype.load = function(data) {
 
 QueueGrid.prototype.getPanel = function() {
 	var _this = this;
-	Ext.define('Queue', {
+	if(!Ext.ClassManager.isCreated('Queue') ){
+		Ext.define('Queue', {
 		extend : 'Ext.data.Model',
 		fields : [ 'name', 'date', 'volumePorod', 'runCreationDate', 'measurementCode', 'macromoleculeAcronym', 'bufferAcronym', 'I0',
 				'I0Stdev', 'acronym', 'averageFilePath', 'bufferAverageFilePath', 'bufferId', 'bufferOnedimensionalFiles', 'code',
@@ -14655,7 +14653,9 @@ QueueGrid.prototype.getPanel = function() {
 				'rgGuinier', 'rgStdev', 'runId', 'safetyLevelId', 'sampleAverageFilePath', 'sampleOneDimensionalFiles',
 				'samplePlatePositionId', 'scatteringFilePath', 'sequence', 'sessionId', 'sourceFilePath', 'specimenId', 'status',
 				'stockSolutionId', 'substractedFilePath', 'subtractionId', 'total', 'transmission', 'viscosity', 'volume', 'volumeToLoad',
-				'waitTime', 'reference', 'refined', 'fitCount', 'superposisitionCount', 'rigidbodyCount', 'abinitioCount' ] });
+				'waitTime', 'reference', 'refined', 'fitCount', 'superposisitionCount', 'rigidbodyCount', 'abinitioCount' ] });	
+	}
+	
 
 	this.store = Ext.create('Ext.data.Store', {
 		model : 'Queue',

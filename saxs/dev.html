@@ -43,6 +43,9 @@
         <script src="../bower_components/dustjs-linkedin/dist/dust-full.min.js"></script>
         <script src="../bower_components/dustjs-helpers/dist/dust-helpers.min.js"></script>
         <script src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="../bower_components/notifyjs/dist/notify.js"></script>
+        <script src="../bower_components/three.js/build/three.js"></script>
+        <script src="../bower_components/leapjs/leap-0.6.4.js"></script>
         <!-- endbower -->
 
 
@@ -102,6 +105,27 @@
 		  
         <!-- DUST -->  
 		<script src="../js/dust/helpers.js"></script>
+		<script src="../js/dust/xtal/content.js"></script>
+		<script src="../js/dust/xtal/dependencies/DAT.GUI.min.js"></script>
+		<script src="../js/dust/xtal/dependencies/Detector.js"></script>
+		<script src="../js/dust/xtal/dependencies/dropzone.js"></script>
+		<script src="../js/dust/xtal/dependencies/hoverIntent.min.js"></script>
+		<script src="../js/dust/xtal/dependencies/sprintf.js"></script>
+		<script src="../js/dust/xtal/dependencies/three.TrackballControls.js"></script>
+		<script src="../js/dust/xtal/dependencies/three.min.js"></script>
+		<script src="../js/dust/xtal/input.js"></script>
+		<script src="../js/dust/xtal/restraints_grid.js"></script>
+		<script src="../js/dust/xtal/xtal.cif.js"></script>
+		<script src="../js/dust/xtal/xtal.cifexplorer.js"></script>
+		<script src="../js/dust/xtal/xtal.display.js"></script>
+		<script src="../js/dust/xtal/xtal.example.js"></script>
+		<script src="../js/dust/xtal/xtal.js"></script>
+		<script src="../js/dust/xtal/xtal.loggraph.js"></script>
+		<script src="../js/dust/xtal/xtal.marchingcubes.js"></script>
+		<script src="../js/dust/xtal/xtal.model.js"></script>
+		<script src="../js/dust/xtal/xtal.space_groups.js"></script>
+		<script src="../js/dust/xtal/xtal.viewer.js"></script>
+		<script src="../js/dust/xtal/xtal.viewer_gui.js"></script>
 	   
         <!-- SECURITY -->
 	    <script src="../js/core/security/credential.js"></script>
@@ -120,14 +144,17 @@
         <script src="../js/core/widget/curveplotter.js"></script>
         <script src="../js/core/widget/parcelpanel.js"></script>
         <script src="../js/core/widget/proposalgrid.js"></script>
+        <script src="../js/core/widget/puckparcelpanel.js"></script>
         <script src="../js/core/widget/sessiongrid.js"></script>
         <script src="../js/mx/widget/autoprocintegrationgridfileexplorer.js"></script>
         <script src="../js/mx/widget/curveplotter.js"></script>
+        <script src="../js/mx/widget/electrondensityviewer.js"></script>
         <script src="../js/mx/widget/energyscangrid.js"></script>
         <script src="../js/mx/widget/pucks/a_samplechangerwidget.js"></script>
         <script src="../js/mx/widget/pucks/flexhcdwidget.js"></script>
         <script src="../js/mx/widget/pucks/puckwidget.js"></script>
         <script src="../js/mx/widget/pucks/puckwidgetcontainer.js"></script>
+        <script src="../js/mx/widget/pucks/robodiffwidget.js"></script>
         <script src="../js/mx/widget/pucks/samplechangerselector.js"></script>
         <script src="../js/mx/widget/pucks/sc3widget.js"></script>
         <script src="../js/mx/widget/pucks/spinepuckwidget.js"></script>
@@ -227,6 +254,7 @@
         <script src="../js/saxs/navigation/templatelistview.js"></script>
         
         <!-- MENU -->
+        <script src="../js/core/menu/bootstrapgrid.js"></script>
         <script src="../js/core/menu/mainmenu.js"></script>
         <script src="../js/core/menu/selectionmenu.js"></script>
         <script src="../js/mx/menu/mxmainmenu.js"></script>
@@ -245,6 +273,7 @@
         <script src="../js/core/view/shipping/puckform.js"></script>
         <script src="../js/core/view/shipping/shipmentform.js"></script>
         <script src="../js/core/view/shipping/shippingmainview.js"></script>
+        <script src="../js/core/view/shipping/shippingmainviewtest.js"></script>
         <script src="../js/core/view/welcomemainview.js"></script>
         <script src="../js/mx/view/autoprocintegration/autoprocintegrationattachmentsgrid.js"></script>
         <script src="../js/mx/view/autoprocintegration/autoprocintegrationcurveplotter.js"></script>
@@ -274,12 +303,9 @@
         <script src="../js/mx/view/phasingview/summaryphasinggrid.js"></script>
         <script src="../js/mx/view/prepareexperiment/confirmshipmentview.js"></script>
         <script src="../js/mx/view/prepareexperiment/containerspreparepreadsheet.js"></script>
-        <script src="../js/mx/view/prepareexperiment/containerspreparepreadsheettest.js"></script>
         <script src="../js/mx/view/prepareexperiment/dewarlistselector.js"></script>
-        <script src="../js/mx/view/prepareexperiment/dewarlistselectortest.js"></script>
-        <script src="../js/mx/view/prepareexperiment/loadshipmentview.js"></script>
+        <script src="../js/mx/view/prepareexperiment/loadsamplechangerview.js"></script>
         <script src="../js/mx/view/prepareexperiment/preparemainview.js"></script>
-        <script src="../js/mx/view/prepareexperiment/preparemainviewtest.js"></script>
         <script src="../js/mx/view/prepareexperiment/previewpanelview.js"></script>
         <script src="../js/mx/view/workflowstepmainview.js"></script>
         <script src="../js/mx/view/xfe/xfeviewermainview.js"></script>
