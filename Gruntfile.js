@@ -159,13 +159,13 @@ module.exports = function(grunt) {
                         switchcase : true,
                         forin : true,
                         trycatch : true
-                    }
+                    	}
                     },
                     files: {
                             'reports/core': ['js/core/**/*.js'],                           
                     }
-                }
-    },
+                
+    	},
 	includeSource: {
 	    	options: {
 		      basePath: '',
