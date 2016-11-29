@@ -37,6 +37,9 @@ SC3Widget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
 SC3Widget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
 SC3Widget.prototype.loadSamples = SampleChangerWidget.prototype.loadSamples;
 SC3Widget.prototype.emptyAllPucks = SampleChangerWidget.prototype.emptyAllPucks;
+SC3Widget.prototype.enableAllPucks = SampleChangerWidget.prototype.enableAllPucks;
+SC3Widget.prototype.disablePuck = SampleChangerWidget.prototype.disablePuck;
+SC3Widget.prototype.enablePuck = SampleChangerWidget.prototype.enablePuck;
 
 /**
 * Creates the particular structure of the SC3

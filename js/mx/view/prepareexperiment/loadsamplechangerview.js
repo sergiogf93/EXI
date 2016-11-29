@@ -57,7 +57,7 @@ function LoadSampleChangerView (args) {
 	});
 
     this.containerListEditor.onLoaded.attach(function(sender, containers){
-        $('.notifyjs-corner').empty();        
+        // $('.notifyjs-corner').empty();  
         _this.load(containers);
     });
 
@@ -71,7 +71,7 @@ function LoadSampleChangerView (args) {
                 }]
             }, "");
         }
-        _this.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId," ");
+        _this.containerListEditor.updateSampleChangerLocation(_this.selectedContainerId,"");
         _this.returnToSelectionStatus();
     });
 };
@@ -100,6 +100,8 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     value : row.get('sampleChangerLocation')
                                 }]
         }, "EMPTY");
+    this.sampleChangerWidget.enablePuck(this.selectedPuck);
+        
 };
 
 /**
@@ -134,7 +136,7 @@ LoadSampleChangerView.prototype.deselectRow = function () {
     this.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
-    this.sampleChangerWidget.allowAllPucks();
+    this.sampleChangerWidget.enableAllPucks();
 }
 
 /**
@@ -220,8 +222,9 @@ LoadSampleChangerView.prototype.load = function (containers) {
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
             if (container.sampleCount > 0){
-                if (container.sampleChangerLocation != " "){
-                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(container.sampleChangerLocation));
+                var sampleChangerLocation = container.sampleChangerLocation;
+                if (sampleChangerLocation != ""){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
                     if (puckId) {
                         filledContainers[container.containerId] = puckId;
                         var puck = this.sampleChangerWidget.findPuckById(puckId);

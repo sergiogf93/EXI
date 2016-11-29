@@ -37,6 +37,9 @@ RoboDiffWidget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData
 RoboDiffWidget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
 RoboDiffWidget.prototype.loadSamples = SampleChangerWidget.prototype.loadSamples;
 RoboDiffWidget.prototype.emptyAllPucks = SampleChangerWidget.prototype.emptyAllPucks;
+RoboDiffWidget.prototype.enableAllPucks = SampleChangerWidget.prototype.enableAllPucks;
+RoboDiffWidget.prototype.disablePuck = SampleChangerWidget.prototype.disablePuck;
+RoboDiffWidget.prototype.enablePuck = SampleChangerWidget.prototype.enablePuck;
 
 /**
 * Creates the particular structure of the FlexHCD

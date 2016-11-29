@@ -147,7 +147,7 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 			puck.loadSamples(pucksToBeLoaded[puck.id]);
 		} else {
-			$.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
+			// $.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
 			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
 			errorPucks.push(puck);
 		}
@@ -260,7 +260,6 @@ SampleChangerWidget.prototype.setClickListeners = function () {
 * @param {Integer} capacity The capacity of the allowed pucks
 */
 SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capacity) {
-	var _this = this;
 	var allPucks = this.getAllPucks();
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
@@ -272,18 +271,39 @@ SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capaci
 };
 
 /**
+* Adds the disabled style class to the puck
+*
+* @method disablePuck
+* @param puck The puck to be disabled
+*/
+SampleChangerWidget.prototype.disablePuck = function (puck) {
+	$("#" + puck.id).addClass("puck-disabled");
+	puck.disableAllCells();
+};
+
+/**
 * Removes the disabled style class to all pucks
 *
-* @method allowAllPucks
+* @method enableAllPucks
 */
-SampleChangerWidget.prototype.allowAllPucks = function () {
-	var _this = this;
+SampleChangerWidget.prototype.enableAllPucks = function () {
 	var allPucks = this.getAllPucks();
 	for (puckIndex in allPucks) {
 		var puck = allPucks[puckIndex];
 		$("#" + puck.puckWidget.id).removeClass("puck-disabled");
 		puck.puckWidget.allowAllCells();
 	}
+};
+
+/**
+* Removes the disabled style class to the puck
+*
+* @method enablePuck
+* @param puck The puck to be enabled
+*/
+SampleChangerWidget.prototype.enablePuck = function (puck) {
+	$("#" + puck.id).removeClass("puck-disabled");
+	puck.allowAllCells();
 };
 
 /**

@@ -38,6 +38,9 @@ FlexHCDWidget.prototype.getPuckData = SampleChangerWidget.prototype.getPuckData;
 FlexHCDWidget.prototype.getAllFilledPucks = SampleChangerWidget.prototype.getAllFilledPucks;
 FlexHCDWidget.prototype.loadSamples = SampleChangerWidget.prototype.loadSamples;
 FlexHCDWidget.prototype.emptyAllPucks = SampleChangerWidget.prototype.emptyAllPucks;
+FlexHCDWidget.prototype.enableAllPucks = SampleChangerWidget.prototype.enableAllPucks;
+FlexHCDWidget.prototype.disablePuck = SampleChangerWidget.prototype.disablePuck;
+FlexHCDWidget.prototype.enablePuck = SampleChangerWidget.prototype.enablePuck;
 
 /**
 * Creates the particular structure of the FlexHCD
