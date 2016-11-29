@@ -61,9 +61,9 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
     var anomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
     var nonanomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
     /**Set non anomalous first */
-    data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
-    data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"),data);    
-    return data;
+    anomalousdata = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    nonanomalousdata = new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    return _.concat(nonanomalousdata, anomalousdata);
 };
 
 AutoProcIntegrationGrid.prototype.load = function(data) {      

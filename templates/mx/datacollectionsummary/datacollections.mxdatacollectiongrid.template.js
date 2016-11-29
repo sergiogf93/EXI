@@ -14,6 +14,7 @@
                     <th>Directory</th>
                     <th>Time</th>
                     <th>Run status</th>
+                    <th>Phasing</th>
                 </tr>
                 </thead>
                 
@@ -33,6 +34,7 @@
                     <td>{.imageDirectory}</td>
                     <td>{.startTime}</td>
                     <td>{.runStatus}</td>
+                    <td>{@gt key=hasPhasing value=0}<div class='summary_datacollection_success'></div>{/gt}</td>
                     
                 </tr>
                
