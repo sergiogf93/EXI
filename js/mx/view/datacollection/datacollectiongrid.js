@@ -40,6 +40,7 @@ DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
         border: 1,        
         store: this.store,       
         disableSelection: true,
+       
         columns: this.getColumns(),
         viewConfig: {
             enableTextSelection: true,
@@ -120,6 +121,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
+    
     return new AutoprocessingRanker().rank(result, "spaceGroup");  
 };
 
@@ -171,7 +173,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 data.xtal4 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4);
 
                 /** Image quality indicator **/
-                data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);              
+                data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
                 
                 /** We dont show screen if there are results of autoprocessing */

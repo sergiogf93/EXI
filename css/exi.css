@@ -236,7 +236,7 @@ img.border-img {
 
 
 .containerWithScroll{
-height:250px;
+height:550px;
 overflow-y: scroll;
 width:100%; 
 overflow-x: hidden;

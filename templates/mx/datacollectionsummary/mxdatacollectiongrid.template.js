@@ -236,7 +236,7 @@
         {@gt key=resultsCount   value="0"}
         <div id="re_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
-               <div class="row">
+               <div class="row" style='height:600px;'>
                     <div class="col-xs-12 col-md-12" id="__re_{.DataCollection_dataCollectionId}">
                             <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                     </div>
@@ -247,7 +247,7 @@
          {@gt key=workflows.length   value="0"}
             <div id="wf_{.DataCollection_dataCollectionId}" class="tab-pane fade">
                 <div class="container-fluid">
-                <div class="row">
+                 <div class="row" style='height:600px;'>
                         <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>
@@ -258,7 +258,7 @@
           {@gt key=hasPhasing   value=0}
             <div id="ph_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
                 <div class="container-fluid">
-                <div class="row">
+                 <div class="row" style='height:600px;'>
                         <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionGroupId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>

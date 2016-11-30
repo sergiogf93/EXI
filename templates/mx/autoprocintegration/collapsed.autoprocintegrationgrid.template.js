@@ -16,6 +16,7 @@
             <thead>
                <tr>
                   <th  ><a href="#"  data-toggle="tooltip" title="Rank is done based on the space group and lower rMerge">Rank</a></th>
+                  
                   <th  >Pipeline</th>
                   <th  >SpaceGroup</th>
                   <th  >Anom</th>
@@ -39,11 +40,25 @@
             {#.}
            
             {@lt key=innerShell.rMerge value=10}
-                <tr style='background-color:#e6ffe6;'>
+                 {?label}
+                    {@eq key=label value="BEST"}
+                        <tr style='background-color:#e6ffe6;'>
+                    {:else} 
+                        <tr style='background-color:#ffffff;'>
+                    {/eq} 
+                  {/label}  
             {:else}
                 <tr style='background-color:#ffddcc;'>
             {/lt}
-               <td  >#{.rank}</td>
+                {?label}
+                    {@eq key=label value="BEST"}
+                        <td >  <kbd style="background-color:green">{.label}</kbd></td>
+                    {:else}
+                        <td  > <kbd style="background-color:orange">{.label}</kbd></td>
+                    {/eq}
+               {:else}
+                    <td  >{.rank}</td>
+               {/label}
                <td  ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/main'>{.v_datacollection_processingPrograms}</a></td>
                <td  >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
                <td  >

@@ -55,6 +55,7 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
          }
          catch(e){
              
+             console.log(e);
          }  
     }
     

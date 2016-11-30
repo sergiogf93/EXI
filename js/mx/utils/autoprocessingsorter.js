@@ -42,6 +42,10 @@ AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
         return _.indexOf(ExtISPyB.spaceGroups, spaceGroupB) - _.indexOf(ExtISPyB.spaceGroups, spaceGroupA);                           
        
     }
+    
+    function sortByrMerge(a, b) {                                    
+         return ( parseFloat(a.innerShell.rMerge) -  parseFloat(b.innerShell.rMerge));                                       
+    }
 
     /** Sort rmerge < 10 by highest symmetry */
     for (var i = 0; i < minus10Rmerge.length; i++){
@@ -49,7 +53,18 @@ AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
     }
    
     minus10Rmerge.sort(sortByHighestSymmetry); 
-    plus10Rmerge.sort(sortByHighestSymmetry); 
+    plus10Rmerge.sort(sortByrMerge); 
+    
+    if (minus10Rmerge[0]){
+        minus10Rmerge[0].label = "BEST";
+    }
+    
+    /** Setting lables */
+    if (plus10Rmerge){
+        for(var i = 0; i < plus10Rmerge.length; i++){
+            plus10Rmerge[i].label = "rMerge > 10";
+        }
+    }
        
     return _.concat(minus10Rmerge, plus10Rmerge);    
 };

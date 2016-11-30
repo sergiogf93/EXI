@@ -39,6 +39,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
         border: 1,        
         store: this.store,  
         id: this.id,     
+         minHeight : 900,
         disableSelection: true,
         columns: this.getColumns(),
         viewConfig: {
@@ -82,7 +83,7 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = function(target, dataCollectionId) {
-    var onSuccess = function(sender, data){                       
+    var onSuccess = function(sender, data){      
         /** Parsing data */
         var html = "";     
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
