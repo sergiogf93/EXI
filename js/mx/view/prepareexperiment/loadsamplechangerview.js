@@ -226,22 +226,25 @@ LoadSampleChangerView.prototype.load = function (containers) {
     if (containers) {
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-            if (container.sampleCount > 0){
-                var sampleChangerLocation = container.sampleChangerLocation;
-                if (sampleChangerLocation != "" && sampleChangerLocation != null){
-                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
-                    if (puckId) {
-                        filledContainers[container.containerId] = puckId;
-                        var puck = this.sampleChangerWidget.findPuckById(puckId);
-                        if (puck.capacity != container.capacity){
-                            this.warningRows.push(container.containerId);
-                        }
-                    } else {
+            var sampleChangerLocation = container.sampleChangerLocation;
+            if (sampleChangerLocation != "" && sampleChangerLocation != null){
+                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
+                if (puckId) {
+                    var puck = this.sampleChangerWidget.findPuckById(puckId);
+                    if (puck.capacity != container.capacity){
                         this.warningRows.push(container.containerId);
+                    }
+                    if (container.sampleCount == 0) {
+                        puck.containerId = container.containerId;
+                        puck.isEmpty = false;
+                    } else {
+                        filledContainers[container.containerId] = puckId;
                     }
                 } else {
                     this.warningRows.push(container.containerId);
                 }
+            } else {
+                this.warningRows.push(container.containerId);
             }
         }
         
@@ -249,12 +252,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
         if (!_.isEmpty(filledContainers)){
             var onSuccess = function (sender, samples) {
                 var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
-                if (errorPucks.length > 0){
-                    // for (index in errorPucks) {
-                    //     var puck = errorPucks[index];
-                    //     $("#" + puck.id).addClass("puck-error");
-                    // }
-                } else {
+                if (errorPucks.length == 0){
                     _this.sampleChangerWidget.removeClassToAllPucks("puck-error");
                 }
             }
