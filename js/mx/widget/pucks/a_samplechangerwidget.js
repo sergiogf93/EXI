@@ -132,12 +132,11 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 	for (puckIndex in _.keys(pucksToBeLoaded)) {
 		var puck = this.findPuckById(_.keys(pucksToBeLoaded)[puckIndex]);
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
-			var errorSamples = [];
 			var currentDewar = pucksToBeLoaded[puck.id][0].Dewar_dewarId;
 			for (var i = 0 ; i < pucksToBeLoaded[puck.id].length ; i++) {
 				var sample = pucksToBeLoaded[puck.id][i];
 				if (Number(sample.BLSample_location) > puck.capacity) {
-					errorSamples.push(sample);
+					sample.hasError = true;
 					errorPucks = _.union(errorPucks,[puck]);
 					$("#" + puck.id).addClass("puck-error");
 				}
@@ -145,8 +144,13 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 					errorPucks = _.union(errorPucks,[puck]);
 					$("#" + puck.id).addClass("puck-error");
 				}
+				if (sample.BLSample_location == ""){
+					sample.hasError = true;
+					errorPucks = _.union(errorPucks,[puck]);
+					$("#" + puck.id).addClass("puck-error");
+				}
 			}
-			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
+			// _.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 		} else {
 			// $.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
 			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
