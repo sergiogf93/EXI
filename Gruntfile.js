@@ -26,11 +26,12 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				 'min/exi.js' 		            : [ "js/dust/**/*js", "js/core/**/*js"],  
+		  
+		 'min/exi.js' 		                : [ "js/dust/**/*js", "js/core/**/*js"],  
                  'min/exi.mx.js' 		        : ["js/mx/**/*js"], 
                  'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],
                  'min/exi.test.js' 		        : ["js/test/**/*js"],               				
-				 'min/bower_components.min.js'  : [ 
+		 'min/bower_components.min.js'  : [ 
 								                    "bower_components/jquery/dist/jquery.min.js",
                                                     "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
@@ -59,8 +60,8 @@ module.exports = function(grunt) {
 			  files : {
 				   'min/exi.min.js' 		: [				 
 				                   		    'min/exi.js', 
-                                            'min/exi.mx.js',
-                                            'min/exi.test.js',
+						                    'min/exi.mx.js',
+						                    'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
 				                   		   ],
                    'min/exi.saxs.min.js' 		: [				 
