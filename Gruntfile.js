@@ -32,7 +32,7 @@ module.exports = function(grunt) {
                  'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],
                  'min/exi.test.js' 		        : ["js/test/**/*js"],               				
 		 'min/bower_components.min.js'  : [ 
-								                    "bower_components/jquery/dist/jquery.min.js",
+						    "bower_components/jquery/dist/jquery.min.js",
                                                     "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
                                                     "bower_components/dustjs-linkedin/dist/dust-full.min.js",
