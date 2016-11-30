@@ -18,6 +18,8 @@ function LoadSampleChangerView (args) {
         }
     };
 
+    this.sampleChangerWidget = new FlexHCDWidget({});
+    
     this.warningRows = [];
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
@@ -41,6 +43,11 @@ function LoadSampleChangerView (args) {
         if (row) {
             if (_this.selectedPuck){
                 _this.deselectPuck();
+            }
+            else{
+                $.notify("Click on a sample changer location to place the dewar", "info");
+                _this.sampleChangerWidget.blink();
+                
             }
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
@@ -200,14 +207,14 @@ LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChanger
         radius : this.widgetRadius,
         isLoading : false
     };
-    var sampleChangerWidget = new FlexHCDWidget(data);
+    this.sampleChangerWidget = new FlexHCDWidget(data);
     if (sampleChangerName == "SC3") {
-        sampleChangerWidget = new SC3Widget(data);
+        this.sampleChangerWidget = new SC3Widget(data);
     } else if (sampleChangerName == "RoboDiff") {
-        sampleChangerWidget = new RoboDiffWidget(data);
+        this.sampleChangerWidget = new RoboDiffWidget(data);
     }
 
-    return sampleChangerWidget;
+    return this.sampleChangerWidget;
 };
 
 /**
@@ -226,35 +233,36 @@ LoadSampleChangerView.prototype.load = function (containers) {
     if (containers) {
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-            //if (container.sampleCount > 0){
-                var sampleChangerLocation = container.sampleChangerLocation;
-                if (sampleChangerLocation != "" && sampleChangerLocation != null){
-                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
-                    if (puckId) {
-                        filledContainers[container.containerId] = puckId;
-                        var puck = this.sampleChangerWidget.findPuckById(puckId);
-                        if (puck.capacity != container.capacity){
-                            this.warningRows.push(container.containerId);
-                        }
-                    } else {
+
+            var sampleChangerLocation = container.sampleChangerLocation;
+            if (sampleChangerLocation != "" && sampleChangerLocation != null){
+                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
+                if (puckId) {
+                    var puck = this.sampleChangerWidget.findPuckById(puckId);
+                    if (puck.capacity != container.capacity){
                         this.warningRows.push(container.containerId);
+                    }
+                    if (container.sampleCount == 0) {
+                        puck.containerId = container.containerId;
+                        puck.isEmpty = false;
+                    } else {
+                        filledContainers[container.containerId] = puckId;
                     }
                 } else {
                     this.warningRows.push(container.containerId);
                 }
-           // }
+
+            } else {
+                this.warningRows.push(container.containerId);
+            }
+
         }
         
         
         if (!_.isEmpty(filledContainers)){
             var onSuccess = function (sender, samples) {
                 var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
-                if (errorPucks.length > 0){
-                    // for (index in errorPucks) {
-                    //     var puck = errorPucks[index];
-                    //     $("#" + puck.id).addClass("puck-error");
-                    // }
-                } else {
+                if (errorPucks.length == 0){
                     _this.sampleChangerWidget.removeClassToAllPucks("puck-error");
                 }
             }

@@ -15,6 +15,7 @@ function SampleChangerWidget (args) {
 	this.onPuckSelected = new Event(this);
 	this.sampleChangerCapacity = 0; //This is set in each sample changer type
 
+    this.data = {};
 	if (args) {
 		if (args.radius){
 			this.radius = args.radius;
@@ -24,6 +25,15 @@ function SampleChangerWidget (args) {
 		}
 	}
 };
+
+/**
+* It blinks the sample changer by fading IN and OUT
+*
+* @method blink` 
+*/
+SampleChangerWidget.prototype.blink = function () {
+    $('#' + this.id).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+}
 
 /**
 * Create certain types of pucks following a circular path
@@ -89,7 +99,7 @@ SampleChangerWidget.prototype.getPanel = function () {
 		    layout:'absolute',
             items : [
 						{
-							html : this.getStructure(),
+							html : this.getStructure(this.data),
 							frame: false,
 							border: false,
 							bodyStyle: 'background:transparent;'
@@ -181,9 +191,10 @@ SampleChangerWidget.prototype.load = function (data) {
 *
 * @method getStructure
 */
-SampleChangerWidget.prototype.getStructure = function () {
+SampleChangerWidget.prototype.getStructure = function (data) {
 	var html = "";
-	dust.render("structure.sampleChanger.template", this.data, function(err, out){
+    
+	dust.render("structure.sampleChanger.template", data, function(err, out){
 		html = out;
 	});
 	

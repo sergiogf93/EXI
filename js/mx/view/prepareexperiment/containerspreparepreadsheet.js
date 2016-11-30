@@ -237,35 +237,35 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     if (typeof(Storage) != "undefined"){
         var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
     }
-    var emptyDewars = false;
+    // var emptyDewars = false;
     //Parse data
     for (dewar in dewars) {
-        if (dewars[dewar].sampleCount > 0){
-            var beamlineName = dewars[dewar].beamlineName;
-            if (preSelectedBeamline) {
-                beamlineName = preSelectedBeamline;
-            }
-            var containerType = "Unipuck";
-            if (dewars[dewar].capacity){
-                if (dewars[dewar].capacity == 10) {
-                    containerType = "Spinepuck";
-                }
-            }
-            data.push({
-                shippingName : dewars[dewar].shippingName,
-                barCode : dewars[dewar].barCode,
-                containerCode : dewars[dewar].containerCode,
-                containerType : containerType,
-                sampleCount : dewars[dewar].sampleCount,
-                beamlineName : beamlineName,
-                sampleChangerLocation : dewars[dewar].sampleChangerLocation,
-                dewarId : dewars[dewar].dewarId,
-                containerId : dewars[dewar].containerId,
-                capacity : dewars[dewar].capacity
-            });
-        } else {
-            emptyDewars = true;
+        // if (dewars[dewar].sampleCount > 0){
+        var beamlineName = dewars[dewar].beamlineName;
+        if (preSelectedBeamline) {
+            beamlineName = preSelectedBeamline;
         }
+        var containerType = "Unipuck";
+        if (dewars[dewar].capacity){
+            if (dewars[dewar].capacity == 10) {
+                containerType = "Spinepuck";
+            }
+        }
+        data.push({
+            shippingName : dewars[dewar].shippingName,
+            barCode : dewars[dewar].barCode,
+            containerCode : dewars[dewar].containerCode,
+            containerType : containerType,
+            sampleCount : dewars[dewar].sampleCount,
+            beamlineName : beamlineName,
+            sampleChangerLocation : dewars[dewar].sampleChangerLocation,
+            dewarId : dewars[dewar].dewarId,
+            containerId : dewars[dewar].containerId,
+            capacity : dewars[dewar].capacity
+        });
+        // } else {
+        //     emptyDewars = true;
+        // }
     }
 
     // if (emptyDewars){
