@@ -226,7 +226,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
     if (containers) {
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-            if (container.sampleCount > 0){
+            //if (container.sampleCount > 0){
                 var sampleChangerLocation = container.sampleChangerLocation;
                 if (sampleChangerLocation != "" && sampleChangerLocation != null){
                     var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
@@ -242,7 +242,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
                 } else {
                     this.warningRows.push(container.containerId);
                 }
-            }
+           // }
         }
         
         
