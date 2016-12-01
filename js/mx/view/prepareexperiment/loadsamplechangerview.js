@@ -18,6 +18,7 @@ function LoadSampleChangerView (args) {
         }
     };
 
+    this.selectedRowItem = null;
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
@@ -36,7 +37,8 @@ function LoadSampleChangerView (args) {
         }
     }
 
-    this.containerListEditor.onSelectRow.attach(function(sender, row){
+    this.containerListEditor.onSelectRow.attach(function(sender, data){
+        var row = data.record;
         if (row) {
             if (_this.selectedPuck){
                 _this.deselectPuck();
@@ -77,6 +79,7 @@ function LoadSampleChangerView (args) {
 
 LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     this.containerListEditor.panel.getSelectionModel().select(row);
+    this.selectedRowItem = $('.x-grid-item-selected')[0];
     this.selectedContainerId = row.get('containerId');
     this.selectedContainerCapacity = row.get('capacity');
     this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
@@ -103,6 +106,8 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     if (this.selectedPuck) {
         this.sampleChangerWidget.enablePuck(this.selectedPuck);
     }
+
+    $("#" + this.selectedRowItem.id).addClass("selected-row");
 };
 
 /**
@@ -141,6 +146,8 @@ LoadSampleChangerView.prototype.deselectRow = function () {
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
     this.sampleChangerWidget.enableAllPucks();
+    $("#" + this.selectedRowItem.id).removeClass("selected-row");
+    this.selectedRowItem = null;
 }
 
 /**

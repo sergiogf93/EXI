@@ -37,13 +37,9 @@ img.border-img {
 	pointer-events: none !important;
 }
 
-.x-grid-item-focused {
-    background-color: #e2eff8 !important;
-}
-
-.x-grid-item-selected {
+.selected-row .x-grid-cell { 
     background-color: #c1ddf1 !important;
-}
+} 
 
 .warning-row .x-grid-cell { 
     background-color: #ffeaa5; 

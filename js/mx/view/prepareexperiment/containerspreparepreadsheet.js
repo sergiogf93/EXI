@@ -133,7 +133,8 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 header: 'Sample Changer Location',
                 dataIndex: 'sampleChangerLocation',
                 flex: 1,
-                type: 'text'
+                type: 'text',
+                tdCls: 'scl-cell'
             }       
         ],
         viewConfig: {
@@ -163,8 +164,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify(record);  
-                debugger           
+                _this.onSelectRow.notify({record : record, item : item});             
             }
            
 
