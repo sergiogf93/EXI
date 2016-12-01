@@ -18,7 +18,6 @@ function LoadSampleChangerView (args) {
         }
     };
 
-    this.warningRows = [];
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
@@ -220,7 +219,6 @@ LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
 
     this.sampleChangerWidget.emptyAllPucks();
-    this.warningRows = [];
     var filledContainers = {};
 
     if (containers) {
@@ -232,7 +230,6 @@ LoadSampleChangerView.prototype.load = function (containers) {
                 if (puckId) {
                     var puck = this.sampleChangerWidget.findPuckById(puckId);
                     if (puck.capacity != container.capacity){
-                        this.warningRows.push(container.containerId);
                     }
                     if (container.sampleCount == 0) {
                         puck.containerId = container.containerId;
@@ -240,11 +237,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
                     } else {
                         filledContainers[container.containerId] = puckId;
                     }
-                } else {
-                    this.warningRows.push(container.containerId);
                 }
-            } else {
-                this.warningRows.push(container.containerId);
             }
         }
         

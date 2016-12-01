@@ -163,7 +163,8 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify(record);             
+                _this.onSelectRow.notify(record);  
+                debugger           
             }
            
 
@@ -308,9 +309,9 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
 /**
 * Returns the row with the given containerId
 *
-* @method getRowByContainerId
+* @method getRowsByContainerId
 * @param {Integer} containerId The container Id of the record to be returned
-* @return The row with the given containerId
+* @return The rows with the given containerId
 */
 ContainerPrepareSpreadSheet.prototype.getRowsByContainerId = function (containerId) {
     var recordsByContainerId = _.filter(this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
