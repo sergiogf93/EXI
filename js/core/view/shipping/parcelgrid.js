@@ -75,6 +75,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			};			
 			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
     }
+
 	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
 	for ( var i in this.dewars) {
 		var parcelPanel = new ParcelPanel({
@@ -153,7 +154,7 @@ ParcelGrid.prototype.getPanel = function() {
 		items : [
 					{
 						xtype : 'label',
-						text : 'Content (* Parcels)',
+						text : 'Content (0 Parcels)',
 						id : this.id + "-label"
 					},
 					_this._getTopButtons()
