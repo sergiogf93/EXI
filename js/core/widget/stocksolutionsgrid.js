@@ -78,7 +78,7 @@ StockSolutionsGrid.prototype.load = function (stockSolutions) {
     var data = [];
     for (var i=0 ; i < stockSolutions.length ; i++) {
         data.push({
-            acronym         : stockSolutions[i].name,
+            acronym         : EXI.proposalManager.getMacromoleculeById(stockSolutions[i].macromoleculeId).acronym,
             buffer          : EXI.proposalManager.getBufferById(stockSolutions[i].bufferId).acronym,
             concentration   : stockSolutions[i].concentration,
             volume          : stockSolutions[i].volume,

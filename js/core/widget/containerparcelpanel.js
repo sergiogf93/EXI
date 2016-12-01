@@ -11,17 +11,18 @@ function ContainerParcelPanel(args) {
     this.containerId = 0;
     this.shippingId = 0;
     this.withoutCollection = true;
-    this.code = "";
     this.type = "Puck";
     this.data = {puckType : "Unipuck", 
                 mainRadius : this.height*0.9/2, 
                 xMargin : this.width/2 - this.height*0.9/2, 
-                yMargin : 2.5, 
+                yMargin : 2.5,
+                code : "",
                 enableMouseOver : true,
                 enableClick : true,
-                enableMainClick : true
+                enableMainClick : true,
     };
     this.width = 2*this.data.mainRadius + 20;
+    this.container = new ContainerWidget(this.data);
 
 	if (args != null) {
         if (args.height != null) {
@@ -41,7 +42,7 @@ function ContainerParcelPanel(args) {
 			this.shippingId = args.shippingId;
 		}
         if (args.code != null) {
-			this.code = args.code;
+            this.data.code = args.code;
 		}
         if (args.type != null) {
 			this.type = args.type;
@@ -54,7 +55,6 @@ function ContainerParcelPanel(args) {
 	}
     
     this.onContainerRemoved = new Event(this);
-    this.onContainerSaved = new Event(this);
 	
 };
 
@@ -69,10 +69,13 @@ ContainerParcelPanel.prototype.getPanel = function () {
     this.container = new ContainerWidget(this.data);
     if (this.type == "Puck"){
         this.container = new PuckWidgetContainer(this.data);
+    } else if (this.type == "StockSolution") {
+        this.data.stockSolutionId = this.containerId;
+        this.container= new StockSolutionContainer(this.data);
     }
 
     this.container.onClick.attach(function (sender, id) {
-        var code = _this.code;
+        var code = _this.data.code;
         if (code == "") {
             code = "-";
         }
@@ -91,7 +94,11 @@ ContainerParcelPanel.prototype.getPanel = function () {
             fn: function(buttonValue, inputText, showConfig) {
                 switch (buttonValue) {
                     case "yes":
-                        location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";                            
+                        if (_this.type == "StockSolution") {
+                            location.href = "#/stocksolution/" + _this.containerId + "/main";                            
+                        } else {
+                            location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";                            
+                        }
                         break;
                     case "no":
                         _this.removeButtonClicked();
@@ -119,14 +126,14 @@ ContainerParcelPanel.prototype.getPanel = function () {
                 ]
 	});
 
-    this.panel.on('boxready', function() {
-        $("#" + _this.id + "-edit-button").click(function () {
-            location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";
-        });
-        $("#" + _this.id + "-remove-button").click(function(){
-            _this.removeButtonClicked();
-        });
-    });
+    // this.panel.on('boxready', function() {
+    //     $("#" + _this.id + "-edit-button").click(function () {
+    //         location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";
+    //     });
+    //     $("#" + _this.id + "-remove-button").click(function(){
+    //         _this.removeButtonClicked();
+    //     });
+    // });
 
     return this.panel;
 };
@@ -158,15 +165,18 @@ ContainerParcelPanel.prototype.load = function (samples) {
 * @return 
 */
 ContainerParcelPanel.prototype.removePuck = function() {
-	var _this = this;
-	this.panel.setLoading();
-	var onSuccess = function(sender, data){
-		_this.panel.setLoading(false);
-        _this.onContainerRemoved.notify(_this.containerId);
-	};
-	var containerId = this.containerId;
-	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
-	
+    this.panel.setLoading();
+    if (this.type == "StockSolution") {
+        this.onContainerRemoved.notify(this.containerId);
+    } else {
+        var _this = this;
+        var onSuccess = function(sender, data){
+            _this.panel.setLoading(false);
+            _this.onContainerRemoved.notify(_this.containerId);
+        };
+        var containerId = this.containerId;
+        EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
+    }
 };
 
 ContainerParcelPanel.prototype.removeButtonClicked = function () {
@@ -178,7 +188,7 @@ ContainerParcelPanel.prototype.removeButtonClicked = function () {
     }
     Ext.MessageBox.show({
         title:'Remove',
-        msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
+        msg: 'Removing a container from this parcel will remove also its content. <br />Are you sure you want to continue?',
         buttons: Ext.MessageBox.YESNO,
         fn: showResult,
         animateTarget: 'mb4',

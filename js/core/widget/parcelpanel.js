@@ -15,6 +15,7 @@ function ParcelPanel(args) {
 	this.containersParcelWidth = 2*this.containersPanelHeight*0.9/2 + 20;
 	// this.containersParcelWidth = 2*this.containersPanelHeight*0.2 + 20;
 	this.shippingId = 0;
+	this.containersPanel = null;
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -112,9 +113,10 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 		if (dewar.containerVOs != null){
 
 			this.containersPanel.removeAll();
+			var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewar.dewarId);
 
 			var maxNumberForRow = Math.floor(this.containersPanel.width/this.containersParcelWidth);
-			var rows = Math.ceil(this.dewar.containerVOs.length/maxNumberForRow);
+			var rows = Math.ceil((this.dewar.containerVOs.length + stockSolutions.length)/maxNumberForRow);
 			var containerRows = [];
 			for (var i = 0 ; i < rows ; i++) {
 				var containerRow = Ext.create('Ext.panel.Panel', {
@@ -142,21 +144,34 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
 					_this.renderPucks(_this.dewar);
 				});
-				containerParcelPanel.onContainerSaved.attach(function (sender, containerVO) {
-					_.remove(_this.dewar.containerVOs, {containerId: containerVO.containerId});
-					_this.dewar.containerVOs.push(containerVO);
-					_this.load(_this.dewar);
-				});
 				containerPanelsMap[container.containerId] = containerParcelPanel;
 				containerIds.push(container.containerId);
 				
 				containerRows[Math.floor(i/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
 			
-			/**  */
-			var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewar.dewarId);
 			for (var i = 0; i< stockSolutions.length; i++){
-					console.log(stockSolutions[i]);
+				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, code : stockSolutions[i].name});	
+				containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
+				containerIds.push(stockSolutions[i].boxId);
+				containerParcelPanel.onContainerRemoved.attach(function (sender, stockSolutionId) {
+					var stockSolution = EXI.proposalManager.getStockSolutionById(stockSolutionId);
+					stockSolution.boxId = null;
+
+					var onSuccess = function(sender, container){
+
+						EXI.proposalManager.onActiveProposalChanged.attach(function(){
+							_this.renderPucks(_this.dewar);
+						});
+						
+						EXI.proposalManager.get(true);
+						
+					};
+					
+					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
+				});
+
+				containerRows[Math.floor((i + dewar.containerVOs.length)/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
 
 			if (!_.isEmpty(containerPanelsMap)) {
@@ -191,14 +206,20 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 */
 ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	var _this = this;
-	
+	this.containersPanel.setLoading();
 	if (containerVO.containerType == "STOCK SOLUTION"){
 		var stockSolution = EXI.proposalManager.getStockSolutionById(containerVO.data.stockSolutionId);
 		stockSolution.boxId = this.dewar.dewarId;
 		stockSolution.name  = containerVO.code;
 		
 		var onSuccess = function(sender, container){
-			
+
+			EXI.proposalManager.onActiveProposalChanged.attach(function(){
+				_this.containersPanel.setLoading(false);
+				_this.renderPucks(_this.dewar);
+			});
+
+			EXI.proposalManager.get(true);
 		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
@@ -208,9 +229,11 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 			_this.dewar.containerVOs.push(container);
 			
 			var onSaveSuccess = function (sender) {
+				_this.containersPanel.setLoading(false);				
 				_this.renderPucks(_this.dewar);
 			}
 			var onError = function(sender,error) {
+				_this.containersPanel.setLoading(false);				
 				EXI.setError(error.responseText);
 				_this.renderPucks(_this.dewar);
 			};
