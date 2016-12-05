@@ -1,5 +1,5 @@
 <div id="{.id}-div">
-	<svg id="{.id}-svg"  height="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" width="{@math key="{mainRadius}" method="multiply" operand="2.2" /}">
+	<svg id="{.id}-svg"  height="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" width="{@math key="{mainRadius}" method="multiply" operand="2.2" /}" style="overflow:visible">
 		<defs>
 		
 			<radialGradient id="errorGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">

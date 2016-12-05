@@ -6,6 +6,9 @@
 * @constructor
 */
 function ParcelPanel(args) {
+	var _this = this;
+	
+	this.test="A";
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
@@ -39,6 +42,7 @@ function ParcelPanel(args) {
 	}
 	
 	this.onSavedClick = new Event(this);
+
 }
 
 ParcelPanel.prototype.load = function(dewar) {
@@ -108,7 +112,8 @@ ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
 
 ParcelPanel.prototype.renderPucks = function (dewar) {
 	var _this = this;
-	
+
+	this.containersPanel.setLoading(false);					
 	if (dewar != null){
 		if (dewar.containerVOs != null){
 
@@ -151,6 +156,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			}
 			
 			for (var i = 0; i< stockSolutions.length; i++){
+				$('#hoveringTooltipDiv-' + stockSolutions[i].stockSolutionId).remove();
 				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, code : stockSolutions[i].name});	
 				containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
@@ -159,18 +165,13 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 					stockSolution.boxId = null;
 
 					var onSuccess = function(sender, container){
-
-						EXI.proposalManager.onActiveProposalChanged.attach(function(){
-							_this.renderPucks(_this.dewar);
-						});
-						
 						EXI.proposalManager.get(true);
-						
+						_this.renderPucks(_this.dewar);
 					};
 					
 					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
 				});
-
+				
 				containerRows[Math.floor((i + dewar.containerVOs.length)/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
 
@@ -210,30 +211,25 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	if (containerVO.containerType == "STOCK SOLUTION"){
 		var stockSolution = EXI.proposalManager.getStockSolutionById(containerVO.data.stockSolutionId);
 		stockSolution.boxId = this.dewar.dewarId;
-		stockSolution.name  = containerVO.code;
-		
+		if (containerVO.code != "") {
+			stockSolution.name  = containerVO.code;
+		}
 		var onSuccess = function(sender, container){
-
-			EXI.proposalManager.onActiveProposalChanged.attach(function(){
-				_this.containersPanel.setLoading(false);
-				_this.renderPucks(_this.dewar);
-			});
-
 			EXI.proposalManager.get(true);
+			_this.renderPucks(_this.dewar);
 		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.stockSolution.saveStockSolution(stockSolution);
 	} else {
 		var onSuccess = function(sender, container){
 			container.code = containerVO.code;
+			container.sampleVOs = [];
 			_this.dewar.containerVOs.push(container);
 			
 			var onSaveSuccess = function (sender) {
-				_this.containersPanel.setLoading(false);				
 				_this.renderPucks(_this.dewar);
 			}
 			var onError = function(sender,error) {
-				_this.containersPanel.setLoading(false);				
 				EXI.setError(error.responseText);
 				_this.renderPucks(_this.dewar);
 			};
@@ -300,7 +296,7 @@ ParcelPanel.prototype.showAddContainerForm = function() {
 
 	addContainerForm.onSave.attach(function(sender,container){
 		_this.addContainerToDewar(container);
-		_this.renderPucks(_this.dewar);
+		// _this.renderPucks(_this.dewar);
 		window.close();
 	})
 

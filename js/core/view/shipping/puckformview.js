@@ -44,7 +44,11 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
         _this.puck = puck;
         if (puck != null){
             Ext.getCmp(_this.id + "puck_name").setValue(_this.puck.code);
-            _this.capacityCombo.setValue(_this.puck.capacity);
+			if (_this.puck.capacity){
+            	_this.capacityCombo.setValue(_this.puck.capacity);
+			} else {
+				$.notify("ERROR: The capacity of the container is not defined.", "error");
+			}
             Ext.getCmp(_this.id + "puck_beamline").setValue(_this.puck.beamlineLocation);
             Ext.getCmp(_this.id + "puck_sampleChangerLocation").setValue(_this.puck.sampleChangerLocation);
             Ext.getCmp(_this.id + "puck_status").setValue(_this.puck.containerStatus);                
@@ -79,7 +83,7 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
 PuckFormView.prototype.getPanel = function() {
 	var _this =this;
 
-	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250});
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
 		_this.containerTypeChanged(capacity);

@@ -4,6 +4,14 @@ function ContainerTypeComboBox(args) {
     this.label = "Choose Container Type:";
     this.labelWidth = 200;
     this.width = 500;
+    this.showStockSolution = true;
+
+    this.data = [
+                    {"type":"UNIPUCK", "capacity":16},
+                    {"type":"SPINE", "capacity":10},
+                    {"type":"PLATE", "capacity":96},
+                    {"type":"OTHER", "capacity":1}
+                ]
 
     if (args) {
         if (args.label) {
@@ -15,15 +23,14 @@ function ContainerTypeComboBox(args) {
         if (args.width) {
             this.width = args.width;
         }
+        if (args.showStockSolution != null) {
+            this.showStockSolution = args.showStockSolution;
+        }
     }
 
-    this.data = [
-                    {"type":"UNIPUCK", "capacity":16},
-                    {"type":"SPINE", "capacity":10},
-                    {"type":"PLATE", "capacity":96},
-                    {"type":"OTHER", "capacity":1},
-                    {"type":"STOCK SOLUTION"}
-                ]
+    if (this.showStockSolution) {
+        this.data.push({"type":"STOCK SOLUTION"});
+    }
 
     this.onSelected = new Event(this);
 }

@@ -8,7 +8,11 @@ function StockSolutionContainer(args) {
                             mainRadius  	: 50,
                             width       	: 100,
                             height      	: 100,
-                            r           	: 20,
+                            imgH			: 42,
+                            imgW			: 42,
+							margin			: 15,
+							stockId			: 0,
+							// rInner			: 10,
 							enableMainClick : false,
                             code            : "",
                             enableClick     : false
@@ -31,7 +35,9 @@ function StockSolutionContainer(args) {
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
 			this.templateData.height = 2*args.mainRadius;
-			this.templateData.r = args.mainRadius/5;
+			this.templateData.imgH = this.templateData.height*0.7;
+			this.templateData.imgW = this.templateData.width*0.7;
+			this.templateData.margin = (this.templateData.width - this.templateData.imgW)*0.5;
 		}
         if (args.code) {
             this.templateData.code = args.code;
@@ -44,6 +50,7 @@ function StockSolutionContainer(args) {
             var stockSolution = EXI.proposalManager.getStockSolutionById(this.stockSolutionId);
             this.templateData.macromoleculeAcronym = EXI.proposalManager.getMacromoleculeById(stockSolution.macromoleculeId).acronym;
             this.templateData.buffer = EXI.proposalManager.getBufferById(stockSolution.bufferId).acronym;
+            this.templateData.stockId = this.stockSolutionId;
         }
 	}
 
@@ -64,7 +71,6 @@ StockSolutionContainer.prototype.getPanel = function () {
 		    frame: false,
 			border: false,
 			bodyStyle: 'background:transparent;',
-            cls : 'border-grid',
 		    
             items : [
 						{
@@ -81,6 +87,9 @@ StockSolutionContainer.prototype.getPanel = function () {
 			$("#" + _this.id).unbind('click').click(function(sender){
 				_this.onClick.notify(sender.target.id);
 			});
+		}
+		if (_this.templateData.height < 40){
+			_this.setOnMouseOverEvent();
 		}
     });
 	
@@ -99,6 +108,11 @@ StockSolutionContainer.prototype.loadSamples = function (samples) {
 
 StockSolutionContainer.prototype.getHTML = function (samples) {
 	var html = "";
+	if (this.templateData.height < 40) {
+		this.templateData.fillPanel = false;
+	} else {
+		this.templateData.fillPanel = true;
+	}
 	dust.render("stock.solution.container.template", this.templateData, function(err, out){
 		html = out;
 	});
@@ -106,3 +120,33 @@ StockSolutionContainer.prototype.getHTML = function (samples) {
 	return html;
 };
 
+StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
+	var _this = this;
+	
+	$("#" + this.id).unbind('mouseover').mouseover(function(sender){
+		var id = sender.currentTarget.id;
+		$("#" + id).addClass("stock-solution-focus");
+		
+		// TOOLTIP
+		var tooltipHtml = "";
+		dust.render("stock.solution.tooltip.template", _this.templateData, function(err, out) {
+			tooltipHtml = out;
+		});
+		$('body').append(tooltipHtml);
+		$('#hoveringTooltipDiv-' + _this.stockSolutionId).css({
+			"top" : $(this).offset().top,
+			"left" : $(this).offset().left + _this.templateData.width
+		});
+
+	});
+	
+	$("#" + this.id).unbind('mouseout').mouseout(function(sender){
+		var stockId = sender.currentTarget.id;
+		$("#" + stockId).removeClass("stock-solution-focus");
+
+		// TOOLTIP
+		$('#hoveringTooltipDiv-' + _this.stockSolutionId).remove();
+		
+	});
+
+}
