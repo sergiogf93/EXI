@@ -87,3 +87,7 @@ ContainerTypeComboBox.prototype.setValue = function (capacity) {
     var type = this.getTypeByCapacity(capacity);
     this.panel.setValue(type);
 };
+
+ContainerTypeComboBox.prototype.disable = function () {
+    this.panel.disable();
+}

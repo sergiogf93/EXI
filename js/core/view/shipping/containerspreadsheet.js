@@ -331,20 +331,20 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  var _this = this;
 	  this.spreadSheet = new Handsontable(container, {
-		beforeChange: function (changes, source) {
-		      lastChange = changes;
-		      
-		},
-	    data: this.getSamplesData(puck),
-	 
-	    height : this.height,
-	    width : this.width,
-	    manualColumnResize: true,
-	    colWidths: this.getHeaderWidth(),
-	    colHeaders: this.getHeaderText(),
-	    stretchH: 'last',
-	    columns: this.getColumns()
-	  });
+				beforeChange: function (changes, source) {
+					lastChange = changes;
+					
+				},
+				data: this.getSamplesData(puck),
+			
+				height : this.height,
+				width : this.width,
+				manualColumnResize: true,
+				colWidths: this.getHeaderWidth(),
+				colHeaders: this.getHeaderText(),
+				stretchH: 'last',
+				columns: this.getColumns()
+		});
 
 	  
 	 /*this.spreadSheet.updateSettings({

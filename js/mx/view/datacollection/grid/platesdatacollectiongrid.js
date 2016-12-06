@@ -129,6 +129,7 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                                                                                 dataCollectionIds : dataCollectionIds
                                                                             });
                             }
+                            debugger
                             tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel());
                         }
                     }

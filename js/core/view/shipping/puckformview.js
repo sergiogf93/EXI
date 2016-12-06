@@ -27,6 +27,12 @@ function PuckFormView(args) {
 	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
 		
 	});*/
+
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false});
+	this.capacityCombo.onSelected.attach(function (sender, data) {
+		var capacity = data.capacity;
+		_this.containerTypeChanged(capacity);
+	});
 	
 	this.onRemoved = new Event(this);
 	this.onSaved = new Event(this);
@@ -58,7 +64,9 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
             var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
             if (withoutCollection.length == samples.length) {
                 Ext.getCmp(_this.id + "_save_button").enable();
-            }
+            } else {
+				_this.capacityCombo.disable();
+			}
             if (samples.length > 0) {
                 _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
             } else {
@@ -82,12 +90,6 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
 
 PuckFormView.prototype.getPanel = function() {
 	var _this =this;
-
-	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false});
-	this.capacityCombo.onSelected.attach(function (sender, data) {
-		var capacity = data.capacity;
-		_this.containerTypeChanged(capacity);
-	});
 
 	this.panel = Ext.create('Ext.panel.Panel', {
 		buttons : this.getToolBar(),
@@ -265,7 +267,11 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	else{
 		data = data.slice(0, capacity);
 	}
+	// debugger
+	// this.panel.remove(this.containerSpreadSheet.panel);
+	// this.panel.insert(this.containerSpreadSheet.getPanel());
 	this.containerSpreadSheet.spreadSheet.loadData(data);
+	this.save();
 	// this.load(this.containerId,this.shippingId);
 };
 
