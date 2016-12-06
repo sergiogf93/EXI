@@ -80,7 +80,10 @@ function LoadSampleChangerView (args) {
 LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     this.containerListEditor.panel.getSelectionModel().select(row);
     this.selectedRowItem = $('.x-grid-item-selected')[0];
-    this.selectedContainerId = row.get('containerId');
+    this.selectedContainerId = -1;
+    if (row.get('containerId')){
+        this.selectedContainerId = row.get('containerId');
+    }
     this.selectedContainerCapacity = row.get('capacity');
     this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
 
