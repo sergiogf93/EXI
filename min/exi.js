@@ -2867,6 +2867,9 @@ function MainView(args) {
 
 }
 
+MainView.prototype.onBoxReady = function() {
+};
+
 MainView.prototype.getContainer = function() {
 	return this.container;
 };
@@ -2885,6 +2888,13 @@ MainView.prototype.getPanel = function() {
 		bodyStyle: this.bodyStyle, 
 		items :[this.getContainer() ]
 	});
+    var _this = this;
+    this.panel.on('boxready', function() {
+        if (_this.onBoxReady){
+            _this.onBoxReady();
+        }
+    });
+    
 	return this.panel;
 };
 function AddressMainView() {
