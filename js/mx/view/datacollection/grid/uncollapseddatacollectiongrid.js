@@ -277,7 +277,7 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                     puck = new SpinePuckWidget(attributesContainerWidget);
                 }
                 
-                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel());
+                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                 
                 var onSuccess = function(sender, samples){
                     if (samples){
