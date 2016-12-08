@@ -2,12 +2,20 @@ function ContainerSpreadSheet(args){
 	this.id = BUI.id();
 	this.height = 380;
 	this.width = 500;
+	this.containerType = "OTHER";
+	this.renderCrystalFormColumn = false;
 	if (args != null) {
 		if (args.height != null) {
 			this.height = args.height;
 		}
 		if (args.width != null) {
 			this.width = args.width;
+		}
+		if (args.containerType != null) {
+			this.containerType = args.containerType;
+		}
+		if (args.renderCrystalFormColumn != null) {
+			this.renderCrystalFormColumn = args.renderCrystalFormColumn;
 		}
 	}
 	
@@ -31,6 +39,10 @@ ContainerSpreadSheet.prototype.getPanel = function(){
 	});
     return this.panel;
 };
+
+ContainerSpreadSheet.prototype.setLoading = function (bool) {
+	this.panel.setLoading(bool);
+}
 
 
 ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
@@ -93,44 +105,72 @@ ContainerSpreadSheet.prototype.getAcronyms = function() {
 
 
 ContainerSpreadSheet.prototype.getHeader = function() {
-	return  [
-	         { text : '#', 	id: 'position', column : {width : 20}}, 
-	         { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-																						width : 60,
-																						type: 'dropdown',
-																						source: this.getAcronyms()
-																					}
-	         }, 
-	         { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
-	         { text :'Space<br /> Group', id : 'Space Group',column : {
-			        	 													width : 90,
-			        	 													type: 'dropdown',
-			        	 													source: this.getSpaceGroups()
-			         								}
-	         }, 
-	         { text :'Exp.<br /> Type', id : 'Experiment Type', column : {
-							        	 								width : 80,  
-							        	 								type: 'dropdown',
-							        	 								source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
-							         								}
-	         }, 
-	         { text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 45}},  
-	         { text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 45}}, 
-	         { text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 45}}, 
-	         { text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 45}}, 
-	         { text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 45}}, 
-	         { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 60}}, 
-	         { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
-	         { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 60}}, 
-	         { text :'A', id :'Unit cell A', column : {width : 40}}, 
-	         { text :'B', id :'Unit cell B', column : {width : 40}}, 
-	         { text :'C', id : 'Unit cell C', column : {width : 40}}, 
-	         { text :'&#945;', id :'Unit cell Alpha', column : {width : 40}}, 
-	         { text :'&#946;', id :'Unit cell Beta', column : {width : 40}}, 
-	         { text :'&#947;', id :'Unit cell Gamma', column : {width : 40}}, 
-	         { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
-	         { text :'Comments', id :'Comments', column : {width : 45}}
-	         ];
+
+	var header = [];
+	if (this.containerType != "OTHER"){
+		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
+				{ text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
+																							width : 60,
+																							type: 'dropdown',
+																							source: this.getAcronyms()
+																						}
+				}, 
+				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
+				{ text :'Space<br /> Group', id : 'Space Group',column : {
+																				width : 90,
+																				type: 'dropdown',
+																				source: this.getSpaceGroups()
+														}
+				}, 
+				{ text :'Exp.<br /> Type', id : 'Experiment Type', column : {
+																			width : 80,  
+																			type: 'dropdown',
+																			source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
+																		}
+				}, 
+				{ text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 60}},  
+				{ text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
+				{ text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
+				{ text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
+				{ text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
+				{ text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
+				{ text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
+				{ text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
+				{ text :'A', id :'Unit cell A', column : {width : 40}}, 
+				{ text :'B', id :'Unit cell B', column : {width : 40}}, 
+				{ text :'C', id : 'Unit cell C', column : {width : 40}}, 
+				{ text :'&#945;', id :'Unit cell Alpha', column : {width : 40}}, 
+				{ text :'&#946;', id :'Unit cell Beta', column : {width : 40}}, 
+				{ text :'&#947;', id :'Unit cell Gamma', column : {width : 40}}, 
+				{ text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
+				{ text :'Comments', id :'Comments', column : {width : 200}}
+				];
+
+		if (this.renderCrystalFormColumn) {
+			header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: "html"}});
+		}
+	} else {
+		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
+				{ text :'Samplesheet <br />Acronym', id :'Protein Acronym', 	column :  {
+																							width : 100,
+																							type: 'dropdown',
+																							source: this.getAcronyms()
+																						}
+				}, 
+				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
+				{ text :'Comments', id :'Comments', column : {width : 200}}
+				];
+	}
+	
+	return header;
+};
+
+ContainerSpreadSheet.prototype.setRenderCrystalFormColumn = function(bool) {
+	this.renderCrystalFormColumn = bool;
+};
+
+ContainerSpreadSheet.prototype.setContainerType = function(containerType) {
+	this.containerType = containerType;
 };
 
 ContainerSpreadSheet.prototype.getHeaderWidth = function() {
@@ -291,20 +331,20 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  var _this = this;
 	  this.spreadSheet = new Handsontable(container, {
-		beforeChange: function (changes, source) {
-		      lastChange = changes;
-		      
-		},
-	    data: this.getSamplesData(puck),
-	 
-	    height : this.height,
-	    width : this.width,
-	    manualColumnResize: true,
-	    colWidths: this.getHeaderWidth(),
-	    colHeaders: this.getHeaderText(),
-	    stretchH: 'last',
-	    columns: this.getColumns()
-	  });
+				beforeChange: function (changes, source) {
+					lastChange = changes;
+					
+				},
+				data: this.getSamplesData(puck),
+			
+				height : this.height,
+				width : this.width,
+				manualColumnResize: true,
+				colWidths: this.getHeaderWidth(),
+				colHeaders: this.getHeaderText(),
+				stretchH: 'last',
+				columns: this.getColumns()
+		});
 
 	  
 	 /*this.spreadSheet.updateSettings({
@@ -316,3 +356,15 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	
 	
 };
+
+ContainerSpreadSheet.prototype.getData = function () {
+	return this.spreadSheet.getData();
+}
+
+ContainerSpreadSheet.prototype.loadData = function (data) {
+	return this.spreadSheet.loadData(data);
+}
+
+ContainerSpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
+	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
+}

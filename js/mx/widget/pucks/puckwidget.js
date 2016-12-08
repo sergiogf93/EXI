@@ -12,11 +12,11 @@ function PuckWidget(args){
 	this.containerId = 0;
 	this.containerCode = "";
 	this.enableMouseOver = false;
-	this.enableClick = false;
+	this.enableClick = false; //click on cells
+	this.enableMainClick = false; //click on the puck
 	this.initSelected = {};
 	this.isLoading = true;
 	this.capacity = 10;
-	
 	this.isUnipuck = false;
 	this.isEmpty = true;
 	
@@ -42,6 +42,9 @@ function PuckWidget(args){
 		if (args.enableClick != null){
 			this.enableClick = args.enableClick;
 		}
+		if (args.enableMainClick != null){
+			this.enableMainClick = args.enableMainClick;
+		}
 		if (args.initSelected){
 			this.initSelected = args.initSelected;
 		}
@@ -63,6 +66,7 @@ function PuckWidget(args){
 				containerId : this.containerId,
 				containerCode : this.containerCode,
 				enableClick : this.enableClick,
+				enableMainClick : this.enableMainClick,
 				enableMouseOver : this.enableMouseOver,
 				dataCollectionIds : this.dataCollectionIds,
 				isLoading : this.isLoading
@@ -110,7 +114,11 @@ PuckWidget.prototype.getPanel = function () {
 		html = out;
 	});
 	
-	return html;
+	return {
+				html : html,
+				width : 2*this.data.mainRadius + 1,
+				height : 2*this.data.mainRadius + 1
+			};
 };
 
 /**
@@ -139,9 +147,10 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
+		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
-		if (dataCollectionIds != null && dataCollectionIds.length > 0){
+		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
 			state = "COLLECTED";
 		}
 		var selected = false;

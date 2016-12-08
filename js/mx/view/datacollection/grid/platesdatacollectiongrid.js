@@ -94,7 +94,11 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                 if (data.containerIds.length > 0){
                     var pucksPanelHeight = 300;
                     var pucks = {};
+
                     var tree = $("<div ><div id='a' style='display: block;overflow-y: scroll;height:" + (2*pucksPanelHeight)+"px;'>" + html + "</div></div>");
+
+
+
                     for (id in data.containerIds){
                         var containerIdNumber = Number(data.containerIds[id]);
                         var container = _.filter(_this.dataCollectionGroup,{"Container_containerId" : containerIdNumber});
@@ -129,7 +133,8 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                                                                                 dataCollectionIds : dataCollectionIds
                                                                             });
                             }
-                            tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel());
+                            
+                            tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel().html);
                         }
                     }
                     

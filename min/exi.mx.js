@@ -2809,7 +2809,6 @@ DataCollectionGrid.prototype.load = function(dataCollectionGroup){
 };
 
 DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
-    var _this = this;
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
         store: this.store,       
@@ -3744,7 +3743,11 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                 if (data.containerIds.length > 0){
                     var pucksPanelHeight = 300;
                     var pucks = {};
+
                     var tree = $("<div ><div id='a' style='display: block;overflow-y: scroll;height:" + (2*pucksPanelHeight)+"px;'>" + html + "</div></div>");
+
+
+
                     for (id in data.containerIds){
                         var containerIdNumber = Number(data.containerIds[id]);
                         var container = _.filter(_this.dataCollectionGroup,{"Container_containerId" : containerIdNumber});
@@ -3779,7 +3782,8 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                                                                                 dataCollectionIds : dataCollectionIds
                                                                             });
                             }
-                            tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel());
+                            
+                            tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel().html);
                         }
                     }
                     
@@ -4133,7 +4137,7 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                     puck = new SpinePuckWidget(attributesContainerWidget);
                 }
                 
-                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel());
+                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                 
                 var onSuccess = function(sender, samples){
                     if (samples){
@@ -5250,13 +5254,13 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 header: 'Sample Changer Location',
                 dataIndex: 'sampleChangerLocation',
                 flex: 1,
-                type: 'text'
+                type: 'text',
+                tdCls: 'scl-cell'
             }       
         ],
         viewConfig: {
             getRowClass: function(record, index, rowParams, store) {
-                debugger
-                if (record.get('sampleChangerLocation') == "" || record.get('sampleChangerLocation') == " ") {
+                if (record.get('sampleChangerLocation') == "" || record.get('sampleChangerLocation') == " " || record.get('sampleChangerLocation') == null ) {
                     return "warning-row";
                 }
                 for (var i = 0 ; i < _this.dewars.length ; i++){
@@ -5281,7 +5285,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify(record);             
+                _this.onSelectRow.notify({record : record, item : item});             
             }
            
 
@@ -5355,40 +5359,41 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     if (typeof(Storage) != "undefined"){
         var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
     }
-    var emptyDewars = false;
+    var error = false;
     //Parse data
-    for (dewar in dewars) {
-        if (dewars[dewar].sampleCount > 0){
-            var beamlineName = dewars[dewar].beamlineName;
+    for (var i = 0 ; i < dewars.length ; i++) {
+        var dewar = dewars[i];
+        if (dewar.containerId){
+            var beamlineName = dewar.beamlineName;
             if (preSelectedBeamline) {
                 beamlineName = preSelectedBeamline;
             }
             var containerType = "Unipuck";
-            if (dewars[dewar].capacity){
-                if (dewars[dewar].capacity == 10) {
+            if (dewar.capacity){
+                if (dewar.capacity == 10) {
                     containerType = "Spinepuck";
                 }
             }
             data.push({
-                shippingName : dewars[dewar].shippingName,
-                barCode : dewars[dewar].barCode,
-                containerCode : dewars[dewar].containerCode,
+                shippingName : dewar.shippingName,
+                barCode : dewar.barCode,
+                containerCode : dewar.containerCode,
                 containerType : containerType,
-                sampleCount : dewars[dewar].sampleCount,
+                sampleCount : dewar.sampleCount,
                 beamlineName : beamlineName,
-                sampleChangerLocation : dewars[dewar].sampleChangerLocation,
-                dewarId : dewars[dewar].dewarId,
-                containerId : dewars[dewar].containerId,
-                capacity : dewars[dewar].capacity
+                sampleChangerLocation : dewar.sampleChangerLocation,
+                dewarId : dewar.dewarId,
+                containerId : dewar.containerId,
+                capacity : dewar.capacity
             });
         } else {
-            emptyDewars = true;
+            error = true;
         }
     }
 
-    // if (emptyDewars){
-        // $.notify("Warning: Some of the dewars have no samples on them.", "warn");
-    // }
+    if (error){
+        $.notify("Error: error loading the dewars", "error");
+    }
 
     this.store.loadData(data);
 };
@@ -5426,9 +5431,9 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
 /**
 * Returns the row with the given containerId
 *
-* @method getRowByContainerId
+* @method getRowsByContainerId
 * @param {Integer} containerId The container Id of the record to be returned
-* @return The row with the given containerId
+* @return The rows with the given containerId
 */
 ContainerPrepareSpreadSheet.prototype.getRowsByContainerId = function (containerId) {
     var recordsByContainerId = _.filter(this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
@@ -5676,7 +5681,7 @@ function LoadSampleChangerView (args) {
         }
     };
 
-    this.warningRows = [];
+    this.selectedRowItem = null;
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
@@ -5695,7 +5700,8 @@ function LoadSampleChangerView (args) {
         }
     }
 
-    this.containerListEditor.onSelectRow.attach(function(sender, row){
+    this.containerListEditor.onSelectRow.attach(function(sender, data){
+        var row = data.record;
         if (row) {
             if (_this.selectedPuck){
                 _this.deselectPuck();
@@ -5736,7 +5742,11 @@ function LoadSampleChangerView (args) {
 
 LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     this.containerListEditor.panel.getSelectionModel().select(row);
-    this.selectedContainerId = row.get('containerId');
+    this.selectedRowItem = $('.x-grid-item-selected')[0];
+    this.selectedContainerId = -1;
+    if (row.get('containerId')){
+        this.selectedContainerId = row.get('containerId');
+    }
     this.selectedContainerCapacity = row.get('capacity');
     this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
 
@@ -5762,6 +5772,8 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     if (this.selectedPuck) {
         this.sampleChangerWidget.enablePuck(this.selectedPuck);
     }
+
+    $("#" + this.selectedRowItem.id).addClass("selected-row");
 };
 
 /**
@@ -5800,6 +5812,10 @@ LoadSampleChangerView.prototype.deselectRow = function () {
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
     this.sampleChangerWidget.enableAllPucks();
+    if(this.selectedRowItem){
+        $("#" + this.selectedRowItem.id).removeClass("selected-row");
+    }
+    this.selectedRowItem = null;
 }
 
 /**
@@ -5878,27 +5894,24 @@ LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
 
     this.sampleChangerWidget.emptyAllPucks();
-    this.warningRows = [];
     var filledContainers = {};
 
     if (containers) {
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-            if (container.sampleCount > 0){
-                var sampleChangerLocation = container.sampleChangerLocation;
-                if (sampleChangerLocation != ""){
-                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
-                    if (puckId) {
-                        filledContainers[container.containerId] = puckId;
-                        var puck = this.sampleChangerWidget.findPuckById(puckId);
-                        if (puck.capacity != container.capacity){
-                            this.warningRows.push(container.containerId);
-                        }
-                    } else {
-                        this.warningRows.push(container.containerId);
+            var sampleChangerLocation = container.sampleChangerLocation;
+            if (sampleChangerLocation != "" && sampleChangerLocation != null){
+                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
+                if (puckId) {
+                    var puck = this.sampleChangerWidget.findPuckById(puckId);
+                    if (puck.capacity != container.capacity){
                     }
-                } else {
-                    this.warningRows.push(container.containerId);
+                    if (container.sampleCount == 0) {
+                        puck.containerId = container.containerId;
+                        puck.isEmpty = false;
+                    } else {
+                        filledContainers[container.containerId] = puckId;
+                    }
                 }
             }
         }
@@ -5907,12 +5920,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
         if (!_.isEmpty(filledContainers)){
             var onSuccess = function (sender, samples) {
                 var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
-                if (errorPucks.length > 0){
-                    // for (index in errorPucks) {
-                    //     var puck = errorPucks[index];
-                    //     $("#" + puck.id).addClass("puck-error");
-                    // }
-                } else {
+                if (errorPucks.length == 0){
                     _this.sampleChangerWidget.removeClassToAllPucks("puck-error");
                 }
             }
@@ -6006,7 +6014,9 @@ LoadSampleChangerView.prototype.getPanel = function () {
 */
 LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
     this.previewPanelView.clean();
-    this.verticalPanel.remove(this.previewPanelView.panel);
+    if(this.previewPanelView.panel.body){
+        this.verticalPanel.remove(this.previewPanelView.panel);
+    }
 };
 
 /**
@@ -7836,12 +7846,11 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 	for (puckIndex in _.keys(pucksToBeLoaded)) {
 		var puck = this.findPuckById(_.keys(pucksToBeLoaded)[puckIndex]);
 		if (pucksToBeLoaded[puck.id].length <= puck.capacity){
-			var errorSamples = [];
 			var currentDewar = pucksToBeLoaded[puck.id][0].Dewar_dewarId;
 			for (var i = 0 ; i < pucksToBeLoaded[puck.id].length ; i++) {
 				var sample = pucksToBeLoaded[puck.id][i];
 				if (Number(sample.BLSample_location) > puck.capacity) {
-					errorSamples.push(sample);
+					sample.hasError = true;
 					errorPucks = _.union(errorPucks,[puck]);
 					$("#" + puck.id).addClass("puck-error");
 				}
@@ -7849,8 +7858,13 @@ SampleChangerWidget.prototype.loadSamples = function (samples, containerIdsMap) 
 					errorPucks = _.union(errorPucks,[puck]);
 					$("#" + puck.id).addClass("puck-error");
 				}
+				if (sample.BLSample_location == ""){
+					sample.hasError = true;
+					errorPucks = _.union(errorPucks,[puck]);
+					$("#" + puck.id).addClass("puck-error");
+				}
 			}
-			_.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
+			// _.remove(pucksToBeLoaded[puck.id], function (o) {return errorSamples.indexOf(o) >= 0});
 		} else {
 			// $.notify("Capacity Error: Couldn't load correctly the puck at location " + this.convertIdToSampleChangerLocation(puck.id) + ".", "error");
 			puck.containerId = pucksToBeLoaded[puck.id][0].Container_containerId;
@@ -8197,11 +8211,11 @@ function PuckWidget(args){
 	this.containerId = 0;
 	this.containerCode = "";
 	this.enableMouseOver = false;
-	this.enableClick = false;
+	this.enableClick = false; //click on cells
+	this.enableMainClick = false; //click on the puck
 	this.initSelected = {};
 	this.isLoading = true;
 	this.capacity = 10;
-	
 	this.isUnipuck = false;
 	this.isEmpty = true;
 	
@@ -8227,6 +8241,9 @@ function PuckWidget(args){
 		if (args.enableClick != null){
 			this.enableClick = args.enableClick;
 		}
+		if (args.enableMainClick != null){
+			this.enableMainClick = args.enableMainClick;
+		}
 		if (args.initSelected){
 			this.initSelected = args.initSelected;
 		}
@@ -8248,6 +8265,7 @@ function PuckWidget(args){
 				containerId : this.containerId,
 				containerCode : this.containerCode,
 				enableClick : this.enableClick,
+				enableMainClick : this.enableMainClick,
 				enableMouseOver : this.enableMouseOver,
 				dataCollectionIds : this.dataCollectionIds,
 				isLoading : this.isLoading
@@ -8295,7 +8313,11 @@ PuckWidget.prototype.getPanel = function () {
 		html = out;
 	});
 	
-	return html;
+	return {
+				html : html,
+				width : 2*this.data.mainRadius + 1,
+				height : 2*this.data.mainRadius + 1
+			};
 };
 
 /**
@@ -8324,14 +8346,18 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
+		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
-		if (dataCollectionIds != null && dataCollectionIds.length > 0){
+		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
 			state = "COLLECTED";
 		}
 		var selected = false;
 		if (selectedLocation != null){
 			selected = sample.BLSample_location == selectedLocation;
+		}
+		if (sample.BLSample_location == "") {
+			sample.hasError = true;
 		}
 		
 		// Parse data
@@ -8344,7 +8370,8 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 			protein_name : sample.Protein_name,
 			dataCollectionIds : dataCollectionIds,
 			containerId : sample.Container_containerId,
-			containerCode : sample.Container_code
+			containerCode : sample.Container_code,
+			hasError : sample.hasError
 		});
 	}
 	this.load(cells);
@@ -8362,16 +8389,24 @@ PuckWidget.prototype.load = function (data) {
 
 	for (sampleIndex in data){
 		var sample = data[sampleIndex];
-		var id = this.id + "-" + sample.location;
-		var cellIndex = this.findCellIndexById(id);
-		this.data.cells[cellIndex].state = sample.state;
-		this.data.cells[cellIndex].selected = sample.selected;
-		this.data.cells[cellIndex].sample_name = sample.sample_name;
-		this.data.cells[cellIndex].protein_acronym = sample.protein_acronym;
-		this.data.cells[cellIndex].protein_name = sample.protein_name;
-		this.data.cells[cellIndex].containerId = sample.containerId;
-		this.data.cells[cellIndex].containerCode = sample.containerCode;
-		if (sample.state != "EMPTY"){
+		if (!sample.hasError){
+			var id = this.id + "-" + sample.location;
+			var cellIndex = this.findCellIndexById(id);
+			this.data.cells[cellIndex].state = sample.state;
+			this.data.cells[cellIndex].selected = sample.selected;
+			this.data.cells[cellIndex].sample_name = sample.sample_name;
+			this.data.cells[cellIndex].protein_acronym = sample.protein_acronym;
+			this.data.cells[cellIndex].protein_name = sample.protein_name;
+			this.data.cells[cellIndex].containerId = sample.containerId;
+			this.data.cells[cellIndex].containerCode = sample.containerCode;
+			if (sample.state != "EMPTY"){
+				this.containerId = sample.containerId;
+				this.containerCode = sample.containerCode;
+				this.data.containerId = this.containerId;
+				this.data.containerCode = this.containerCode;
+				this.isEmpty = false;
+			}
+		} else {
 			this.containerId = sample.containerId;
 			this.containerCode = sample.containerCode;
 			this.data.containerId = this.containerId;
@@ -8536,16 +8571,16 @@ PuckWidget.prototype.allowAllCells = function () {
 function PuckWidgetContainer(args) {
 	var _this = this;
 	
+	this.onClick = new Event(this);
 	this.mouseOverCell = new Event(this);
 	this.mouseOutCell = new Event(this);
 	
 	this.xMargin = 0;
 	this.yMargin = 0;
+	this.containerId = 0;
+	this.enableMainClick = false;
 	if (args){
 		if (args.puckType) {
-			if (args.puckType == "UniPuck" || args.puckType == "SpinePuck") {
-				debugger
-			}
 			switch (args.puckType) {
 				case "Unipuck":
 					this.puckWidget = new UniPuckWidget(args);
@@ -8563,8 +8598,8 @@ function PuckWidgetContainer(args) {
 		if (args.yMargin){
 			this.yMargin = args.yMargin;
 		}
-		if (args.x) {
-			debugger
+		if (args.enableMainClick != null){
+			this.enableMainClick = args.enableMainClick;
 		}
 	}
 	
@@ -8572,9 +8607,8 @@ function PuckWidgetContainer(args) {
 		this.puckWidget = new SpinePuckWidget(args);
 	}
 	
-	this.puckWidget.onClick.attach(function(sender, cell){
-		
-		
+	this.puckWidget.onClick.attach(function(sender, id){
+		_this.onClick.notify(id);
 	});
 	
 	this.puckWidget.onMouseOver.attach(function(sender, location){
@@ -8602,14 +8636,18 @@ PuckWidgetContainer.prototype.getPanel = function () {
 			bodyStyle: 'background:transparent;',
 		    
             items : [
-						{
-							html : this.puckWidget.getPanel(),
-							width : 2*this.puckWidget.data.mainRadius + 1,
-							height : 2*this.puckWidget.data.mainRadius + 1
-						}
+						this.puckWidget.getPanel()
 			],
 			
 	});
+
+	this.panel.on('boxready', function() {
+        if(_this.enableMainClick) {
+			$("#" + this.id).unbind('click').click(function(sender){
+				_this.onClick.notify(sender.target.id);
+			});
+		}
+    });
 	
 	return this.panel;
 	
@@ -8620,7 +8658,12 @@ PuckWidgetContainer.prototype.load = function (data) {
 }
 
 PuckWidgetContainer.prototype.loadSamples = function (samples) {
-	this.puckWidget.loadSamples(samples);
+	if (samples){
+		if (samples.length > 0){
+			this.containerId = samples[0].Container_containerId; 
+			this.puckWidget.loadSamples(samples);
+		}
+	}
 }
 
 PuckWidgetContainer.prototype.focus = function (location, bool) {
