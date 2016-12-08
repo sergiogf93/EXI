@@ -1376,10 +1376,10 @@ AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
          return ( parseFloat(a.innerShell.rMerge) -  parseFloat(b.innerShell.rMerge));                                       
     }
 
-    /** Sort rmerge < 10 by highest symmetry */
+    /** Sort rmerge < 10 by highest symmetry 
     for (var i = 0; i < minus10Rmerge.length; i++){
         console.log(minus10Rmerge[i][spacegroudFieldName]);
-    }
+    }*/
    
     minus10Rmerge.sort(sortByHighestSymmetry); 
     plus10Rmerge.sort(sortByrMerge); 
@@ -4040,7 +4040,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    
                });
                
-               function getMetrics(phasingStep){                   
+               function getMetrics(phasingStep){  
+                                    
                     if (phasingStep.metric){                        
                             var singleMetric = phasingStep.metric.split(",");
                             var values = phasingStep.statisticsValue.split(",");                            
@@ -4049,6 +4050,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     phasingStep[singleMetric[j].replace(/ /g, '_')] = values[j];                           
                             }
                     } 
+                    if (phasingStep.png){
+                        phasingStep.pngURL = EXI.getDataAdapter().mx.phasing.getPhasingFilesByPhasingProgramAttachmentIdAsImage(phasingStep.png);
+                    }
                     return (phasingStep);                     
                }
                

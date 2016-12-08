@@ -163,7 +163,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    
                });
                
-               function getMetrics(phasingStep){                   
+               function getMetrics(phasingStep){  
+                                    
                     if (phasingStep.metric){                        
                             var singleMetric = phasingStep.metric.split(",");
                             var values = phasingStep.statisticsValue.split(",");                            
@@ -172,6 +173,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     phasingStep[singleMetric[j].replace(/ /g, '_')] = values[j];                           
                             }
                     } 
+                    if (phasingStep.png){
+                        phasingStep.pngURL = EXI.getDataAdapter().mx.phasing.getPhasingFilesByPhasingProgramAttachmentIdAsImage(phasingStep.png);
+                    }
                     return (phasingStep);                     
                }
                

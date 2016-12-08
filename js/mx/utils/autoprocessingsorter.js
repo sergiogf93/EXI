@@ -47,10 +47,10 @@ AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
          return ( parseFloat(a.innerShell.rMerge) -  parseFloat(b.innerShell.rMerge));                                       
     }
 
-    /** Sort rmerge < 10 by highest symmetry */
+    /** Sort rmerge < 10 by highest symmetry 
     for (var i = 0; i < minus10Rmerge.length; i++){
         console.log(minus10Rmerge[i][spacegroudFieldName]);
-    }
+    }*/
    
     minus10Rmerge.sort(sortByHighestSymmetry); 
     plus10Rmerge.sort(sortByrMerge); 
