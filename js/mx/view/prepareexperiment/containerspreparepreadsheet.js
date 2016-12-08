@@ -238,40 +238,41 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     if (typeof(Storage) != "undefined"){
         var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
     }
-    // var emptyDewars = false;
+    var error = false;
     //Parse data
-    for (dewar in dewars) {
-        // if (dewars[dewar].sampleCount > 0){
-        var beamlineName = dewars[dewar].beamlineName;
-        if (preSelectedBeamline) {
-            beamlineName = preSelectedBeamline;
-        }
-        var containerType = "Unipuck";
-        if (dewars[dewar].capacity){
-            if (dewars[dewar].capacity == 10) {
-                containerType = "Spinepuck";
+    for (var i = 0 ; i < dewars.length ; i++) {
+        var dewar = dewars[i];
+        if (dewar.containerId){
+            var beamlineName = dewar.beamlineName;
+            if (preSelectedBeamline) {
+                beamlineName = preSelectedBeamline;
             }
+            var containerType = "Unipuck";
+            if (dewar.capacity){
+                if (dewar.capacity == 10) {
+                    containerType = "Spinepuck";
+                }
+            }
+            data.push({
+                shippingName : dewar.shippingName,
+                barCode : dewar.barCode,
+                containerCode : dewar.containerCode,
+                containerType : containerType,
+                sampleCount : dewar.sampleCount,
+                beamlineName : beamlineName,
+                sampleChangerLocation : dewar.sampleChangerLocation,
+                dewarId : dewar.dewarId,
+                containerId : dewar.containerId,
+                capacity : dewar.capacity
+            });
+        } else {
+            error = true;
         }
-        data.push({
-            shippingName : dewars[dewar].shippingName,
-            barCode : dewars[dewar].barCode,
-            containerCode : dewars[dewar].containerCode,
-            containerType : containerType,
-            sampleCount : dewars[dewar].sampleCount,
-            beamlineName : beamlineName,
-            sampleChangerLocation : dewars[dewar].sampleChangerLocation,
-            dewarId : dewars[dewar].dewarId,
-            containerId : dewars[dewar].containerId,
-            capacity : dewars[dewar].capacity
-        });
-        // } else {
-        //     emptyDewars = true;
-        // }
     }
 
-    // if (emptyDewars){
-        // $.notify("Warning: Some of the dewars have no samples on them.", "warn");
-    // }
+    if (error){
+        $.notify("Error: error loading the dewars", "error");
+    }
 
     this.store.loadData(data);
 };

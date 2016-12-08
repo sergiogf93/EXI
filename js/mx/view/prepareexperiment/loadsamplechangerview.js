@@ -149,7 +149,9 @@ LoadSampleChangerView.prototype.deselectRow = function () {
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
     this.sampleChangerWidget.enableAllPucks();
-    $("#" + this.selectedRowItem.id).removeClass("selected-row");
+    if(this.selectedRowItem){
+        $("#" + this.selectedRowItem.id).removeClass("selected-row");
+    }
     this.selectedRowItem = null;
 }
 
