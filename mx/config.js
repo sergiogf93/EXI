@@ -1,6 +1,6 @@
 var ExtISPyB ={
-   version : '0.9.7.1',
-   release_date : '2016/12/06',
+   version : '0.9.8',
+   release_date : '2016/12/08',
    
    /**
     *   P1211 is a synonym for P21
