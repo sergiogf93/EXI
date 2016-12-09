@@ -24,6 +24,7 @@ QueueGridTest.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCa
 QueueGridTest.prototype.load = function(experiment){
     var _this = this;
     
+    this.setLoading();
     try{
         if (experiment.experimentId){
             var onSuccess = function(sender, data){
@@ -32,6 +33,7 @@ QueueGridTest.prototype.load = function(experiment){
                     _this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
                     _this.attachCallBackAfterRender(document.getElementById(_this.id + "-body").childNodes[0]);
                 }
+                _this.setLoading(false);
             };
 
             EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
@@ -39,6 +41,7 @@ QueueGridTest.prototype.load = function(experiment){
             this.dataByDataCollectionId = this.parseDataById(experiment);
             this.store.loadData(_.keys(_.keyBy(experiment,'dataCollectionId')), true);
             _this.attachCallBackAfterRender();
+            _this.setLoading(false);
         }
     }
     catch(e){
@@ -61,6 +64,10 @@ QueueGridTest.prototype.getPanel = function (dataCollectionGroup) {
     });
 
     return this.panel;
+};
+
+QueueGridTest.prototype.setLoading = function(bool){
+	this.panel.setLoading(bool);
 };
 
 QueueGridTest.prototype.filter = function(key, value) {
@@ -148,8 +155,6 @@ QueueGridTest.prototype.getColumns = function() {
 
                     codes.push({code : experiment.code, acronym : macromoleculeAcronym, average : _this.getPercentage(experiment.framesMerge,experiment.framesCount)});
                 }                      
-                
-                debugger
 
                 var templateData = {
 									codes : codes,

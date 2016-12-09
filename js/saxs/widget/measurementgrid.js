@@ -186,7 +186,7 @@ MeasurementGrid.prototype.getPanel = function(){
     var _this = this;
 
 	return {
-		html : '<div id="' + this.id + '">This is a test</div>',
+		html : '<div id="' + this.id + '"></div>',
 		autoScroll : false
 	}
 };

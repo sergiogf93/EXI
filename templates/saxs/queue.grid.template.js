@@ -1,6 +1,6 @@
 <div class="container-fluid persist-header" >
     <div class="row text-center" style="border : 1px solid #ccc;">
-        <div class="col-sm-8 " style="padding:0px;">
+        <div class="col-sm-7 " style="padding:0px;">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-1  queue-border-right-columns" style="width:4.166666666%; padding:0;">
@@ -11,11 +11,6 @@
                     <div class="col-sm-2  queue-border-right-columns" style="width:20.833333333%">
                         <div>&nbsp;</div>
                         Frames <span style='font-size:10px;'>(Average/Total)</span>
-                        <div>&nbsp;</div>
-                    </div> 
-                    <div class="col-sm-1 queue-border-right-columns" >
-                        <div>&nbsp;</div>
-                        Exp. Temp.
                         <div>&nbsp;</div>
                     </div>
                     <div class="col-sm-3  queue-border-right-columns">
@@ -48,7 +43,7 @@
                             </div>
                         </div>
                     </div> 
-                    <div class="col-sm-2 queue-border-right-columns">
+                    <div class="col-sm-3 queue-border-right-columns">
                         <div>&nbsp;</div>
                         Porod
                         <div class="row text-center">
@@ -64,7 +59,7 @@
             </div>
         </div>
 
-        <div class="col-sm-3"  style="padding:0px;">
+        <div class="col-sm-4"  style="padding:0px;">
             <div class="col-sm-3  queue-border-right-columns" >
                 <div>&nbsp;</div>
                 Scattering
@@ -99,7 +94,7 @@
     {#rows}
     <div class="container-fluid queue-border-bottom-columns" style="padding-top:10px; padding-bottom:10px;">
         <div class="row">
-            <div class="col-sm-8"  style="padding-left:0px;padding-right:0px;padding-bottom:0px;padding-top:10px;">
+            <div class="col-sm-7"  style="padding-left:0px;padding-right:0px;padding-bottom:0px;padding-top:10px;">
                 <div class="container-fluid">
                     <div class="row text-center">
                         <div class="col-sm-1 " style="width:4.166666666%; padding:0;">
@@ -120,9 +115,9 @@
                                 <div class="col-sm-8">
                                     <table class="table  queue-small-padding-table table-queue-grid-borderless">
                                         <tbody>
-                                            {#.macromoleculeInfo}
-                                                <tr><td>{@eq key=acronym value=""}&nbsp;{:else}<b>{.acronym}</b> {.concentration} <span style='font-size:9px;color:gray'>  mg/ml</span>{/eq}</td></tr>
-                                            {/.macromoleculeInfo}
+                                            <tr><td><b>{.macromoleculeAcronym}</b></td></tr>
+                                            <tr><td>{.concentration} <span style='font-size:9px;color:gray'>  mg/ml</span></td></tr>
+                                            <tr><td>{.expTemp} C</td></tr>
                                         </tbody>
                                     </table>
                                 </div> 
@@ -136,9 +131,6 @@
                                     </table>
                                 </div> 
                             </div>
-                        </div> 
-                        <div class="col-sm-1 text-center">
-                            {.expTemp}
                         </div>
                         <div class="col-sm-3">
                             <div class="row text-center">
@@ -166,7 +158,7 @@
                                 </div>
                             </div>
                         </div> 
-                        <div class="col-sm-2">
+                        <div class="col-sm-3">
                             <div class="row text-center">
                                 <div class="col-sm-6">
                                     <span {@eq key=volumePorod value="NA"}class='notavailablefield'>NA</span>{:else}>{.volumePorod}</span><span style='font-size:8px;color:gray;'> nm<sub>3</sub></span>{/eq}
@@ -179,7 +171,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3"  style="padding:0px;">
+            <div class="col-sm-4"  style="padding:0px;">
                 <div class="container-fluid">
                     <div class="row ">
                         <div class="col-sm-3 ">

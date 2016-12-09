@@ -16,12 +16,12 @@
         <div>
             <div>
                 <div class="container-fluid">
-                    <div class="row" style="padding-bottom:10px;">
+                    <div class="row">
                         <div class="col-sm-6">
                             <div class="container-fluid">
                                 <div class="row">
-                                    <div class="col-sm-3">
-                                        <table class="table">
+                                    <div class="col-sm-4">
+                                       <table class="table">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center" colspan="2">Frames</span></th>
@@ -29,7 +29,7 @@
                                             </thead>
                                             {#codes}
                                                 <tr>
-                                                    <td>#{.code}</td>
+                                                    <td width="20%">#{.code}</td>
                                                     <td>{@ne key=acronym value=""}<b>{.acronym}</b> {concentration} <span style='font-size:9px;color:gray'>  mg/ml</span>{/ne}</td>
                                                     <td class="text-center" style="background-color:{.average.color};font-size:9px;">{.average.text}</td>
                                                 </tr>
@@ -40,7 +40,7 @@
                                                 </tr>
                                         </table>
                                     </div>
-                                    <div class="col-sm-3">
+                                    <div class="col-sm-2">
                                         <table class="table">
                                             <thead>
                                                 <tr>

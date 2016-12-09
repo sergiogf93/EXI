@@ -71,9 +71,11 @@ OverviewQueueGrid.prototype.parseData = function(data) {
             var superposition = false;
             var rigidBody = false;
 
+			var concentration = "";
+			var macromoleculeAcronym = "";
+
 			for (var j = 0 ; j < currentDataCollection.length ; j++) {
 				var experiment = currentDataCollection[j];
-				var concentration = "";
 
 				codes.push(experiment.code);
 				if (experiment.concentration != 0) {
@@ -100,9 +102,9 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 					density = this.getImage(experiment,"density");
 					guinier = this.getImage(experiment,"guinier");
 				}
-				var macromoleculeAcronym = experiment.macromoleculeAcronym;
-				if (macromoleculeAcronym == null) {
-					macromoleculeAcronym = "";
+				
+				if (experiment.macromoleculeAcronym != null) {
+					macromoleculeAcronym = experiment.macromoleculeAcronym;
 				}
 				macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
 				averages.push(this.getPercentage(experiment.framesMerge,experiment.framesCount));
@@ -110,7 +112,8 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 			
 			templateData.rows.push({
 									codes : codes,
-									macromoleculeInfo : macromoleculeInfo,
+									macromoleculeAcronym : macromoleculeAcronym,
+									concentration : concentration,
 									averages : averages,
 									expTemp : expTemp,
 									rg : rg,
