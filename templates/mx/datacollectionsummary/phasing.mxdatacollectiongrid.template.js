@@ -89,8 +89,8 @@
                       <td >
                         {#metrics} 
                             {?pngURL}
-                                    <a href="{.pngURL}"  data-lightbox="{.PhasingStep_phasingStepId}" data-title="{.PhasingStep_phasingStepType} : {.SpaceGroup_spaceGroupShortName}">
-                                    <img id="{.PhasingStep_phasingStepId}" alt="Image not found" style='height:60px; width:60px;' class="img-responsive smalllazy" data-src="{.pngURL}" src='{.pngURL}'/>
+                                    {!<a href="{.pngURL}"  data-lightbox="{.PhasingStep_phasingStepId}" data-title="{.PhasingStep_phasingStepType} : {.SpaceGroup_spaceGroupShortName}">!}
+                                    <img id="{.PhasingStep_phasingStepId}" alt="Image not found" style='height:60px; width:60px;'  src='{.pngURL}'/>
                             {:else}
                                 
                             {/pngURL}

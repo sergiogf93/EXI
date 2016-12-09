@@ -15,11 +15,11 @@
          <table class="table table-striped table-hover">
             <thead>
                <tr>
-                  <th  ><a href="#"  data-toggle="tooltip" title="Rank is done based on the space group and lower rMerge">Rank</a></th>
-                  
+                  {!<th  ><a href="#"  data-toggle="tooltip" title="Rank is done based on the space group and lower rMerge">Rank</a></th>!}
+                  <th  ></th>
+                  <th  ></th>
                   <th  >Pipeline</th>
                   <th  >SpaceGroup</th>
-                  <th  >Anom</th>
                   <th  >A</th>
                   <th > B</th>
                   <th > C</th>
@@ -50,6 +50,15 @@
             {:else}
                 <tr style='background-color:#ffddcc;'>
             {/lt}
+                <td  >
+                  {@eq key=v_datacollection_summary_phasing_anomalous type="boolean" value="true"}
+                        <kbd style="FONT-FAMILY:helvetica, arial, verdana, sans-serif;background-color:#337ab7">ANOM</kbd>
+                  {:else}
+                        
+                  {/eq}
+               </td>
+               
+               
                 {?label}
                     {@eq key=label value="BEST"}
                         <td >  <kbd style="background-color:green">{.label}</kbd></td>
@@ -61,12 +70,7 @@
                {/label}
                <td  ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/main'>{.v_datacollection_processingPrograms}</a></td>
                <td  >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
-               <td  >
-                  {@eq key=v_datacollection_summary_phasing_anomalous type="boolean" value="true"}
-                  <span style='color:green;' class="glyphicon glyphicon-ok"></span>
-                  {:else}
-                  {/eq}
-               </td>
+              
                <td  >{@decimal key="v_datacollection_summary_phasing_cell_a" decimals=1}{/decimal}</td>
                <td >{@decimal key="v_datacollection_summary_phasing_cell_b" decimals=1}{/decimal}</td>
                <td >{@decimal key="v_datacollection_summary_phasing_cell_c" decimals=1}{/decimal}</td>
