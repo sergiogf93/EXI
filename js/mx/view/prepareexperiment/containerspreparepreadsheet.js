@@ -32,7 +32,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     this.store = Ext.create('Ext.data.Store', {
         storeId:'spreadSheedStore',
-        fields:['shippingName', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','sampleChangerLocation','dewarId','containerId','capacity'],
+        fields:['shippingName', 'shippingId', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
         data: []
     });
 
@@ -68,7 +68,15 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 flex: 1,
                 hidden : true,
                 readOnly: true
-            },              
+            },  
+            {
+                header: 'ShippingId',
+                dataIndex: 'shippingId',
+                type: 'text',
+                flex: 1,
+                hidden : true,
+                readOnly: true
+            },             
              {
                 header: 'ContainerId',
                 dataIndex: 'containerId',
@@ -123,11 +131,35 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 readOnly: true
             },
             { 
-                header : 'Selected Beamline',
+                header : 'Beamline',
                 dataIndex: 'beamlineName',
+                hidden : true,
                 type: 'dropdown',			        	 								
                 flex: 1,
                 source: EXI.credentialManager.getBeamlineNames()
+            },
+             {
+                header: 'Beamline',
+                dataIndex: 'beamlineCombo',
+                type: 'text',
+                flex: 1,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){
+                    var beamlines = _.map(EXI.credentialManager.getBeamlinesByTechnique("MX"),"name");
+                    _.union(beamlines,[record.data.beamlineName])
+                    var templateData = {
+                                            beamlines   : beamlines,
+                                            selected    : record.data.beamlineName,
+                                            containerId : record.data.containerId,
+                                            id          : _this.id
+                                        }
+                    var html = "";
+                    dust.render("beamlines.combobox.template", templateData, function(err, out){
+                        html = out;
+                    });
+                    return html;
+                }
+                
             },
             {
                 header: 'Sample Changer Location',
@@ -164,7 +196,9 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify({record : record, item : item});             
+                if (e.target.tagName != "SELECT"){
+                    _this.onSelectRow.notify({record : record, item : item});          
+                }
             }
            
 
@@ -179,21 +213,6 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
             
         ]
     });
-
-    //arrowUp and arrowDown listeners. 
-    //Needs the first column of row Index
-    // this.panel.view.addElListener('keyup', function(event,row) {
-    //     if (event.keyCode == 38 || event.keyCode == 40) { 
-    //         _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
-    //     }
-    // });
-
-    // this.panel.on('boxready', function() {
-    //     for (var i = 0 ; i < _this.warningRows.length ; i++) {
-    //         var containerId = _this.warningRows[i];
-    //         _this.addClassToRow (containerId, "warning-row");
-    //     }
-    // });
 
     return this.panel;
 };
@@ -229,43 +248,39 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
 * @return
 */
 ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+    var _this = this;
     this.dewars = dewars;
     if (sampleChangerWidget){
         this.sampleChangerWidget = sampleChangerWidget;
     }
     var data = [];
-    var preSelectedBeamline = null;
-    if (typeof(Storage) != "undefined"){
-        var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
-    }
     var error = false;
     //Parse data
     for (var i = 0 ; i < dewars.length ; i++) {
         var dewar = dewars[i];
         if (dewar.containerId){
-            var beamlineName = dewar.beamlineName;
-            if (preSelectedBeamline) {
-                beamlineName = preSelectedBeamline;
-            }
             var containerType = "Unipuck";
             if (dewar.capacity){
                 if (dewar.capacity == 10) {
                     containerType = "Spinepuck";
                 }
             }
+            
             data.push({
                 shippingName : dewar.shippingName,
+                shippingId : dewar.shippingId,
                 barCode : dewar.barCode,
                 containerCode : dewar.containerCode,
                 containerType : containerType,
                 sampleCount : dewar.sampleCount,
-                beamlineName : beamlineName,
+                beamlineName : dewar.beamlineName,
                 sampleChangerLocation : dewar.sampleChangerLocation,
                 dewarId : dewar.dewarId,
                 containerId : dewar.containerId,
                 capacity : dewar.capacity
             });
         } else {
+            debugger
             error = true;
         }
     }
@@ -275,6 +290,12 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     }
 
     this.store.loadData(data);
+    //Define listener for beamline combobox
+    $('.beamlines-select').change(function(sender) {
+        var beamline = $("#" + _this.id + "-" + sender.target.value + " option:selected").text();
+        var containerId = sender.target.value;
+        _this.updateBeamlineName(containerId,beamline);
+    });
 };
 
 /**
@@ -287,7 +308,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
 */
 ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
-    var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
+    var recordsByContainerId = this.getRowsByContainerId(containerId);
 
     for (var i = 0 ; i < recordsByContainerId.length ; i++) {
         var record = recordsByContainerId[i];
@@ -302,6 +323,30 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
             };
 
             EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
+            return
+        }
+    }
+};
+
+ContainerPrepareSpreadSheet.prototype.updateBeamlineName = function (containerId, beamline) {
+    var _this = this;
+    var recordsByContainerId = this.getRowsByContainerId(containerId);
+
+    for (var i = 0 ; i < recordsByContainerId.length ; i++) {
+        var record = recordsByContainerId[i];
+        if (record.get('containerId') == containerId) {
+            var onSuccess = function(sender, container) {
+                container.beamlineLocation = beamline;
+                container.sampleChangerLocation = "";
+
+                var onSuccessSave = function (sender){
+                    _this.loadProcessingDewars();
+                }
+                
+                EXI.getDataAdapter({onSuccess : onSuccessSave}).proposal.shipping.saveContainer(record.get('shippingId'),record.get('dewarId'),Number(containerId),container);
+            };
+            
+            EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(record.get('shippingId'),record.get('dewarId'),Number(containerId));
             return
         }
     }

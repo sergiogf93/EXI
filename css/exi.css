@@ -52,7 +52,15 @@ img.border-img {
 	background-color : #ff5555;
 }
 
-/** Prepare experiment steps **/
+/** Prepare experiment **/
+
+/*.beamlines-select-disabled {
+	pointer-events : none !important;
+}
+
+.beamlines-select {
+	pointer-events : auto !important;
+}*/
 
 .step-btn {
 	pointer-events: none !important;

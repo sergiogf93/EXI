@@ -14,6 +14,7 @@ function SampleChangerWidget (args) {
 	this.name = '';
 	this.onPuckSelected = new Event(this);
 	this.sampleChangerCapacity = 0; //This is set in each sample changer type
+	this.beamlineName = "";
 
 	if (args) {
 		if (args.radius){
@@ -21,6 +22,9 @@ function SampleChangerWidget (args) {
 		}
 		if (args.isLoading != null){
 			this.isLoading = args.isLoading;
+		}
+		if (args.beamlineName){
+			this.beamlineName = args.beamlineName;
 		}
 	}
 };

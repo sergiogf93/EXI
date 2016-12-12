@@ -311,16 +311,16 @@ MxPrepare.prototype.init = function() {
 	    mainView.load();
 	}).enter(this.setPageBackground);
 
-	Path.map("#/mx/prepare/main/selectSampleChanger").to(function() {
-		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainView({currentStep : 2});
-		EXI.addMainPanel(mainView);
-	    mainView.load();
-	}).enter(this.setPageBackground);
+	// Path.map("#/mx/prepare/main/selectSampleChanger").to(function() {
+	// 	EXI.clearNavigationPanel();
+	//     var mainView = new PrepareMainView({currentStep : 2});
+	// 	EXI.addMainPanel(mainView);
+	//     mainView.load();
+	// }).enter(this.setPageBackground);
 
 	Path.map("#/mx/prepare/main/loadSampleChanger").to(function() {
 		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainView({currentStep : 3});
+	    var mainView = new PrepareMainView({currentStep : 2});
 		EXI.addMainPanel(mainView);
 	    mainView.load();
 	}).enter(this.setPageBackground);
@@ -5139,6 +5139,7 @@ function ContainerPrepareSpreadSheet(args){
     }
 
     this.onSelectRow = new Event(this);
+    this.onBeamlineChanged = new Event(this);
     this.onLoaded = new Event(this);
 };
 
@@ -5153,7 +5154,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     this.store = Ext.create('Ext.data.Store', {
         storeId:'spreadSheedStore',
-        fields:['shippingName', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','sampleChangerLocation','dewarId','containerId','capacity'],
+        fields:['shippingName', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
         data: []
     });
 
@@ -5244,11 +5245,33 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 readOnly: true
             },
             { 
-                header : 'Selected Beamline',
+                header : 'Beamline',
                 dataIndex: 'beamlineName',
+                hidden : true,
                 type: 'dropdown',			        	 								
                 flex: 1,
                 source: EXI.credentialManager.getBeamlineNames()
+            },
+             {
+                header: 'Beamline',
+                dataIndex: 'beamlineCombo',
+                type: 'text',
+                flex: 1,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){
+                    var beamlines = _.map(EXI.credentialManager.getBeamlinesByTechnique("MX"),"name");
+                    _.union(beamlines,[record.data.beamlineName])
+                    var templateData = {
+                                            beamlines   : beamlines,
+                                            selected    : record.data.beamlineName
+                                        }
+                    var html = "";
+                    dust.render("beamlines.combobox.template", templateData, function(err, out){
+                        html = out;
+                    });
+                    return html;
+                }
+                
             },
             {
                 header: 'Sample Changer Location',
@@ -5285,7 +5308,9 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify({record : record, item : item});             
+                if (e.target.tagName != "SELECT"){
+                    _this.onSelectRow.notify({record : record, item : item});             
+                }
             }
            
 
@@ -5301,23 +5326,18 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         ]
     });
 
-    //arrowUp and arrowDown listeners. 
-    //Needs the first column of row Index
-    // this.panel.view.addElListener('keyup', function(event,row) {
-    //     if (event.keyCode == 38 || event.keyCode == 40) { 
-    //         _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
-    //     }
-    // });
-
-    // this.panel.on('boxready', function() {
-    //     for (var i = 0 ; i < _this.warningRows.length ; i++) {
-    //         var containerId = _this.warningRows[i];
-    //         _this.addClassToRow (containerId, "warning-row");
-    //     }
-    // });
-
     return this.panel;
 };
+
+ContainerPrepareSpreadSheet.prototype.getBeamlinesComboBox = function () {
+    var comboStore = Ext.create('Ext.data.Store', {
+                        data : [
+                                    {Id: 0, Name:"Active"},
+                                    {Id: 1, Name: "Inactive"}
+                                ]
+                    });
+    return comboStore;
+}
 
 /**
 * Loads the processing dewars from the database
@@ -5350,24 +5370,17 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
 * @return
 */
 ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+    var _this = this;
     this.dewars = dewars;
     if (sampleChangerWidget){
         this.sampleChangerWidget = sampleChangerWidget;
     }
     var data = [];
-    var preSelectedBeamline = null;
-    if (typeof(Storage) != "undefined"){
-        var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
-    }
     var error = false;
     //Parse data
     for (var i = 0 ; i < dewars.length ; i++) {
         var dewar = dewars[i];
         if (dewar.containerId){
-            var beamlineName = dewar.beamlineName;
-            if (preSelectedBeamline) {
-                beamlineName = preSelectedBeamline;
-            }
             var containerType = "Unipuck";
             if (dewar.capacity){
                 if (dewar.capacity == 10) {
@@ -5380,13 +5393,14 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                 containerCode : dewar.containerCode,
                 containerType : containerType,
                 sampleCount : dewar.sampleCount,
-                beamlineName : beamlineName,
+                beamlineName : dewar.beamlineName,
                 sampleChangerLocation : dewar.sampleChangerLocation,
                 dewarId : dewar.dewarId,
                 containerId : dewar.containerId,
                 capacity : dewar.capacity
             });
         } else {
+            debugger
             error = true;
         }
     }
@@ -5396,6 +5410,9 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     }
 
     this.store.loadData(data);
+    $('.beamlines-select').change(function(sender) {
+        _this.onBeamlineChanged.notify(sender.target.value);
+    });
 };
 
 /**
@@ -5681,6 +5698,12 @@ function LoadSampleChangerView (args) {
         }
     };
 
+    var data = {
+        radius : this.widgetRadius,
+        isLoading : false
+    };
+    this.sampleChangerWidget = new FlexHCDWidget(data);
+
     this.selectedRowItem = null;
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
@@ -5691,7 +5714,6 @@ function LoadSampleChangerView (args) {
     this.previewPanelView = new PreviewPanelView({
                                                         height : 100
                                                     });
-    this.sampleChangerName = "";
     
     if (typeof(Storage) != "undefined"){
         var sampleChangerName = sessionStorage.getItem("sampleChangerName");
@@ -5700,9 +5722,28 @@ function LoadSampleChangerView (args) {
         }
     }
 
+    this.containerListEditor.onBeamlineChanged.attach(function(sender,beamline){
+        _this;
+        debugger
+    });
+
     this.containerListEditor.onSelectRow.attach(function(sender, data){
         var row = data.record;
         if (row) {
+            // Check if the sampleChanger needs to be changed
+            if (row.data.beamlineName != _this.sampleChangerWidget.beamlineName) {
+                var newBeamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":row.data.beamlineName});
+                if (newBeamline.length > 0) {
+                    _this.createSampleChangerWidget(newBeamline[0].sampleChangerType,newBeamline[0].name);
+                } else {
+                    _this.createSampleChangerWidget("FlexHCD",row.data.beamlineName);
+                }
+                _this.widgetContainer.removeAll();
+                _this.load(_this.containers);
+                _this.widgetContainer.insert(_this.sampleChangerWidget.getPanel());
+                _this.reloadSampleChangerWidget();
+            }
+            // Manage the selection/deselection of rows and cells
             if (_this.selectedPuck){
                 _this.deselectPuck();
             }
@@ -5864,24 +5905,26 @@ LoadSampleChangerView.prototype.loadSampleChangerPuck = function (puck, containe
 /**
 * Generates a sampleChangerWidget given its name. It also checks for puck data on the sessionStorage
 *
-* @method getSampleChangerWidget
+* @method createSampleChangerWidget
 * @param {String} sampleChangerName The name of the sampleChangerWidget to be generated
+* @param {String} beamlineName The name of the beamline
 * @return A sampleChangerWidget
 */
-LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChangerName) {
+LoadSampleChangerView.prototype.createSampleChangerWidget = function (sampleChangerName, beamlineName) {
     var _this = this;
     var data = {
         radius : this.widgetRadius,
-        isLoading : false
+        isLoading : false,
+        beamlineName : beamlineName
     };
-    var sampleChangerWidget = new FlexHCDWidget(data);
+    this.sampleChangerWidget = new FlexHCDWidget(data);
     if (sampleChangerName == "SC3") {
-        sampleChangerWidget = new SC3Widget(data);
+        this.sampleChangerWidget = new SC3Widget(data);
     } else if (sampleChangerName == "RoboDiff") {
-        sampleChangerWidget = new RoboDiffWidget(data);
+        this.sampleChangerWidget = new RoboDiffWidget(data);
     }
 
-    return sampleChangerWidget;
+    return this.sampleChangerWidget;
 };
 
 /**
@@ -5892,25 +5935,28 @@ LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChanger
 */
 LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
-
+    
     this.sampleChangerWidget.emptyAllPucks();
     var filledContainers = {};
 
     if (containers) {
+        this.containers = containers;
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-            var sampleChangerLocation = container.sampleChangerLocation;
-            if (sampleChangerLocation != "" && sampleChangerLocation != null){
-                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
-                if (puckId) {
-                    var puck = this.sampleChangerWidget.findPuckById(puckId);
-                    if (puck.capacity != container.capacity){
-                    }
-                    if (container.sampleCount == 0) {
-                        puck.containerId = container.containerId;
-                        puck.isEmpty = false;
-                    } else {
-                        filledContainers[container.containerId] = puckId;
+            if (container.beamlineName == this.sampleChangerWidget.beamlineName){
+                var sampleChangerLocation = container.sampleChangerLocation;
+                if (sampleChangerLocation != "" && sampleChangerLocation != null){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
+                    if (puckId) {
+                        var puck = this.sampleChangerWidget.findPuckById(puckId);
+                        if (puck.capacity != container.capacity){
+                        }
+                        if (container.sampleCount == 0) {
+                            puck.containerId = container.containerId;
+                            puck.isEmpty = false;
+                        } else {
+                            filledContainers[container.containerId] = puckId;
+                        }
                     }
                 }
             }
@@ -5940,8 +5986,6 @@ LoadSampleChangerView.prototype.load = function (containers) {
 */
 LoadSampleChangerView.prototype.getPanel = function () {
     var _this = this;
-
-    this.sampleChangerWidget = this.getSampleChangerWidget(this.sampleChangerName);
 
     this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
@@ -5974,37 +6018,42 @@ LoadSampleChangerView.prototype.getPanel = function () {
     });
 
     this.panel.on('boxready', function() {
-        _this.sampleChangerWidget.setClickListeners();
-        _this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
-            if (_this.selectedContainerId) {
-                if (_this.selectedPuck) {
-                    if (_this.selectedPuck == puck) {
-                        _this.returnToSelectionStatus();
-                    } else {
-                        _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
-                    }
-                } else {
-                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
-                }
-            } else {
-                if (_this.selectedPuck) {
-                    if (_this.selectedPuck == puck) {
-                        _this.returnToSelectionStatus();
-                    } else {
-                        _this.deselectRow();
-                        _this.deselectPuck();
-                        _this.setSelectedPuck(puck);
-                    }
-                } else {
-                    _this.setSelectedPuck(puck);
-                }
-            }
-        });
-        _this.sampleChangerWidget.render();
+        _this.reloadSampleChangerWidget();
     });
 
     return this.panel;
 };
+
+LoadSampleChangerView.prototype.reloadSampleChangerWidget = function () {
+    var _this = this;
+    this.sampleChangerWidget.setClickListeners();
+    this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
+        if (_this.selectedContainerId) {
+            if (_this.selectedPuck) {
+                if (_this.selectedPuck == puck) {
+                    _this.returnToSelectionStatus();
+                } else {
+                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                }
+            } else {
+                _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+            }
+        } else {
+            if (_this.selectedPuck) {
+                if (_this.selectedPuck == puck) {
+                    _this.returnToSelectionStatus();
+                } else {
+                    _this.deselectRow();
+                    _this.deselectPuck();
+                    _this.setSelectedPuck(puck);
+                }
+            } else {
+                _this.setSelectedPuck(puck);
+            }
+        }
+    });
+    this.sampleChangerWidget.render();
+}
 
 /**
 * Cleans and removes the previewPanelView
@@ -6053,13 +6102,12 @@ function PrepareMainView(args) {
         }
     }
 
-    this.steps = ["","/selectSampleChanger","/loadSampleChanger"];
+    this.steps = ["","/loadSampleChanger"];
 
     this.height = 550;
     this.width = 1300;
     
     this.dewarListSelector = new DewarListSelectorGrid({height : this.height - 12, width : this.width - 60});
-    this.sampleChangerSelector = new SampleChangerSelector({height : this.height - 12, width : this.width - 0});
     this.loadSampleChangerView = new LoadSampleChangerView({height : this.height - 12, width : this.width - 0});
     this.confirmShipmentView = new ConfirmShipmentView();
 
@@ -6082,25 +6130,6 @@ function PrepareMainView(args) {
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
-
-    this.sampleChangerSelector.onRowSelected.attach(function(sender,beamline){
-        if (beamline) {
-            _this.save("selectedBeamline", beamline);
-        } else {
-            _this.removeFromStorage("selectedBeamline");
-        }
-    });
-
-    this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
-        Ext.getCmp("next-button").enable();
-        $('#step-3').attr("disabled", false);
-        _this.sampleChangerName = changerName;
-        _this.save('sampleChangerName', changerName);
-        if (typeof(Storage) != "undefined") {
-            sessionStorage.removeItem('puckData');
-        }
-        _this.loadSampleChangerView.sampleChangerName = changerName;
-    });
 
 };
 
@@ -6139,18 +6168,9 @@ PrepareMainView.prototype.manageButtons = function () {
         Ext.getCmp("next-button").enable(); 
     } else {
         Ext.getCmp("previous-button").show();
-    }
-    if (this.currentStep == 2) {
-        Ext.getCmp("next-button").disable();
-    }
-    if (this.currentStep < 3) {
-        Ext.getCmp("next-button").show();  
-        $('#done-button').hide();
-    }
-    if (this.currentStep == 3) {
         Ext.getCmp("next-button").hide();
     }
-    for (var i = 1 ; i <= 3 ; i++){
+    for (var i = 1 ; i <= 2 ; i++){
         if (i == this.currentStep) {
             $('#step-' + i).addClass('active-step');
         } else {
@@ -6170,25 +6190,6 @@ PrepareMainView.prototype.changeStep = function (direction) {
     this.currentStep += direction;
     location.href = "#/mx/prepare/main" + this.steps[this.currentStep-1];
 };
-
-/**
-* Manages the disable state of the step buttons
-*
-* @method manageStepButtons
-* @return 
-*/
-// PrepareMainView.prototype.manageStepButtons = function () {
-//     if (this.loadSampleChangerView.sampleChangerName == "") {
-//         $('#step-3').attr("disabled", true);
-//     } else {
-//         $('#step-3').attr("disabled", false);
-//     }
-//     for (var i = 1 ; i <= 4 ; i++){
-//         if (i == this.currentStep){
-//             $('#step-' + i).addClass('active-step');
-//         }
-//     }
-// };
 
 /**
 * Loads a Ext.panel.panel constaining a Ext.panel.Panel that will render the steps inside and sets the click events for the buttons
@@ -6221,22 +6222,11 @@ PrepareMainView.prototype.getPanel = function() {
         height : this.height + 200,
         // cls : 'border-grid',
         items : [
-                    this.getToolBar(), this.container,
-                    //   this.getButtons()
+                    this.getToolBar(), this.container
         ]
 	});
 
     this.panel.on('boxready', function() {
-        // $('#next-button').unbind('click').click(function (sender){
-        //     if (_this.currentStep < 4) {
-        //         _this.changeStep(1);
-        //     }
-        // });
-        // $('#previous-button').unbind('click').click(function (sender){
-        //     if (_this.currentStep > 0) {
-        //         _this.changeStep(-1);             
-        //     }
-        // });
         _this.manageButtons();
     });
         
@@ -6331,36 +6321,57 @@ PrepareMainView.prototype.load = function() {
         };
         
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    } else if (this.currentStep == 2){
-        this.container.add(this.sampleChangerSelector.getPanel());
-        this.sampleChangerSelector.panel.setLoading();
+    // } else if (this.currentStep == 2){
+    //     this.container.add(this.sampleChangerSelector.getPanel());
+    //     this.sampleChangerSelector.panel.setLoading();
 
-        var onSuccessProposal = function(sender, containers) { 
+    //     var onSuccessProposal = function(sender, containers) { 
+    //         _this.containers = containers;
+    //         var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
+
+    //         if (beamlinesSelected.length > 1) {
+    //             $.notify("Warning: Multiple beamlines selected", "warn");
+    //         } else if (beamlinesSelected.length == 1) {
+    //             if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
+    //                 _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+    //             } else {
+    //                 $.notify("Warning: Unknown beamline", "warn");
+    //             }
+    //         }
+
+    //         _this.sampleChangerSelector.panel.setLoading(false);
+    //     };
+
+    //     var onError = function(sender, error) {        
+    //         EXI.setError("Ops, there was an error");
+    //         _this.sampleChangerSelector.panel.setLoading(false);
+    //     };
+        
+    //     EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
+    } else if (this.currentStep == 2) {
+        var onSuccessProposal = function(sender, containers) {     
             _this.containers = containers;
             var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
-
-            if (beamlinesSelected.length > 1) {
-                $.notify("Warning: Multiple beamlines selected", "warn");
-            } else if (beamlinesSelected.length == 1) {
-                if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
-                    _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+            if (beamlinesSelected.length > 0) {
+                var beamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlinesSelected[0]});
+                if (beamline.length > 0) {
+                    _this.loadSampleChangerView.createSampleChangerWidget(beamline[0].sampleChangerType,beamline[0].name);
                 } else {
-                    $.notify("Warning: Unknown beamline", "warn");
+                    $.notify("Warning: Unknown beamline " + beamlinesSelected[0], "warn");
+                    _this.loadSampleChangerView.createSampleChangerWidget("FlexHCD",beamlinesSelected[0]);
+                }
+                for (var i = 1 ; i < beamlinesSelected.length ; i++){
+                    var beamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlinesSelected[i]});
+                    if (beamline.length == 0) {
+                        $.notify("Warning: Unknown beamline " + beamlinesSelected[i], "warn");
+                    }
                 }
             }
-
-            _this.sampleChangerSelector.panel.setLoading(false);
-        };
-
-        var onError = function(sender, error) {        
-            EXI.setError("Ops, there was an error");
-            _this.sampleChangerSelector.panel.setLoading(false);
+            _this.container.add(_this.loadSampleChangerView.getPanel());
+            _this.loadSampleChangerView.load();
         };
         
-        EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    } else if (this.currentStep == 3) {
-        this.container.add(this.loadSampleChangerView.getPanel());
-        this.loadSampleChangerView.load();
+        EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByProposal();
     }
 };
 
@@ -7728,6 +7739,7 @@ function SampleChangerWidget (args) {
 	this.name = '';
 	this.onPuckSelected = new Event(this);
 	this.sampleChangerCapacity = 0; //This is set in each sample changer type
+	this.beamlineName = "";
 
 	if (args) {
 		if (args.radius){
@@ -7735,6 +7747,9 @@ function SampleChangerWidget (args) {
 		}
 		if (args.isLoading != null){
 			this.isLoading = args.isLoading;
+		}
+		if (args.beamlineName){
+			this.beamlineName = args.beamlineName;
 		}
 	}
 };
@@ -8094,8 +8109,8 @@ function FlexHCDWidget (args) {
 	};
 	
 	this.createStructure();
-	this.createPucks("Unipuck", this.data.cells/2, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
-	this.createPucks("Spinepuck", this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Spinepuck", this.data.cells/2, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Unipuck", this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
 };
 
 FlexHCDWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
