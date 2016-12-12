@@ -62,6 +62,11 @@ function LoadSampleChangerView (args) {
             if (_this.selectedPuck){
                 _this.deselectPuck();
             }
+            else{
+                $.notify("Click on a sample changer location to place the dewar", "info");
+                _this.sampleChangerWidget.blink();
+                
+            }
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
                     _this.deselectRow();
@@ -282,6 +287,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
                     }
                 }
             }
+
         }
         
         

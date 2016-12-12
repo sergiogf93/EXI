@@ -39,6 +39,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
         border: 1,        
         store: this.store,  
         id: this.id,     
+         minHeight : 900,
         disableSelection: true,
         columns: this.getColumns(),
         viewConfig: {
@@ -82,7 +83,7 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = function(target, dataCollectionId) {
-    var onSuccess = function(sender, data){                       
+    var onSuccess = function(sender, data){      
         /** Parsing data */
         var html = "";     
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
@@ -125,7 +126,7 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
 * @param {Integer} dataCollectionId 
 * @method displayWorkflowsTab
 */
-UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionId) {
+UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId) {
   var onSuccess = function(sender, data){                       
         /** Parsing data */
        var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
@@ -140,19 +141,30 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
                    return _.filter(keys, function(e){return e!= "null";});
                }
+               /*function getMap(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "map"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }
+                function getPDB(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "pdb"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }*/
                var node = {};
                node = ({
-                   spaceGroup      : spaceGroup,
-                   prepare         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
-                   sub             : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
-                   phasing         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
-                   model           : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
-                   downloadCSV     : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                   spaceGroup       : spaceGroup,
+                   prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
+                   sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
+                   phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                   model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
+                   downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                   //map              : getMap(stepsBySpaceGroup),
+                   //pdb              : getPDB(stepsBySpaceGroup)
                    
                });
                
-               function getMetrics(phasingStep){                   
+               function getMetrics(phasingStep){  
+                                    
                     if (phasingStep.metric){                        
                             var singleMetric = phasingStep.metric.split(",");
                             var values = phasingStep.statisticsValue.split(",");                            
@@ -161,10 +173,14 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     phasingStep[singleMetric[j].replace(/ /g, '_')] = values[j];                           
                             }
                     } 
+                    if (phasingStep.png){
+                        phasingStep.pngURL = EXI.getDataAdapter().mx.phasing.getPhasingFilesByPhasingProgramAttachmentIdAsImage(phasingStep.png);
+                    }
                     return (phasingStep);                     
                }
                
                function getNodeByPhasingStep(node, stepsBySpaceGroup, step){
+                   
                    var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : step});
                    node["metrics"] = [];
                    if (modelBuildingSteps){
@@ -175,10 +191,32 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                             if (modelBuildingSteps[z].metric){                                                        
                                 toBePushed = getMetrics(modelBuildingSteps[z]);
                             }  
+                            
+                            /* Opening uglymol with:
+                                    1) pdb file
+                                    2) map1 as first map file
+                                    3) map2 as second map file
+                                    */           
+                            var pdbUrl = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( modelBuildingSteps[z].pdb);
+                            if ( modelBuildingSteps[0].map != null){
+                                var mapsArr = modelBuildingSteps[z].map.split(",");
+                                if (mapsArr.length == 2){
+                                    var mapUrl1 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[0]);
+                                    var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
+                                    toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
+                                }
+                            }
+                            
+                             
+                   
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
                    node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
+                   
+                 
+           
+                 
                    return node;         
                }
                
@@ -223,7 +261,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
-       console.log(parsed);
+      
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
@@ -233,8 +271,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
     };                    
-                    
-    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
+                                    
+    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionGroupId(dataCollectionGroupId);
+    //EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
 };
 
 /**
@@ -345,8 +384,8 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                 }
                 
                   if (target.startsWith("#ph")){                           
-                    var dataCollectionId = target.slice(4);
-                    _this.displayPhasingTab(target, dataCollectionId);              
+                    var dataCollectionGroupId = target.slice(4);
+                    _this.displayPhasingTab(target, dataCollectionGroupId);              
                    
                 }
             });

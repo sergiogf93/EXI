@@ -1336,37 +1336,66 @@ function AutoprocessingRanker(){
  * Filter by space group and lower rMerge
  * 
  */
-AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName, rmergeFieldName){
-    array = array.sort(function(a1, a2){        
-         var spaceGroudTrimmed1 = a1[spacegroudFieldName].replace(/\s+/g, '');
-         var spaceGroudTrimmed2 = a2[spacegroudFieldName].replace(/\s+/g, '');
+AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
+   /** First sorting autoprocessing with rMerge < 10 */
+   var minus10Rmerge  = _.filter(array, function(o) {       
+            if (o.innerShell){
+                if (o.innerShell.rMerge){                    
+                    if ((Number(o.innerShell.rMerge) <= 10) && (Number(o.innerShell.rMerge) > 0)){
+                        return true;
+                    }
+                }
+            }
+            return false        
+     }); 
+     /** Second we get rMerge > 10 */
+    var plus10Rmerge  = _.filter(array, function(o) {
+            if (o.innerShell){
+                if (o.innerShell.rMerge){                    
+                    if (Number(o.innerShell.rMerge) > 10){
+                        return true;
+                    }
+                }
+            }
+            return false        
+     }); 
+   
+    
+     function sortByHighestSymmetry(a, b) {         
+        var spaceGroupA = a[spacegroudFieldName].replace(/\s/g, "");        
+        var spaceGroupB = b[spacegroudFieldName].replace(/\s/g, "");
         
-         var space1 = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed1);
-         var space2 = _.indexOf(ExtISPyB.spaceGroups, spaceGroudTrimmed2);
-        
-         /** Sort by rmerge */
-         if (space2 -  space1 == 0){
-             var rmerge1 = a1["overall"]["rMerge"];
-             var rmerge2 = a2["overall"]["rMerge"];
-             
-             if (rmerge1){
-                 if (rmerge2){
-                     return rmerge1 - rmerge2;
-                 }
-                 else{
-                     return 1;
-                 }
-             }
-             return -1;
-             
-         }
-         return space2 -  space1;
-      
-    });
-    for(var i =0; i < array.length; i++){            
-            array[i].rank = i + 1;
+        if ( _.indexOf(ExtISPyB.spaceGroups, spaceGroupA) ==  _.indexOf(ExtISPyB.spaceGroups, spaceGroupB)){                          
+            return ( parseFloat(a.innerShell.rMerge) -  parseFloat(b.innerShell.rMerge));
+        }
+        return _.indexOf(ExtISPyB.spaceGroups, spaceGroupB) - _.indexOf(ExtISPyB.spaceGroups, spaceGroupA);                           
+       
     }
-    return array;
+    
+    function sortByrMerge(a, b) {                                    
+         return ( parseFloat(a.innerShell.rMerge) -  parseFloat(b.innerShell.rMerge));                                       
+    }
+
+    /** Sort rmerge < 10 by highest symmetry 
+    for (var i = 0; i < minus10Rmerge.length; i++){
+        console.log(minus10Rmerge[i][spacegroudFieldName]);
+    }*/
+   
+    minus10Rmerge.sort(sortByHighestSymmetry); 
+    plus10Rmerge.sort(sortByrMerge); 
+    
+    if (minus10Rmerge[0]){
+        minus10Rmerge[0].label = "BEST";
+    }
+    
+    /** Setting lables */
+    if (plus10Rmerge){
+        for(var i = 0; i < plus10Rmerge.length; i++){
+            plus10Rmerge[i].label = "rMerge > 10";
+        }
+    }
+       
+    return _.concat(minus10Rmerge, plus10Rmerge);    
 };
 
 AutoprocessingRanker.prototype.sortBySpaceGroup = function(array, spacegroudFieldName){
@@ -1497,15 +1526,16 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
          }
          catch(e){
              
+             console.log(e);
          }  
     }
     
     var anomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
     var nonanomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
     /**Set non anomalous first */
-    data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
-    data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"),data);    
-    return data;
+    anomalousdata = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    nonanomalousdata = new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    return _.concat(nonanomalousdata, anomalousdata);
 };
 
 AutoProcIntegrationGrid.prototype.load = function(data) {      
@@ -2813,6 +2843,7 @@ DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
         border: 1,        
         store: this.store,       
         disableSelection: true,
+       
         columns: this.getColumns(),
         viewConfig: {
             enableTextSelection: true,
@@ -2886,27 +2917,15 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         });
 
     }
-
+    
     /** Convert from map to array */
     var ids = _.map(data, 'autoProcId');
     var result = [];
     for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
-
-    function sortByBest(a, b) {
-        var spaceGroupA = a.spaceGroup.replace(/\s/g, "");
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");              
-        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
-    }
-
-    var sorted = result.sort(sortByBest).reverse();    
-    /** Add new attribute for ranking order */
-    for ( i = 0; i < sorted.length; i++) {
-        sorted[i]["rank"] = i + 1;
-    }
-
-    return sorted;
+    
+    return new AutoprocessingRanker().rank(result, "spaceGroup");  
 };
 
 
@@ -2957,7 +2976,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 data.xtal4 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4);
 
                 /** Image quality indicator **/
-                data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);              
+                data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
                 
                 /** We dont show screen if there are results of autoprocessing */
@@ -3022,12 +3041,13 @@ function DataCollectionMxMainView() {
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 DataCollectionMxMainView.prototype.getContainer = function() {
-		this.container = Ext.create('Ext.tab.Panel', {       
+		this.container = Ext.create('Ext.tab.Panel', {   
+        minHeight : 900,    
         padding : "5 40 0 5",
         items: [ {
                         title: 'Data Collections',
                         cls : 'border-grid',
-                        id : this.id + "_dataCollectionTab",
+                        id : this.id + "_dataCollectionTab",                        
                         items:[
                             this.genericDataCollectionPanel.getPanel()
                         ]
@@ -3256,6 +3276,7 @@ MXDataCollectionGrid.prototype.getPanel = function(dataCollectionGroup) {
 
     this.panel = Ext.create('Ext.panel.Panel', {  
         id: this.id,
+        minHeight : 900,
         tbar: this.getToolBar(),        
         items: [_this.activePanel.getPanel(dataCollectionGroup)]
      });
@@ -3899,6 +3920,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
         border: 1,        
         store: this.store,  
         id: this.id,     
+         minHeight : 900,
         disableSelection: true,
         columns: this.getColumns(),
         viewConfig: {
@@ -3942,7 +3964,7 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = function(target, dataCollectionId) {
-    var onSuccess = function(sender, data){                       
+    var onSuccess = function(sender, data){      
         /** Parsing data */
         var html = "";     
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
@@ -3985,7 +4007,7 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
 * @param {Integer} dataCollectionId 
 * @method displayWorkflowsTab
 */
-UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionId) {
+UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId) {
   var onSuccess = function(sender, data){                       
         /** Parsing data */
        var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
@@ -4000,19 +4022,30 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
                    return _.filter(keys, function(e){return e!= "null";});
                }
+               /*function getMap(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "map"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }
+                function getPDB(stepsBySpaceGroup){
+                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "pdb"));
+                   return _.filter(keys, function(e){return e!= "null";});
+               }*/
                var node = {};
                node = ({
-                   spaceGroup      : spaceGroup,
-                   prepare         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
-                   sub             : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
-                   phasing         : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
-                   model           : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
-                   downloadCSV     : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                   spaceGroup       : spaceGroup,
+                   prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
+                   sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
+                   phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                   model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
+                   downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                   //map              : getMap(stepsBySpaceGroup),
+                   //pdb              : getPDB(stepsBySpaceGroup)
                    
                });
                
-               function getMetrics(phasingStep){                   
+               function getMetrics(phasingStep){  
+                                    
                     if (phasingStep.metric){                        
                             var singleMetric = phasingStep.metric.split(",");
                             var values = phasingStep.statisticsValue.split(",");                            
@@ -4021,10 +4054,14 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     phasingStep[singleMetric[j].replace(/ /g, '_')] = values[j];                           
                             }
                     } 
+                    if (phasingStep.png){
+                        phasingStep.pngURL = EXI.getDataAdapter().mx.phasing.getPhasingFilesByPhasingProgramAttachmentIdAsImage(phasingStep.png);
+                    }
                     return (phasingStep);                     
                }
                
                function getNodeByPhasingStep(node, stepsBySpaceGroup, step){
+                   
                    var modelBuildingSteps = _.filter(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : step});
                    node["metrics"] = [];
                    if (modelBuildingSteps){
@@ -4035,10 +4072,32 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                             if (modelBuildingSteps[z].metric){                                                        
                                 toBePushed = getMetrics(modelBuildingSteps[z]);
                             }  
+                            
+                            /* Opening uglymol with:
+                                    1) pdb file
+                                    2) map1 as first map file
+                                    3) map2 as second map file
+                                    */           
+                            var pdbUrl = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( modelBuildingSteps[z].pdb);
+                            if ( modelBuildingSteps[0].map != null){
+                                var mapsArr = modelBuildingSteps[z].map.split(",");
+                                if (mapsArr.length == 2){
+                                    var mapUrl1 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[0]);
+                                    var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
+                                    toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
+                                }
+                            }
+                            
+                             
+                   
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
                    node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
+                   
+                 
+           
+                 
                    return node;         
                }
                
@@ -4083,7 +4142,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
-       console.log(parsed);
+      
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
@@ -4093,8 +4152,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
     };                    
-                    
-    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
+                                    
+    EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionGroupId(dataCollectionGroupId);
+    //EXI.getDataAdapter({onSuccess : onSuccess}).mx.phasing.getPhasingViewByDataCollectionId(dataCollectionId);  
 };
 
 /**
@@ -4205,8 +4265,8 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                 }
                 
                   if (target.startsWith("#ph")){                           
-                    var dataCollectionId = target.slice(4);
-                    _this.displayPhasingTab(target, dataCollectionId);              
+                    var dataCollectionGroupId = target.slice(4);
+                    _this.displayPhasingTab(target, dataCollectionGroupId);              
                    
                 }
             });
@@ -5139,7 +5199,6 @@ function ContainerPrepareSpreadSheet(args){
     }
 
     this.onSelectRow = new Event(this);
-    this.onBeamlineChanged = new Event(this);
     this.onLoaded = new Event(this);
 };
 
@@ -5154,7 +5213,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     this.store = Ext.create('Ext.data.Store', {
         storeId:'spreadSheedStore',
-        fields:['shippingName', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
+        fields:['shippingName', 'shippingId', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
         data: []
     });
 
@@ -5190,7 +5249,15 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 flex: 1,
                 hidden : true,
                 readOnly: true
-            },              
+            },  
+            {
+                header: 'ShippingId',
+                dataIndex: 'shippingId',
+                type: 'text',
+                flex: 1,
+                hidden : true,
+                readOnly: true
+            },             
              {
                 header: 'ContainerId',
                 dataIndex: 'containerId',
@@ -5263,7 +5330,9 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                     _.union(beamlines,[record.data.beamlineName])
                     var templateData = {
                                             beamlines   : beamlines,
-                                            selected    : record.data.beamlineName
+                                            selected    : record.data.beamlineName,
+                                            containerId : record.data.containerId,
+                                            id          : _this.id
                                         }
                     var html = "";
                     dust.render("beamlines.combobox.template", templateData, function(err, out){
@@ -5309,7 +5378,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         listeners: {
             itemclick: function(grid, record, item, index, e) {
                 if (e.target.tagName != "SELECT"){
-                    _this.onSelectRow.notify({record : record, item : item});             
+                    _this.onSelectRow.notify({record : record, item : item});          
                 }
             }
            
@@ -5328,16 +5397,6 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     return this.panel;
 };
-
-ContainerPrepareSpreadSheet.prototype.getBeamlinesComboBox = function () {
-    var comboStore = Ext.create('Ext.data.Store', {
-                        data : [
-                                    {Id: 0, Name:"Active"},
-                                    {Id: 1, Name: "Inactive"}
-                                ]
-                    });
-    return comboStore;
-}
 
 /**
 * Loads the processing dewars from the database
@@ -5387,8 +5446,10 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                     containerType = "Spinepuck";
                 }
             }
+            
             data.push({
                 shippingName : dewar.shippingName,
+                shippingId : dewar.shippingId,
                 barCode : dewar.barCode,
                 containerCode : dewar.containerCode,
                 containerType : containerType,
@@ -5410,8 +5471,11 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     }
 
     this.store.loadData(data);
+    //Define listener for beamline combobox
     $('.beamlines-select').change(function(sender) {
-        _this.onBeamlineChanged.notify(sender.target.value);
+        var beamline = $("#" + _this.id + "-" + sender.target.value + " option:selected").text();
+        var containerId = sender.target.value;
+        _this.updateBeamlineName(containerId,beamline);
     });
 };
 
@@ -5425,7 +5489,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
 */
 ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
-    var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
+    var recordsByContainerId = this.getRowsByContainerId(containerId);
 
     for (var i = 0 ; i < recordsByContainerId.length ; i++) {
         var record = recordsByContainerId[i];
@@ -5440,6 +5504,30 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
             };
 
             EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
+            return
+        }
+    }
+};
+
+ContainerPrepareSpreadSheet.prototype.updateBeamlineName = function (containerId, beamline) {
+    var _this = this;
+    var recordsByContainerId = this.getRowsByContainerId(containerId);
+
+    for (var i = 0 ; i < recordsByContainerId.length ; i++) {
+        var record = recordsByContainerId[i];
+        if (record.get('containerId') == containerId) {
+            var onSuccess = function(sender, container) {
+                container.beamlineLocation = beamline;
+                container.sampleChangerLocation = "";
+
+                var onSuccessSave = function (sender){
+                    _this.loadProcessingDewars();
+                }
+                
+                EXI.getDataAdapter({onSuccess : onSuccessSave}).proposal.shipping.saveContainer(record.get('shippingId'),record.get('dewarId'),Number(containerId),container);
+            };
+            
+            EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(record.get('shippingId'),record.get('dewarId'),Number(containerId));
             return
         }
     }
@@ -5698,6 +5786,7 @@ function LoadSampleChangerView (args) {
         }
     };
 
+<<<<<<< HEAD
     var data = {
         radius : this.widgetRadius,
         isLoading : false
@@ -5705,6 +5794,11 @@ function LoadSampleChangerView (args) {
     this.sampleChangerWidget = new FlexHCDWidget(data);
 
     this.selectedRowItem = null;
+=======
+    this.sampleChangerWidget = new FlexHCDWidget({});
+    
+    this.warningRows = [];
+>>>>>>> 5908fb11c722d8ce7dc233db435cf080f8619b8c
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
@@ -5721,11 +5815,6 @@ function LoadSampleChangerView (args) {
             this.sampleChangerName = sampleChangerName;
         }
     }
-
-    this.containerListEditor.onBeamlineChanged.attach(function(sender,beamline){
-        _this;
-        debugger
-    });
 
     this.containerListEditor.onSelectRow.attach(function(sender, data){
         var row = data.record;
@@ -5746,6 +5835,11 @@ function LoadSampleChangerView (args) {
             // Manage the selection/deselection of rows and cells
             if (_this.selectedPuck){
                 _this.deselectPuck();
+            }
+            else{
+                $.notify("Click on a sample changer location to place the dewar", "info");
+                _this.sampleChangerWidget.blink();
+                
             }
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
@@ -5815,6 +5909,9 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     }
 
     $("#" + this.selectedRowItem.id).addClass("selected-row");
+
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).prop('disabled', false);
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).css('pointer-events','auto');
 };
 
 /**
@@ -5849,6 +5946,10 @@ LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
 * @return 
 */
 LoadSampleChangerView.prototype.deselectRow = function () {
+    //disable beamline combobox
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).prop('disabled', 'disabled');
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).css('pointer-events','none');
+    //deselect row and reinitialize values
     this.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
@@ -5943,6 +6044,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
         this.containers = containers;
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
+<<<<<<< HEAD
             if (container.beamlineName == this.sampleChangerWidget.beamlineName){
                 var sampleChangerLocation = container.sampleChangerLocation;
                 if (sampleChangerLocation != "" && sampleChangerLocation != null){
@@ -5957,9 +6059,32 @@ LoadSampleChangerView.prototype.load = function (containers) {
                         } else {
                             filledContainers[container.containerId] = puckId;
                         }
+=======
+
+            var sampleChangerLocation = container.sampleChangerLocation;
+            if (sampleChangerLocation != "" && sampleChangerLocation != null){
+                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
+                if (puckId) {
+                    var puck = this.sampleChangerWidget.findPuckById(puckId);
+                    if (puck.capacity != container.capacity){
+                        this.warningRows.push(container.containerId);
+                    }
+                    if (container.sampleCount == 0) {
+                        puck.containerId = container.containerId;
+                        puck.isEmpty = false;
+                    } else {
+                        filledContainers[container.containerId] = puckId;
+>>>>>>> 5908fb11c722d8ce7dc233db435cf080f8619b8c
                     }
                 }
+<<<<<<< HEAD
+=======
+
+            } else {
+                this.warningRows.push(container.containerId);
+>>>>>>> 5908fb11c722d8ce7dc233db435cf080f8619b8c
             }
+
         }
         
         
@@ -6081,6 +6206,7 @@ LoadSampleChangerView.prototype.previewPuck = function (containerId, capacity, d
     this.verticalPanel.add(this.previewPanelView.getPanel());
     this.previewPanelView.load(containerId, capacity, data, instructionsButtonText);
 };
+
 /**
 * This class renders the steps and panels of every class used in the prepare experiment tab
 *
@@ -6560,8 +6686,7 @@ PreviewPanelView.prototype.clean = function () {
 };
 function WorkflowStepMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
-	MainView.call(this);
-	
+	MainView.call(this);	
 	var _this = this;
 	
 }
@@ -6583,6 +6708,9 @@ WorkflowStepMainView.prototype.getContainer = function() {
 	return this.mainPanel;
 };
 
+WorkflowStepMainView.prototype.onBoxReady = function() {
+	
+};
 
 WorkflowStepMainView.prototype.getGrid = function(title, columns, data) {
 	var store = Ext.create('Ext.data.Store', {
@@ -6593,7 +6721,7 @@ WorkflowStepMainView.prototype.getGrid = function(title, columns, data) {
     for (var i = 0; i < columns.length; i++) {
          gridColumns.push({ text: columns[i],  dataIndex: columns[i], flex: 1 });
     }
-    return Ext.create('Ext.grid.Panel', {
+    var panel = Ext.create('Ext.grid.Panel', {
         title: title,
         flex : 1,
         margin : '10 180 10 10',
@@ -6601,6 +6729,12 @@ WorkflowStepMainView.prototype.getGrid = function(title, columns, data) {
         store: store,
         columns: gridColumns
     });
+    
+    panel.on('boxready', function() {
+        
+    });
+    
+    return panel;
 };
 
 WorkflowStepMainView.prototype.getImageResolution = function(imageItem) {  
@@ -6613,8 +6747,7 @@ WorkflowStepMainView.prototype.getImageResolution = function(imageItem) {
 };
 
 WorkflowStepMainView.prototype.getImagesResolution = function(imageItems) {  
-    var resolution = 1024;
-   
+    var resolution = 1024;   
     resolution = resolution/imageItems.length;
     for (var i = 0; i < imageItems.length; i++) {
         var imageItem = imageItems[i];        
@@ -6636,35 +6769,63 @@ WorkflowStepMainView.prototype.load = function(workflowStep) {
     function onSuccess(sender, data){    
    
         var items = JSON.parse(data).items;
+        _this.items = items;
         _this.panel.setTitle(JSON.parse(data).title);
         
-        var insertContainer = function(err, out){    
-                
-                    _this.mainPanel.insert({
-                            padding : 2,
-                           
-                            html : out
-                    });
+        var insertContainer = function(err, out){                    
+                _this.mainPanel.insert({
+                        padding : 2,
+                        html : out
+                });
         };
         
         for (var i = 0; i < items.length; i++) {
             console.log(items[i]);
-            if (items[i].type == "table"){
-                  _this.mainPanel.insert(_this.getGrid(items[i].title,items[i].columns, items[i].data));
-            }
-            else{
-                if (items[i].type == "image"){
-                    
+            var events = [];
+            switch(items[i].type) {
+                case "table":
+                    //_this.mainPanel.insert(_this.getGrid(items[i].title,items[i].columns, items[i].data));
+                    //continue;                    
+                case "image":
                     items[i] = _this.getImageResolution(items[i]);
-                }
-                
-                 if (items[i].type == "images"){
-                     
-                    items[i].items = _this.getImagesResolution(items[i].items);
+                    break;
+                case "images":
+                    items[i].items = _this.getImagesResolution(items[i].items);  
+                    break;
+                 case "logFile":
+                    items[i].id = BUI.id(); 
+                    events.push(function(){
+                        $( "#" + items[i].id ).click(function() {
+                            var item = _.find(_this.items, {id:this.id});
+                            var filename = item.title.replace(/\s/g, ""); + ".log";
+                            var text = item.logText;
+                            var pom = document.createElement('a');
+                            pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+                            pom.setAttribute('download', filename);
+
+                            if (document.createEvent) {
+                                var event = document.createEvent('MouseEvents');
+                                event.initEvent('click', true, true);
+                                pom.dispatchEvent(event);
+                            }
+                            else {
+                                pom.click();
+                            }
+                            
+                            
+                            
+                            
+                        });       
+                    }); 
+                    break;
+                default:
                    
-                }
-               
-                dust.render("workflowmainview.template", items[i], insertContainer);
+            }
+            
+            dust.render("workflowmainview.template", items[i], insertContainer);
+            
+            for(var j =0; j< events.length; j++){
+                events[j]();
             }
         }
       
@@ -7670,6 +7831,69 @@ AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
     return this.plotPanel;
 };
 
+function ElectronDensityViewer (args) {
+    this.id = BUI.id();
+}
+
+
+
+ElectronDensityViewer.prototype.getPanel = function(){
+    var _this = this;
+
+    this.panel = Ext.create('Ext.panel.Panel', {
+        buttons : this.getToolBar(),
+        items : [
+            {
+                html : '<div id="' + this.id + '" height="600px"></div>',
+                height : 800,
+            }
+        ]
+    });
+
+    this.panel.on('boxready', function() {
+        _this.load();
+    });
+
+    return this.panel;
+};
+
+
+ElectronDensityViewer.prototype.load = function(){
+    var _this = this;
+
+    var html = "";
+    dust.render("electron.density.viewer.template", _this.sample, function(err, out) {                                                                       
+        html = html + out;
+    });
+    
+    $(document.body).html(html);
+    // $('#' + _this.id).hide().html(html).fadeIn('fast');
+
+    init_gui();
+    this.XV = new XtalViewer("Viewer", null, true, true);
+    draw_selection_console(this.XV);
+    this.XV.animate();
+    if (!getQuery(this.XV)) {
+        this.XV.load_pdb("data/1mru.pdb", "1mru");
+        this.XV.load_dsn6_map("data/1mru.omap", "2mFo-Dfc", 0);
+        this.XV.animate();
+    }
+    this.XV.enable_leap_motion();
+};
+
+ElectronDensityViewer.prototype.getToolBar = function() {
+	var _this = this;
+	return [
+			{
+                xtype : 'button',
+                text: 'Debugger',
+                handler: function() {
+                    _this.XV;
+                    debugger;
+                }
+            }
+	];
+};
 
 /**
 * EnergyScanGrid displays the information fo a energyscan
@@ -7741,6 +7965,7 @@ function SampleChangerWidget (args) {
 	this.sampleChangerCapacity = 0; //This is set in each sample changer type
 	this.beamlineName = "";
 
+    this.data = {};
 	if (args) {
 		if (args.radius){
 			this.radius = args.radius;
@@ -7753,6 +7978,15 @@ function SampleChangerWidget (args) {
 		}
 	}
 };
+
+/**
+* It blinks the sample changer by fading IN and OUT
+*
+* @method blink` 
+*/
+SampleChangerWidget.prototype.blink = function () {
+    $('#' + this.id).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+}
 
 /**
 * Create certain types of pucks following a circular path
@@ -7818,7 +8052,7 @@ SampleChangerWidget.prototype.getPanel = function () {
 		    layout:'absolute',
             items : [
 						{
-							html : this.getStructure(),
+							html : this.getStructure(this.data),
 							frame: false,
 							border: false,
 							bodyStyle: 'background:transparent;'
@@ -7910,9 +8144,10 @@ SampleChangerWidget.prototype.load = function (data) {
 *
 * @method getStructure
 */
-SampleChangerWidget.prototype.getStructure = function () {
+SampleChangerWidget.prototype.getStructure = function (data) {
 	var html = "";
-	dust.render("structure.sampleChanger.template", this.data, function(err, out){
+    
+	dust.render("structure.sampleChanger.template", data, function(err, out){
 		html = out;
 	});
 	
@@ -8102,6 +8337,7 @@ function FlexHCDWidget (args) {
 	this.sampleChangerCapacity = 24;
 	this.initAlpha = -7*2*Math.PI/16;
 	this.data = {
+        id : this.id,
 		radius : this.radius,
 		cells : 8,
 		lines : [],
@@ -8113,6 +8349,8 @@ function FlexHCDWidget (args) {
 	this.createPucks("Unipuck", this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
 };
 
+
+FlexHCDWidget.prototype.blink = SampleChangerWidget.prototype.blink;
 FlexHCDWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
 FlexHCDWidget.prototype.createPucks = SampleChangerWidget.prototype.createPucks;
 FlexHCDWidget.prototype.getPanel = SampleChangerWidget.prototype.getPanel;
@@ -8701,6 +8939,7 @@ function RoboDiffWidget (args) {
 	this.sampleChangerCapacity = 24;
 	this.initAlpha = -7*2*Math.PI/16;
 	this.data = {
+        id : this.id,
 		radius : this.radius,
 		cells : 8,
 		lines : [],
@@ -8711,6 +8950,7 @@ function RoboDiffWidget (args) {
 	this.createPucks("Spinepuck", this.data.cells, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
 };
 
+RoboDiffWidget.prototype.blink = SampleChangerWidget.prototype.blink;
 RoboDiffWidget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
 RoboDiffWidget.prototype.createPucks = SampleChangerWidget.prototype.createPucks;
 RoboDiffWidget.prototype.getPanel = SampleChangerWidget.prototype.getPanel;
@@ -8836,6 +9076,7 @@ function SampleChangerSelector (args) {
     };
 
     this.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
+
     var beamlinesGridData = [];
     for (var i = 0 ; i < this.beamlines.length ; i++) {
         var beamline = this.beamlines[i];
@@ -8980,6 +9221,7 @@ function SC3Widget (args) {
 	this.clockwise = -1;
 
 	this.data = {
+        id : this.id,
 		radius : this.radius,
 		cells : 5,
 		text : []
@@ -8989,6 +9231,7 @@ function SC3Widget (args) {
 	this.createPucks("Spinepuck", this.data.cells, 0, this.data.radius/2, 0.8);
 };
 
+SC3Widget.prototype.blink = SampleChangerWidget.prototype.blink;
 SC3Widget.prototype.getPuckIndexFromAngle = SampleChangerWidget.prototype.getPuckIndexFromAngle;
 SC3Widget.prototype.createPucks = SampleChangerWidget.prototype.createPucks;
 SC3Widget.prototype.getPanel = SampleChangerWidget.prototype.getPanel;
