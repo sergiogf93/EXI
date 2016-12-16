@@ -97,12 +97,12 @@ QueueGrid.prototype.getImage = function(sample, name) {
 QueueGrid.prototype.parseDataById = function (data) {
 	var parsed = {};
 	data.sort(function (a,b){
-		return a.measurementId - b.measurementId;
+		return a.Measurement_measurementId - b.Measurement_measurementId;
 	});
-	var byDataCollectionId = _.keyBy(data,'dataCollectionId');
+	var byDataCollectionId = _.keyBy(data,'SaxsDataCollection_dataCollectionId');
 	for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
 		var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
-		parsed[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
+		parsed[dataCollectionId] = _.filter(data,{'SaxsDataCollection_dataCollectionId' : dataCollectionId});
 	}
 	return parsed;
 }
@@ -131,4 +131,14 @@ QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
        
     var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
 
+};
+
+QueueGrid.prototype.getPanel = function(){
+    var _this = this;
+
+	return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : true,
+        padding : this.padding
+	}
 };

@@ -1,5 +1,4 @@
 function SAXSExiController() {
-    
 	this.init();
 }
 
@@ -1094,9 +1093,10 @@ function DataCollectionMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGrid({
+	this.grid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
 		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
+		padding : 40,
 		sorters : [ {
 			property : 'macromoleculeAcronym',
 			direction : 'ASC' } ] });
@@ -1111,7 +1111,7 @@ DataCollectionMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 DataCollectionMainView.prototype.filter = function(macromoleculeAcronym, bufferAcronym) {
 	this.grid.key = {};
-	this.grid.store.filter( [{property : "bufferAcronym", value : bufferAcronym, anyMacth : true}]);
+	this.grid.filter("bufferAcronym",bufferAcronym);
 };
 
 DataCollectionMainView.prototype.load = function(selected) {
@@ -1131,9 +1131,9 @@ DataCollectionMainView.prototype.load = function(selected) {
 
 	this.container.insert(0, this.grid.getPanel());
 
-	this.grid.panel.setLoading();
-	this.grid.store.loadData(selected);
-	this.grid.panel.setLoading(false);
+	//this.grid.panel.setLoading();
+	this.grid.load(selected);
+	//this.grid.panel.setLoading(false);
 };
 
 function DesignerMainView() {
@@ -1257,7 +1257,7 @@ ExperimentDesignerMainView.prototype.load = function() {
 function ExperimentMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
-	this.experimentHeaderForm = new ExperimentHeaderForm();
+	// this.experimentHeaderForm = new ExperimentHeaderForm();
 	var _this = this;
 	/** Viscosity **/
 	var storeViscosity = Ext.create('Ext.data.Store', {
@@ -1363,7 +1363,7 @@ function ExperimentMainView() {
 	});
 
 	
-	this.queueGrid = new QueueGrid({
+	this.queueGrid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
 //		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
 		sorters : [ {
@@ -1371,11 +1371,87 @@ function ExperimentMainView() {
 			direction : 'ASC'
 		} ]
 	});
-	
+
+	this.queueGridVersion2 = new QueueGridTest();
+
+	this.activePanel = this.queueGrid;
 	
 }
 
 ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+ExperimentMainView.prototype.getToolBar = function() {
+    var _this = this;
+    function onMenuClicked(widget){
+        if (_this.activePanel != widget){
+            _this.activePanel = widget;
+			_this.load(_this.experimentId);
+        }
+    }
+
+    var menu =  Ext.create('Ext.menu.Menu', {     
+        items: [{
+            text: 'Online Data Analysis',
+            handler: function(){
+                onMenuClicked(_this.queueGrid);
+            }
+        },{
+            text: 'Online Data Analysis (v2)',            
+            handler: function(){
+                onMenuClicked(_this.queueGridVersion2);
+            }
+        },{
+            text: 'Measurements',            
+            handler: function(){
+                onMenuClicked(_this.measurementGrid);
+            }
+        },{
+            text: 'Sample Plate Setup',            
+            handler: function(){
+                onMenuClicked(_this.specimenWidget);
+            }
+        }]
+   });
+    return Ext.create('Ext.toolbar.Toolbar', {
+        width: 500,
+        items: [
+           {
+                text:'View',
+                iconCls: 'bmenu',  // <-- icon
+                menu : menu  // assign menu by instance
+            }
+        ]
+    });
+};
+
+ExperimentMainView.prototype.getContainer = function() {
+
+	this.container = Ext.create('Ext.container.Container',{
+		layout : 'fit',
+		height : 700,
+		padding : 20,
+		style : {
+			borderColor : 'gray',
+			borderStyle : 'solid',
+			borderWidth : '1px',
+			'background-color' : 'white' 
+		},
+		items : [this.activePanel.getPanel()]
+	});
+
+	return Ext.create('Ext.panel.Panel', {
+	    margin : 30,
+		bodyStyle : {
+			"background-color" : "#E6E6E6" 
+		},
+		tbar : this.getToolBar(),
+	    items: [this.container]
+	});
+};
+
+
+
+
 
 ExperimentMainView.prototype.getSelected = function() {
 	var selected = [];
@@ -1466,43 +1542,29 @@ ExperimentMainView.prototype.getTabs = function() {
 };
 
 
-ExperimentMainView.prototype.getContainer = function() {
-	return Ext.create('Ext.container.Container', {
-	    layout: {
-	        type: 'anchor'
-	    },
-	    defaults : {
-			anchor : '100%',
-			hideEmptyLabel : false },
-	    margin : 30,
-		bodyStyle : {
-			"background-color" : "#E6E6E6" 
-		},
-	    items: [
-	            this.experimentHeaderForm.getPanel(),
-	            this.getTabs()
-	    ]
-	});
-};
+
 
 
 
 ExperimentMainView.prototype.load = function(experimentId) {
 	var _this = this;
+	_this.experimentId = experimentId;
+	_this.container.removeAll();
+	_this.container.add(_this.activePanel.getPanel());
 	_this.panel.setLoading();
-	_this.queueGrid.panel.setLoading();
 	var onSuccess = function(sender, experiments){
 		_this.experiment = new Experiment(experiments[0]);
-		_this.experimentHeaderForm.load(_this.experiment);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.specimenWidget.refresh(_this.experiment);
+		_this.activePanel.load(_this.experiment);
+		// _this.experimentHeaderForm.load(_this.experiment);
+		// _this.measurementGrid.loadExperiment(_this.experiment);
+		// _this.specimenWidget.refresh(_this.experiment);
 		_this.panel.setTitle(experiments[0].name);
 		_this.panel.setLoading(false);	
-		var onSuccess = function(sender, data){
-			_this.queueGrid.load(data);
-			_this.queueGrid.panel.setLoading(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		// var onSuccess = function(sender, data){
+		// 	_this.queueGrid.load(data);
+		// 	// _this.queueGrid.setLoading(false);
+		// };
+		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experimentId);
 };
@@ -3026,6 +3088,140 @@ TemplateMainView.prototype.load = function(experiments) {
 	this.panel.setTitle("Template");
 };
 
+function QueueGrid(args) {
+    this.decimals = 3;
+	this.onSelect = new Event();
+
+	this.maxHeight = 600;
+	this.imgWidth = 77;
+	this.padding = 0;
+	
+	this.id = BUI.id();
+	this.title = 'Data Collections';
+	this.key = {};
+
+	this.selectionMode = 'MULTI';
+	
+	this.collapsible = true;
+	this.collapsed = false;
+	
+	var _this = this;
+	this.filters = [ function(item) {
+		if (item.data.dataCollectionId == null) {
+			return false;
+		}
+		if (_this.key[item.data.dataCollectionId] == null) {
+			_this.key[item.data.dataCollectionId] = [];
+		}
+		_this.key[item.data.dataCollectionId].push(item.data);
+		return item.data.macromoleculeId != null;
+	} ];
+	if (args!= null){
+		if (args.maxHeight != null){
+			this.maxHeight = args.maxHeight;
+		}
+		if (args.padding != null){
+			this.padding = args.padding;
+		}
+		if (args.collapsible != null){
+			this.collapsible = args.collapsible;
+		}
+		if (args.collapsed != null){
+			this.collapsed = args.collapsed;
+		}
+		if (args.selectionMode != null){
+			this.selectionMode = args.selectionMode;
+		}
+		if (args.title != null){
+			if (args.title == false){
+				this.title = null;
+			}
+		}
+	}
+	
+	this.selected = []; 
+	this.onSelectionChange = new Event();
+	this.onDeselect = new Event(this);
+	this.onSelect = new Event(this)
+}
+
+QueueGrid.prototype.getPercentage = function(averaged, total) {
+	
+	var color = "undefined";
+	if (averaged == null){
+		averaged = "NA";
+		color = "orange";
+	}
+	if (total == null){
+		total = "NA";
+		color = "orange";
+	}
+	
+	if ((averaged != "NA")&(total != "NA")){
+		if (averaged/total >= 0.3){
+			color = "orange";
+		}
+		if (averaged/total > 0.7){
+			// color = "#BCF5A9";
+			color = "undefined";
+		}
+		
+		if (averaged/total < 0.3){
+			color = "red";
+		}
+		
+		
+	}
+	
+	return {color : color,
+			text : averaged + " / " + total};
+};
+
+QueueGrid.prototype.getImage = function(sample, name) {
+	if (sample.subtractionId != null) {
+		var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.subtractionId, name);
+		return url;
+	}
+};
+
+QueueGrid.prototype.parseDataById = function (data) {
+	var parsed = {};
+	data.sort(function (a,b){
+		return a.measurementId - b.measurementId;
+	});
+	var byDataCollectionId = _.keyBy(data,'dataCollectionId');
+	for (var i=0 ; i < _.keys(byDataCollectionId).length ; i++) {
+		var dataCollectionId = Number(_.keys(byDataCollectionId)[i]);
+		parsed[dataCollectionId] = _.filter(data,{'dataCollectionId' : dataCollectionId});
+	}
+	return parsed;
+}
+
+
+/**
+* Attaches the events to lazy load to the images. Images concerned are with the class queue-img
+*
+* @method attachCallBackAfterRender
+*/
+QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
+    
+    var _this = this;
+	
+    var lazy = {
+            bind: 'event',
+            /** !!IMPORTANT this is the parent node which contains the scroll **/
+            appendScroll: nodeWithScroll,
+            beforeLoad: function(element) {
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
+            },           
+            onFinishedAll: function() {
+                EXI.mainStatusBar.showReady();
+            }
+    };
+       
+    var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
+
+};
 /**
  * Example form
  * 
@@ -8512,7 +8708,7 @@ function MeasurementGrid(args) {
 	
 	this.id = BUI.id();
 
-	this.height = 500;
+	this.height = 600;
 	this.width = 900;
 
 	this.maxWidth = 1200;
@@ -8555,19 +8751,11 @@ function MeasurementGrid(args) {
 		direction : 'ASC'
 	} ];
 	
-//	this.selModel = Ext.create('Ext.selection.RowModel', {
-//		allowDeselect : true,
-//		mode : 'MULTI',
-//		listeners : {
-//			selectionchange : function(sm, selections) {
-//				var selected = [];
-//				for (var i = 0; i < selections.length; i++) {
-//					selected.push(selections[i].raw);
-//				}
-//				_this.onSelected.notify(selected);
-//			}
-//		}
-//	});
+	// this.store = Ext.create('Ext.data.Store', {
+	// 	fields : [ 'macromoleculeId', 'name', 'acronym', 'comments' ],
+	// 	data : [],
+	// 	sorters : this.sorter
+	// });
 	
 	
 	if (args != null) {
@@ -8661,76 +8849,34 @@ function MeasurementGrid(args) {
 }
 
 
-
-
-
-MeasurementGrid.prototype.edit = function(macromolecule) {
-	var _this = this;
-	var window = new MacromoleculeWindow();
-	window.onSave.attach(function(sender) {
-//		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
-//		_this.onMacromoleculesChanged.notify();
-	});
-	window.draw(macromolecule);
-};
-
-//MeasurementGrid.prototype.getTbar = function() {
-//	var _this = this;
-//	var actions = [];
-//
-//	actions.push(Ext.create('Ext.Action', {
-//		icon: '../images/icon/add.png',
-//		text : 'Add',
-//		disabled : false,
-//		handler : function(widget, event) {
-//			_this.edit();
-//		}
-//	}));
-//	actions.push("->");
-//	actions.push(Ext.create('Ext.Action', {
-//		icon : '../images/icon/refresh.png',
-//		text : 'Update From SMIS',
-//		tooltip : "Retrieve all the macromolecules of your proposal from SMIS database",
-//		disabled : false,
-//		handler : function(widget, event) {
-//			_this.grid.setLoading("Connecting to SMIS");
-//			var adapter = new BiosaxsDataAdapter();
-//			adapter.onSuccess.attach(function(sender, data) {
-//				BIOSAXS.proposal.setMacromolecules(data.macromolecules);
-//				_this.refresh(BIOSAXS.proposal.macromolecules);
-//				_this.grid.setLoading(false);
-//			});
-//			adapter.onError.attach(function(sender, data) {
-//				_this.grid.setLoading(false);
-//			});
-//			adapter.updateDataBaseFromSMIS();
-//		}
-//	}));
-//	return actions;
-//};
-
-MeasurementGrid.prototype.deselectAll = function() {
-	this.grid.getSelectionModel().deselectAll();
-};
-
-MeasurementGrid.prototype.selectById = function(macromoleculeId) {
-	this.grid.getSelectionModel().deselectAll();
-	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
-		var item = this.grid.getStore().data.items[i].raw;
-		if (item.macromoleculeId == macromoleculeId) {
-			this.grid.getSelectionModel().select(i);
-		}
-	}
-};
-
-MeasurementGrid.prototype.load = function(data) {
-	this.store.loadData(data, false);
-};
-
-MeasurementGrid.prototype.loadExperiment = function(experiment) {
+MeasurementGrid.prototype.load = function(experiment) {
 	this.experimentList = new ExperimentList([ experiment ]);
 	var data = this._prepareData(this.experimentList.getMeasurements(), this.experimentList);
-	this.load(data);
+
+	for (var i=0 ; i < data.length ; i++){
+		data[i].samplePlateLetter = BUI.getSamplePlateLetters()[data[i].bufferSampleplateposition3VO.rowNumber - 1];
+	}
+
+	data.sort(function (a,b){
+		return a.measurementId - b.measurementId;
+	});
+
+	var html = "";
+	dust.render("measurement.grid.template", {rows : data, id : this.id,  height : this.height}, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	// this.store.loadData(data, false);
+};
+
+MeasurementGrid.prototype.getPanel = function(){
+    var _this = this;
+
+	return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : false
+	}
 };
 
 MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
@@ -8795,485 +8941,503 @@ MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
 	return data;
 };
 
+// MeasurementGrid.prototype.edit = function(macromolecule) {
+// 	var _this = this;
+// 	var window = new MacromoleculeWindow();
+// 	window.onSave.attach(function(sender) {
+// //		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
+// //		_this.onMacromoleculesChanged.notify();
+// 	});
+// 	window.draw(macromolecule);
+// };
+
+// MeasurementGrid.prototype.deselectAll = function() {
+// 	this.grid.getSelectionModel().deselectAll();
+// };
+
+// MeasurementGrid.prototype.selectById = function(macromoleculeId) {
+// 	this.grid.getSelectionModel().deselectAll();
+// 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
+// 		var item = this.grid.getStore().data.items[i].raw;
+// 		if (item.macromoleculeId == macromoleculeId) {
+// 			this.grid.getSelectionModel().select(i);
+// 		}
+// 	}
+// };
+
+
 /**
  * @key name of the columns mathing the this.editor[key]
  */
-MeasurementGrid.prototype._getEditor = function(key) {
-	if (this.editor != null){
-		if (this.editor[key] != null) {
-			return this.editor[key];
-		}
-	}
-	return null;
-};
+// MeasurementGrid.prototype._getEditor = function(key) {
+// 	if (this.editor != null){
+// 		if (this.editor[key] != null) {
+// 			return this.editor[key];
+// 		}
+// 	}
+// 	return null;
+// };
 
-MeasurementGrid.prototype.getColumns = function() {
-	var _this = this;
-	var columns = [{
-			text : 'Order',
-			dataIndex : 'priority',
-			flex : 0.3,
-			hidden : _this.isPriorityColumnHidden,
-			sortable : true,
-			hidden : true
-		},
-		{
-			text : 'Run Number',
-			dataIndex : 'code',
-			flex : 0.5,
-			hidden : true,
-			sortable : true
-		},
-		{
-			text : 'Specimen',
-			columns : [
+// MeasurementGrid.prototype.getColumns = function() {
+// 	var _this = this;
+// 	var columns = [{
+// 			text : 'Order',
+// 			dataIndex : 'priority',
+// 			flex : 0.3,
+// 			hidden : _this.isPriorityColumnHidden,
+// 			sortable : true,
+// 			hidden : true
+// 		},
+// 		{
+// 			text : 'Run Number',
+// 			dataIndex : 'code',
+// 			flex : 0.5,
+// 			hidden : true,
+// 			sortable : true
+// 		},
+// 		{
+// 			text : 'Specimen',
+// 			columns : [
 
-					{
-						text : '',
-						dataIndex : 'macromoleculeId',
-						flex : 1,
-						hidden : true,
-						sortable : true
-					},
-					{
-						text : 'Macromolecule',
-						dataIndex : 'acronym',
-						flex : 1,
-						sortable : true
-					},
-					{
-						text : 'Conc. ',
-						dataIndex : 'concentration',
-						flex : 1,
-						sortable : true
-					},
-					{
-						text : '',
-						dataIndex : 'bufferId',
-						flex : 1,
-						hidden : true,
-						sortable : true
-					},
-					{
-						text : 'Buffer',
-						dataIndex : 'buffer_acronym',
-						flex : 1,
-						renderer : function(val, y, sample) {
-							if (sample.data.bufferSampleplateposition3VO != null) {
-								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
-										+ sample.data.bufferSampleplate.slotPositionColumn + ", "
-										+ BUI.getSamplePlateLetters()[sample.data.bufferSampleplateposition3VO.rowNumber - 1] + "-"
-										+ sample.data.bufferSampleplateposition3VO.columnNumber + "]</span>";
-							}
-							return val;
-						},
-						sortable : true
-					}, {
-						text : 'Position',
-						flex : 1,
-						hidden : true,
-					} ]
-		},
-		{
-			text : 'Parameters',
-			columns : [
-					{
-						text : 'Ex. Flow. time (s)',
-						dataIndex : 'extraFlowTime',
-						flex : 1,
-						hidden : true,
-					},
-					{
-						text : 'Exp. Temp.',
-						dataIndex : 'exposureTemperature',
-						flex : 1,
-						sortable : true,
-						editor : this._getEditor("exposureTemperature")
-					},
-					{
-						text : 'Vol. Load',
-						dataIndex : 'volumeToLoad',
-						flex : 0.5,
-						hidden : false,
-						editor : this._getEditor("volumeToLoad"),
-					},
-					{
-						text : 'Volume in Well',
-						dataIndex : 'volume',
-						hidden : true,
-						editor : this._getEditor("volume"),
-						flex : 1
-					},
-					{
-						text : 'Trans.',
-						dataIndex : 'transmission',
-						flex : 1,
-						editor : this._getEditor("transmission"),
-					},
-					{
-						text : 'Wait T.',
-						dataIndex : 'waitTime',
-						editor : this._getEditor("waitTime"),
-						flex : 0.5
-					},
-					{
-						text : 'Flow',
-						dataIndex : 'flow',
-						editor : this._getEditor("flow"),
-						flex : 0.3
-					},
-					{
-						text : 'Viscosity',
-						dataIndex : 'viscosity',
-						tooltip : 'The viscosity of a fluid is a measure of its resistance to gradual deformation by shear stress or tensile stress. For liquids, it corresponds to the informal notion of "thickness"',
-						editor : this._getEditor("viscosity"),
-						flex : 0.5
-					} ]
-		}, {
-			text : 'Status',
-			dataIndex : 'status',
-//			width : 50,
-			flex : 1,
-			hidden : _this.isStatusColumnHidden,
-			renderer : function(val, record, r){
-				if (val != null){
-					return "<span style='font-weight: bold;'>" + val +"</span>"
-				}
-			}
-		}, {
-			text : 'Time',
-			dataIndex : 'time',
-			flex : 1,
-			hidden : _this.isTimeColumnHidden,
-		}, {
-			text : 'Energy',
-			dataIndex : 'energy',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Real Exp. Temp.(C)',
-			flex : 1,
-			dataIndex : 'expExposureTemperature',
-			hidden : true
-		}, {
-			text : 'Storage Temp.(C)',
-			flex : 1,
-			dataIndex : 'storageTemperature',
-			hidden : true
-		}, {
-			text : 'Time/Frame (s)',
-			flex : 1,
-			dataIndex : 'timePerFrame',
-			hidden : true
-		}, {
-			text : 'Radiation Relative',
-			dataIndex : 'radiationRelative',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Radiation Absolute',
-			dataIndex : 'radiationAbsolute',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Comments',
-			dataIndex : 'comments',
-			flex : 1,
-			hidden : true,
-			editor : this._getEditor("comments")
+// 					{
+// 						text : '',
+// 						dataIndex : 'macromoleculeId',
+// 						flex : 1,
+// 						hidden : true,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : 'Macromolecule',
+// 						dataIndex : 'acronym',
+// 						flex : 1,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : 'Conc. ',
+// 						dataIndex : 'concentration',
+// 						flex : 1,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : '',
+// 						dataIndex : 'bufferId',
+// 						flex : 1,
+// 						hidden : true,
+// 						sortable : true
+// 					},
+// 					{
+// 						text : 'Buffer',
+// 						dataIndex : 'buffer_acronym',
+// 						flex : 1,
+// 						renderer : function(val, y, sample) {
+// 							if (sample.data.bufferSampleplateposition3VO != null) {
+// 								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
+// 										+ sample.data.bufferSampleplate.slotPositionColumn + ", "
+// 										+ BUI.getSamplePlateLetters()[sample.data.bufferSampleplateposition3VO.rowNumber - 1] + "-"
+// 										+ sample.data.bufferSampleplateposition3VO.columnNumber + "]</span>";
+// 							}
+// 							return val;
+// 						},
+// 						sortable : true
+// 					}, {
+// 						text : 'Position',
+// 						flex : 1,
+// 						hidden : true,
+// 					} ]
+// 		},
+// 		{
+// 			text : 'Parameters',
+// 			columns : [
+// 					{
+// 						text : 'Ex. Flow. time (s)',
+// 						dataIndex : 'extraFlowTime',
+// 						flex : 1,
+// 						hidden : true,
+// 					},
+// 					{
+// 						text : 'Exp. Temp.',
+// 						dataIndex : 'exposureTemperature',
+// 						flex : 1,
+// 						sortable : true,
+// 						editor : this._getEditor("exposureTemperature")
+// 					},
+// 					{
+// 						text : 'Vol. Load',
+// 						dataIndex : 'volumeToLoad',
+// 						flex : 0.5,
+// 						hidden : false,
+// 						editor : this._getEditor("volumeToLoad"),
+// 					},
+// 					{
+// 						text : 'Volume in Well',
+// 						dataIndex : 'volume',
+// 						hidden : true,
+// 						editor : this._getEditor("volume"),
+// 						flex : 1
+// 					},
+// 					{
+// 						text : 'Trans.',
+// 						dataIndex : 'transmission',
+// 						flex : 1,
+// 						editor : this._getEditor("transmission"),
+// 					},
+// 					{
+// 						text : 'Wait T.',
+// 						dataIndex : 'waitTime',
+// 						editor : this._getEditor("waitTime"),
+// 						flex : 0.5
+// 					},
+// 					{
+// 						text : 'Flow',
+// 						dataIndex : 'flow',
+// 						editor : this._getEditor("flow"),
+// 						flex : 0.3
+// 					},
+// 					{
+// 						text : 'Viscosity',
+// 						dataIndex : 'viscosity',
+// 						tooltip : 'The viscosity of a fluid is a measure of its resistance to gradual deformation by shear stress or tensile stress. For liquids, it corresponds to the informal notion of "thickness"',
+// 						editor : this._getEditor("viscosity"),
+// 						flex : 0.5
+// 					} ]
+// 		}, {
+// 			text : 'Status',
+// 			dataIndex : 'status',
+// //			width : 50,
+// 			flex : 1,
+// 			hidden : _this.isStatusColumnHidden,
+// 			renderer : function(val, record, r){
+// 				if (val != null){
+// 					return "<span style='font-weight: bold;'>" + val +"</span>"
+// 				}
+// 			}
+// 		}, {
+// 			text : 'Time',
+// 			dataIndex : 'time',
+// 			flex : 1,
+// 			hidden : _this.isTimeColumnHidden,
+// 		}, {
+// 			text : 'Energy',
+// 			dataIndex : 'energy',
+// 			flex : 1,
+// 			hidden : true
+// 		}, {
+// 			text : 'Real Exp. Temp.(C)',
+// 			flex : 1,
+// 			dataIndex : 'expExposureTemperature',
+// 			hidden : true
+// 		}, {
+// 			text : 'Storage Temp.(C)',
+// 			flex : 1,
+// 			dataIndex : 'storageTemperature',
+// 			hidden : true
+// 		}, {
+// 			text : 'Time/Frame (s)',
+// 			flex : 1,
+// 			dataIndex : 'timePerFrame',
+// 			hidden : true
+// 		}, {
+// 			text : 'Radiation Relative',
+// 			dataIndex : 'radiationRelative',
+// 			flex : 1,
+// 			hidden : true
+// 		}, {
+// 			text : 'Radiation Absolute',
+// 			dataIndex : 'radiationAbsolute',
+// 			flex : 1,
+// 			hidden : true
+// 		}, {
+// 			text : 'Comments',
+// 			dataIndex : 'comments',
+// 			flex : 1,
+// 			hidden : true,
+// 			editor : this._getEditor("comments")
 
-		}, 
-		{
-			id : _this.id + 'buttonRemoveSample',
-			text : '',
-			hidden : !_this.removeBtnEnabled,
-			flex : 1,
-//			sortable : false,
-			renderer : function(value, metaData, record, rowIndex, colIndex, store) {
-//				return "asdsad"
-				if (record.data.macromoleculeId != null) {
-					if (_this.removeBtnEnabled) {
-						return BUI.getRedButton('REMOVE');
-					}
-				}
-			}
-		}
-//		{
-//			xtype : 'actioncolumn',
-//			text : 'Remove',
-//			flex : 1,
-//			sortable : false,
-//			editable : false,
-//			items : [{
-//			         	icon : '../images/icon/ic_delete_black_24dp.png',
-//		                tooltip: 'Remove',
-//		                handler: function(grid, rowIndex, colIndex) {
-//		                    grid.getStore().removeAt(rowIndex);
-//		                }
-//			}
-//			]
-//		} 
-		];
-	return columns;
-};
+// 		}, 
+// 		{
+// 			id : _this.id + 'buttonRemoveSample',
+// 			text : '',
+// 			hidden : !_this.removeBtnEnabled,
+// 			flex : 1,
+// //			sortable : false,
+// 			renderer : function(value, metaData, record, rowIndex, colIndex, store) {
+// //				return "asdsad"
+// 				if (record.data.macromoleculeId != null) {
+// 					if (_this.removeBtnEnabled) {
+// 						return BUI.getRedButton('REMOVE');
+// 					}
+// 				}
+// 			}
+// 		}
+// //		{
+// //			xtype : 'actioncolumn',
+// //			text : 'Remove',
+// //			flex : 1,
+// //			sortable : false,
+// //			editable : false,
+// //			items : [{
+// //			         	icon : '../images/icon/ic_delete_black_24dp.png',
+// //		                tooltip: 'Remove',
+// //		                handler: function(grid, rowIndex, colIndex) {
+// //		                    grid.getStore().removeAt(rowIndex);
+// //		                }
+// //			}
+// //			]
+// //		} 
+// 		];
+// 	return columns;
+// };
 
 
 /**
  * If updateRowEnabled returns an array with Ext.grid.plugin.RowEditing
  */
-MeasurementGrid.prototype._getPlugins = function() {
-	var _this = this;
-	var plugins = [];
-	if (this.updateRowEnabled) {
-		plugins.push(Ext.create('Ext.grid.plugin.RowEditing', {
-			clicksToEdit : 1,
-			listeners : {
-				validateedit : function(grid, e) {
-					/** Setting values * */
-					for ( var key in _this.editor) {
-						e.record.data[key] = e.newValues[key];
-					}
-					/** Comments are always updatable* */
-					e.record.data.comments = e.newValues.comments;
+// MeasurementGrid.prototype._getPlugins = function() {
+// 	var _this = this;
+// 	var plugins = [];
+// 	if (this.updateRowEnabled) {
+// 		plugins.push(Ext.create('Ext.grid.plugin.RowEditing', {
+// 			clicksToEdit : 1,
+// 			listeners : {
+// 				validateedit : function(grid, e) {
+// 					/** Setting values * */
+// 					for ( var key in _this.editor) {
+// 						e.record.data[key] = e.newValues[key];
+// 					}
+// 					/** Comments are always updatable* */
+// 					e.record.data.comments = e.newValues.comments;
 					
-					var onSuccess = (function(sender, measurement) {
-						_this.onMeasurementChanged.notify(measurement);
-						_this.grid.setLoading(false);
-					});
-					_this.grid.setLoading();
-					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.saveMeasurement(e.record.data);
-				}
-			}
-		}));
-	}
-	return plugins;
-};
+// 					var onSuccess = (function(sender, measurement) {
+// 						_this.onMeasurementChanged.notify(measurement);
+// 						_this.grid.setLoading(false);
+// 					});
+// 					_this.grid.setLoading();
+// 					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.saveMeasurement(e.record.data);
+// 				}
+// 			}
+// 		}));
+// 	}
+// 	return plugins;
+// };
 
 
-/** Returns the grid **/
-MeasurementGrid.prototype.getPanel = function() {
-	var _this = this;
 
-	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'macromoleculeId', 'name', 'acronym', 'comments' ],
-		data : [],
-		sorters : this.sorter
-	});
+// MeasurementGrid.prototype.getPanel = function() {
+// 	var _this = this;
 
-
-	if (this.multiselect) {
-		this.selModel = Ext.create('Ext.selection.CheckboxModel', {
-			multiSelect : this.multiselect,
-			listeners : {
-				selectionchange : function(sm, selections) {
-					var macromolecules = [];
-					for ( var i = 0; i < selections.length; i++) {
-						macromolecules.push(selections[i].raw);
-					}
-					_this.onSelected.notify(macromolecules);
-				}
-			}
-		});
-	}
+// 	if (this.multiselect) {
+// 		this.selModel = Ext.create('Ext.selection.CheckboxModel', {
+// 			multiSelect : this.multiselect,
+// 			listeners : {
+// 				selectionchange : function(sm, selections) {
+// 					var macromolecules = [];
+// 					for ( var i = 0; i < selections.length; i++) {
+// 						macromolecules.push(selections[i].raw);
+// 					}
+// 					_this.onSelected.notify(macromolecules);
+// 				}
+// 			}
+// 		});
+// 	}
 	
-	 var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
-	        clicksToEdit: 1,
-	        autoCancel: true
-	    });
+// 	 var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
+// 	        clicksToEdit: 1,
+// 	        autoCancel: true
+// 	    });
 	  
-	 var bbar = {};
-		try {
-			bbar = Ext.create('Ext.ux.StatusBar', {
-				id : _this.id + 'basic-statusbar',
-				defaultText : 'Ready',
-				text : 'Ready',
-				iconCls : 'x-status-valid',
-				items : []
-			});
-		} catch (exp) {
-			console.log("bbar error");
-		}
+// 	 var bbar = {};
+// 		try {
+// 			bbar = Ext.create('Ext.ux.StatusBar', {
+// 				id : _this.id + 'basic-statusbar',
+// 				defaultText : 'Ready',
+// 				text : 'Ready',
+// 				iconCls : 'x-status-valid',
+// 				items : []
+// 			});
+// 		} catch (exp) {
+// 			console.log("bbar error");
+// 		}
 		
 		
-	this.grid = Ext.create('Ext.grid.Panel', {
-		id : this.id,
-		title : this.title,
-		plugins : this._getPlugins(),
-		margin : this.margin,
-		store : this.store,
-		height : this.height,
-		maxHeight : this.maxHeight,
-		columns : this.getColumns(),
-		bbar : bbar,
-		tbar :  this._getMenu(),
-		cls : 'border-grid',
-		viewConfig : {
-			stripeRows : true,
-			getRowClass : function(record, index, rowParams, store) {
-				if (record.data.status == "DONE") {
-					return 'green-row';
-				}
-			},
-			listeners : {
-				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-				},
-				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-					if (td.innerHTML.indexOf("REMOVE") != -1){
-						grid.getStore().removeAt(rowIndex);
+// 	this.grid = Ext.create('Ext.grid.Panel', {
+// 		id : this.id,
+// 		title : this.title,
+// 		plugins : this._getPlugins(),
+// 		margin : this.margin,
+// 		store : this.store,
+// 		height : this.height,
+// 		maxHeight : this.maxHeight,
+// 		columns : this.getColumns(),
+// 		bbar : bbar,
+// 		tbar :  this._getMenu(),
+// 		cls : 'border-grid',
+// 		viewConfig : {
+// 			stripeRows : true,
+// 			getRowClass : function(record, index, rowParams, store) {
+// 				if (record.data.status == "DONE") {
+// 					return 'green-row';
+// 				}
+// 			},
+// 			listeners : {
+// 				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+// 				},
+// 				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
+// 					if (td.innerHTML.indexOf("REMOVE") != -1){
+// 						grid.getStore().removeAt(rowIndex);
 					
 						
-						if (record.data.measurementId != null) {
-							/** For testing * */
-							grid.setLoading("ISPyB: Removing measurement");
-							var onSuccess = (function(sender, data) {
-								grid.setLoading(false);
-								/**
-								 * We get and refresh experiment
-								 * because specimens has changed *
-								 */
-								var onExperimentRetrievedSuccess =  (function(sender, experiment) {
-									_this.onRemoved.notify(experiment);
-									_this._showStatusBarReady('Ready');
-								});
-								EXI.getDataAdapter({onSuccess : onExperimentRetrievedSuccess}).saxs.experiment.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
-								_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
-							});
-							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.removeMeasurement(record.data);
-						}
-					}
-				}
+// 						if (record.data.measurementId != null) {
+// 							/** For testing **/
+// 							grid.setLoading("ISPyB: Removing measurement");
+// 							var onSuccess = (function(sender, data) {
+// 								grid.setLoading(false);
+// 								/**
+// 								 * We get and refresh experiment
+// 								 * because specimens has changed */
+								 
+// 								var onExperimentRetrievedSuccess =  (function(sender, experiment) {
+// 									_this.onRemoved.notify(experiment);
+// 									_this._showStatusBarReady('Ready');
+// 								});
+// 								EXI.getDataAdapter({onSuccess : onExperimentRetrievedSuccess}).saxs.experiment.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
+// 								_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
+// 							});
+// 							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.removeMeasurement(record.data);
+// 						}
+// 					}
+// 				}
 
-			}
-		}
-	});
-	return this.grid;
-};
+// 			}
+// 		}
+// 	});
+// 	return this.grid;
+// };
 
 /**
  * Set status bar to ready (ok icon)
  * 
  * @msg message to be displayed on the bar
  */
-MeasurementGrid.prototype._showStatusBarReady = function(msg) {
-	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
-	statusBar.setStatus({
-		text : msg,
-		iconCls : 'x-status-valid',
-		clear : false
-	});
-};
+// MeasurementGrid.prototype._showStatusBarReady = function(msg) {
+// 	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
+// 	statusBar.setStatus({
+// 		text : msg,
+// 		iconCls : 'x-status-valid',
+// 		clear : false
+// 	});
+// };
 
 /**
  * Set status bar to busy (refreshing icon)
  * 
  * @msg message to be displayed on the bar
  */
-MeasurementGrid.prototype._showStatusBarBusy = function(msg) {
-	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
-	statusBar.setStatus({
-		text : msg,
-		iconCls : 'x-status-busy',
-		clear : false
-	});
-};
+// MeasurementGrid.prototype._showStatusBarBusy = function(msg) {
+// 	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
+// 	statusBar.setStatus({
+// 		text : msg,
+// 		iconCls : 'x-status-busy',
+// 		clear : false
+// 	});
+// };
 
 /** Opens WizardWidget for adding new measurements * */
-MeasurementGrid.prototype._openAddMeasurementWindow = function(measurements, experiments) {
-	var _this = this;
-	var wizardWidget = new WizardWidget({
-		windowMode : true,
-		width : 1200
-	});
-	wizardWidget.onFinished.attach(function(sender, result) {
-		_this.grid.setLoading();
-		wizardWidget.window.close();
-		var onSuccess = (function(sender, data) {
-			_this.onExperimentChanged.notify(data);
-			_this.grid.setLoading(false);
+// MeasurementGrid.prototype._openAddMeasurementWindow = function(measurements, experiments) {
+// 	var _this = this;
+// 	var wizardWidget = new WizardWidget({
+// 		windowMode : true,
+// 		width : 1200
+// 	});
+// 	wizardWidget.onFinished.attach(function(sender, result) {
+// 		_this.grid.setLoading();
+// 		wizardWidget.window.close();
+// 		var onSuccess = (function(sender, data) {
+// 			_this.onExperimentChanged.notify(data);
+// 			_this.grid.setLoading(false);
 			
-		});
-		wizardWidget.current.setLoading("ISPyB: Adding measurements");
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
-	});
+// 		});
+// 		wizardWidget.current.setLoading("ISPyB: Adding measurements");
+// 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
+// 	});
 
-	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers(), {
-		noNext : true
-	}));
-};
+// 	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers(), {
+// 		noNext : true
+// 	}));
+// };
 
-MeasurementGrid.prototype._getMenu = function() {
-	var _this = this;
-	if (this.tbar) {
+// MeasurementGrid.prototype._getMenu = function() {
+// 	var _this = this;
+// 	if (this.tbar) {
 
-		var items = [];
-		if (_this.addBtnEnable) {
-			items.push({
-				icon: '../images/icon/add.png',
-				text : 'Add',
-				handler : function() {
-					_this._openAddMeasurementWindow();
-				}
-			});
-		}
+// 		var items = [];
+// 		if (_this.addBtnEnable) {
+// 			items.push({
+// 				icon: '../images/icon/add.png',
+// 				text : 'Add',
+// 				handler : function() {
+// 					_this._openAddMeasurementWindow();
+// 				}
+// 			});
+// 		}
 
 
-		if (_this.sortingBtnEnable) {
-			var split = Ext.create('Ext.button.Split', {
-				text : 'Sort by',
-				icon: '../images/icon/sort.png',
-				handler : function() {
-				},
-				menu : new Ext.menu.Menu({
-					items : [
-					{
-						text : 'First Created First Measured',
-						handler : function() {
-							_this._sortBy("FIFO");
-						}
-					}, "-", {
-						text : 'Default',
-						handler : function() {
-							_this._sortBy("DEFAULT");
-						}
-					} ]
-				})
-			});
-			items.push(split);
-		}
+// 		if (_this.sortingBtnEnable) {
+// 			var split = Ext.create('Ext.button.Split', {
+// 				text : 'Sort by',
+// 				icon: '../images/icon/sort.png',
+// 				handler : function() {
+// 				},
+// 				menu : new Ext.menu.Menu({
+// 					items : [
+// 					{
+// 						text : 'First Created First Measured',
+// 						handler : function() {
+// 							_this._sortBy("FIFO");
+// 						}
+// 					}, "-", {
+// 						text : 'Default',
+// 						handler : function() {
+// 							_this._sortBy("DEFAULT");
+// 						}
+// 					} ]
+// 				})
+// 			});
+// 			items.push(split);
+// 		}
 
-		if (_this.collapseBtnEnable) {
-			items.push({
-				text : 'Collapse buffers',
-				enableToggle : true,
-				scope : this,
-				toggleHandler : function(item, pressed) {
-					this.collapsed = pressed;
-					this.grid.getStore().loadData(this._prepareData(this.measurements, this.experiments), false);
-				},
-				pressed : this.collapsed
-			});
-		}
+// 		if (_this.collapseBtnEnable) {
+// 			items.push({
+// 				text : 'Collapse buffers',
+// 				enableToggle : true,
+// 				scope : this,
+// 				toggleHandler : function(item, pressed) {
+// 					this.collapsed = pressed;
+// 					this.grid.getStore().loadData(this._prepareData(this.measurements, this.experiments), false);
+// 				},
+// 				pressed : this.collapsed
+// 			});
+// 		}
 
-		var tb = Ext.create('Ext.toolbar.Toolbar', {
-			cls : 'exi-top-bar',
-			 height : 45,
-			items : items
-		});
-		return tb;
-	}
-	return null;
-};
+// 		var tb = Ext.create('Ext.toolbar.Toolbar', {
+// 			cls : 'exi-top-bar',
+// 			 height : 45,
+// 			items : items
+// 		});
+// 		return tb;
+// 	}
+// 	return null;
+// };
 
-MeasurementGrid.prototype._sortBy = function(sort) {
-	var _this = this;
-	var adapter = new DataAdapter();
-	var onSuccess = (function(sender, data) {
-		_this.onExperimentChanged.notify(data);
-		_this.grid.setLoading(false);
-	});
-	_this.grid.setLoading("Sorting");
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
-};
+// MeasurementGrid.prototype._sortBy = function(sort) {
+// 	var _this = this;
+// 	var adapter = new DataAdapter();
+// 	var onSuccess = (function(sender, data) {
+// 		_this.onExperimentChanged.notify(data);
+// 		_this.grid.setLoading(false);
+// 	});
+// 	_this.grid.setLoading("Sorting");
+// 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
+// };
 
 /**
  * Example form
@@ -13638,6 +13802,214 @@ function OctagonVertexGraphFormatter(id, defaultFormat, selectedFormat, overForm
 };
 
 
+function OverviewQueueGrid(args) {
+//	this.height = Ext.getBody().getHeight() - 500;
+	QueueGrid.call(this,args);
+    this.imgWidth = 200;
+
+}
+
+
+
+OverviewQueueGrid.prototype.getPercentage = QueueGrid.prototype.getPercentage;
+OverviewQueueGrid.prototype.getImage = QueueGrid.prototype.getImage;
+OverviewQueueGrid.prototype.parseDataById = QueueGrid.prototype.parseDataById;
+OverviewQueueGrid.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCallBackAfterRender;
+
+
+
+OverviewQueueGrid.prototype.parseData = function(data) {
+	var templateData = {rows : [], id : this.id, height : this.maxHeight};
+	if (!_.isEmpty(data)) {
+		for (var i = 0 ; i < _.keys(data).length ; i++) {
+			var dataCollectionId = _.keys(data)[i];
+			var currentDataCollection = data[dataCollectionId];                      
+			var html = "";
+
+			var codes = [];
+			var macromoleculeInfo = [];
+			var averages = [];
+			var expTemp = currentDataCollection[0].exposureTemperature + " C";
+
+			var rg = "NA";
+			var points = "NA";
+			if (currentDataCollection[0].rg != null) {
+				rg = Number(currentDataCollection[0].rg).toFixed(this.decimals);
+				points = currentDataCollection[0].firstPointUsed + " - " + currentDataCollection[0].lastPointUsed + " (" + (currentDataCollection[0].lastPointUsed - currentDataCollection[0].firstPointUsed) + ")";
+			}	
+			var I0 = "NA";
+			if (currentDataCollection[0].I0 != null){
+				var I0 = Number(currentDataCollection[0].I0).toFixed(this.decimals-2);
+				var I0Stdev = Number(Number(currentDataCollection[0].I0Stdev).toFixed(this.decimals)).toExponential();
+			}
+
+			var rgGnom = "NA";
+			if (currentDataCollection[0].rgGnom != null) {
+				rgGnom = Number(currentDataCollection[0].rgGnom).toFixed(this.decimals);
+			}	
+			var total = "NA";
+			if (currentDataCollection[0].total != null) {
+				total = Number(currentDataCollection[0].total).toFixed(this.decimals);
+			}
+			var dmax = "NA";
+			if (currentDataCollection[0].dmax != null) {
+				dmax = Number(currentDataCollection[0].dmax).toFixed(this.decimals);
+			}
+
+			var volumePorod = "NA";
+			var mmvolest = "NA";
+			if (currentDataCollection[0].volumePorod != null) {
+				volumePorod = Number(currentDataCollection[0].volumePorod).toFixed(this.decimals);
+				mmvolest = Number(currentDataCollection[0].volumePorod / 2).toFixed(1) + " - "
+										+ Number(currentDataCollection[0].volumePorod / 1.5).toFixed(1);
+			}
+
+			var scattering = "";
+			var kratky = "";
+			var density = "";
+			var guinier = "";
+			
+            var dataReduction = false;
+            var abinitio = false;
+            var fit = false;
+            var superposition = false;
+            var rigidBody = false;
+
+			var concentration = "";
+			var macromoleculeAcronym = "";
+
+			for (var j = 0 ; j < currentDataCollection.length ; j++) {
+				var experiment = currentDataCollection[j];
+
+				codes.push(experiment.code);
+				if (experiment.concentration != 0) {
+					concentration = Number(experiment.concentration).toFixed(this.decimals-1);
+                    if (experiment.runCreationDate) {
+                        dataReduction = true;
+                    }
+                    if (experiment.abinitioCount != 0) {
+                        abinitio = true;
+                    }
+                    if (experiment.fitCount != 0) {
+                        fit = true;
+                    }
+                    if (experiment.superpositionCount != 0) {
+                        superposition = true;
+                    }
+                    if (experiment.rigidbodyCount != 0) {
+                        rigidBody = true;
+                    }
+				}
+				if (experiment.macromoleculeId != null) {
+					scattering = this.getImage(experiment,"scattering");
+					kratky = this.getImage(experiment,"kratky");
+					density = this.getImage(experiment,"density");
+					guinier = this.getImage(experiment,"guinier");
+				}
+				
+				if (experiment.macromoleculeAcronym != null) {
+					macromoleculeAcronym = experiment.macromoleculeAcronym;
+				}
+				macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
+				averages.push(this.getPercentage(experiment.framesMerge,experiment.framesCount));
+			}
+			
+			templateData.rows.push({
+									codes : codes,
+									macromoleculeAcronym : macromoleculeAcronym,
+									concentration : concentration,
+									averages : averages,
+									expTemp : expTemp,
+									rg : rg,
+									points : points,
+									I0 : I0,
+									I0Stdev : I0Stdev,
+									rgGnom : rgGnom,
+									total : total,
+									dmax : dmax,
+									volumePorod : volumePorod,
+									mmvolest : mmvolest,
+									scattering : scattering,
+									kratky : kratky,
+									density : density,
+									guinier : guinier,
+									imgWidth : this.imgWidth,
+                                    dataReduction : dataReduction,
+                                    abinitio : abinitio,
+                                    fit : fit,
+                                    superposition : superposition,
+                                    rigidBody : rigidBody,
+								});
+		}
+	}
+	
+	return templateData;
+};
+
+OverviewQueueGrid.prototype.load = function(experiment) {
+	var _this = this;
+	
+	this.setLoading();
+	_this.key = {};
+	if (experiment.experimentId) {
+		var onSuccess = function(sender, data){
+			if (data != null) {
+
+				_this.dataByDataCollectionId = _this.parseDataById(data);
+
+				_this.render(_this.dataByDataCollectionId);
+			}
+		};
+
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+	} else {
+		_this.dataByDataCollectionId = _this.parseDataById(experiment);
+		this.render(_this.dataByDataCollectionId);
+	}
+};
+
+OverviewQueueGrid.prototype.render = function(data) {
+	
+	var templateData = this.parseData(data);
+
+	var html = "";
+	dust.render("queue.grid.template", templateData, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+
+	this.attachCallBackAfterRender(document.getElementById("xx"));
+}
+
+
+OverviewQueueGrid.prototype.filter = function(key, value) {
+	var filtered = _.filter(this.dataByDataCollectionId,function(o) {return o[0]["bufferAcronym"] == value});
+	this.render(this.parseDataById([].concat.apply([], filtered)));
+}
+
+OverviewQueueGrid.prototype.setLoading = function(){
+	$('#' + this.id).html("Loading...");
+};
+
+OverviewQueueGrid.prototype.getPanel = function(){
+    var _this = this;
+
+	return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : false,
+        padding : this.padding
+	}
+};
+
+OverviewQueueGrid.prototype.getHeader = function() {
+	var html = "";
+	dust.render("queue.grid.header.template", [], function(err, out) {                                                                       
+		html = html + out;
+	});
+	return html;
+}
+
 function PDBViewer(args) {
 	this.id = BUI.id();
 	this.glMol = null;
@@ -14095,669 +14467,199 @@ StructurePDBViewer.prototype.refresh = function(structures) {
 		this.webGLNotAvailable();
 	}
 };
-function QueueGrid(args) {
-//	this.height = Ext.getBody().getHeight() - 500;
+/**
+* Displays the data collections by session or acronym of the protein in a collapsed way
+*
+* @class QueueGridTest
+* @constructor
+*/
+function QueueGridTest(args) {
+    this.id = BUI.id();
 
-	this.decimals = 3;
-	this.onSelect = new Event();
+    QueueGrid.call(this,args);
+    this.imgWidth = 130;
 
-	this.maxHeight = 600;
-	
-	this.id = BUI.id();
-	this.title = 'Data Collections';
-	this.key = {};
-	
-
-	this.selectionMode = 'MULTI';
-	
-	this.collapsible = true;
-	this.collapsed = false;
-	
-	var _this = this;
-	this.filters = [ function(item) {
-		if (item.data.dataCollectionId == null) {
-			return false;
-		}
-		if (_this.key[item.data.dataCollectionId] == null) {
-			_this.key[item.data.dataCollectionId] = [];
-		}
-		_this.key[item.data.dataCollectionId].push(item.data);
-		return item.data.macromoleculeId != null;
-	} ];
-	if (args!= null){
-		if (args.maxHeight != null){
-			this.maxHeight = args.maxHeight;
-		}
-		if (args.collapsible != null){
-			this.collapsible = args.collapsible;
-		}
-		if (args.collapsed != null){
-			this.collapsed = args.collapsed;
-		}
-		if (args.selectionMode != null){
-			this.selectionMode = args.selectionMode;
-		}
-		if (args.title != null){
-			if (args.title == false){
-				this.title = null;
-			}
-		}
-	}
-	
-	this.selected = []; 
-	this.onSelectionChange = new Event();
-	this.onDeselect = new Event(this);
-	this.onSelect = new Event(this);
+    this.store = Ext.create('Ext.data.Store', {
+            fields: ["experiment"]
+     });
 }
 
-QueueGrid.prototype.getSorters = function() {
-	return {};
+QueueGridTest.prototype.getPercentage = QueueGrid.prototype.getPercentage;
+QueueGridTest.prototype.getImage = QueueGrid.prototype.getImage;
+QueueGridTest.prototype.parseDataById = QueueGrid.prototype.parseDataById;
+QueueGridTest.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCallBackAfterRender;
+
+
+QueueGridTest.prototype.load = function(experiment){
+    var _this = this;
+    
+    this.setLoading();
+    try{
+        if (experiment.experimentId){
+            var onSuccess = function(sender, data){
+                if (data != null) {
+                    _this.dataByDataCollectionId = _this.parseDataById(data);
+                    _this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
+                    _this.attachCallBackAfterRender(document.getElementById(_this.id + "-body").childNodes[0]);
+                }
+                _this.setLoading(false);
+            };
+
+            EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+        } else {
+            this.dataByDataCollectionId = this.parseDataById(experiment);
+            this.store.loadData(_.keys(_.keyBy(experiment,'dataCollectionId')), true);
+            _this.attachCallBackAfterRender();
+            _this.setLoading(false);
+        }
+    }
+    catch(e){
+        console.log(e);
+    }
 };
 
-QueueGrid.prototype.getSelected = function() {
-	return this.selected;
+QueueGridTest.prototype.getPanel = function (dataCollectionGroup) {
+    var _this = this;
+    this.panel = Ext.create('Ext.grid.Panel', {
+        id: this.id,
+        border: 1,        
+        store: this.store,       
+        disableSelection: true,
+        columns: this.getColumns(),
+        viewConfig: {
+            enableTextSelection: true,
+            stripeRows: false
+        }
+    });
+
+    return this.panel;
 };
 
-
-QueueGrid.prototype.getSelectedData = function() {
-	var elements = this.panel.getSelectionModel().selected.items;
-	var data = [];
-	for (var i = 0; i < elements.length; i++) {
-		data.push(elements[i].data);
-	}
-	return data;
+QueueGridTest.prototype.setLoading = function(bool){
+	this.panel.setLoading(bool);
 };
 
+QueueGridTest.prototype.filter = function(key, value) {
+    var filtered = _.filter(this.dataByDataCollectionId,function(o) {return o[0]["bufferAcronym"] == value});
+    this.store.loadData(_.keys(_.keyBy([].concat.apply([], filtered),'dataCollectionId')));
+}
 
 
+QueueGridTest.prototype.getColumns = function() {
+    var _this = this;
+    var columns = [
+        {
+            dataIndex: 'experiment',
+            name: 'experiment',
+            flex: 1.5,
+            hidden: false,
+            renderer: function(grid, e, record) {
 
-QueueGrid.prototype.getFields = function() {
-	return [ 'experimentId', 'subtractionId', 'macromoleculeAcronym', 'priorityLevelId', 'code', 'exposureTemperature', 'concentration' ];
+                var dataCollectionId = record.data;
+                var currentDataCollection = _this.dataByDataCollectionId[dataCollectionId];                              
+                var html = "";
+
+                var codes = [];
+                var macromoleculeInfo = [];
+                var averages = [];
+                var expTemp = currentDataCollection[0].exposureTemperature + " C";
+
+                var rg = "NA";
+                var points = "NA";
+                if (currentDataCollection[0].rg != null) {
+                    rg = Number(currentDataCollection[0].rg).toFixed(_this.decimals);
+                    points = currentDataCollection[0].firstPointUsed + " - " + currentDataCollection[0].lastPointUsed + " (" + (currentDataCollection[0].lastPointUsed - currentDataCollection[0].firstPointUsed) + ")";
+                }	
+                var I0 = "NA";
+                if (currentDataCollection[0].I0 != null){
+                    var I0 = Number(currentDataCollection[0].I0).toFixed(_this.decimals-2);
+                    var I0Stdev = Number(Number(currentDataCollection[0].I0Stdev).toFixed(_this.decimals)).toExponential();
+                }
+
+                var rgGnom = "NA";
+                if (currentDataCollection[0].rgGnom != null) {
+                    rgGnom = Number(currentDataCollection[0].rgGnom).toFixed(_this.decimals);
+                }	
+                var total = "NA";
+                if (currentDataCollection[0].total != null) {
+                    total = Number(currentDataCollection[0].total).toFixed(_this.decimals);
+                }
+                var dmax = "NA";
+                if (currentDataCollection[0].dmax != null) {
+                    dmax = Number(currentDataCollection[0].dmax).toFixed(_this.decimals);
+                }
+
+                var volumePorod = "NA";
+                var mmvolest = "NA";
+                if (currentDataCollection[0].volumePorod != null) {
+                    volumePorod = Number(currentDataCollection[0].volumePorod).toFixed(_this.decimals);
+                    mmvolest = Number(currentDataCollection[0].volumePorod / 2).toFixed(1) + " - "
+                                            + Number(currentDataCollection[0].volumePorod / 1.5).toFixed(1);
+                }
+
+                var scattering = "";
+                var kratky = "";
+                var density = "";
+                var guinier = "";
+                var concentration = "";
+
+                for (var j = 0 ; j < currentDataCollection.length ; j++) {
+                    var experiment = currentDataCollection[j];
+                    // codes.push(experiment.code);
+                    if (experiment.concentration != 0) {
+                        concentration = Number(experiment.concentration).toFixed(_this.decimals-1);
+                    }
+                    if (experiment.macromoleculeId != null) {
+                        scattering = _this.getImage(experiment,"scattering");
+                        kratky = _this.getImage(experiment,"kratky");
+                        density = _this.getImage(experiment,"density");
+                        guinier = _this.getImage(experiment,"guinier");
+                    }
+                    var macromoleculeAcronym = "";
+                    if (experiment.macromoleculeAcronym != null) {
+                        macromoleculeAcronym = experiment.macromoleculeAcronym;
+                    }
+                    // macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
+                    // averages.push(_this.getPercentage(experiment.framesMerge,experiment.framesCount));
+
+                    codes.push({code : experiment.code, acronym : macromoleculeAcronym, average : _this.getPercentage(experiment.framesMerge,experiment.framesCount)});
+                }                      
+
+                var templateData = {
+									codes : codes,
+									macromoleculeAcronym : macromoleculeAcronym,
+                                    concentration : concentration,
+									// averages : averages,
+									expTemp : expTemp,
+									rg : rg,
+									points : points,
+									I0 : I0,
+									I0Stdev : I0Stdev,
+									rgGnom : rgGnom,
+									total : total,
+									dmax : dmax,
+									volumePorod : volumePorod,
+									mmvolest : mmvolest,
+									scattering : scattering,
+									kratky : kratky,
+									density : density,
+									guinier : guinier,
+									imgWidth : _this.imgWidth,
+                                    creationDate : currentDataCollection[0].creationDate
+								};
+
+                dust.render("queue.grid.test.template", templateData, function(err, out) {                                                                       
+                    html = html + out;
+                });
+                
+                return html;
+
+            }
+        }
+    ];
+
+    return columns;
 };
-
-QueueGrid.prototype.getRunHTML = function(sample) {
-	var dataCollectionId = sample.data.dataCollectionId;
-	var table = document.createElement("table");
-	if (this.key[dataCollectionId] != null) {
-
-		this.key[dataCollectionId].sort(function(a, b) {
-			return b.measurementId - a.measurementId;
-		});
-
-		for (i in this.key[dataCollectionId]) {
-			var specimen = this.key[dataCollectionId][i];
-			var tr = document.createElement("tr");
-			var td = document.createElement("td");
-			if (specimen.measurementCode != null){
-				if (specimen.macromoleculeId == null) {
-					td.setAttribute("style", "padding-top:1px;width:130px;color:gray;");
-					td.appendChild(document.createTextNode("# " + specimen.measurementCode));
-				} else {
-					td.setAttribute("style", "padding-top:1px;width:130px;font-weight:bold;");
-					td.appendChild(document.createTextNode("# " + specimen.measurementCode));
-				}
-			}
-			else{
-				td.appendChild(document.createTextNode(" - "));
-			}
-			tr.appendChild(td);
-			table.appendChild(tr);
-		}
-
-	}
-	return "<table>" + table.innerHTML + "</table>";
-};
-
-QueueGrid.prototype.getPercentage = function(averaged, total) {
-	var tdFrames = document.createElement("td");
-	
-	var color = "green";
-	if (averaged == null){
-		averaged = "NA";
-		color = "orange";
-	}
-	if (total == null){
-		total = "NA";
-		color = "orange";
-	}
-	
-	if ((averaged != "NA")&(total != "NA")){
-		if (averaged/total >= 0.3){
-			color = "orange";
-		}
-		if (averaged/total > 0.7){
-			color = "#BCF5A9";
-		}
-		
-		if (averaged/total < 0.3){
-			color = "red";
-		}
-		
-		
-	}
-	
-	tdFrames.appendChild(document.createTextNode(averaged + " / " + total));
-	
-	tdFrames.setAttribute("style", "background-color:" + color +";");
-	return tdFrames;
-};
-
-QueueGrid.prototype.getFramesHTML = function(sample) {
-	var dataCollectionId = sample.data.dataCollectionId;
-	var table = document.createElement("table");
-	if (this.key[dataCollectionId] != null) {
-
-		this.key[dataCollectionId].sort(function(a, b) {
-			return b.measurementId - a.measurementId;
-		});
-
-		for (i in this.key[dataCollectionId]) {
-			var specimen = this.key[dataCollectionId][i];
-			var tr = document.createElement("tr");
-			var td = document.createElement("td");
-			if (specimen.macromoleculeId == null) {
-				td.setAttribute("style", "width:130px;color:gray;");
-				td.appendChild(document.createTextNode(specimen.bufferAcronym));
-			} else {
-				td.setAttribute("style", "width:130px;font-weight:bold;");
-				td.appendChild(document.createTextNode(specimen.macromoleculeAcronym));
-			}
-			tr.appendChild(td);
-			
-			tr.appendChild(this.getPercentage(specimen.framesMerge, specimen.framesCount));
-
-			var td = document.createElement("td");
-			var a = document.createElement("a");
-			if (specimen.macromoleculeId == null) {
-				a.setAttribute("href", BUI.getZipURLByAverageId(specimen.mergeId, specimen.measurementCode));
-			} else {
-				a.setAttribute("href", BUI.getZipURLBySubtractionId(specimen.subtractionId, specimen.measurementCode));
-			}
-
-			tr.appendChild(td);
-
-			table.appendChild(tr);
-		}
-
-	}
-	return "<table>" + table.innerHTML + "</table>";
-};
-
-QueueGrid.prototype.getHTMLTable = function(items) {
-	var html = "";
-	for (var i = 0; i < items.length; i++) {
-			html = html + "<tr><td class='key_subgrid'>" + items[i].key + "</td><td class='value_subgrid'>" + items[i].value + "</td></tr>";
-	}
-	return "<table>" + html + "</table>";
-};
-
-QueueGrid.prototype.getImage = function(sample, name) {
-	if (sample.data.macromoleculeId != null) {
-		if (sample.data.subtractionId != null) {
-			var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.data.subtractionId, name);
-			return '<img src=' + url + '   height="70" width="70" >';
-		}
-	}
-};
-
-QueueGrid.prototype.getColumns = function() {
-	var _this = this;
-	return [
-			{
-				header : "dataCollectionId",
-				name : "dataCollectionId",
-				dataIndex : "dataCollectionId",
-				flex : 1,
-				hidden : true },
-			{
-				header : "Exp. Id",
-				name : "experimentId",
-				dataIndex : "experimentId",
-				flex : 1,
-				hidden : true },
-			{
-				header : "Exp. Name",
-				name : "name",
-				dataIndex : "name",
-				flex : 1,
-				hidden : true },
-			{
-				header : "MeasurementId",
-				name : "measurementId",
-				dataIndex : "measurementId",
-				hidden : true,
-				flex : 1,
-				renderer : function(val, y, sample) {
-					return sample.raw.measurementId;
-				} },
-			{
-				header : "Date",
-				name : "date",
-				flex : 1,
-				dataIndex : "runCreationDate",
-				hidden : true },
-
-			{
-				header : "Run",
-				flex : 0.2,
-				name : "runNumber",
-				dataIndex : "measurementCode",
-				renderer : function(val, y, sample) {
-					return _this.getRunHTML(sample);//"<span style='font-weight:bold;'>#" + val + "</span>";
-				} },
-			{
-				header : "Frames (Average/Total)",
-				dataIndex : "macromoleculeId",
-				name : "macromoleculeAcronym",
-				flex : 1,
-				// locked : true,
-				hidden : false,
-				renderer : function(val, meta, sample) {
-					return _this.getFramesHTML(sample);
-
-				} },
-			{
-				text : 'Scattering',
-				dataIndex : 'subtractionId',
-				width : 110,
-				// locked : true,
-				name : 'subtractionId',
-				renderer : function(val, y, sample) {
-					return _this.getImage(sample, "scattering");
-				} 
-			},
-			{
-				header : "Macromolecule",
-				name : "macromoleculeAcronym",
-				dataIndex : "macromoleculeAcronym",
-				flex : 1,
-				hidden : true },
-			{
-				header : "Concentration",
-				name : "concentration",
-				flex : 0.5,
-				dataIndex : "concentration",
-				hidden : false,
-				renderer : function(val, y, sample) {
-					if (sample.data.concentration != 0) {
-						return BUI.formatValuesUnits(sample.data.concentration, "mg/ml", 7, this.decimals);
-					}
-				} },
-			{
-				header : "Exp. Temp.",
-				name : "bufferAcronym",
-				dataIndex : "bufferAcronym",
-				flex : 0.5,
-				renderer : function(val, y, sample) {
-					return BUI.formatValuesUnits(sample.data.exposureTemperature, "C", 10, this.decimals);
-				} },
-			{
-				text : 'Kratky.',
-				dataIndex : 'subtractionId',
-				hidden : true,
-				flex : 1,
-
-				name : 'subtractionId',
-				renderer : function(val, y, sample) {
-					return _this.getImage(sample, "kratky");
-				} 
-			},
-			{
-				text : 'P(r).',
-				hidden : true,
-				flex : 1,
-				dataIndex : 'subtractionId',
-				type : 'string',
-				renderer : function(val, y, sample) {
-					return _this.getImage(sample, "density");
-				}
-			},
-			{
-				text : 'Guinier.',
-				hidden : true,
-				flex : 1,
-				dataIndex : 'subtractionId',
-				type : 'string',
-				renderer : function(val, y, sample) {
-					return _this.getImage(sample, "guinier");
-				} 
-			},
-			{
-				text : 'Guinier',
-				name : 'Guinier',
-				flex : 0.8,
-				dataIndex : 'subtractionId',
-				renderer : function(val, y, sample) {
-					if (sample.data.macromoleculeId != null) {
-						if (sample.data.subtractionId != null) {
-							var items = [];
-							if (sample.data.rg != null){
-								items.push({
-									key : "Rg",
-									value : BUI.formatValuesUnits(sample.data.rg, "nm", 12, this.decimals) });
-							}
-							else{
-								items.push({
-									key : "Rg",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							
-							if (sample.data.rg != null){
-									items.push({
-										key : "Points",
-										value : "<span>" + sample.data.firstPointUsed + " - " + sample.data.lastPointUsed + " ("
-												+ (sample.data.lastPointUsed - sample.data.firstPointUsed) + ")</span>" });
-							}
-							else{
-								items.push({
-									key : "Points",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							
-							if (sample.data.I0 != null){
-								items.push({
-									key : "I0",
-									value : BUI.formatValuesErrorUnitsScientificFormat(sample.data.I0, sample.data.I0Stdev, "") });
-							}
-							else{
-								items.push({
-									key : "I0",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							return _this.getHTMLTable(items);
-
-						}
-					}
-				} },
-			{
-				text : 'Gnom',
-				name : 'Gnom',
-				flex : 0.7,
-				dataIndex : 'subtractionId',
-				renderer : function(val, y, sample) {
-					if (sample.data.macromoleculeId != null) {
-						if (sample.data.subtractionId != null) {
-							var items = [];
-							if (sample.data.rgGnom != null){
-								items.push({
-									key : "Rg",
-									value : BUI.formatValuesUnits(sample.data.rgGnom, "nm") });
-							}
-							else{
-								items.push({
-									key : "Rg",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							
-							if (sample.data.rgGnom != null){
-								items.push({
-									key : "Total",
-									value : BUI.formatValuesUnits(sample.data.total, '') });
-							}
-							else{
-								items.push({
-									key : "Total",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							if (sample.data.dmax != null){
-								items.push({
-											key : "D<sub>max</sub>",
-											value : BUI.formatValuesUnits(sample.data.dmax, "")
-													+ "<span style='font-size:8px;color:gray;'> nm</span>" });
-							}
-							else{
-								items.push({
-									key : "D<sub>max</sub>",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-
-							return _this.getHTMLTable(items);
-
-						}
-					}
-				} },
-			{
-				text : 'Porod',
-				name : 'Porod',
-				flex : 1,
-				dataIndex : 'subtractionId',
-				renderer : function(val, y, sample) {
-					if (sample.data.macromoleculeId != null) {
-						if (sample.data.subtractionId != null) {
-							var items = [];
-							if (sample.data.volumePorod != null){
-								items.push({
-									key : "Volume",
-									value : BUI.formatValuesUnits(sample.data.volumePorod, '')
-											+ "<span style='font-size:8px;color:gray;'> nm<sub>3</sub></span>"
-	
-								});
-							}
-							else{
-								items.push({
-									key : "Volume",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							
-							if (sample.data.volumePorod != null){
-								items.push({
-									key : "MM Vol. est.",
-									value : Number(sample.data.volumePorod / 2).toFixed(1) + " - "
-											+ Number(sample.data.volumePorod / 1.5).toFixed(1)
-											+ "<span style='font-size:8px;color:gray;'>kD</span>" });
-								
-							}
-							else{
-								items.push({
-									key : "MM Vol. est.",
-									value : "<span class='notavailablefield'>NA</span>"
-								});
-							}
-							
-							return _this.getHTMLTable(items);
-
-						}
-					}
-				}
-			},
-				{
-				text : 'Advanced',
-				hidden : false,
-				id : this.id + 'buttonAction',
-				dataIndex : 'subtrationId',
-				flex : 1,
-				renderer : function(val, y, sample) {
-					// 'fitCount', 'superposisitionCount', 'rigidbodyCount',
-					// 'abinitioCount'
-					var html = "<table><tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Data Reduction", {
-						width : 90,
-						height : 15 }) + "</td></tr>";
-
-					if (sample.data.abinitioCount > 0) {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Abinitio", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					} else {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Abinitio", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					}
-
-					if (sample.data.fitCount > 0) {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Fit", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					} else {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Fit", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					}
-
-					if (sample.data.superposisitionCount > 0) {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Superposition", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					} else {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Superposition", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					}
-					if (sample.data.rigidbodyCount > 0) {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getGreenButton("Rigid Body", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					} else {
-						html = html + "<tr><td style='padding-bottom: 1px;'>" + BUI.getBlueButton("Rigid Body", {
-							width : 90,
-							height : 15 }) + "</td></tr>";
-					}
-
-					return html + "</table>";
-				}
-
-			}
-		];
-};
-
-QueueGrid.prototype.load = function(data) {
-	if (data != null) {
-		this.key = {};
-		this.store.loadData(data, true);
-	} else {
-		this.store.load();
-	}
-};
-
-QueueGrid.prototype.getPanel = function() {
-	var _this = this;
-	Ext.define('Queue', {
-		extend : 'Ext.data.Model',
-		fields : [ 'name', 'date', 'volumePorod', 'runCreationDate', 'measurementCode', 'macromoleculeAcronym', 'bufferAcronym', 'I0',
-				'I0Stdev', 'acronym', 'averageFilePath', 'bufferAverageFilePath', 'bufferId', 'bufferOnedimensionalFiles', 'code',
-				'comments', 'composition', 'concentration', 'creationDate', 'creationTime', 'dataAcquisitionFilePath', 'dataCollectionId',
-				'discardedFrameNameList', 'dmax', 'experimentId', 'experimentType', 'exposureTemperature', 'extintionCoefficient',
-				'extraFlowTime', 'firstPointUsed', 'flow', 'frameListId', 'framesCount', 'framesMerge', 'gnomFilePath',
-				'gnomFilePathOutput', 'guinierFilePath', 'isagregated', 'kratkyFilePath', 'lastPointUsed', {
-					name : 'macromoleculeId',
-					id : 'macromoleculeId'
-
-				}, {
-					name : 'measurementId',
-					type : 'int' }, 'mergeId', 'molecularMass', 'name', 'pH', 'priorityLevelId', 'proposalId', 'quality', 'rg', 'rgGnom',
-				'rgGuinier', 'rgStdev', 'runId', 'safetyLevelId', 'sampleAverageFilePath', 'sampleOneDimensionalFiles',
-				'samplePlatePositionId', 'scatteringFilePath', 'sequence', 'sessionId', 'sourceFilePath', 'specimenId', 'status',
-				'stockSolutionId', 'substractedFilePath', 'subtractionId', 'total', 'transmission', 'viscosity', 'volume', 'volumeToLoad',
-				'waitTime', 'reference', 'refined', 'fitCount', 'superposisitionCount', 'rigidbodyCount', 'abinitioCount' ] });
-
-	this.store = Ext.create('Ext.data.Store', {
-		model : 'Queue',
-		data : [],
-		filters : this.filters,
-		listeners : {
-			beforeload : function() {
-				_this.key = {};
-				return true;
-			},
-			load : function(store, records) {
-
-			} },
-		proxy : {
-			type : 'memory',
-			reader : {
-				type : 'json' } } });
-
-	var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect		: true,
-		mode				: this.selectionMode,
-		listeners			: {
-						        selectionchange: function (sm, selections) {
-						           	_this.selected = _this.getSelectedData();
-						        	_this.onSelectionChange.notify(_this.selected );
-						        },
-						        select: function (sm, selected) {
-						        	_this.onSelect.notify(selected.data);
-						        },
-						        deselect: function (sm, deselected) {
-						        	_this.onDeselect.notify(deselected.data);
-						        }
-		}
-	});
-	
-	this.panel = Ext.create('Ext.grid.Panel', {
-		title : this.title,
-		border : true,
-		cls : 'defaultGridPanel',
-		maxHeight : this.maxHeight,
-//		minHeight : 300,
-		overflow : 'auto', 
-		margin : 5,
-		store : this.store,
-		columns : this.getColumns(),
-		allowDeselect : true,
-		selModel			: selModel,
-		collapsible : this.collapsible,
-		collapsed : this.collapsed,
-		viewConfig : {
-			enableTextSelection : true,
-			preserveScrollOnRefresh : true,
-			stripeRows : true,
-			rowLines : true,
-			listeners : {
-				cellclick : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-						if (e.target.defaultValue == 'Data Reduction') {
-							location.hash = "/saxs/datacollection/dataCollectionId/" + record.data.dataCollectionId + "/primaryviewer";
-						}
-
-						if (e.target.defaultValue == 'Abinitio') {
-							_this.onAbinitioButtonClicked(record.raw);
-						}
-
-						if (e.target.defaultValue == 'Fit') {
-							_this.onFitButtonClicked(record.raw);
-						}
-
-						if (e.target.defaultValue == 'Superposition') {
-							_this.onSuperpositionButtonClicked(record.raw);
-						}
-
-						if (e.target.defaultValue == 'Rigid Body') {
-							_this.onRigidBodyButtonClicked(record.raw);
-						}
-				}
-			}
-		}
-	});
-	return this.panel;
-};
-
-QueueGrid.prototype.onDataReductionButtonClicked = function(record) {
-	var adapter = new DataAdapter();
-	var dataReductionForm = new DataReductionForm({});
-
-	Ext.create('Ext.window.Window', {
-		title : 'Data Reduction',
-		height : 540,
-		width : 1000,
-		modal : true,
-		items : [ dataReductionForm.getPanel() ]
-	}).show();
-
-	dataReductionForm.panel.setLoading();
-	adapter.onSuccess.attach(function(sender, subtractions) {
-		dataReductionForm.refresh(subtractions);
-		dataReductionForm.panel.setLoading(false);
-	});
-	adapter.getSubtractionsBySubtractionIdList([ record.subtractionId ]);
-};
-
-
 
 function RigidModelGrid(args) {
 	this.height = null;
@@ -15269,8 +15171,9 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 				width		: (this.width/3) - 5, 
 				height		: this.heightPlates + 10 , 
 				nodeSize	: this.nodeSize, 
-				fontSize	: 0, 
-				strokeWidth	: 1.5
+				fontSize	: 8, 
+				strokeWidth	: 1.5,
+				enableClick : false
 			});
 
 	if (this.isVerticalLayout()){
@@ -15279,16 +15182,28 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 	}
 	
 	samplePlateWidget.draw(experiment, plate, targetId );
-	samplePlateWidget.onVertexUp.attach(function(sender, args){
+
+	samplePlateWidget.onNodeSelected.attach(function(sender, args){
 		_this.onClick.notify(
 				{
 					samplePlate	: args.samplePlate, 
-					row			: args.row, 
-					column		: args.column
+					row			: args.node.row, 
+					column		: args.node.column
 
 				}
 		);
 	});
+
+	// samplePlateWidget.onVertexUp.attach(function(sender, args){
+	// 	_this.onClick.notify(
+	// 			{
+	// 				samplePlate	: args.samplePlate, 
+	// 				row			: args.row, 
+	// 				column		: args.column
+
+	// 			}
+	// 	);
+	// });
 
 	this.samplePlateWidgets.push(samplePlateWidget);
 };
@@ -15452,8 +15367,6 @@ SamplePlateGroupWidget.prototype.refresh = function(experiment){
 
 	/** We refrsh also the bbar  but it could not exist yet* */
 	this._refreshBbar();	
-	
-
 };
 
 SamplePlateGroupWidget.prototype._getAutoFillButton = function(){
@@ -15801,6 +15714,8 @@ function SamplePlateWidget(args) {
 	this.showFullName = false;
 	this.showLabels = false;
 
+	this.enableClick = true;
+
 	if (args != null) {
 		if (args.showBorderLabels != null) {
 			this.showBorderLabels = args.showBorderLabels;
@@ -15835,14 +15750,19 @@ function SamplePlateWidget(args) {
 		if (args.strokeWidth != null) {
 			this.strokeWidth = args.strokeWidth;
 		}
+		if (args.enableClick != null) {
+			this.enableClick = args.enableClick;
+		}
 	}
+
+	this.onNodeSelected = new Event(this);
 
 	/** this is the ids[specimenId] = nodeId **/
 	this.ids = {};
 	this.onVertexUp = new Event(this);
 	this.selectedSVGNodes = [];
 	this.markedSpecimenId = {};
-}
+};
 
 SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) {
 	if (document.getElementById(this.targetId) != null) {
@@ -15850,32 +15770,38 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 	}
 };
 
-SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
-	var _this = this;
-
-	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
-	this.windowContainerId = windowContainerId;
-	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
-		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
-		return;
+SamplePlateWidget.prototype.load = function (experiment) {
+	for (var i = 0 ; i < experiment.getSamples().length ; i++) {
+		var specimen = experiment.getSamples()[i];
+		if (specimen.sampleplateposition3VO.samplePlateId == this.samplePlate.samplePlateId) {
+			var nodeId = this.id + "-node-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber;
+			var color = experiment.getSpecimenColorByBufferId(specimen.specimenId);
+			if (specimen.macromolecule3VO != null) {
+				color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
+			}
+			$("#" + nodeId).attr("fill",color);
+			if (specimen.measurements && specimen.measurements.length > 0) {
+				if (specimen.measurements[0].run3VO.runId != null) {
+					$("#" + this.id + "-square-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber).attr("visibility","visible");
+				}
+			}
+		}
 	}
+};
 
+SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
 	this.onVertexUp = new Event(this);
 	this.samplePlate = samplePlate;
 	this.experiment = experiment;
 
 	this.targetId = targetId;
+	$("#" + this.targetId).append( "<div id='" + this.targetId + "-div-svg" + "'></div>" );
 
 	var rows = this.samplePlate.platetype3VO.rowCount;
 	var columns = this.samplePlate.platetype3VO.columnCount;
 
-	this.network = new NetworkWidget({
-		targetId : targetId
-	});
-	var dataset = new GraphDataset();
-	var formatter = new NetworkDataSetFormatter({
-		defaultFormat : {
-			type : "LineEdgeNetworkFormatter",
+	var formatter = {
+			// type : "LineEdgeNetworkFormatter",
 			'fill-opacity' : 1,
 			fill : this.wellColor,
 			'stroke-width' : this.strokeWidth,
@@ -15886,64 +15812,222 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			title : {
 				fontSize : this.fontSize,
 				fill : "#000000"
-			}
-		}
-	}, null, {
-		labeled : false,
-		height : this.height,
-		width : this.width,
-       
-		right : this.width,
-		backgroundColor : this.backgroundColor,
-		balanceNodes : false,
-		nodesMaxSize : 12,
-		nodesMinSize : 2
-	});
+			},
+			labeled : false,
+			height : this.height,
+			width : this.width,
+		
+			right : this.width,
+			backgroundColor : this.backgroundColor,
+			balanceNodes : false,
+			nodesMaxSize : 12,
+			nodesMinSize : 2
+		};
 
-	formatter.dataBind(dataset);
-	var layout = new LayoutDataset();
-	layout.dataBind(dataset);
-	this.network.draw(dataset, formatter, layout);
+	this.nodes = [];
+	var text = [];
+	var margin = 10;
+	var nodeRadius = Math.min((this.width-margin)/columns,(this.height-margin)/rows)/2;
+	nodeRadius = Math.min(nodeRadius, formatter.nodesMaxSize);
+	nodeRadius = Math.max(nodeRadius, formatter.nodesMinSize);
+
+	var horizontalMargin = ((this.width-margin) - 2*nodeRadius*columns)/(columns + 1);
+	var verticalMargin = ((this.height-margin) - 2*nodeRadius*rows)/(rows + 1);
 
 	for ( var i = 1; i <= rows; i++) {
 		for ( var j = 1; j <= columns; j++) {
-			this.network.getDataset().addNode("", {
-				row : i,
-				column : j
-			});
-
+			var factor = 0.8;
 			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
-				if (j < 9) {
-					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
+				if (j >= 9) {
+					factor = 1.0;
 				} else {
-					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
+					factor = 0.6;
 				}
 			}
+			var squareSide = Math.min(horizontalMargin,verticalMargin) + 2*nodeRadius*factor;
 
+			this.nodes.push({
+							nodeId 		:	this.id + "-node-" + i + "-" + j,
+							squareId 	:	this.id + "-square-" + i + "-" + j,
+							radius 		: 	nodeRadius*factor,
+							x 			: 	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
+							y 			: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin,
+							row 		: 	i,
+							column 		: 	j,
+							xSquare 	:	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin - squareSide/2 ,
+							ySquare		: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin - squareSide/2,
+							squareSide	:	squareSide
+			});
+			if (j == 1) {
+				var letter = ["A","B","C","D","E","F","G","H"][i-1];
+				text.push({
+							text 	:	letter,
+							x		:	Math.max(horizontalMargin,nodeRadius) / 2,
+							y 		: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin + this.fontSize/2
+				});
+			}
+			if (i == rows) {
+				text.push({
+							text 	:	j,
+							x		:	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
+							y 		: 	this.height
+				});
+			}
 		}
 	}
 
-	/** EVENT WHEN USER CLICK ON A WELL **/
-	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
-		_this.onVertexUp.notify({
-			samplePlate : _this.samplePlate,
-			row : _this.network.getDataset().getVertexById(nodeId).args.row,
-			column : _this.network.getDataset().getVertexById(nodeId).args.column
-
-		});
-	});
-
-	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
-	});
-
-	this.relayout(this.network, rows, columns);
-	this.fillSimulator(this.experiment.getSamples());
-
-	if (this.showBorderLabels) {
-		this.drawBorders();
+	var templateData = {
+							id 			: 	this.id,
+							nodes 		: 	this.nodes,
+							text		:	text,
+							formatter 	: 	formatter,
+							enableClick	:	this.enableClick
 	}
 
+	var html = "";
+	dust.render("sample.plate.template", templateData, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$("#" + this.targetId + "-div-svg").html(html);
+
+	if (this.enableClick){
+		this.attachClickListeners();
+	}
+
+	this.load(this.experiment);
+
 };
+
+SamplePlateWidget.prototype.attachClickListeners = function (row, column) {
+	var _this = this;
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		$("#" + node.nodeId).unbind('click').click(function(sender){
+			_this.onNodeSelected.notify({
+										samplePlate : _this.samplePlate,
+										node : _this.getNodeById(sender.target.id)
+									});
+		});
+	}
+};
+
+SamplePlateWidget.prototype.getNodeById = function (id) {
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		if (node.nodeId == id) {
+			return node;
+		}
+	}
+	return;
+};
+
+SamplePlateWidget.prototype.clearSelection = function() {
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		$("#" + node.squareId).removeClass("plate-square-selected");
+	}
+};
+
+SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
+	var squareId = this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+	$("#" + squareId).addClass("plate-square-selected");
+};
+
+// SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
+// 	var _this = this;
+// 	debugger
+// 	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
+// 	this.windowContainerId = windowContainerId;
+// 	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
+// 		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
+// 		return;
+// 	}
+
+// 	this.onVertexUp = new Event(this);
+// 	this.samplePlate = samplePlate;
+// 	this.experiment = experiment;
+
+// 	this.targetId = targetId;
+
+// 	var rows = this.samplePlate.platetype3VO.rowCount;
+// 	var columns = this.samplePlate.platetype3VO.columnCount;
+
+// 	this.network = new NetworkWidget({
+// 		targetId : targetId
+// 	});
+// 	var dataset = new GraphDataset();
+// 	var formatter = new NetworkDataSetFormatter({
+// 		defaultFormat : {
+// 			type : "LineEdgeNetworkFormatter",
+// 			'fill-opacity' : 1,
+// 			fill : this.wellColor,
+// 			'stroke-width' : this.strokeWidth,
+// 			'stroke-opacity' : 1,
+           
+// 			stroke : "#000000",
+// 			size : this.nodeSize,
+// 			title : {
+// 				fontSize : this.fontSize,
+// 				fill : "#000000"
+// 			}
+// 		}
+// 	}, null, {
+// 		labeled : false,
+// 		height : this.height,
+// 		width : this.width,
+       
+// 		right : this.width,
+// 		backgroundColor : this.backgroundColor,
+// 		balanceNodes : false,
+// 		nodesMaxSize : 12,
+// 		nodesMinSize : 2
+// 	});
+
+// 	formatter.dataBind(dataset);
+// 	var layout = new LayoutDataset();
+// 	layout.dataBind(dataset);
+// 	this.network.draw(dataset, formatter, layout);
+
+// 	for ( var i = 1; i <= rows; i++) {
+// 		for ( var j = 1; j <= columns; j++) {
+// 			this.network.getDataset().addNode("", {
+// 				row : i,
+// 				column : j
+// 			});
+
+// 			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
+// 				if (j < 9) {
+// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
+// 				} else {
+// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
+// 				}
+// 			}
+
+// 		}
+// 	}
+
+// 	/** EVENT WHEN USER CLICK ON A WELL **/
+// 	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
+// 		_this.onVertexUp.notify({
+// 			samplePlate : _this.samplePlate,
+// 			row : _this.network.getDataset().getVertexById(nodeId).args.row,
+// 			column : _this.network.getDataset().getVertexById(nodeId).args.column
+
+// 		});
+// 	});
+
+// 	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
+// 	});
+
+// 	this.relayout(this.network, rows, columns);
+// 	this.fillSimulator(this.experiment.getSamples());
+
+// 	if (this.showBorderLabels) {
+// 		this.drawBorders();
+// 	}
+
+// };
 
 SamplePlateWidget.prototype.drawBorders = function() {
 	var xArray = {};
@@ -16007,21 +16091,21 @@ SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
 	}
 };
 
-SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
-	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
-	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
-	var svg = this.network.graphCanvas._svg;
-	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
-};
+// SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
+// 	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
+// 	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
+// 	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
+// 	var svg = this.network.graphCanvas._svg;
+// 	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
+// };
 
-SamplePlateWidget.prototype.clearSelection = function() {
-	var svg = this.network.graphCanvas._svg;
-	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
-		svg.removeChild(this.selectedSVGNodes[i]);
-	}
-	this.selectedSVGNodes = [];
-};
+// SamplePlateWidget.prototype.clearSelection = function() {
+// 	var svg = this.network.graphCanvas._svg;
+// 	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
+// 		svg.removeChild(this.selectedSVGNodes[i]);
+// 	}
+// 	this.selectedSVGNodes = [];
+// };
 
 SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	var vertices = this.network.getDataset().getVertices();
@@ -16690,7 +16774,6 @@ SpecimenGrid.prototype.getPlugins = function() {
 					var macromoleculeId = e.record.data.macromoleculeId;
 					
 					var onSuccess = (function(sender, specimen) {
-						debugger
 						/** Because macromolecule3VO is fecthed LAZY **/
 						if (macromoleculeId != null) {
 							specimen.macromolecule3VO = EXI.proposalManager.getMacromoleculeById(macromoleculeId);
@@ -17091,7 +17174,7 @@ function SpecimenWidget(args){
 											minHeight 			: 425,
 											selectionMode 		: "SINGLE",
 											editEnabled 		: false,
-											updateRowEnabled 	: true,
+											updateRowEnabled 	: false,
 											width 				: 900,
 											showTitle 			: false
 	});
@@ -17099,7 +17182,7 @@ function SpecimenWidget(args){
 	
 	this.specimenGrid.onSpecimenChanged.attach(function(sender, specimen) {
 		_this.experiment.setSpecimenById(specimen);
-		_this.refresh(_this.experiment);
+		_this.load(_this.experiment);
 	});
 
 	this.specimenGrid.onSelected.attach(function(sender, specimens) {
@@ -17122,7 +17205,7 @@ function SpecimenWidget(args){
 	
 	
 	this.samplePlateGroupWidget.onExperimentChanged.attach(function(sender, json) {
-		_this.refresh(new Experiment(json));
+		_this.load(new Experiment(json));
 	});
 
 	this.samplePlateGroupWidget.onClick.attach(function(sender, args) {
@@ -17150,6 +17233,11 @@ function SpecimenWidget(args){
 				/** If success * */
 				var onSuccess = (function(sender, experiment) {
 					_this.samplePlateGroupWidget.panel.setLoading(false);
+					_this.samplePlateGroupWidget.refresh(_this.experiment);
+					_this.specimenGrid.refresh(_this.experiment);
+					//_this.refresh(_this.experiment);
+					_this.specimenSelected = null;
+					_this.specimenGrid.deselectAll();
 				});
 
 //				adapter.onError.attach(function(sender, error) {
@@ -17158,12 +17246,6 @@ function SpecimenWidget(args){
 //				});
 
 				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
-
-				_this.samplePlateGroupWidget.refresh(_this.experiment);
-				_this.specimenGrid.refresh(_this.experiment);
-				//_this.refresh(_this.experiment);
-				_this.specimenSelected = null;
-				_this.specimenGrid.deselectAll();
 				
 			} else {
 				/**
@@ -17172,23 +17254,28 @@ function SpecimenWidget(args){
 				 */
 				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
 				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-
-				if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
-					if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
-							((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
-						var onSuccess = (function(sender, data) {
-							_this.refresh(new Experiment(data));
-							_this.samplePlateGroupWidget.panel.setLoading(false);
-							
-							_this.onExperimentChanged.notify(experiment);
-						});
-						_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
-						EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
-						_this.specimenSelected = null;
-						_this.specimenGrid.deselectAll();
-					}
+				if (target == specimen) {
+					_this.samplePlateGroupWidget.refresh(_this.experiment);
+					_this.specimenSelected = null;
+					_this.specimenGrid.deselectAll();
 				} else {
-					alert("Well is not empty. Select another well!");
+					if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
+						if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
+								((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
+							var onSuccess = (function(sender, data) {
+								_this.load(new Experiment(data));
+								_this.samplePlateGroupWidget.panel.setLoading(false);
+								
+								_this.onExperimentChanged.notify(experiment);
+							});
+							_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
+							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
+							_this.specimenSelected = null;
+							_this.specimenGrid.deselectAll();
+						}
+					} else {
+						$.notify("Well is not empty. Select another well!", "error");
+					}
 				}
 			}
 		} else {
@@ -17227,7 +17314,7 @@ SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
 };
 
 
-SpecimenWidget.prototype.refresh = function(experiment){
+SpecimenWidget.prototype.load = function(experiment){
 	this.experiment = experiment;
 	
 	/** Removing all components **/
@@ -17289,25 +17376,25 @@ SpecimenWidget.prototype.getPanel = function(){
 };
 
 
-SpecimenWidget.prototype.input = function() {
-	return {
-		experiment : DATADOC.getExperiment_10(),
-		proposal : DATADOC.getProposal_10()
-	};
-};
+// SpecimenWidget.prototype.input = function() {
+// 	return {
+// 		experiment : DATADOC.getExperiment_10(),
+// 		proposal : DATADOC.getProposal_10()
+// 	};
+// };
 
-SpecimenWidget.prototype.test = function(targetId) {
-	var specimenWidget = new SpecimenWidget({
-		height : 500,
-		width : 1000
-	});
-	BIOSAXS.proposal = new Proposal(specimenWidget.input().proposal);
-	var experiment = new Experiment(specimenWidget.input().experiment);
-	var panel = specimenWidget.getPanel();
-	panel.render(targetId);
-	specimenWidget.refresh(experiment);
+// SpecimenWidget.prototype.test = function(targetId) {
+// 	var specimenWidget = new SpecimenWidget({
+// 		height : 500,
+// 		width : 1000
+// 	});
+// 	BIOSAXS.proposal = new Proposal(specimenWidget.input().proposal);
+// 	var experiment = new Experiment(specimenWidget.input().experiment);
+// 	var panel = specimenWidget.getPanel();
+// 	panel.render(targetId);
+// 	specimenWidget.refresh(experiment);
 
-};
+// };
 
 
 

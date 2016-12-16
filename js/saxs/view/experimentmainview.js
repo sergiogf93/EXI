@@ -193,10 +193,6 @@ ExperimentMainView.prototype.getContainer = function() {
 	});
 };
 
-
-
-
-
 ExperimentMainView.prototype.getSelected = function() {
 	var selected = [];
 	for (var i = 0; i < this.queueGridList.length; i++) {
@@ -204,7 +200,6 @@ ExperimentMainView.prototype.getSelected = function() {
 	}
 	return selected;
 };
-
 
 ExperimentMainView.prototype.getTabs = function() {
 	return  Ext.createWidget('tabpanel',
@@ -285,11 +280,6 @@ ExperimentMainView.prototype.getTabs = function() {
 	);
 };
 
-
-
-
-
-
 ExperimentMainView.prototype.load = function(experimentId) {
 	var _this = this;
 	_this.experimentId = experimentId;
@@ -299,16 +289,8 @@ ExperimentMainView.prototype.load = function(experimentId) {
 	var onSuccess = function(sender, experiments){
 		_this.experiment = new Experiment(experiments[0]);
 		_this.activePanel.load(_this.experiment);
-		// _this.experimentHeaderForm.load(_this.experiment);
-		// _this.measurementGrid.loadExperiment(_this.experiment);
-		// _this.specimenWidget.refresh(_this.experiment);
 		_this.panel.setTitle(experiments[0].name);
-		_this.panel.setLoading(false);	
-		// var onSuccess = function(sender, data){
-		// 	_this.queueGrid.load(data);
-		// 	// _this.queueGrid.setLoading(false);
-		// };
-		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		_this.panel.setLoading(false);
 	};
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experimentId);
 };

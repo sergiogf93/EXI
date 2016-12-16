@@ -3667,7 +3667,11 @@ PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
         store: this.store,            
-        columns: this.getColumns()
+        columns: this.getColumns(),
+        disableSelection: true,
+        viewConfig : {
+            trackOver : false
+        }
     });
     return this.panel;
 };
@@ -3682,8 +3686,10 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
             hidden: false,
             renderer: function(grid, e, record) {
 
-                var data = record.data;                              
-                var html = "";               
+                var data = record.data;  
+                var nContainers = data.containerIds.length;
+
+                var html = "";          
                 
                 dust.render("plates.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                     html = html + out;
@@ -4157,6 +4163,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             /** !!IMPORTANT this is the parent node which contains the scroll **/
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
+                alert("!");
                 console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
             },           
             onFinishedAll: function() {

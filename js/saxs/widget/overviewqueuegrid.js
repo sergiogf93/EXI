@@ -5,14 +5,10 @@ function OverviewQueueGrid(args) {
 
 }
 
-
-
 OverviewQueueGrid.prototype.getPercentage = QueueGrid.prototype.getPercentage;
 OverviewQueueGrid.prototype.getImage = QueueGrid.prototype.getImage;
 OverviewQueueGrid.prototype.parseDataById = QueueGrid.prototype.parseDataById;
 OverviewQueueGrid.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCallBackAfterRender;
-
-
 
 OverviewQueueGrid.prototype.parseData = function(data) {
 	var templateData = {rows : [], id : this.id, height : this.maxHeight};
@@ -149,6 +145,7 @@ OverviewQueueGrid.prototype.load = function(experiment) {
 	_this.key = {};
 	if (experiment.experimentId) {
 		var onSuccess = function(sender, data){
+			debugger
 			if (data != null) {
 
 				_this.dataByDataCollectionId = _this.parseDataById(data);
@@ -157,7 +154,7 @@ OverviewQueueGrid.prototype.load = function(experiment) {
 			}
 		};
 
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(experiment.experimentId);
 	} else {
 		_this.dataByDataCollectionId = _this.parseDataById(experiment);
 		this.render(_this.dataByDataCollectionId);
@@ -193,7 +190,7 @@ OverviewQueueGrid.prototype.getPanel = function(){
 
 	return {
 		html : '<div id="' + this.id + '"></div>',
-		autoScroll : false,
+		autoScroll : true,
         padding : this.padding
 	}
 };
