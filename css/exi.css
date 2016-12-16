@@ -28,6 +28,10 @@
     background-color:#DDD;
 }
 
+.table.align-middle-rows tbody>tr>td{
+    align: middle;
+}
+
 .table.valign-middle-rows tbody>tr>td{
     vertical-align: middle;
 }
