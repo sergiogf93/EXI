@@ -130,6 +130,7 @@ PrepareMainView.prototype.getPanel = function() {
     );
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+        autoScroll : true,
         buttons : this.getButtons(),
         layout: {
             type: 'vbox',
@@ -238,37 +239,10 @@ PrepareMainView.prototype.load = function() {
         };
         
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    // } else if (this.currentStep == 2){
-    //     this.container.add(this.sampleChangerSelector.getPanel());
-    //     this.sampleChangerSelector.panel.setLoading();
-
-    //     var onSuccessProposal = function(sender, containers) { 
-    //         _this.containers = containers;
-    //         var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
-
-    //         if (beamlinesSelected.length > 1) {
-    //             $.notify("Warning: Multiple beamlines selected", "warn");
-    //         } else if (beamlinesSelected.length == 1) {
-    //             if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
-    //                 _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
-    //             } else {
-    //                 $.notify("Warning: Unknown beamline", "warn");
-    //             }
-    //         }
-
-    //         _this.sampleChangerSelector.panel.setLoading(false);
-    //     };
-
-    //     var onError = function(sender, error) {        
-    //         EXI.setError("Ops, there was an error");
-    //         _this.sampleChangerSelector.panel.setLoading(false);
-    //     };
-        
-    //     EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
     } else if (this.currentStep == 2) {
         var onSuccessProposal = function(sender, containers) {     
             _this.containers = containers;
-            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
+            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineLocation'));
             if (beamlinesSelected.length > 0) {
                 var beamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlinesSelected[0]});
                 if (beamline.length > 0) {

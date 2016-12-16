@@ -14,6 +14,7 @@ function PuckWidget(args){
 	this.enableMouseOver = false;
 	this.enableClick = false; //click on cells
 	this.enableMainClick = false; //click on the puck
+	this.enableMainMouseOver = false; //mouse over on the puck
 	this.initSelected = {};
 	this.isLoading = true;
 	this.capacity = 10;
@@ -44,6 +45,9 @@ function PuckWidget(args){
 		}
 		if (args.enableMainClick != null){
 			this.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableMainMouseOver != null){
+			this.enableMainMouseOver = args.enableMainMouseOver;
 		}
 		if (args.initSelected){
 			this.initSelected = args.initSelected;
@@ -224,13 +228,13 @@ PuckWidget.prototype.load = function (data) {
 				var cellIndex = _this.findCellIndexById(sender.target.id);
 				
 				_this.onMouseOver.notify(sender.target.id.split("-")[1]);
-				_this.focus(sender.target.id.split("-")[1],true);
+				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
 				if (_this.data.cells[cellIndex].sample_name){
 	
 					var tooltipHtml = "";
-					dust.render("plates.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
+					dust.render("containers.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
 						tooltipHtml = out;
 					});
 					$('body').append(tooltipHtml);
@@ -250,7 +254,7 @@ PuckWidget.prototype.load = function (data) {
 			
 			$("#" + currentId).unbind('mouseout').mouseout(function(sender){
 				_this.onMouseOut.notify();
-				_this.focus(sender.target.id.split("-")[1],false);
+				_this.focusWell(sender.target.id.split("-")[1],false);
 
 				// TOOLTIP
 				$('#hoveringTooltipDiv').remove();
@@ -273,13 +277,27 @@ PuckWidget.prototype.load = function (data) {
 };
 
 /**
-* Focus or unfocus one cell according to a boolean and its location 
+* focus or unfocus the puck
 *
 * @method focus
+* @param {Boolean} bool Whether or not to focus the cell
+*/
+PuckWidget.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id).addClass("puck-selected");		
+	} else {
+		$("#" + this.id).removeClass("puck-selected");	
+	}
+};
+
+/**
+* focus or unfocus one cell according to a boolean and its location 
+*
+* @method focusWell
 * @param {Integer} location The location of the cell on the puck
 * @param {Boolean} bool Whether or not to focus the cell
 */
-PuckWidget.prototype.focus = function (location, bool) {
+PuckWidget.prototype.focusWell = function (location, bool) {
 	if (bool){
 		$("#" + this.id + "-" + location).attr("class", "cell_focus");
 		$("#" + this.id + "-" + location + "-inner").attr("class", "cell_inner_hidden");		
@@ -369,3 +387,12 @@ PuckWidget.prototype.allowAllCells = function () {
 		$("#" + cell.id).removeClass("cell-disabled");
 	}
 };
+
+/**
+* It blinks the sample changer by fading IN and OUT
+*
+* @method blink` 
+*/
+PuckWidget.prototype.blink = function () {
+    $('#' + this.id + "-div").fadeIn().fadeOut().fadeIn();
+}

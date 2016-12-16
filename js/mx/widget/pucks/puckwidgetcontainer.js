@@ -4,11 +4,14 @@ function PuckWidgetContainer(args) {
 	this.onClick = new Event(this);
 	this.mouseOverCell = new Event(this);
 	this.mouseOutCell = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 	
 	this.xMargin = 0;
 	this.yMargin = 0;
 	this.containerId = 0;
 	this.enableMainClick = false;
+	this.enableMainMouseOver = false;
 	if (args){
 		if (args.puckType) {
 			switch (args.puckType) {
@@ -30,6 +33,9 @@ function PuckWidgetContainer(args) {
 		}
 		if (args.enableMainClick != null){
 			this.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableMainMouseOver != null){
+			this.enableMainMouseOver = args.enableMainMouseOver;
 		}
 	}
 	
@@ -77,6 +83,15 @@ PuckWidgetContainer.prototype.getPanel = function () {
 				_this.onClick.notify(sender.target.id);
 			});
 		}
+		if(_this.enableMainMouseOver) {
+			$("#" + this.id).unbind('mouseover').mouseover(function(sender){
+				_this.onMouseOver.notify(_this.puckWidget);
+			});
+			
+			$("#" + this.id).unbind('mouseout').mouseout(function(sender){
+				_this.onMouseOut.notify(_this.puckWidget);
+			});
+		}
     });
 	
 	return this.panel;
@@ -100,4 +115,11 @@ PuckWidgetContainer.prototype.focus = function (location, bool) {
 	this.puckWidget.focus(location, bool);
 }
 
-
+/**
+* It blinks the sample changer by fading IN and OUT
+*
+* @method blink` 
+*/
+PuckWidgetContainer.prototype.blink = function () {
+    this.puckWidget.blink();
+}

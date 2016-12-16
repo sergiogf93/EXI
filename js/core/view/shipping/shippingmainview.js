@@ -33,6 +33,7 @@ ShippingMainView.prototype.getPanel = function() {
             type: 'vbox',
             align: 'center'
         },
+		padding : 10,
         cls : 'border-grid',
         items : [
                     this.shipmentForm.getPanel(),

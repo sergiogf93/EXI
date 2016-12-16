@@ -1,14 +1,14 @@
 /**
-* Displays the plates of the data collections by session or acronym of the protein
+* Displays the containers of the data collections by session or acronym of the protein
 *
-* @class PlatesDataCollectionGrid
+* @class ContainersDataCollectionGrid
 * @constructor
 */
-function PlatesDataCollectionGrid(args) {
-    
+function ContainersDataCollectionGrid(args) {
+    this.legend = new PuckLegend({width : 300, height : 50, cy : "12.5%", tOffset : 30});
 }
 
-PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
+ContainersDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
     var _this = this;
     this.store = Ext.create('Ext.data.Store', {
             fields: ["dataCollectionGroup"]
@@ -23,10 +23,18 @@ PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
             trackOver : false
         }
     });
-    return this.panel;
+
+    this.container = Ext.create('Ext.panel.Panel', {
+        items : [
+                this.legend.getPanel(),
+                this.panel]
+    });
+
+
+    return this.container;
 };
 
-PlatesDataCollectionGrid.prototype.getColumns = function() {
+ContainersDataCollectionGrid.prototype.getColumns = function() {
     var _this = this;
     var columns = [
         {
@@ -41,7 +49,7 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
 
                 var html = "";          
                 
-                dust.render("plates.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
+                dust.render("containers.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
                     html = html + out;
                 }); 
                 
@@ -82,7 +90,7 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
                             pucks[containerId].load(cells[containerId]);
                             var infoHtml = "";
                             
-                            dust.render("plates.info.mxdatacollectiongrid.template", cells[containerId][0], function(err, out) {                                                                       
+                            dust.render("containers.info.mxdatacollectiongrid.template", cells[containerId][0], function(err, out) {                                                                       
                                 infoHtml = infoHtml + out;
                             }); 
                             
@@ -164,7 +172,7 @@ PlatesDataCollectionGrid.prototype.getColumns = function() {
     return columns;
 };
 
-PlatesDataCollectionGrid.prototype.select = function(selectedDataCollectionGroup) {      
+ContainersDataCollectionGrid.prototype.select = function(selectedDataCollectionGroup) {      
     var selected = {};   
     for (sample in selectedDataCollectionGroup){
         if (selected[selectedDataCollectionGroup[sample].Container_containerId] == null){
@@ -176,11 +184,11 @@ PlatesDataCollectionGrid.prototype.select = function(selectedDataCollectionGroup
     this.store.loadData([{containerIds : this.getContainersId(this.dataCollectionGroup), selected : selected}]);
 };
 
-PlatesDataCollectionGrid.prototype.getContainersId = function(dataCollectionGroup) {         
+ContainersDataCollectionGrid.prototype.getContainersId = function(dataCollectionGroup) {         
    return _.filter(Object.keys(_.keyBy(dataCollectionGroup, "Container_containerId")), function(element){return isNumber(element);});                                                              
 };
 
-PlatesDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
+ContainersDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
     this.dataCollectionGroup = dataCollectionGroup;    
     this.store.loadData([{containerIds:  this.getContainersId(this.dataCollectionGroup), selected :{}}]);
 };

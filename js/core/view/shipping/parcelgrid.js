@@ -9,7 +9,7 @@ function ParcelGrid(args) {
 	this.id = BUI.id();
 	this.height = 100;
 	this.width = 100;
-	this.padding = 10;
+	this.padding = 0;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
 
@@ -82,6 +82,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			height : 90,
 			width : this.width - 60,
 			shippingId : this.shipment.shippingId,
+			shippingStatus : this.shipment.shippingStatus,
 			index : Number(i)+1
 		});
 		this.panel.insert(parcelPanel.getPanel());

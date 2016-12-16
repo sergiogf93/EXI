@@ -309,7 +309,11 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                                                 enableClick : false,
                                                 dataCollectionIds : dataCollectionIds
                 };
-                                            
+
+                var puckLegend = new PuckLegend();
+
+                $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
+    
                 var puck = new UniPuckWidget(attributesContainerWidget);
                 
                 if (dc.Container_capacity == 10){

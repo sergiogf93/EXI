@@ -33,10 +33,14 @@ function SampleChangerWidget (args) {
 /**
 * It blinks the sample changer by fading IN and OUT
 *
-* @method blink` 
+* @method blink
 */
 SampleChangerWidget.prototype.blink = function () {
-    $('#' + this.id).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+    $('#' + this.id).fadeIn().fadeOut().fadeIn();
+	var allPucks = this.getAllPucks();
+	for (var i = 0 ; i < allPucks.length ; i++) {
+		allPucks[i].blink();
+	}
 }
 
 /**

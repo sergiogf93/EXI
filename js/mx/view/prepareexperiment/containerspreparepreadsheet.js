@@ -19,6 +19,8 @@ function ContainerPrepareSpreadSheet(args){
 
     this.onSelectRow = new Event(this);
     this.onLoaded = new Event(this);
+    this.onBeamlineChanged = new Event(this);
+    this.onUnloadAllButtonClicked = new Event(this);
 };
 
 /**
@@ -38,6 +40,25 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     this.panel = Ext.create('Ext.grid.Panel', {
         title: 'Loaded or to be Loaded on MxCube',
+        buttons: [
+                            {
+                                xtype: 'button',
+                                text: '<div style="color: white">Unload all</div>',
+                                width: 200,
+                                color: '#FFFFFF',
+                                scale: 'large',
+                                style: {
+                                    background: '#444444',
+                                },
+                                handler : function(){
+                                    var onSuccess = function (sender,c) {
+                                        _this.onUnloadAllButtonClicked.notify();
+                                        _this.loadProcessingDewars(_this.sampleChangerWidget);
+                                    }
+                                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(_.map(_this.dewars,"containerId"));
+                                }
+                            }
+        ],
         store: this.store,
         cls : 'border-grid',
         height  : this.height,
@@ -130,7 +151,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 hidden :true,
                 readOnly: true
             },
-            { 
+            {
                 header : 'Beamline',
                 dataIndex: 'beamlineName',
                 hidden : true,
@@ -146,7 +167,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 readOnly: true,
                 renderer : function(value, metaData, record, rowIndex){
                     var beamlines = _.map(EXI.credentialManager.getBeamlinesByTechnique("MX"),"name");
-                    _.union(beamlines,[record.data.beamlineName])
+                    beamlines = _.union(beamlines,[record.data.beamlineName])
                     var templateData = {
                                             beamlines   : beamlines,
                                             selected    : record.data.beamlineName,
@@ -176,21 +197,21 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 }
                 for (var i = 0 ; i < _this.dewars.length ; i++){
                     var dewar = _this.dewars[i];
-                    if (record.get('dewarId') != dewar.dewarId && dewar.sampleCount > 0) {
+                    if (record.get('containerId') != dewar.containerId && dewar.beamlineLocation == record.get('beamlineName')) {
                         if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
                             return "puck-error";
                         }
                     }
                 }
-                if (_this.sampleChangerWidget){
-                    if (record.get('sampleChangerLocation') > _this.sampleChangerWidget.sampleChangerCapacity) {
-                        return "warning-row";
-                    }
-                    var puckToBeFilled = _this.sampleChangerWidget.findPuckById(_this.sampleChangerWidget.convertSampleChangerLocationToId(record.get('sampleChangerLocation')));
-                    if (puckToBeFilled.capacity != record.get('capacity')){
-                        return "warning-row";
-                    }
-                }
+                // if (_this.sampleChangerWidget){
+                //     if (record.get('sampleChangerLocation') > _this.sampleChangerWidget.sampleChangerCapacity) {
+                //         return "warning-row";
+                //     }
+                //     var puckToBeFilled = _this.sampleChangerWidget.findPuckById(_this.sampleChangerWidget.convertSampleChangerLocationToId(record.get('sampleChangerLocation')));
+                //     if (puckToBeFilled.capacity != record.get('capacity')){
+                //         return "warning-row";
+                //     }
+                // }
                 return "";
             }
         },
@@ -265,7 +286,6 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                     containerType = "Spinepuck";
                 }
             }
-            
             data.push({
                 shippingName : dewar.shippingName,
                 shippingId : dewar.shippingId,
@@ -273,7 +293,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                 containerCode : dewar.containerCode,
                 containerType : containerType,
                 sampleCount : dewar.sampleCount,
-                beamlineName : dewar.beamlineName,
+                beamlineName : dewar.beamlineLocation,
                 sampleChangerLocation : dewar.sampleChangerLocation,
                 dewarId : dewar.dewarId,
                 containerId : dewar.containerId,
@@ -295,6 +315,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
         var beamline = $("#" + _this.id + "-" + sender.target.value + " option:selected").text();
         var containerId = sender.target.value;
         _this.updateBeamlineName(containerId,beamline);
+        _this.onBeamlineChanged.notify(beamline);
     });
 };
 
@@ -330,26 +351,15 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
 
 ContainerPrepareSpreadSheet.prototype.updateBeamlineName = function (containerId, beamline) {
     var _this = this;
-    var recordsByContainerId = this.getRowsByContainerId(containerId);
 
-    for (var i = 0 ; i < recordsByContainerId.length ; i++) {
-        var record = recordsByContainerId[i];
-        if (record.get('containerId') == containerId) {
-            var onSuccess = function(sender, container) {
-                container.beamlineLocation = beamline;
-                container.sampleChangerLocation = "";
+    var onSuccess = function(sender, containers) {
+        _this.loadProcessingDewars();
+    };
+    var onError = function(sender, error) {        
+        EXI.setError("Ops, there was an error");
+    };
 
-                var onSuccessSave = function (sender){
-                    _this.loadProcessingDewars();
-                }
-                
-                EXI.getDataAdapter({onSuccess : onSuccessSave}).proposal.shipping.saveContainer(record.get('shippingId'),record.get('dewarId'),Number(containerId),container);
-            };
-            
-            EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(record.get('shippingId'),record.get('dewarId'),Number(containerId));
-            return
-        }
-    }
+    EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamline], [""]);
 };
 
 /**

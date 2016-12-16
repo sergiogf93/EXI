@@ -5,6 +5,7 @@ function ContainerTypeComboBox(args) {
     this.labelWidth = 200;
     this.width = 500;
     this.showStockSolution = true;
+    this.initDisabled = false;
 
     this.data = [
                     {"type":"UNIPUCK", "capacity":16},
@@ -25,6 +26,9 @@ function ContainerTypeComboBox(args) {
         }
         if (args.showStockSolution != null) {
             this.showStockSolution = args.showStockSolution;
+        }
+        if (args.initDisabled != null){
+            this.initDisabled = args.initDisabled;
         }
     }
 
@@ -52,7 +56,8 @@ ContainerTypeComboBox.prototype.getPanel = function () {
         labelWidth : this.labelWidth,
         displayField: 'type',
         value:'UNIPUCK',
-        width: this.width
+        width: this.width,
+        disabled : this.initDisabled
     });
 
     this.panel.on('select', function(capacityCombo, record){
@@ -88,6 +93,6 @@ ContainerTypeComboBox.prototype.setValue = function (capacity) {
     this.panel.setValue(type);
 };
 
-ContainerTypeComboBox.prototype.disable = function () {
-    this.panel.disable();
+ContainerTypeComboBox.prototype.enable = function () {
+    this.panel.enable();
 }

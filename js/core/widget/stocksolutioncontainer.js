@@ -15,7 +15,8 @@ function StockSolutionContainer(args) {
 							// rInner			: 10,
 							enableMainClick : false,
                             code            : "",
-                            enableClick     : false
+                            enableClick     : false,
+							enableMainMouseOver : false
                         };
 
 	this.stockSolutionId = 0;
@@ -27,6 +28,9 @@ function StockSolutionContainer(args) {
 		}
 		if (args.yMargin){
 			this.templateData.yMargin = args.yMargin;
+		}
+		if (args.enableMainClick != null){
+			this.templateData.enableMainClick = args.enableMainClick;
 		}
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
@@ -55,6 +59,8 @@ function StockSolutionContainer(args) {
 	}
 
 	this.onClick = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 };
 
 StockSolutionContainer.prototype.getPanel = function () {
@@ -88,9 +94,7 @@ StockSolutionContainer.prototype.getPanel = function () {
 				_this.onClick.notify(sender.target.id);
 			});
 		}
-		if (_this.templateData.height < 40){
-			_this.setOnMouseOverEvent();
-		}
+		_this.setOnMouseOverEvent();
     });
 	
 	return this.panel;
@@ -124,29 +128,41 @@ StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
 	var _this = this;
 	
 	$("#" + this.id).unbind('mouseover').mouseover(function(sender){
-		var id = sender.currentTarget.id;
-		$("#" + id).addClass("stock-solution-focus");
-		
-		// TOOLTIP
-		var tooltipHtml = "";
-		dust.render("stock.solution.tooltip.template", _this.templateData, function(err, out) {
-			tooltipHtml = out;
-		});
-		$('body').append(tooltipHtml);
-		$('#hoveringTooltipDiv-' + _this.stockSolutionId).css({
-			"top" : $(this).offset().top,
-			"left" : $(this).offset().left + _this.templateData.width
-		});
-
+		_this.onMouseOver.notify(_this);
+		if (_this.templateData.height < 40){
+			var id = sender.currentTarget.id;
+			$("#" + id).addClass("stock-solution-focus");
+			
+			// TOOLTIP
+			var tooltipHtml = "";
+			dust.render("stock.solution.tooltip.template", _this.templateData, function(err, out) {
+				tooltipHtml = out;
+			});
+			$('body').append(tooltipHtml);
+			$('#hoveringTooltipDiv-' + _this.stockSolutionId).css({
+				"top" : $(this).offset().top,
+				"left" : $(this).offset().left + _this.templateData.width
+			});
+		}
 	});
 	
 	$("#" + this.id).unbind('mouseout').mouseout(function(sender){
-		var stockId = sender.currentTarget.id;
-		$("#" + stockId).removeClass("stock-solution-focus");
+		_this.onMouseOut.notify(_this);
+		if (_this.templateData.height < 40){
+			var stockId = sender.currentTarget.id;
+			$("#" + stockId).removeClass("stock-solution-focus");
 
-		// TOOLTIP
-		$('#hoveringTooltipDiv-' + _this.stockSolutionId).remove();
-		
+			// TOOLTIP
+			$('#hoveringTooltipDiv-' + _this.stockSolutionId).remove();
+		}
 	});
 
 }
+
+StockSolutionContainer.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id + "-img").addClass("stock-solution-selected");		
+	} else {
+		$("#" + this.id + "-img").removeClass("stock-solution-selected");	
+	}
+};

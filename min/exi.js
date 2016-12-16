@@ -1707,7 +1707,7 @@ ShippingExiController.prototype.init = function() {
 		// 	var mainView = new ElectronDensityViewer();
 		// 	EXI.addMainPanel(mainView);
 		// }).enter(this.setPageBackground);
-		
+
 };
 
 /**
@@ -5185,6 +5185,7 @@ ShipmentEditForm.prototype.load = function(shipment) {
 		beamlineName = shipment.sessions[0].beamlineName;
 		startDate = shipment.sessions[0].startDate;
 	}
+	
     dust.render("shipping.edit.form.template", {id : this.id, sessions : EXI.proposalManager.getSessions(), to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
 		html = out;
 	});

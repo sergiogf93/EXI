@@ -6,6 +6,8 @@
 function LoadSampleChangerView (args) {
     var _this = this;
 
+    this.id = BUI.id();
+    this.showTip = true;
     this.height = 600;
     this.width = 600;
     this.widgetRadius = 185;
@@ -30,7 +32,7 @@ function LoadSampleChangerView (args) {
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
-    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
+    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 507,width : 600});
     this.previewPanelView = new PreviewPanelView({
                                                         height : 100
                                                     });
@@ -45,27 +47,18 @@ function LoadSampleChangerView (args) {
     this.containerListEditor.onSelectRow.attach(function(sender, data){
         var row = data.record;
         if (row) {
+            if (_this.showTip){
+                $.notify("Click on a sample changer location to place the dewar","info");
+                _this.sampleChangerWidget.blink();
+                _this.showTip = false;
+            }
             // Check if the sampleChanger needs to be changed
             if (row.data.beamlineName != _this.sampleChangerWidget.beamlineName) {
-                var newBeamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":row.data.beamlineName});
-                if (newBeamline.length > 0) {
-                    _this.createSampleChangerWidget(newBeamline[0].sampleChangerType,newBeamline[0].name);
-                } else {
-                    _this.createSampleChangerWidget("FlexHCD",row.data.beamlineName);
-                }
-                _this.widgetContainer.removeAll();
-                _this.load(_this.containers);
-                _this.widgetContainer.insert(_this.sampleChangerWidget.getPanel());
-                _this.reloadSampleChangerWidget();
+                _this.changeSampleChangerWidgetByBeamline(row.data.beamlineName);
             }
             // Manage the selection/deselection of rows and cells
             if (_this.selectedPuck){
                 _this.deselectPuck();
-            }
-            else{
-                $.notify("Click on a sample changer location to place the dewar", "info");
-                _this.sampleChangerWidget.blink();
-                
             }
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
@@ -81,12 +74,20 @@ function LoadSampleChangerView (args) {
         }
 	});
 
+    this.containerListEditor.onBeamlineChanged.attach(function(sender,beamline) {
+        _this.changeSampleChangerWidgetByBeamline(beamline);
+    });
+
     this.containerListEditor.onLoaded.attach(function(sender, containers){
         // $('.notifyjs-corner').empty();  
         _this.load(containers);
     });
 
-    this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
+    this.containerListEditor.onUnloadAllButtonClicked.attach(function(sender){
+        _this.returnToSelectionStatus();
+    });
+
+    this.previewPanelView.onUnloadButtonClicked.attach(function(sender){
         if (_this.selectedPuck){
             _this.selectedPuck.emptyAll();
             _this.previewPuck(_this.selectedPuck.containerId, _this.selectedPuck.capacity, {
@@ -118,7 +119,10 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
             this.setSelectedPuck(puck);
         }
     }
-
+    var text = "<span style='font-size:12px;'>Click on a sample changer </br>location to place the dewar</span>";
+    if (row.get('sampleChangerLocation') != null && row.get('sampleChangerLocation') !="") {
+        text = "Unload #" + row.get('sampleChangerLocation');
+    }
     this.previewPuck(row.get('containerId'), 
                         row.get('capacity'), {
                                 info : [{
@@ -128,7 +132,7 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     text : 'SC Location',
                                     value : row.get('sampleChangerLocation')
                                 }]
-        }, "EMPTY");
+        }, text);
     
     if (this.selectedPuck) {
         this.sampleChangerWidget.enablePuck(this.selectedPuck);
@@ -208,7 +212,9 @@ LoadSampleChangerView.prototype.returnToSelectionStatus = function () {
     if (this.selectedPuck) {
         this.deselectPuck();        
     }
-    this.cleanPreviewPanel();
+    if (this.previewPanelView){
+        this.cleanPreviewPanel();
+    }
 };
 
 /**
@@ -254,6 +260,22 @@ LoadSampleChangerView.prototype.createSampleChangerWidget = function (sampleChan
     return this.sampleChangerWidget;
 };
 
+LoadSampleChangerView.prototype.changeSampleChangerWidgetByBeamline = function (beamlineName) {
+    var newBeamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlineName});
+    if (newBeamline.length > 0) {
+        this.createSampleChangerWidget(newBeamline[0].sampleChangerType,newBeamline[0].name);
+    } else {
+        this.createSampleChangerWidget("FlexHCD",beamlineName);
+    }
+    this.widgetContainer.removeAll();
+    this.load(this.containers);
+    this.widgetContainer.insert(this.sampleChangerWidget.getPanel());
+    this.reloadSampleChangerWidget();
+    this.sampleChangerWidget.blink();
+    this.returnToSelectionStatus();
+}
+
+
 /**
 * Loads the sampleChangerWidget
 *
@@ -270,7 +292,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
         this.containers = containers;
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-            if (container.beamlineName == this.sampleChangerWidget.beamlineName){
+            if (container.beamlineLocation == this.sampleChangerWidget.beamlineName){
                 var sampleChangerLocation = container.sampleChangerLocation;
                 if (sampleChangerLocation != "" && sampleChangerLocation != null){
                     var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
@@ -287,10 +309,7 @@ LoadSampleChangerView.prototype.load = function (containers) {
                     }
                 }
             }
-
         }
-        
-        
         if (!_.isEmpty(filledContainers)){
             var onSuccess = function (sender, samples) {
                 var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
@@ -328,13 +347,19 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.verticalPanel = Ext.create('Ext.panel.Panel', {
         // layout : 'hbox',
-            items : [
+            layout: {
+                type: 'vbox',
+                align: 'center',
+                pack: 'center'
+            },
+            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid ' align='center' ><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:300px;font-size:20px;font-weight:100;'></span></div>"},
                         this.widgetContainer    
             ]
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
         // title : 'Load the sample changer',
+        autoScroll : true,
         layout : 'hbox',
         height : this.height,
         width : this.width,
@@ -381,6 +406,8 @@ LoadSampleChangerView.prototype.reloadSampleChangerWidget = function () {
         }
     });
     this.sampleChangerWidget.render();
+    $("#" + this.id + "-scw-label").html(this.sampleChangerWidget.beamlineName + " (" + this.sampleChangerWidget.name + ")");
+    this.panel.doLayout();
 }
 
 /**
@@ -391,8 +418,10 @@ LoadSampleChangerView.prototype.reloadSampleChangerWidget = function () {
 */
 LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
     this.previewPanelView.clean();
-    if(this.previewPanelView.panel.body){
-        this.verticalPanel.remove(this.previewPanelView.panel);
+    if (this.previewPanelView.panel){
+        if(this.previewPanelView.panel.body){
+            this.verticalPanel.remove(this.previewPanelView.panel);
+        }
     }
 };
 

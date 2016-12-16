@@ -6,17 +6,12 @@
         </div>
     </div>
     <div class="form-group row">
-        <label class="col-md-2 col-form-label">Beamline:</label>
-        <div class="col-md-10">
-            <input id="{id}-beamline" class="form-control" type="text" value="{.beamlineName}">
-        </div>
-    </div>
-    <div class="form-group row">
-        <label class="col-md-2 col-form-label">Date:</label>
+        <label class="col-md-2 col-form-label">Session:</label>
         <div class="col-md-10">
             <select id="{id}-date" class="form-control">
+                <option> </option>
                 {#sessions}
-                <option value={.sessionId} {@eq key="{.BLSession_startDate}" value="{startDate}"}selected{/eq}>{.BLSession_startDate}</option>
+                <option value={.sessionId} {@eq key="{.date}" value="{startDate}"}{@eq key="{.beamLineName}" value="{beamlineName}"}selected{/eq}{/eq}>{.beamLineName}, {.date}</option>
                 {/sessions}
             </select>
         </div>

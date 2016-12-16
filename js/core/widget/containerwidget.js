@@ -9,7 +9,8 @@ function ContainerWidget(args) {
                             width       	: 100,
                             height      	: 100,
                             r           	: 20,
-							enableMainClick : false
+							enableMainClick : false,
+							enableMainMouseOver : false,
                         };
 	this.containerId = 0;
     this.samples = null;
@@ -24,6 +25,9 @@ function ContainerWidget(args) {
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
 		}
+		if (args.enableMainMouseOver != null){
+			this.templateData.enableMainMouseOver = args.enableMainMouseOver;
+		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
@@ -33,6 +37,8 @@ function ContainerWidget(args) {
 	}
 
 	this.onClick = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 };
 
 ContainerWidget.prototype.getPanel = function () {
@@ -66,6 +72,15 @@ ContainerWidget.prototype.getPanel = function () {
 				_this.onClick.notify(sender.target.id);
 			});
 		}
+		if(_this.templateData.enableMainMouseOver) {
+			$("#" + _this.id).unbind('mouseover').mouseover(function(sender){
+				_this.onMouseOver.notify(_this);
+			});
+			
+			$("#" + _this.id).unbind('mouseout').mouseout(function(sender){
+				_this.onMouseOut.notify(_this);
+			});
+		}
     });
 	
 	return this.panel;
@@ -90,3 +105,10 @@ ContainerWidget.prototype.getSVG = function (samples) {
 	return html;
 };
 
+ContainerWidget.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id).addClass("puck-selected");		
+	} else {
+		$("#" + this.id).removeClass("puck-selected");	
+	}
+};

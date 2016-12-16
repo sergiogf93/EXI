@@ -28,7 +28,7 @@ function PuckFormView(args) {
 		
 	});*/
 
-	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false});
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
 		_this.containerTypeChanged(capacity);
@@ -39,9 +39,10 @@ function PuckFormView(args) {
 }
 
 /** Loads a puck into the form **/
-PuckFormView.prototype.load = function(containerId, shippingId) {
+PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) {
 	var _this = this;
     this.shippingId = shippingId;
+    this.shippingStatus = shippingStatus;
     this.containerId = containerId;
     this.containerSpreadSheet.setLoading(true);
 	this.panel.setTitle("Shipment");
@@ -61,12 +62,6 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
         }
 
         var onSuccess = function (sender, samples) {
-            var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
-            if (withoutCollection.length == samples.length) {
-                Ext.getCmp(_this.id + "_save_button").enable();
-            } else {
-				_this.capacityCombo.disable();
-			}
             if (samples.length > 0) {
                 _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
             } else {
@@ -74,6 +69,16 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
 			}
 			_this.containerSpreadSheet.setContainerType(puck.containerType);
             _this.containerSpreadSheet.load(puck);
+			if (_this.shippingStatus != "processing"){
+				var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+				if (withoutCollection.length == samples.length) {
+					Ext.getCmp(_this.id + "_save_button").enable();
+					Ext.getCmp(_this.id + "_remove_button").enable();
+					_this.capacityCombo.enable();
+				}
+			} else {
+				_this.containerSpreadSheet.disableAll();
+			}
             _this.containerSpreadSheet.setLoading(false);
 			if (_this.containerSpreadSheet.renderCrystalFormColumn) {
 				_this.setValuesForEditCrystalColumn();
@@ -92,6 +97,7 @@ PuckFormView.prototype.getPanel = function() {
 	var _this =this;
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+		autoScroll 	: true,
 		buttons : this.getToolBar(),
 		items : [ 
 		         {
@@ -161,8 +167,10 @@ PuckFormView.prototype.getToolBar = function() {
 	return [
 			{
 			    text: 'Remove',
+				id: this.id + "_remove_button",
 			    width : 100,
 			    height : 30,
+				disabled : true,
 			    cls : 'btn-red',
 			    handler : function(){
 			    	function showResult(result){
@@ -223,6 +231,7 @@ PuckFormView.prototype.save = function() {
 	this.panel.setLoading("Saving Puck");
 
 	var puck = this.containerSpreadSheet.getPuck();
+
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getSelectedCapacity();
@@ -243,10 +252,11 @@ PuckFormView.prototype.save = function() {
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
-PuckFormView.prototype.getEditCrystalFormLink = function (location) {
-	var sampleId = this.puck.sampleVOs[location].blSampleId;
-	return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
-}
+// PuckFormView.prototype.getEditCrystalFormLink = function (row) {
+// 	// var crystalId = this.puck.sampleVOs[row].crystalVO.crystalId;
+// 	return "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
+// 	// return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
+// }
 
 /**
  * When container type has changed from SPINE|| UNIPUCK || PLATE
@@ -281,9 +291,10 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
  */
 PuckFormView.prototype.setValuesForEditCrystalColumn = function(capacity) {
 	var rows = this.containerSpreadSheet.parseTableData();
-	var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+	var columnIndex = this.containerSpreadSheet.getColumnIndex("editCrystalForm");
 	for (var i = 0; i < rows.length; i++) {
-		this.containerSpreadSheet.setDataAtCell(rows[i].location-1,columnIndex,this.getEditCrystalFormLink(i));
+		this.containerSpreadSheet.addEditCrystalFormButton(rows[i].location-1,columnIndex);
 	}
+	this.panel.doLayout();
 };
 				

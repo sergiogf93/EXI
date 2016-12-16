@@ -31,9 +31,28 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	var startDate = "";
 	if (shipment.sessions.length > 0){
 		beamlineName = shipment.sessions[0].beamlineName;
-		startDate = shipment.sessions[0].startDate;
+		startDate = (new Date(shipment.sessions[0].startDate)).toLocaleDateString();
 	}
-    dust.render("shipping.edit.form.template", {id : this.id, sessions : EXI.proposalManager.getSessions(), to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
+
+	var sessionSort = function(o1,o2) {
+		var d1 = new Date(o1.BLSession_startDate);
+		var d2 = new Date(o2.BLSession_startDate);
+		if (d1 === d2) {
+			return 0;
+		} else {
+			return (d1 < d2) ? 1 : -1;
+		}
+	}
+	var sessions = EXI.proposalManager.getSessions();
+	sessions.sort(sessionSort);
+	var sessionsSelectData = [];
+	for (var i = 0 ; i < sessions.length ; i++){
+		var session = sessions[i];
+		sessionsSelectData.push({sessionId : session.sessionId, date : (new Date(session.BLSession_startDate)).toLocaleDateString(), beamLineName : session.beamLineName});
+	}
+	
+	
+    dust.render("shipping.edit.form.template", {id : this.id, sessions : sessionsSelectData, to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
 		html = out;
 	});
 	

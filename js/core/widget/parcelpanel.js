@@ -18,6 +18,7 @@ function ParcelPanel(args) {
 	this.containersParcelWidth = 2*this.containersPanelHeight*0.9/2 + 20;
 	// this.containersParcelWidth = 2*this.containersPanelHeight*0.2 + 20;
 	this.shippingId = 0;
+	this.shippingStatus = "";
 	this.containersPanel = null;
 
 	this.isSaveButtonHidden = false;
@@ -39,6 +40,9 @@ function ParcelPanel(args) {
 		if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
 		}
+		if (args.shippingStatus != null) {
+			this.shippingStatus = args.shippingStatus;
+		}
 	}
 	
 	this.onSavedClick = new Event(this);
@@ -52,7 +56,7 @@ ParcelPanel.prototype.load = function(dewar) {
 	
 	/** Loading the template **/
 	var html = "";
-	dust.render("parcel.panel.template", {id : this.id, height : this.height, width : this.width}, function(err, out){
+	dust.render("parcel.panel.template", {id : this.id, dewar : this.dewar, height : this.height, width : this.width}, function(err, out){
 		html = out;
 	});
 	
@@ -60,9 +64,17 @@ ParcelPanel.prototype.load = function(dewar) {
 	$('#' + this.id).hide().html(html).fadeIn("fast");
 	this.panel.doLayout();
 
-	$("#" + this.id + "-edit-button").click(function () {
-		_this.showCaseForm();
-	});
+	if (this.shippingStatus != "processing"){
+		$("#" + this.id + "-add-button").removeClass("disabled");
+		$("#" + this.id + "-add-button").click(function () {
+			_this.showAddContainerForm();
+		});
+
+		$("#" + this.id + "-edit-button").removeClass("disabled");
+		$("#" + this.id + "-edit-button").click(function () {
+			_this.showCaseForm();
+		});
+	}
 
 	$("#" + this.id + "-print-button").click(function () {
 		var dewarId = _this.dewar.dewarId;
@@ -71,15 +83,11 @@ ParcelPanel.prototype.load = function(dewar) {
 		return;
 	});
 
-	$("#" + this.id + "-add-button").click(function () {
-		_this.showAddContainerForm();
-	});
-
 	this.containersPanel = Ext.create('Ext.panel.Panel', {
 		id			: this.id + "-containers-panel",
 		// layout      : 'hbox',
-		cls 		: "border-grid",
-		margin		: this.height*0.05 + ' 0 0 0',
+		cls 		: "border-grid-light",
+		margin		: this.height*0.0 + ' 0 ' + this.height*0.05 + ' 0',
 		width       : this.containersPanelWidth,
 		height    	: this.containersPanelHeight,
 		autoScroll 	: false,
@@ -96,16 +104,20 @@ ParcelPanel.prototype.load = function(dewar) {
 
 ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
 	var html = "";
-	dust.render("parcel.panel.parameter.table.template", {dewar : dewar, height : this.height}, function(err, out){
+	dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
 		html = out;
 	});
 
 	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
 	if (dewar.comments != "" && dewar.comments != null) {
 		$('#' + this.id + "-comments").hide().html("Comments: " + dewar.comments).fadeIn("fast");
-		this.panel.setHeight(this.height + 20);
+		$('#' + this.id + "-index-td").attr('rowspan',2);
+		$('#' + this.id + "-buttons-td").attr('rowspan',2);
+		this.panel.setHeight(this.height + 25);
 	} else {
 		this.panel.setHeight(this.height);
+		$('#' + this.id + "-index-td").attr('rowspan',1);
+		$('#' + this.id + "-buttons-td").attr('rowspan',1);
 	}
 	this.panel.doLayout();
 };
@@ -120,7 +132,11 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			this.containersPanel.removeAll();
 			var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewar.dewarId);
 
+			if (dewar.containerVOs.length)
 			var maxNumberForRow = Math.floor(this.containersPanel.width/this.containersParcelWidth);
+			if (maxNumberForRow == null){
+				maxNumberForRow = Math.floor(this.containersPanel.width/this.containersParcelWidth);
+			}
 			var rows = Math.ceil((this.dewar.containerVOs.length + stockSolutions.length)/maxNumberForRow);
 			var containerRows = [];
 			for (var i = 0 ; i < rows ; i++) {
@@ -137,6 +153,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				this.containersPanel.insert(containerRow);
 			}
 			
+			
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
 			var containerPanelsMap = {};
@@ -144,7 +161,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
+				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
 					_this.renderPucks(_this.dewar);
@@ -157,7 +174,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< stockSolutions.length; i++){
 				$('#hoveringTooltipDiv-' + stockSolutions[i].stockSolutionId).remove();
-				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, code : stockSolutions[i].name});	
+				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, code : stockSolutions[i].name});	
 				containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
 				containerParcelPanel.onContainerRemoved.attach(function (sender, stockSolutionId) {
@@ -296,7 +313,6 @@ ParcelPanel.prototype.showAddContainerForm = function() {
 
 	addContainerForm.onSave.attach(function(sender,container){
 		_this.addContainerToDewar(container);
-		// _this.renderPucks(_this.dewar);
 		window.close();
 	})
 
