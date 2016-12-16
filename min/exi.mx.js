@@ -3176,7 +3176,7 @@ CollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.ge
 * @constructor
 */
 function ContainersDataCollectionGrid(args) {
-    // this.legend = new PuckLegend({width : 300, height : 40, tooltipYDirection : 0, tooltipXDirection : 1, cy : "12.5%"});
+    this.legend = new PuckLegend({width : 300, height : 50, cy : "12.5%", tOffset : 30});
 }
 
 ContainersDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
@@ -3197,7 +3197,7 @@ ContainersDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup)
 
     this.container = Ext.create('Ext.panel.Panel', {
         items : [
-                // this.legend.getPanel(),
+                this.legend.getPanel(),
                 this.panel]
     });
 
@@ -4199,9 +4199,9 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                                                 dataCollectionIds : dataCollectionIds
                 };
 
-                // var puckLegend = new PuckLegend();
+                var puckLegend = new PuckLegend();
 
-                // $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
+                $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
     
                 var puck = new UniPuckWidget(attributesContainerWidget);
                 
@@ -5213,6 +5213,7 @@ function ContainerPrepareSpreadSheet(args){
     this.onSelectRow = new Event(this);
     this.onLoaded = new Event(this);
     this.onBeamlineChanged = new Event(this);
+    this.onUnloadAllButtonClicked = new Event(this);
 };
 
 /**
@@ -5235,7 +5236,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         buttons: [
                             {
                                 xtype: 'button',
-                                text: '<div style="color: white">Empty all</div>',
+                                text: '<div style="color: white">Unload all</div>',
                                 width: 200,
                                 color: '#FFFFFF',
                                 scale: 'large',
@@ -5244,10 +5245,10 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                                 },
                                 handler : function(){
                                     var onSuccess = function (sender,c) {
-                                        debugger
+                                        _this.onUnloadAllButtonClicked.notify();
                                         _this.loadProcessingDewars(_this.sampleChangerWidget);
                                     }
-                                    EXI.getDataAdapter().proposal.dewar.emptySampleLocation(_.map(_this.dewars,"containerId"));
+                                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(_.map(_this.dewars,"containerId"));
                                 }
                             }
         ],
@@ -5810,6 +5811,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
 function LoadSampleChangerView (args) {
     var _this = this;
 
+    this.id = BUI.id();
     this.showTip = true;
     this.height = 600;
     this.width = 600;
@@ -5835,7 +5837,7 @@ function LoadSampleChangerView (args) {
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
-    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
+    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 507,width : 600});
     this.previewPanelView = new PreviewPanelView({
                                                         height : 100
                                                     });
@@ -5851,22 +5853,13 @@ function LoadSampleChangerView (args) {
         var row = data.record;
         if (row) {
             if (_this.showTip){
-                $.notify("Click on a sample changer location to place the dewar", "info");
+                $.notify("Click on a sample changer location to place the dewar","info");
                 _this.sampleChangerWidget.blink();
                 _this.showTip = false;
             }
             // Check if the sampleChanger needs to be changed
             if (row.data.beamlineName != _this.sampleChangerWidget.beamlineName) {
-                var newBeamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":row.data.beamlineName});
-                if (newBeamline.length > 0) {
-                    _this.createSampleChangerWidget(newBeamline[0].sampleChangerType,newBeamline[0].name);
-                } else {
-                    _this.createSampleChangerWidget("FlexHCD",row.data.beamlineName);
-                }
-                _this.widgetContainer.removeAll();
-                _this.load(_this.containers);
-                _this.widgetContainer.insert(_this.sampleChangerWidget.getPanel());
-                _this.reloadSampleChangerWidget();
+                _this.changeSampleChangerWidgetByBeamline(row.data.beamlineName);
             }
             // Manage the selection/deselection of rows and cells
             if (_this.selectedPuck){
@@ -5887,7 +5880,7 @@ function LoadSampleChangerView (args) {
 	});
 
     this.containerListEditor.onBeamlineChanged.attach(function(sender,beamline) {
-
+        _this.changeSampleChangerWidgetByBeamline(beamline);
     });
 
     this.containerListEditor.onLoaded.attach(function(sender, containers){
@@ -5895,7 +5888,11 @@ function LoadSampleChangerView (args) {
         _this.load(containers);
     });
 
-    this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
+    this.containerListEditor.onUnloadAllButtonClicked.attach(function(sender){
+        _this.returnToSelectionStatus();
+    });
+
+    this.previewPanelView.onUnloadButtonClicked.attach(function(sender){
         if (_this.selectedPuck){
             _this.selectedPuck.emptyAll();
             _this.previewPuck(_this.selectedPuck.containerId, _this.selectedPuck.capacity, {
@@ -5927,7 +5924,10 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
             this.setSelectedPuck(puck);
         }
     }
-
+    var text = "<span style='font-size:12px;'>Click on a sample changer </br>location to place the dewar</span>";
+    if (row.get('sampleChangerLocation') != null && row.get('sampleChangerLocation') !="") {
+        text = "Unload #" + row.get('sampleChangerLocation');
+    }
     this.previewPuck(row.get('containerId'), 
                         row.get('capacity'), {
                                 info : [{
@@ -5937,7 +5937,7 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     text : 'SC Location',
                                     value : row.get('sampleChangerLocation')
                                 }]
-        }, "EMPTY");
+        }, text);
     
     if (this.selectedPuck) {
         this.sampleChangerWidget.enablePuck(this.selectedPuck);
@@ -6017,7 +6017,9 @@ LoadSampleChangerView.prototype.returnToSelectionStatus = function () {
     if (this.selectedPuck) {
         this.deselectPuck();        
     }
-    this.cleanPreviewPanel();
+    if (this.previewPanelView){
+        this.cleanPreviewPanel();
+    }
 };
 
 /**
@@ -6063,6 +6065,20 @@ LoadSampleChangerView.prototype.createSampleChangerWidget = function (sampleChan
     return this.sampleChangerWidget;
 };
 
+LoadSampleChangerView.prototype.changeSampleChangerWidgetByBeamline = function (beamlineName) {
+    var newBeamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlineName});
+    if (newBeamline.length > 0) {
+        this.createSampleChangerWidget(newBeamline[0].sampleChangerType,newBeamline[0].name);
+    } else {
+        this.createSampleChangerWidget("FlexHCD",beamlineName);
+    }
+    this.widgetContainer.removeAll();
+    this.load(this.containers);
+    this.widgetContainer.insert(this.sampleChangerWidget.getPanel());
+    this.reloadSampleChangerWidget();
+    this.sampleChangerWidget.blink();
+    this.returnToSelectionStatus();
+}
 
 
 /**
@@ -6136,13 +6152,19 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.verticalPanel = Ext.create('Ext.panel.Panel', {
         // layout : 'hbox',
-            items : [
+            layout: {
+                type: 'vbox',
+                align: 'center',
+                pack: 'center'
+            },
+            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid ' align='center' ><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:300px;font-size:20px;font-weight:100;'></span></div>"},
                         this.widgetContainer    
             ]
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
         // title : 'Load the sample changer',
+        autoScroll : true,
         layout : 'hbox',
         height : this.height,
         width : this.width,
@@ -6189,6 +6211,8 @@ LoadSampleChangerView.prototype.reloadSampleChangerWidget = function () {
         }
     });
     this.sampleChangerWidget.render();
+    $("#" + this.id + "-scw-label").html(this.sampleChangerWidget.beamlineName + " (" + this.sampleChangerWidget.name + ")");
+    this.panel.doLayout();
 }
 
 /**
@@ -6199,8 +6223,10 @@ LoadSampleChangerView.prototype.reloadSampleChangerWidget = function () {
 */
 LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
     this.previewPanelView.clean();
-    if(this.previewPanelView.panel.body){
-        this.verticalPanel.remove(this.previewPanelView.panel);
+    if (this.previewPanelView.panel){
+        if(this.previewPanelView.panel.body){
+            this.verticalPanel.remove(this.previewPanelView.panel);
+        }
     }
 };
 
@@ -6350,6 +6376,7 @@ PrepareMainView.prototype.getPanel = function() {
     );
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+        autoScroll : true,
         buttons : this.getButtons(),
         layout: {
             type: 'vbox',
@@ -6458,37 +6485,10 @@ PrepareMainView.prototype.load = function() {
         };
         
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    // } else if (this.currentStep == 2){
-    //     this.container.add(this.sampleChangerSelector.getPanel());
-    //     this.sampleChangerSelector.panel.setLoading();
-
-    //     var onSuccessProposal = function(sender, containers) { 
-    //         _this.containers = containers;
-    //         var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
-
-    //         if (beamlinesSelected.length > 1) {
-    //             $.notify("Warning: Multiple beamlines selected", "warn");
-    //         } else if (beamlinesSelected.length == 1) {
-    //             if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
-    //                 _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
-    //             } else {
-    //                 $.notify("Warning: Unknown beamline", "warn");
-    //             }
-    //         }
-
-    //         _this.sampleChangerSelector.panel.setLoading(false);
-    //     };
-
-    //     var onError = function(sender, error) {        
-    //         EXI.setError("Ops, there was an error");
-    //         _this.sampleChangerSelector.panel.setLoading(false);
-    //     };
-        
-    //     EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
     } else if (this.currentStep == 2) {
         var onSuccessProposal = function(sender, containers) {     
             _this.containers = containers;
-            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
+            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineLocation'));
             if (beamlinesSelected.length > 0) {
                 var beamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlinesSelected[0]});
                 if (beamline.length > 0) {
@@ -6577,7 +6577,7 @@ function PreviewPanelView (args) {
                 enableMouseOver : true
             };
 
-    this.onEmptyButtonClicked = new Event(this);
+    this.onUnloadButtonClicked = new Event(this);
 };
 
 /**
@@ -6607,14 +6607,16 @@ PreviewPanelView.prototype.getPanel = function () {
         },
         listeners: {
             click: function(button) {
-                if (button.text == "EMPTY") {
-                    _this.onEmptyButtonClicked.notify();
+                if (button.text != null){
+                    if (button.text.split(" ")[0] == "Unload") {
+                        _this.onUnloadButtonClicked.notify();
+                    }
                 }
             }
         }
     });
 
-    var infoContainer = Ext.create('Ext.panel.Panel', {
+    this.infoContainer = Ext.create('Ext.panel.Panel', {
         layout : 'vbox',
         width : this.width/2,
         height : this.height,
@@ -6633,7 +6635,7 @@ PreviewPanelView.prototype.getPanel = function () {
         layout : 'hbox',
         width : this.width,
         height : this.height,
-        items : [infoContainer, this.previewPanel ]
+        items : [this.infoContainer, this.previewPanel ]
     });
 
     return this.panel;
@@ -6660,7 +6662,6 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
                             html    : html,
                             margin  : 6
                     });
-
     this.instructionsButton.setText(instructionsButtonText);
     this.puckData.containerId = containerId;
     if (capacity == 10){
@@ -6691,9 +6692,11 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
 * @return
 */
 PreviewPanelView.prototype.clean = function () {
-    this.previewPanel.removeAll();
-    this.infoPanel.removeAll();
-    this.instructionsButton.setText("");
+    if (this.previewPanel){
+        this.previewPanel.removeAll();
+        this.infoPanel.removeAll();
+        this.instructionsButton.setText("");
+    }
 };
 function WorkflowStepMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -7996,7 +7999,7 @@ function SampleChangerWidget (args) {
 * @method blink
 */
 SampleChangerWidget.prototype.blink = function () {
-    $('#' + this.id).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+    $('#' + this.id).fadeIn().fadeOut().fadeIn();
 	var allPucks = this.getAllPucks();
 	for (var i = 0 ; i < allPucks.length ; i++) {
 		allPucks[i].blink();
@@ -8470,6 +8473,7 @@ function PuckLegend(args){
     this.width = 200;
     this.height = 10;
     var cy = "30.5%";
+    var tOffset = 8;
 
     if (args) {
         if (args.width) {
@@ -8480,6 +8484,9 @@ function PuckLegend(args){
         }
         if (args.cy) {
             cy = args.cy;
+        }
+        if (args.tOffset) {
+            tOffset = args.tOffset;
         }
     }
     
@@ -8492,7 +8499,8 @@ function PuckLegend(args){
 
     this.data = {
                     id      : this.id,
-                    circles : circles
+                    circles : circles,
+                    tOffset : tOffset
                 };
 }
 
@@ -8525,6 +8533,7 @@ function PuckWidget(args){
 	this.enableMouseOver = false;
 	this.enableClick = false; //click on cells
 	this.enableMainClick = false; //click on the puck
+	this.enableMainMouseOver = false; //mouse over on the puck
 	this.initSelected = {};
 	this.isLoading = true;
 	this.capacity = 10;
@@ -8555,6 +8564,9 @@ function PuckWidget(args){
 		}
 		if (args.enableMainClick != null){
 			this.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableMainMouseOver != null){
+			this.enableMainMouseOver = args.enableMainMouseOver;
 		}
 		if (args.initSelected){
 			this.initSelected = args.initSelected;
@@ -8735,7 +8747,7 @@ PuckWidget.prototype.load = function (data) {
 				var cellIndex = _this.findCellIndexById(sender.target.id);
 				
 				_this.onMouseOver.notify(sender.target.id.split("-")[1]);
-				_this.focus(sender.target.id.split("-")[1],true);
+				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
 				if (_this.data.cells[cellIndex].sample_name){
@@ -8761,7 +8773,7 @@ PuckWidget.prototype.load = function (data) {
 			
 			$("#" + currentId).unbind('mouseout').mouseout(function(sender){
 				_this.onMouseOut.notify();
-				_this.focus(sender.target.id.split("-")[1],false);
+				_this.focusWell(sender.target.id.split("-")[1],false);
 
 				// TOOLTIP
 				$('#hoveringTooltipDiv').remove();
@@ -8784,13 +8796,27 @@ PuckWidget.prototype.load = function (data) {
 };
 
 /**
-* Focus or unfocus one cell according to a boolean and its location 
+* focus or unfocus the puck
 *
 * @method focus
+* @param {Boolean} bool Whether or not to focus the cell
+*/
+PuckWidget.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id).addClass("puck-selected");		
+	} else {
+		$("#" + this.id).removeClass("puck-selected");	
+	}
+};
+
+/**
+* focus or unfocus one cell according to a boolean and its location 
+*
+* @method focusWell
 * @param {Integer} location The location of the cell on the puck
 * @param {Boolean} bool Whether or not to focus the cell
 */
-PuckWidget.prototype.focus = function (location, bool) {
+PuckWidget.prototype.focusWell = function (location, bool) {
 	if (bool){
 		$("#" + this.id + "-" + location).attr("class", "cell_focus");
 		$("#" + this.id + "-" + location + "-inner").attr("class", "cell_inner_hidden");		
@@ -8887,7 +8913,7 @@ PuckWidget.prototype.allowAllCells = function () {
 * @method blink` 
 */
 PuckWidget.prototype.blink = function () {
-    $('#' + this.id + "-div").fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+    $('#' + this.id + "-div").fadeIn().fadeOut().fadeIn();
 }
 function PuckWidgetContainer(args) {
 	var _this = this;
@@ -8895,11 +8921,14 @@ function PuckWidgetContainer(args) {
 	this.onClick = new Event(this);
 	this.mouseOverCell = new Event(this);
 	this.mouseOutCell = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 	
 	this.xMargin = 0;
 	this.yMargin = 0;
 	this.containerId = 0;
 	this.enableMainClick = false;
+	this.enableMainMouseOver = false;
 	if (args){
 		if (args.puckType) {
 			switch (args.puckType) {
@@ -8921,6 +8950,9 @@ function PuckWidgetContainer(args) {
 		}
 		if (args.enableMainClick != null){
 			this.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableMainMouseOver != null){
+			this.enableMainMouseOver = args.enableMainMouseOver;
 		}
 	}
 	
@@ -8966,6 +8998,15 @@ PuckWidgetContainer.prototype.getPanel = function () {
         if(_this.enableMainClick) {
 			$("#" + this.id).unbind('click').click(function(sender){
 				_this.onClick.notify(sender.target.id);
+			});
+		}
+		if(_this.enableMainMouseOver) {
+			$("#" + this.id).unbind('mouseover').mouseover(function(sender){
+				_this.onMouseOver.notify(_this.puckWidget);
+			});
+			
+			$("#" + this.id).unbind('mouseout').mouseout(function(sender){
+				_this.onMouseOut.notify(_this.puckWidget);
 			});
 		}
     });
@@ -9388,6 +9429,7 @@ SpinePuckWidget.prototype.getPanel = PuckWidget.prototype.getPanel;
 SpinePuckWidget.prototype.load = PuckWidget.prototype.load;
 SpinePuckWidget.prototype.addCirclePathCells = PuckWidget.prototype.addCirclePathCells;
 SpinePuckWidget.prototype.focus = PuckWidget.prototype.focus;
+SpinePuckWidget.prototype.focusWell = PuckWidget.prototype.focusWell;
 SpinePuckWidget.prototype.render = PuckWidget.prototype.render;
 SpinePuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 SpinePuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
@@ -9432,6 +9474,7 @@ UniPuckWidget.prototype.getPanel = PuckWidget.prototype.getPanel;
 UniPuckWidget.prototype.load = PuckWidget.prototype.load;
 UniPuckWidget.prototype.addCirclePathCells = PuckWidget.prototype.addCirclePathCells;
 UniPuckWidget.prototype.focus = PuckWidget.prototype.focus;
+UniPuckWidget.prototype.focusWell = PuckWidget.prototype.focusWell;
 UniPuckWidget.prototype.render = PuckWidget.prototype.render;
 UniPuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 UniPuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;

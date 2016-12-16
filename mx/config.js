@@ -77,7 +77,7 @@ var ExtISPyB ={
             MX:[
                { 
                    name : "ID23-1",
-                   sampleChangerType : 'SC3'
+                   sampleChangerType : 'FlexHCD'
                },
                { 
                    name : "ID23-2",
@@ -130,7 +130,7 @@ var ExtISPyB ={
             MX:[
                { 
                    name : "ID23-1",
-                   sampleChangerType : 'SC3'
+                   sampleChangerType : 'FlexHCD'
                },
                { 
                    name : "ID23-2",

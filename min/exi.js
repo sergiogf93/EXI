@@ -1691,10 +1691,10 @@ ShippingExiController.prototype.init = function() {
 			mainView.load();
 		}).enter(this.setPageBackground);
 
-		Path.map("#/shipping/:shippingId/containerId/:containerId/edit").to(function() {
+		Path.map("#/shipping/:shippingId/:shippingStatus/containerId/:containerId/edit").to(function() {
 			var mainView = new PuckFormView();
 			EXI.addMainPanel(mainView);
-			mainView.load(this.params['containerId'],this.params['shippingId']);
+			mainView.load(this.params['containerId'],this.params['shippingId'],this.params['shippingStatus']);
 		}).enter(this.setPageBackground);
 
 		Path.map("#/shipping/:shippingId/containerId/:containerId/sampleId/:sampleId/editCrystalForm").to(function() {
@@ -4018,6 +4018,10 @@ function ContainerSpreadSheet(args){
 			this.renderCrystalFormColumn = args.renderCrystalFormColumn;
 		}
 	}
+
+	this.crystalFormIndex = -1;
+	this.unitCellIndex = -1;
+	this.spaceGroupIndex = -1;
 	
 	this.onModified = new Event(this);
 }
@@ -4073,9 +4077,8 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 					diffraction = {};
 				}
 				data.push(
-					[(i+1), protein.acronym, sample.name, crystal.spaceGroup, diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
-					 crystal.cellA, crystal.cellB, crystal.cellC, crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, sample.smiles, sample.comments
+					[(i+1), protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
 					 ]
 				);
 		}
@@ -4087,11 +4090,11 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 };
 
 
-ContainerSpreadSheet.prototype.getSpaceGroups = function() {
-	return ["P1","P2","P21","C2","P222","P2221","P21212","P212121","C222","C2221","F222","I222","I212121","P4","P41","P42","P43","P422","P4212","P4122","P41212","P4222","P42212","P4322","P43212",
-                	"I4","I41","I422","I4122","P3","P31","P32","P31","P321","P3112","P3121","P3212","P3221","P6","P61","P65","P62","P64","P63","P622","P6122","P6522","P6222","P6422","P6322","R3","R32","P23","P213",
-                	"P432",	"P4232","P4332","P4132","F23","F432","F4132","I23",	"I213","I432","I4132", "UNKNOWN"];
-};
+// ContainerSpreadSheet.prototype.getSpaceGroups = function() {
+// 	return ["P1","P2","P21","C2","P222","P2221","P21212","P212121","C222","C2221","F222","I222","I212121","P4","P41","P42","P43","P422","P4212","P4122","P41212","P4222","P42212","P4322","P43212",
+//                 	"I4","I41","I422","I4122","P3","P31","P32","P31","P321","P3112","P3121","P3212","P3221","P6","P61","P65","P62","P64","P63","P622","P6122","P6522","P6222","P6422","P6322","R3","R32","P23","P213",
+//                 	"P432",	"P4232","P4332","P4132","F23","F432","F4132","I23",	"I213","I432","I4132", "UNKNOWN"];
+// };
 
 
 ContainerSpreadSheet.prototype.getAcronyms = function() {
@@ -4105,8 +4108,20 @@ ContainerSpreadSheet.prototype.getAcronyms = function() {
 
 
 ContainerSpreadSheet.prototype.getHeader = function() {
-
+	var _this = this;
 	var header = [];
+	var disabledRenderer = function(instance, td, row, col, prop, value, cellProperties){
+		if (value != undefined){
+			td.innerHTML = value;
+		}
+		td.style.background = '#DDD';
+	}
+	var editCrystalFormRenderer = function(instance, td, row, col, prop, value, cellProperties){
+		if (value != undefined){
+			td.innerHTML = value;
+		}
+	}
+	  
 	if (this.containerType != "OTHER"){
 		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
 				{ text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
@@ -4116,12 +4131,28 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 																						}
 				}, 
 				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
-				{ text :'Space<br /> Group', id : 'Space Group',column : {
-																				width : 90,
-																				type: 'dropdown',
-																				source: this.getSpaceGroups()
-														}
-				}, 
+				{ text :'Crystal<br /> Form', id : 'Crystal Form',column : {
+																			width : 300,
+																			type: 'dropdown',
+																			source: function(query, process) {
+																				var src = [];
+																				var colIndex = _this.getColumnIndex("Protein Acronym");
+																				var protein = EXI.proposalManager.getProteinByAcronym(this.instance.getDataAtCell(this.row,colIndex));
+																				if (protein.length > 0){
+																					var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == protein[0].proteinId;});
+																					if (crystalsByProteinId) {
+																						for (var i = 0 ; i < crystalsByProteinId.length ; i++){
+																							var crystal = crystalsByProteinId[i];
+																							src.push(_this.getCrystalInfo(crystal));
+																						}
+																					}
+																					process(_.union(src,["NEW"]));
+																				} else {
+																					process([]);
+																				}
+																			}
+																		}
+																	}, 
 				{ text :'Exp.<br /> Type', id : 'Experiment Type', column : {
 																			width : 80,  
 																			type: 'dropdown',
@@ -4136,18 +4167,14 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 				{ text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
 				{ text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
 				{ text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
-				{ text :'A', id :'Unit cell A', column : {width : 40}}, 
-				{ text :'B', id :'Unit cell B', column : {width : 40}}, 
-				{ text :'C', id : 'Unit cell C', column : {width : 40}}, 
-				{ text :'&#945;', id :'Unit cell Alpha', column : {width : 40}}, 
-				{ text :'&#946;', id :'Unit cell Beta', column : {width : 40}}, 
-				{ text :'&#947;', id :'Unit cell Gamma', column : {width : 40}}, 
+				{ text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+				{ text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
 				{ text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
 				{ text :'Comments', id :'Comments', column : {width : 200}}
 				];
 
 		if (this.renderCrystalFormColumn) {
-			header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: "html"}});
+			header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: editCrystalFormRenderer, editor : false, readOnly: true}});
 		}
 	} else {
 		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
@@ -4247,13 +4274,14 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 				sample["crystalVO"]["proteinVO"] = proteins[0];
 			}
         }
-		sample["crystalVO"]["spaceGroup"] = rows[i]["Space Group"];
-		sample["crystalVO"]["cellA"] = Number(rows[i]["Unit cell A"]);
-		sample["crystalVO"]["cellB"] = Number(rows[i]["Unit cell B"]);
-		sample["crystalVO"]["cellC"] = Number(rows[i]["Unit cell C"]);
-		sample["crystalVO"]["cellAlpha"] = Number(rows[i]["Unit cell Alpha"]);
-		sample["crystalVO"]["cellBeta"] = Number(rows[i]["Unit cell Beta"]);
-		sample["crystalVO"]["cellGamma"] = Number(rows[i]["Unit cell Gamma"]);
+		var crystal = this.parseCrystalSpaceGroup(rows[i]["Crystal Form"]);
+		sample["crystalVO"]["spaceGroup"] = crystal.spaceGroup;
+		sample["crystalVO"]["cellA"] = crystal.cellA;
+		sample["crystalVO"]["cellB"] = crystal.cellB;
+		sample["crystalVO"]["cellC"] = crystal.cellC;
+		sample["crystalVO"]["cellAlpha"] = crystal.cellAlpha;
+		sample["crystalVO"]["cellBeta"] = crystal.cellBeta;
+		sample["crystalVO"]["cellGamma"] = crystal.cellGamma;
 		
 		sample["diffractionPlanVO"] = {};
 		sample["diffractionPlanVO"]["radiationSensitivity"]= Number(rows[i]["Radiation Sensitivity"]);
@@ -4303,8 +4331,12 @@ ContainerSpreadSheet.prototype.parseTableData = function() {
 };
 
 ContainerSpreadSheet.prototype.load = function(puck){
+	var _this = this;
 	this.puck = puck;
 	var container = document.getElementById(this.id + '_samples');
+	this.crystalFormIndex = this.getColumnIndex('Crystal Form');
+	this.unitCellIndex = this.getColumnIndex('Unit cell');
+	this.spaceGroupIndex = this.getColumnIndex("Space Group");
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -4326,14 +4358,44 @@ ContainerSpreadSheet.prototype.load = function(puck){
 		    		td.className = 'custom-row-text-required';
 		  	    }
 	    }
+		if ((col == _this.unitCellIndex) || col == _this.spaceGroupIndex) {
+			td.style.background = '#EEE';
+		}
 	  }
+
+	  
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
-	  var _this = this;
 	  this.spreadSheet = new Handsontable(container, {
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 					
+				},
+				afterChange: function (changes, source) {
+					$(".edit-crystal-button").click(function(sender){
+								var row = sender.target.id.split("-")[2];
+								var crystal = _this.parseCrystalSpaceGroup(_this.getData()[row][_this.crystalFormIndex]);
+								_this.showEditForm(crystal,row);
+							});
+					if (source == "edit") {
+						if (changes) {
+							for (var i = 0 ; i < changes.length ; i++) {
+								var change = changes[i];
+								if (change[2] != change[3]) {
+									_this.manageChange(change);
+								}
+							}
+						}
+					} else if (source == "autofill") {
+						if (changes){
+							for (var i = 0 ; i < changes.length ; i++) {
+								var change = changes[i];
+								if (change[2] != change[3]) {
+									_this.manageChange(change);
+								}
+							}
+						}
+					}
 				},
 				data: this.getSamplesData(puck),
 			
@@ -4343,16 +4405,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 				colWidths: this.getHeaderWidth(),
 				colHeaders: this.getHeaderText(),
 				stretchH: 'last',
-				columns: this.getColumns()
+				columns: this.getColumns(),
 		});
 
-	  
-	 /*this.spreadSheet.updateSettings({
-		  afterChange: function (changes, source) {              
-				_this.onModified.notify(_this.getPuck());
-			
-		  }
-		});*/
 	
 	
 };
@@ -4367,6 +4422,156 @@ ContainerSpreadSheet.prototype.loadData = function (data) {
 
 ContainerSpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
 	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
+}
+
+ContainerSpreadSheet.prototype.getColumnIndex = function (colId) {
+	return _.findIndex(this.getHeader(),{id :colId});
+}
+
+ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (data) {
+	var parsed = {
+					spaceGroup 	: null,
+					cellA		: null,
+					cellB		: null,
+					cellC		: null,
+					cellAlpha	: null,
+					cellBeta	: null,
+					cellGamma	: null
+				};
+	if (data != ""){
+		if (data == "NEW") {
+			parsed.spaceGroup = "NEW";
+		} else {
+			var splitted = data.split("-")
+			parsed.spaceGroup = splitted[0].trim();
+			if (splitted.length > 1){
+				if(splitted[1].indexOf("|") >= 0){
+					var cells = splitted[1].trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
+					parsed.cellA = (cells.split("|")[0].split(":")[0] == "null")? null : cells.split("|")[0].split(":")[0];
+					parsed.cellB = (cells.split("|")[0].split(":")[1] == "null")? null : cells.split("|")[0].split(":")[1];
+					parsed.cellC = (cells.split("|")[0].split(":")[1] == "null")? null : cells.split("|")[0].split(":")[2];
+					parsed.cellAlpha = (cells.split("|")[1].split(":")[0] == "null")? null : cells.split("|")[1].split(":")[0];
+					parsed.cellBeta = (cells.split("|")[1].split(":")[1] == "null")? null : cells.split("|")[1].split(":")[1];
+					parsed.cellGamma = (cells.split("|")[1].split(":")[2] == "null")? null : cells.split("|")[1].split(":")[2];
+				}
+			} else {
+				parsed.cellA = 0;
+				parsed.cellB = 0;
+				parsed.cellC = 0;
+				parsed.cellAlpha = 0;
+				parsed.cellBeta = 0;
+				parsed.cellGamma = 0;
+			}
+		}
+	}
+	return parsed;
+}
+
+ContainerSpreadSheet.prototype.getCrystalInfo = function (crystal) {
+	if (crystal.cellA == null) {
+		return crystal.spaceGroup + " - undefined";
+	} else if (crystal.cellA == 0 && crystal.cellB == 0 && crystal.cellC == 0 && crystal.cellAlpha == 0 && crystal.cellBeta == 0 && crystal.cellGamma == 0 ){
+		return crystal.spaceGroup
+	}
+	return crystal.spaceGroup + " - (" + crystal.cellA + " : " + crystal.cellB + " : " + crystal.cellC + " | " + crystal.cellAlpha + " : " + crystal.cellBeta + " : " + crystal.cellGamma + ")";
+}
+
+ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
+	var html = "";
+	dust.render("shipping.edit.form.unit.cell.template", crystal, function(err,out){
+		html = out;
+	});
+	return html;
+}
+
+ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
+	var _this = this;
+	var editCrystalForm = new EditCrystalFormView();
+
+	editCrystalForm.onSaved.attach(function (sender, crystal) {
+		_this.setDataAtCell(row,_this.crystalFormIndex,_this.getCrystalInfo(crystal));
+		_this.setDataAtCell(row,_this.unitCellIndex,_this.getUnitCellInfo(crystal));
+		_this.setDataAtCell(row,_this.spaceGroupIndex,crystal.spaceGroup);
+		window.close();
+	});
+
+	var window = Ext.create('Ext.window.Window', {
+		title : 'New Crystal Form',
+		height : 325,
+		width : 600,
+		modal : true,
+		layout : 'fit',
+		items : [ editCrystalForm.getPanel() ],
+		buttons : [ {
+				text : 'Save',
+				handler : function() {
+					editCrystalForm.save();
+				}
+			}, {
+				text : 'Cancel',
+				handler : function() {
+					if (crystal.spaceGroup == "NEW"){
+						_this.setDataAtCell(row,_this.crystalFormIndex,"");
+						_this.setDataAtCell(row,_this.unitCellIndex,"");
+						_this.setDataAtCell(row,_this.spaceGroupIndex,"");
+					}
+					window.close();
+				}
+			} ]
+	}).show();
+
+	editCrystalForm.load(crystal);
+}
+
+ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column) {
+	if (!column) {
+		column = this.getColumnIndex("editCrystalForm");
+	}
+	var button = "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
+	this.setDataAtCell(row,column,button);
+}
+
+ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
+	this.setDataAtCell(row,this.crystalFormIndex,"");
+	this.setDataAtCell(row,this.unitCellIndex,"");
+	this.setDataAtCell(row,this.spaceGroupIndex,"");
+	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
+}
+
+ContainerSpreadSheet.prototype.disableAll = function () {
+	this.spreadSheet.updateSettings({
+					readOnly: true
+				});
+}
+
+ContainerSpreadSheet.prototype.manageChange = function (change){
+	var _this = this;
+	switch (change[1]) {
+		case this.crystalFormIndex : {
+			var parsed = this.parseCrystalSpaceGroup(change[3]);
+			if (parsed.spaceGroup != undefined){
+				if (parsed.spaceGroup == "NEW"){
+					this.showEditForm(parsed, change[0]);
+				} else {
+					var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsed.spaceGroup}),function(o){return o.proteinVO.acronym == _this.getData()[change[0]][1]})
+					if (crystalsBySpaceGroupAndAcronym.length > 0){
+						this.setDataAtCell(change[0],this.unitCellIndex,this.getUnitCellInfo(parsed));
+						this.setDataAtCell(change[0],this.spaceGroupIndex,parsed.spaceGroup);
+						this.addEditCrystalFormButton(change[0]);
+					} else {
+						this.resetCrystalGroup(change[0]);
+					}
+				}
+			} else {
+				this.resetCrystalGroup(change[0]);
+			}
+			break;
+		}
+		case this.getColumnIndex("Protein Acronym") : {
+			this.resetCrystalGroup(change[0]);
+			break;
+		}
+	}
 }
 function CrystalFormView (args) {
     this.id = BUI.id();
@@ -4462,6 +4667,69 @@ CrystalFormView.prototype.load = function(containerId, sampleId, shippingId){
 
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
 };
+function EditCrystalFormView (args) {
+    this.id = BUI.id();
+
+    this.width = 600;
+    this.height = 200;
+	this.showTitle = true;
+	if (args != null) {
+		if (args.showTitle != null) {
+			this.showTitle = args.showTitle;
+		}
+        if (args.width != null) {
+			this.width = args.width;
+		}
+        if (args.height != null) {
+			this.height = args.height;
+		}
+	}
+
+	this.onSaved = new Event(this);
+};
+
+EditCrystalFormView.prototype.getPanel = function() {
+
+	this.panel = Ext.create("Ext.panel.Panel",{
+		items :	[{
+					html : '<div id="' + this.id + '"></div>',
+					autoScroll : false,
+					padding : this.padding,
+					width : this.width
+				}]
+	});
+
+	return this.panel;
+};
+
+EditCrystalFormView.prototype.load = function(crystal) {
+
+	this.crystal = crystal;
+    this.crystal.id = this.id;
+    this.crystal.spaceGroups = ExtISPyB.spaceGroups;
+
+    var html = "";
+	
+    dust.render("crystal.edit.form.template", this.crystal, function(err, out){
+		html = out;
+	});
+	
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
+};
+
+EditCrystalFormView.prototype.save = function () {
+    var crystal = {
+                    spaceGroup  :   $("#" + this.id + "-space-group").val(),
+                    cellA       :   $("#" + this.id + "-cellA").val(),
+                    cellB       :   $("#" + this.id + "-cellB").val(),
+                    cellC       :   $("#" + this.id + "-cellC").val(),
+                    cellAlpha   :   $("#" + this.id + "-cellAlpha").val(),
+                    cellBeta    :   $("#" + this.id + "-cellBeta").val(),
+                    cellGamma   :   $("#" + this.id + "-cellGamma").val()
+                };
+    this.onSaved.notify(crystal);
+};
 
 /**
 * This is a grid for parcels
@@ -4473,7 +4741,7 @@ function ParcelGrid(args) {
 	this.id = BUI.id();
 	this.height = 100;
 	this.width = 100;
-	this.padding = 10;
+	this.padding = 0;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
 
@@ -4546,6 +4814,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			height : 90,
 			width : this.width - 60,
 			shippingId : this.shipment.shippingId,
+			shippingStatus : this.shipment.shippingStatus,
 			index : Number(i)+1
 		});
 		this.panel.insert(parcelPanel.getPanel());
@@ -4891,7 +5160,7 @@ function PuckFormView(args) {
 		
 	});*/
 
-	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false});
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
 		_this.containerTypeChanged(capacity);
@@ -4902,9 +5171,10 @@ function PuckFormView(args) {
 }
 
 /** Loads a puck into the form **/
-PuckFormView.prototype.load = function(containerId, shippingId) {
+PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) {
 	var _this = this;
     this.shippingId = shippingId;
+    this.shippingStatus = shippingStatus;
     this.containerId = containerId;
     this.containerSpreadSheet.setLoading(true);
 	this.panel.setTitle("Shipment");
@@ -4924,12 +5194,6 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
         }
 
         var onSuccess = function (sender, samples) {
-            var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
-            if (withoutCollection.length == samples.length) {
-                Ext.getCmp(_this.id + "_save_button").enable();
-            } else {
-				_this.capacityCombo.disable();
-			}
             if (samples.length > 0) {
                 _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
             } else {
@@ -4937,6 +5201,16 @@ PuckFormView.prototype.load = function(containerId, shippingId) {
 			}
 			_this.containerSpreadSheet.setContainerType(puck.containerType);
             _this.containerSpreadSheet.load(puck);
+			if (_this.shippingStatus != "processing"){
+				var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+				if (withoutCollection.length == samples.length) {
+					Ext.getCmp(_this.id + "_save_button").enable();
+					Ext.getCmp(_this.id + "_remove_button").enable();
+					_this.capacityCombo.enable();
+				}
+			} else {
+				_this.containerSpreadSheet.disableAll();
+			}
             _this.containerSpreadSheet.setLoading(false);
 			if (_this.containerSpreadSheet.renderCrystalFormColumn) {
 				_this.setValuesForEditCrystalColumn();
@@ -4955,6 +5229,7 @@ PuckFormView.prototype.getPanel = function() {
 	var _this =this;
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+		autoScroll 	: true,
 		buttons : this.getToolBar(),
 		items : [ 
 		         {
@@ -5024,8 +5299,10 @@ PuckFormView.prototype.getToolBar = function() {
 	return [
 			{
 			    text: 'Remove',
+				id: this.id + "_remove_button",
 			    width : 100,
 			    height : 30,
+				disabled : true,
 			    cls : 'btn-red',
 			    handler : function(){
 			    	function showResult(result){
@@ -5086,6 +5363,7 @@ PuckFormView.prototype.save = function() {
 	this.panel.setLoading("Saving Puck");
 
 	var puck = this.containerSpreadSheet.getPuck();
+
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getSelectedCapacity();
@@ -5106,10 +5384,11 @@ PuckFormView.prototype.save = function() {
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
-PuckFormView.prototype.getEditCrystalFormLink = function (location) {
-	var sampleId = this.puck.sampleVOs[location].blSampleId;
-	return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
-}
+// PuckFormView.prototype.getEditCrystalFormLink = function (row) {
+// 	// var crystalId = this.puck.sampleVOs[row].crystalVO.crystalId;
+// 	return "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
+// 	// return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
+// }
 
 /**
  * When container type has changed from SPINE|| UNIPUCK || PLATE
@@ -5144,10 +5423,11 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
  */
 PuckFormView.prototype.setValuesForEditCrystalColumn = function(capacity) {
 	var rows = this.containerSpreadSheet.parseTableData();
-	var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+	var columnIndex = this.containerSpreadSheet.getColumnIndex("editCrystalForm");
 	for (var i = 0; i < rows.length; i++) {
-		this.containerSpreadSheet.setDataAtCell(rows[i].location-1,columnIndex,this.getEditCrystalFormLink(i));
+		this.containerSpreadSheet.addEditCrystalFormButton(rows[i].location-1,columnIndex);
 	}
+	this.panel.doLayout();
 };
 				
 function ShipmentEditForm(args) {
@@ -5183,10 +5463,28 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	var startDate = "";
 	if (shipment.sessions.length > 0){
 		beamlineName = shipment.sessions[0].beamlineName;
-		startDate = shipment.sessions[0].startDate;
+		startDate = (new Date(shipment.sessions[0].startDate)).toLocaleDateString();
+	}
+
+	var sessionSort = function(o1,o2) {
+		var d1 = new Date(o1.BLSession_startDate);
+		var d2 = new Date(o2.BLSession_startDate);
+		if (d1 === d2) {
+			return 0;
+		} else {
+			return (d1 < d2) ? 1 : -1;
+		}
+	}
+	var sessions = EXI.proposalManager.getSessions();
+	sessions.sort(sessionSort);
+	var sessionsSelectData = [];
+	for (var i = 0 ; i < sessions.length ; i++){
+		var session = sessions[i];
+		sessionsSelectData.push({sessionId : session.sessionId, date : (new Date(session.BLSession_startDate)).toLocaleDateString(), beamLineName : session.beamLineName});
 	}
 	
-    dust.render("shipping.edit.form.template", {id : this.id, sessions : EXI.proposalManager.getSessions(), to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
+	
+    dust.render("shipping.edit.form.template", {id : this.id, sessions : sessionsSelectData, to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
 		html = out;
 	});
 	
@@ -5305,18 +5603,23 @@ ShipmentForm.prototype.load = function(shipment) {
     dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
 		html = out;
 	});
-
+	
     $('#' + _this.id).hide().html(html).fadeIn('fast');
-	$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
-		_this.edit();
-	});
+	if (shipment.shippingStatus != "processing"){
+		$("#" + _this.id + "-edit-button").prop('disabled',false);
+		$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
+			_this.edit();
+		});
+	}
 
 };
 
 ShipmentForm.prototype.getPanel = function() {
     this.panel =  {
+					cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
+					margin : 10,
 					padding : this.padding,
 					width : this.width
                 };
@@ -5356,102 +5659,6 @@ ShipmentForm.prototype.edit = function(dewar) {
 	shippingEditForm.load(this.shipment);
 };
 
-// ShipmentForm.prototype.fillStores = function() {
-// 	this.panel.setLoading("Loading Labcontacts from database");
-// 	var labContacts = EXI.proposalManager.getLabcontacts();
-
-// 	this.labContactForSendingStore.loadData(labContacts, false);
-
-// 	labContacts.sort(function(a, b){
-// 	    if(a.cardName < b.cardName) {return -1;}
-// 	    if(a.cardName > b.cardName) {return 1;}
-// 	    return 0;
-// 	});
-	
-// 	$.extend(labContacts, [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
-// 	this.labContactForReturnStore.loadData(labContacts, false);
-
-// 	this.labContactsReturnCombo.setValue(-1);
-
-// 	this.panel.setLoading(false);
-// 	if (this.shipment != null) {
-// 		this.setShipment(this.shipment);
-// 	}
-// };
-
-// ShipmentForm.prototype.draw = function(targetId) {
-// 	this.getPanel().render(targetId);
-// };
-
-// ShipmentForm.prototype._saveShipment = function() {
-// 	var _this = this;
-// 	var shippingId = null;
-	
-// 	if (this.shipment != null) {
-// 		shippingId = this.shipment.shippingId;
-// 	}
-	
-// 	var sendingAddressId = this.labContactsSendingCombo.getValue();
-// 	var returnAddressId = this.labContactsReturnCombo.getValue();
-	
-// 	if (sendingAddressId == null) {
-// 		BUI.showError("User contact information for shipping to beamline is mandatory");
-// 		return;
-// 	}
-
-		
-// 	/** No return requested **/
-// 	if (this.labContactsReturnCombo.getValue() == 0){
-// 		returnAddressId = 0;
-// 	}
-	
-// 	/** Same sender **/
-// 	if (this.labContactsReturnCombo.getValue() == -1){
-// 		returnAddressId = -1;
-// 	}
-
-// 	var sendingAddress = (EXI.proposalManager.getLabcontactById(sendingAddressId));
-// 	var json = {
-// 		shippingId : shippingId,
-// 		name : Ext.getCmp(_this.id + "shippingName").getValue(),
-// 		status : "Not set",
-// 		sendingLabContactId : sendingAddressId,
-// 		returnLabContactId : returnAddressId, 
-// 		returnCourier : returnAddressId,
-// 		courierAccount : sendingAddress.courierAccount,
-// 		billingReference : sendingAddress.billingReference,
-// 		dewarAvgCustomsValue : sendingAddress.dewarAvgCustomsValue,
-// 		dewarAvgTransportValue :sendingAddress.dewarAvgTransportValue,
-// 		comments : Ext.getCmp(_this.id + "comments").getValue(),
-// 		sessionId : this.sessionComboBox.getValue()
-// 	};
-
-// 	var onSuccess = function(sender, shipment) {
-// 		location.hash = "#/shipping/" + shipment.shippingId + "/main";
-// 		_this.panel.setLoading(false);
-// 		_this.onSaved.notify(shipment);
-// 	};
-
-
-// 	/** Cheking params **/
-// 	if (json.name == "") {
-// 		BUI.showError("Name field is mandatory");
-// 		return;
-// 	}
-
-// 	if (json.sendingLabContactId == null) {
-// 		BUI.showError("Lab contact for sending field is mandatory");
-// 		return;
-// 	}
-
-	
-// 	this.panel.setLoading();
-// 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveShipment(json);
-	
-	
-// };
-
-
 /**
 * This main class deals with the creation and edition of shipments
 *
@@ -5486,6 +5693,7 @@ ShippingMainView.prototype.getPanel = function() {
             type: 'vbox',
             align: 'center'
         },
+		padding : 10,
         cls : 'border-grid',
         items : [
                     this.shipmentForm.getPanel(),
@@ -5785,20 +5993,21 @@ AuthenticationForm.prototype.getPanel = function(){
 */
 function ContainerParcelPanel(args) {
     this.id = BUI.id();
-    var factor = 0.2; //to calculate the radius in relation to the height of the panel
     this.height = 220;
     this.containerId = 0;
     this.shippingId = 0;
+    this.shippingStatus = "";
     this.withoutCollection = true;
     this.type = "Puck";
     this.data = {puckType : "Unipuck", 
-                mainRadius : this.height*0.9/2, 
+                mainRadius : this.height*0.75*0.9/2,
                 xMargin : this.width/2 - this.height*0.9/2, 
                 yMargin : 2.5,
                 code : "",
                 enableMouseOver : true,
                 enableClick : true,
                 enableMainClick : true,
+                enableMainMouseOver : true
     };
     this.width = 2*this.data.mainRadius + 20;
     this.container = new ContainerWidget(this.data);
@@ -5806,7 +6015,7 @@ function ContainerParcelPanel(args) {
 	if (args != null) {
         if (args.height != null) {
 			this.height = args.height;
-            this.data.mainRadius = this.height*0.9/2;
+            this.data.mainRadius = this.height*0.75*0.9/2;
             this.width = 2*this.data.mainRadius + 20;
             this.data.xMargin = this.width/2 - this.data.mainRadius;
 		}
@@ -5819,6 +6028,9 @@ function ContainerParcelPanel(args) {
 		}
         if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
+		}
+        if (args.shippingStatus != null) {
+			this.shippingStatus = args.shippingStatus;
 		}
         if (args.code != null) {
             this.data.code = args.code;
@@ -5858,37 +6070,54 @@ ContainerParcelPanel.prototype.getPanel = function () {
         if (code == "") {
             code = "-";
         }
-        Ext.Msg.show({
+        
+        var window = Ext.create('Ext.window.Window', {
             title: 'Container',
-            msg: '<b>Code:</b> ' + code + "</br></br> Select one of the options below:",
-            width: 300,
-            closable: false,
-            buttons: Ext.Msg.YESNOCANCEL,
-            buttonText: {
-                yes: 'Edit',
-                no: 'Remove',
-                cancel: 'Cancel'
-            },
-            multiline: false,
-            fn: function(buttonValue, inputText, showConfig) {
-                switch (buttonValue) {
-                    case "yes":
-                        if (_this.type == "StockSolution") {
-                            location.href = "#/stocksolution/" + _this.containerId + "/main";                            
-                        } else {
-                            location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";                            
+            width: 250,
+            layout: 'fit',
+            modal : true,
+            items: [
+                        {
+                            html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;"><b>Code:</b> ' + code + '</span></div><div class="row"><span style="font-size:12px;color: #666;">Select one of the options below:</span></div></div>',
                         }
-                        break;
-                    case "no":
-                        _this.removeButtonClicked();
-                        break;
-                }
-            }
+            ],
+            buttons : [ {
+                            text : 'Edit',
+                            handler : function() {
+                                if (_this.type == "StockSolution") {
+                                    location.href = "#/stocksolution/" + _this.containerId + "/main";                            
+                                } else {
+                                    location.href = "#/shipping/" + _this.shippingId + "/" + _this.shippingStatus + "/containerId/" + _this.containerId + "/edit";                            
+                                }
+                                 window.close();
+                            }
+                        },{
+                            text : 'Remove',
+                            disabled : _this.shippingStatus == "processing",
+                            handler : function() {
+                                _this.removeButtonClicked();
+                                 window.close();
+                            }
+                        }, {
+                            text : 'Cancel',
+                            handler : function() {
+                                window.close();
+                            }
+                        } ]
         });
+        window.show();
+    });
+
+    this.container.onMouseOver.attach(function(sender, container){
+        container.focus(true);
+    });
+
+    this.container.onMouseOut.attach(function(sender, container){
+        container.focus(false);
     });
 
     var containerPanelHeight = 2*this.data.mainRadius + 5;
-
+    
     this.containerPanel = Ext.create('Ext.panel.Panel', {
         // cls : 'border-grid',
         width : this.width,
@@ -5898,21 +6127,25 @@ ContainerParcelPanel.prototype.getPanel = function () {
 
     this.panel = Ext.create('Ext.panel.Panel', {
         // cls : 'border-grid',
+        layout: {
+                type: 'vbox',
+                align: 'center',
+                pack: 'center'
+        },
         width : this.width,
         height : this.height,
         items : [
-                this.containerPanel,
+                this.containerPanel
                 ]
 	});
-
-    // this.panel.on('boxready', function() {
-    //     $("#" + _this.id + "-edit-button").click(function () {
-    //         location.href = "#/shipping/" + _this.shippingId + "/containerId/" + _this.containerId + "/edit";
-    //     });
-    //     $("#" + _this.id + "-remove-button").click(function(){
-    //         _this.removeButtonClicked();
-    //     });
-    // });
+    
+    if (this.height >= 45) {
+        this.panel.insert({
+                    html : "<div class='container-fluid' align='center'><span style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
+                    height : this.height*0.25,
+                    width : this.width
+                });
+    }
 
     return this.panel;
 };
@@ -5981,6 +6214,7 @@ function ContainerTypeComboBox(args) {
     this.labelWidth = 200;
     this.width = 500;
     this.showStockSolution = true;
+    this.initDisabled = false;
 
     this.data = [
                     {"type":"UNIPUCK", "capacity":16},
@@ -6001,6 +6235,9 @@ function ContainerTypeComboBox(args) {
         }
         if (args.showStockSolution != null) {
             this.showStockSolution = args.showStockSolution;
+        }
+        if (args.initDisabled != null){
+            this.initDisabled = args.initDisabled;
         }
     }
 
@@ -6028,7 +6265,8 @@ ContainerTypeComboBox.prototype.getPanel = function () {
         labelWidth : this.labelWidth,
         displayField: 'type',
         value:'UNIPUCK',
-        width: this.width
+        width: this.width,
+        disabled : this.initDisabled
     });
 
     this.panel.on('select', function(capacityCombo, record){
@@ -6064,8 +6302,8 @@ ContainerTypeComboBox.prototype.setValue = function (capacity) {
     this.panel.setValue(type);
 };
 
-ContainerTypeComboBox.prototype.disable = function () {
-    this.panel.disable();
+ContainerTypeComboBox.prototype.enable = function () {
+    this.panel.enable();
 }
 function ContainerWidget(args) {
     this.id = BUI.id();
@@ -6078,7 +6316,8 @@ function ContainerWidget(args) {
                             width       	: 100,
                             height      	: 100,
                             r           	: 20,
-							enableMainClick : false
+							enableMainClick : false,
+							enableMainMouseOver : false,
                         };
 	this.containerId = 0;
     this.samples = null;
@@ -6093,6 +6332,9 @@ function ContainerWidget(args) {
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
 		}
+		if (args.enableMainMouseOver != null){
+			this.templateData.enableMainMouseOver = args.enableMainMouseOver;
+		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
@@ -6102,6 +6344,8 @@ function ContainerWidget(args) {
 	}
 
 	this.onClick = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 };
 
 ContainerWidget.prototype.getPanel = function () {
@@ -6135,6 +6379,15 @@ ContainerWidget.prototype.getPanel = function () {
 				_this.onClick.notify(sender.target.id);
 			});
 		}
+		if(_this.templateData.enableMainMouseOver) {
+			$("#" + _this.id).unbind('mouseover').mouseover(function(sender){
+				_this.onMouseOver.notify(_this);
+			});
+			
+			$("#" + _this.id).unbind('mouseout').mouseout(function(sender){
+				_this.onMouseOut.notify(_this);
+			});
+		}
     });
 	
 	return this.panel;
@@ -6159,7 +6412,13 @@ ContainerWidget.prototype.getSVG = function (samples) {
 	return html;
 };
 
-
+ContainerWidget.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id).addClass("puck-selected");		
+	} else {
+		$("#" + this.id).removeClass("puck-selected");	
+	}
+};
 function CurvePlotter(args) {
     this.id = BUI.id();
 
@@ -6511,6 +6770,7 @@ function ParcelPanel(args) {
 	this.containersParcelWidth = 2*this.containersPanelHeight*0.9/2 + 20;
 	// this.containersParcelWidth = 2*this.containersPanelHeight*0.2 + 20;
 	this.shippingId = 0;
+	this.shippingStatus = "";
 	this.containersPanel = null;
 
 	this.isSaveButtonHidden = false;
@@ -6532,6 +6792,9 @@ function ParcelPanel(args) {
 		if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
 		}
+		if (args.shippingStatus != null) {
+			this.shippingStatus = args.shippingStatus;
+		}
 	}
 	
 	this.onSavedClick = new Event(this);
@@ -6545,7 +6808,7 @@ ParcelPanel.prototype.load = function(dewar) {
 	
 	/** Loading the template **/
 	var html = "";
-	dust.render("parcel.panel.template", {id : this.id, height : this.height, width : this.width}, function(err, out){
+	dust.render("parcel.panel.template", {id : this.id, dewar : this.dewar, height : this.height, width : this.width}, function(err, out){
 		html = out;
 	});
 	
@@ -6553,9 +6816,17 @@ ParcelPanel.prototype.load = function(dewar) {
 	$('#' + this.id).hide().html(html).fadeIn("fast");
 	this.panel.doLayout();
 
-	$("#" + this.id + "-edit-button").click(function () {
-		_this.showCaseForm();
-	});
+	if (this.shippingStatus != "processing"){
+		$("#" + this.id + "-add-button").removeClass("disabled");
+		$("#" + this.id + "-add-button").click(function () {
+			_this.showAddContainerForm();
+		});
+
+		$("#" + this.id + "-edit-button").removeClass("disabled");
+		$("#" + this.id + "-edit-button").click(function () {
+			_this.showCaseForm();
+		});
+	}
 
 	$("#" + this.id + "-print-button").click(function () {
 		var dewarId = _this.dewar.dewarId;
@@ -6564,15 +6835,11 @@ ParcelPanel.prototype.load = function(dewar) {
 		return;
 	});
 
-	$("#" + this.id + "-add-button").click(function () {
-		_this.showAddContainerForm();
-	});
-
 	this.containersPanel = Ext.create('Ext.panel.Panel', {
 		id			: this.id + "-containers-panel",
 		// layout      : 'hbox',
-		cls 		: "border-grid",
-		margin		: this.height*0.05 + ' 0 0 0',
+		cls 		: "border-grid-light",
+		margin		: this.height*0.0 + ' 0 ' + this.height*0.05 + ' 0',
 		width       : this.containersPanelWidth,
 		height    	: this.containersPanelHeight,
 		autoScroll 	: false,
@@ -6589,16 +6856,20 @@ ParcelPanel.prototype.load = function(dewar) {
 
 ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
 	var html = "";
-	dust.render("parcel.panel.parameter.table.template", {dewar : dewar, height : this.height}, function(err, out){
+	dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
 		html = out;
 	});
 
 	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
 	if (dewar.comments != "" && dewar.comments != null) {
 		$('#' + this.id + "-comments").hide().html("Comments: " + dewar.comments).fadeIn("fast");
-		this.panel.setHeight(this.height + 20);
+		$('#' + this.id + "-index-td").attr('rowspan',2);
+		$('#' + this.id + "-buttons-td").attr('rowspan',2);
+		this.panel.setHeight(this.height + 25);
 	} else {
 		this.panel.setHeight(this.height);
+		$('#' + this.id + "-index-td").attr('rowspan',1);
+		$('#' + this.id + "-buttons-td").attr('rowspan',1);
 	}
 	this.panel.doLayout();
 };
@@ -6613,7 +6884,11 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			this.containersPanel.removeAll();
 			var stockSolutions = EXI.proposalManager.getStockSolutionsByDewarId(dewar.dewarId);
 
+			if (dewar.containerVOs.length)
 			var maxNumberForRow = Math.floor(this.containersPanel.width/this.containersParcelWidth);
+			if (maxNumberForRow == null){
+				maxNumberForRow = Math.floor(this.containersPanel.width/this.containersParcelWidth);
+			}
 			var rows = Math.ceil((this.dewar.containerVOs.length + stockSolutions.length)/maxNumberForRow);
 			var containerRows = [];
 			for (var i = 0 ; i < rows ; i++) {
@@ -6630,6 +6905,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				this.containersPanel.insert(containerRow);
 			}
 			
+			
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
 			var containerPanelsMap = {};
@@ -6637,7 +6913,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, capacity : container.capacity, code : container.code});
+				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
 					_this.renderPucks(_this.dewar);
@@ -6650,7 +6926,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< stockSolutions.length; i++){
 				$('#hoveringTooltipDiv-' + stockSolutions[i].stockSolutionId).remove();
-				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, code : stockSolutions[i].name});	
+				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, code : stockSolutions[i].name});	
 				containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
 				containerParcelPanel.onContainerRemoved.attach(function (sender, stockSolutionId) {
@@ -6789,7 +7065,6 @@ ParcelPanel.prototype.showAddContainerForm = function() {
 
 	addContainerForm.onSave.attach(function(sender,container){
 		_this.addContainerToDewar(container);
-		// _this.renderPucks(_this.dewar);
 		window.close();
 	})
 
@@ -7316,7 +7591,8 @@ function StockSolutionContainer(args) {
 							// rInner			: 10,
 							enableMainClick : false,
                             code            : "",
-                            enableClick     : false
+                            enableClick     : false,
+							enableMainMouseOver : false
                         };
 
 	this.stockSolutionId = 0;
@@ -7328,6 +7604,9 @@ function StockSolutionContainer(args) {
 		}
 		if (args.yMargin){
 			this.templateData.yMargin = args.yMargin;
+		}
+		if (args.enableMainClick != null){
+			this.templateData.enableMainClick = args.enableMainClick;
 		}
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
@@ -7356,6 +7635,8 @@ function StockSolutionContainer(args) {
 	}
 
 	this.onClick = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 };
 
 StockSolutionContainer.prototype.getPanel = function () {
@@ -7389,9 +7670,7 @@ StockSolutionContainer.prototype.getPanel = function () {
 				_this.onClick.notify(sender.target.id);
 			});
 		}
-		if (_this.templateData.height < 40){
-			_this.setOnMouseOverEvent();
-		}
+		_this.setOnMouseOverEvent();
     });
 	
 	return this.panel;
@@ -7425,32 +7704,44 @@ StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
 	var _this = this;
 	
 	$("#" + this.id).unbind('mouseover').mouseover(function(sender){
-		var id = sender.currentTarget.id;
-		$("#" + id).addClass("stock-solution-focus");
-		
-		// TOOLTIP
-		var tooltipHtml = "";
-		dust.render("stock.solution.tooltip.template", _this.templateData, function(err, out) {
-			tooltipHtml = out;
-		});
-		$('body').append(tooltipHtml);
-		$('#hoveringTooltipDiv-' + _this.stockSolutionId).css({
-			"top" : $(this).offset().top,
-			"left" : $(this).offset().left + _this.templateData.width
-		});
-
+		_this.onMouseOver.notify(_this);
+		if (_this.templateData.height < 40){
+			var id = sender.currentTarget.id;
+			$("#" + id).addClass("stock-solution-focus");
+			
+			// TOOLTIP
+			var tooltipHtml = "";
+			dust.render("stock.solution.tooltip.template", _this.templateData, function(err, out) {
+				tooltipHtml = out;
+			});
+			$('body').append(tooltipHtml);
+			$('#hoveringTooltipDiv-' + _this.stockSolutionId).css({
+				"top" : $(this).offset().top,
+				"left" : $(this).offset().left + _this.templateData.width
+			});
+		}
 	});
 	
 	$("#" + this.id).unbind('mouseout').mouseout(function(sender){
-		var stockId = sender.currentTarget.id;
-		$("#" + stockId).removeClass("stock-solution-focus");
+		_this.onMouseOut.notify(_this);
+		if (_this.templateData.height < 40){
+			var stockId = sender.currentTarget.id;
+			$("#" + stockId).removeClass("stock-solution-focus");
 
-		// TOOLTIP
-		$('#hoveringTooltipDiv-' + _this.stockSolutionId).remove();
-		
+			// TOOLTIP
+			$('#hoveringTooltipDiv-' + _this.stockSolutionId).remove();
+		}
 	});
 
 }
+
+StockSolutionContainer.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id + "-img").addClass("stock-solution-selected");		
+	} else {
+		$("#" + this.id + "-img").removeClass("stock-solution-selected");	
+	}
+};
 /**
  * Grid rendering the stock solutions
  * 
