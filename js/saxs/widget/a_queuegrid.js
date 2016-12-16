@@ -88,8 +88,8 @@ QueueGrid.prototype.getPercentage = function(averaged, total) {
 };
 
 QueueGrid.prototype.getImage = function(sample, name) {
-	if (sample.subtractionId != null) {
-		var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.subtractionId, name);
+	if (sample.Subtraction_subtractionId != null) {
+		var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.Subtraction_subtractionId, name);
 		return url;
 	}
 };
