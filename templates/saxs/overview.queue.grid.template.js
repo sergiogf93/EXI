@@ -31,7 +31,7 @@
                     {#.specimens}
                         <tr>
                             {?hasMacromolecule}
-                                <td># {.code}</td>
+                                <td># {.code} {dataCollectionId}</td>
                                 <td>
                                     <div class="row">
                                         <div class="col-md-8">

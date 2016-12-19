@@ -4163,7 +4163,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             /** !!IMPORTANT this is the parent node which contains the scroll **/
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
-                alert("!");
                 console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
             },           
             onFinishedAll: function() {

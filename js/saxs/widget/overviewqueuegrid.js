@@ -1,3 +1,4 @@
+
 function OverviewQueueGrid(args) {
 //	this.height = Ext.getBody().getHeight() - 500;
 	QueueGrid.call(this,args);
@@ -52,7 +53,6 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 						specimenData.rg = Number(specimen.Subtraction_rg).toFixed(this.decimals);
 						specimenData.points = specimen.Subtraction_firstPointUsed + " - " + specimen.Subtraction_lastPointUsed + " (" + (specimen.Subtraction_lastPointUsed - specimen.Subtraction_firstPointUsed) + ")";
 					}
-					debugger
 					if (specimen.Subtraction_I0 != null){
 						specimenData.I0 = Number(specimen.Subtraction_I0).toFixed(this.decimals-2);
 						specimenData.I0Stdev = Number(Number(specimen.Subtraction_I0Stdev).toFixed(this.decimals)).toExponential();
@@ -97,129 +97,6 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 			}
 			templateData.rows.push(rowData);
 		}
-		debugger
-
-
-	// 	for (var i = 0 ; i < _.keys(data).length ; i++) {
-	// 		var dataCollectionId = _.keys(data)[i];
-	// 		var currentDataCollection = data[dataCollectionId];                      
-	// 		var html = "";
-
-	// 		var codes = [];
-	// 		var macromoleculeInfo = [];
-	// 		var averages = [];
-	// 		var expTemp = currentDataCollection[0].exposureTemperature + " C";
-
-	// 		var rg = "NA";
-	// 		var points = "NA";
-	// 		if (currentDataCollection[0].rg != null) {
-	// 			rg = Number(currentDataCollection[0].rg).toFixed(this.decimals);
-	// 			points = currentDataCollection[0].firstPointUsed + " - " + currentDataCollection[0].lastPointUsed + " (" + (currentDataCollection[0].lastPointUsed - currentDataCollection[0].firstPointUsed) + ")";
-	// 		}	
-	// 		var I0 = "NA";
-	// 		if (currentDataCollection[0].I0 != null){
-	// 			var I0 = Number(currentDataCollection[0].I0).toFixed(this.decimals-2);
-	// 			var I0Stdev = Number(Number(currentDataCollection[0].I0Stdev).toFixed(this.decimals)).toExponential();
-	// 		}
-
-	// 		var rgGnom = "NA";
-	// 		if (currentDataCollection[0].rgGnom != null) {
-	// 			rgGnom = Number(currentDataCollection[0].rgGnom).toFixed(this.decimals);
-	// 		}	
-	// 		var total = "NA";
-	// 		if (currentDataCollection[0].total != null) {
-	// 			total = Number(currentDataCollection[0].total).toFixed(this.decimals);
-	// 		}
-	// 		var dmax = "NA";
-	// 		if (currentDataCollection[0].dmax != null) {
-	// 			dmax = Number(currentDataCollection[0].dmax).toFixed(this.decimals);
-	// 		}
-
-	// 		var volumePorod = "NA";
-	// 		var mmvolest = "NA";
-	// 		if (currentDataCollection[0].volumePorod != null) {
-	// 			volumePorod = Number(currentDataCollection[0].volumePorod).toFixed(this.decimals);
-	// 			mmvolest = Number(currentDataCollection[0].volumePorod / 2).toFixed(1) + " - "
-	// 									+ Number(currentDataCollection[0].volumePorod / 1.5).toFixed(1);
-	// 		}
-
-	// 		var scattering = "";
-	// 		var kratky = "";
-	// 		var density = "";
-	// 		var guinier = "";
-			
-    //         var dataReduction = false;
-    //         var abinitio = false;
-    //         var fit = false;
-    //         var superposition = false;
-    //         var rigidBody = false;
-
-	// 		var concentration = "";
-	// 		var macromoleculeAcronym = "";
-
-	// 		for (var j = 0 ; j < currentDataCollection.length ; j++) {
-	// 			var experiment = currentDataCollection[j];
-
-	// 			codes.push(experiment.code);
-	// 			if (experiment.concentration != 0) {
-	// 				concentration = Number(experiment.concentration).toFixed(this.decimals-1);
-    //                 if (experiment.runCreationDate) {
-    //                     dataReduction = true;
-    //                 }
-    //                 if (experiment.abinitioCount != 0) {
-    //                     abinitio = true;
-    //                 }
-    //                 if (experiment.fitCount != 0) {
-    //                     fit = true;
-    //                 }
-    //                 if (experiment.superpositionCount != 0) {
-    //                     superposition = true;
-    //                 }
-    //                 if (experiment.rigidbodyCount != 0) {
-    //                     rigidBody = true;
-    //                 }
-	// 			}
-	// 			if (experiment.macromoleculeId != null) {
-	// 				scattering = this.getImage(experiment,"scattering");
-	// 				kratky = this.getImage(experiment,"kratky");
-	// 				density = this.getImage(experiment,"density");
-	// 				guinier = this.getImage(experiment,"guinier");
-	// 			}
-				
-	// 			if (experiment.macromoleculeAcronym != null) {
-	// 				macromoleculeAcronym = experiment.macromoleculeAcronym;
-	// 			}
-	// 			macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
-	// 			averages.push(this.getPercentage(experiment.framesMerge,experiment.framesCount));
-	// 		}
-			
-	// 		templateData.rows.push({
-	// 								codes : codes,
-	// 								macromoleculeAcronym : macromoleculeAcronym,
-	// 								concentration : concentration,
-	// 								averages : averages,
-	// 								expTemp : expTemp,
-	// 								rg : rg,
-	// 								points : points,
-	// 								I0 : I0,
-	// 								I0Stdev : I0Stdev,
-	// 								rgGnom : rgGnom,
-	// 								total : total,
-	// 								dmax : dmax,
-	// 								volumePorod : volumePorod,
-	// 								mmvolest : mmvolest,
-	// 								scattering : scattering,
-	// 								kratky : kratky,
-	// 								density : density,
-	// 								guinier : guinier,
-	// 								imgWidth : this.imgWidth,
-    //                                 dataReduction : dataReduction,
-    //                                 abinitio : abinitio,
-    //                                 fit : fit,
-    //                                 superposition : superposition,
-    //                                 rigidBody : rigidBody,
-	// 							});
-	// 	}
 	}
 	
 	return templateData;
@@ -233,10 +110,9 @@ OverviewQueueGrid.prototype.load = function(experiment) {
 	if (experiment.experimentId) {
 		var onSuccess = function(sender, data){
 			if (data != null) {
-
-				_this.dataByDataCollectionId = _this.parseDataById(data);
-
-				_this.render(_this.dataByDataCollectionId);
+				// _this.dataByDataCollectionId = _this.parseDataById(data);
+				
+				_this.render(data);
 			}
 		};
 
@@ -248,9 +124,12 @@ OverviewQueueGrid.prototype.load = function(experiment) {
 };
 
 OverviewQueueGrid.prototype.render = function(data) {
-	var templateData = this.parseData(data);
+	// var templateData = this.parseData(data);
+	// for (var i = 0 ; i < data.length ; i++){
+	// 	data[i].average = this.getPercentage(data[i].Merge_framesMerge,data[i].Merge_framesCount);
+	// }
 	var html = "";
-	dust.render("overview.queue.grid.template", templateData, function(err, out) {                                                                                               
+	dust.render("overview.queue.grid.test.template", data, function(err, out) {                                                                                               
 		html = html + out;
 	});
 	
