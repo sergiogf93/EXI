@@ -1,7 +1,7 @@
 function OverviewQueueGrid(args) {
 //	this.height = Ext.getBody().getHeight() - 500;
 	QueueGrid.call(this,args);
-    this.imgWidth = 200;
+    this.imgWidth = 100;
 
 }
 
@@ -18,7 +18,6 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 			var currentDataCollection = data[dataCollectionId];
 			var rowData = {
 							specimens 		: [],
-							nSpecimens 		: currentDataCollection.length,
 							scattering 		: "",
 							kratky 			: "",
 							density 		: "",
@@ -32,16 +31,17 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 			for (var j = 0 ; j < currentDataCollection.length ; j++) {
 				var specimen = currentDataCollection[j];
 				var specimenData = {
-										code			:	specimen.Measurement_code,
-										average			:	this.getPercentage(specimen.Merge_framesMerge,specimen.Merge_framesCount),
-										rg				:	"NA",
-										points			:	"NA",
-										I0				:	"NA",
-										rgGnom			:	"NA",
-										total			:	"NA",
-										dmax			:	"NA",
-										volumePorod		:	"NA",
-										mmvolest		:	"NA",
+										code				:	specimen.Measurement_code,
+										average				:	this.getPercentage(specimen.Merge_framesMerge,specimen.Merge_framesCount),
+										rg					:	"NA",
+										points				:	"NA",
+										I0					:	"NA",
+										rgGnom				:	"NA",
+										total				:	"NA",
+										dmax				:	"NA",
+										volumePorod			:	"NA",
+										mmvolest			:	"NA",
+										dataCollectionOrder : specimen.MeasurementToDataCollection_dataCollectionOrder
 									};
 				if (specimen.Macromolecule_macromoleculeId) {
 					specimenData.hasMacromolecule = true;
@@ -96,6 +96,7 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 			}
 			templateData.rows.push(rowData);
 		}
+		debugger
 
 
 	// 	for (var i = 0 ; i < _.keys(data).length ; i++) {
