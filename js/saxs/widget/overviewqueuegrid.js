@@ -52,7 +52,8 @@ OverviewQueueGrid.prototype.parseData = function(data) {
 						specimenData.rg = Number(specimen.Subtraction_rg).toFixed(this.decimals);
 						specimenData.points = specimen.Subtraction_firstPointUsed + " - " + specimen.Subtraction_lastPointUsed + " (" + (specimen.Subtraction_lastPointUsed - specimen.Subtraction_firstPointUsed) + ")";
 					}
-					if (specimen.I0 != null){
+					debugger
+					if (specimen.Subtraction_I0 != null){
 						specimenData.I0 = Number(specimen.Subtraction_I0).toFixed(this.decimals-2);
 						specimenData.I0Stdev = Number(Number(specimen.Subtraction_I0Stdev).toFixed(this.decimals)).toExponential();
 					}
