@@ -500,6 +500,7 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 		height : 325,
 		width : 600,
 		modal : true,
+		closable : false,
 		layout : 'fit',
 		items : [ editCrystalForm.getPanel() ],
 		buttons : [ {
