@@ -109,13 +109,13 @@ OverviewQueueGrid.prototype.load = function(experiment) {
 	_this.key = {};
 	if (experiment.experimentId) {
 		var onSuccess = function(sender, data){
-			if (data != null) {
+			if (data != null && data.length > 0) {
 				// _this.dataByDataCollectionId = _this.parseDataById(data);
-				
 				_this.render(data);
+			} else {
+				$('#' + _this.id).hide().html("<h4>No results found</h4>").fadeIn('fast');
 			}
 		};
-
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(experiment.experimentId);
 	} else {
 		_this.dataByDataCollectionId = _this.parseDataById(experiment);
