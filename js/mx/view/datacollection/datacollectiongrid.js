@@ -95,7 +95,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
                 spaceGroup: autoProc_spaceGroups[i]
             };
         }
-
+        
         data[autoProcIds[i]][scalingStatisticsTypes[i]] = ({
             autoProcId: autoProcIds[i],
             scalingStatisticsType: scalingStatisticsTypes[i],

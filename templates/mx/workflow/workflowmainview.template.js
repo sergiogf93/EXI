@@ -65,10 +65,8 @@
         <div class="container">
            
             <table class="table table-hover table-striped table-bordered"> 
-                <tr>
-                    
-                        <th style='background-color:#adb2ba;' colspan={.columns.length}>{.title}</th>
-                   
+                <tr>                    
+                        <th style='background-color:#3892d3;color:white;font-size:14px;' colspan={.columns.length}>{.title}</th>                   
                 </tr>                    
                 <tr>
                     {#columns}

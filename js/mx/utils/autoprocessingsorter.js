@@ -8,6 +8,7 @@ function AutoprocessingRanker(){
  * 
  */
 AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
+    
    /** First sorting autoprocessing with rMerge < 10 */
    var minus10Rmerge  = _.filter(array, function(o) {       
             if (o.innerShell){
@@ -21,9 +22,10 @@ AutoprocessingRanker.prototype.rank = function(array, spacegroudFieldName){
      }); 
      /** Second we get rMerge > 10 */
     var plus10Rmerge  = _.filter(array, function(o) {
+        
             if (o.innerShell){
                 if (o.innerShell.rMerge){                    
-                    if (Number(o.innerShell.rMerge) > 10){
+                    if (Number(o.innerShell.rMerge) > 10 || Number(o.innerShell.rMerge) <= 0){
                         return true;
                     }
                 }

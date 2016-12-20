@@ -83,7 +83,8 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = function(target, dataCollectionId) {
-    var onSuccess = function(sender, data){      
+    var onSuccess = function(sender, data){    
+          
         /** Parsing data */
         var html = "";     
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
@@ -141,14 +142,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    var keys = _.keys(_.keyBy(stepsBySpaceGroup, "csv"));
                    return _.filter(keys, function(e){return e!= "null";});
                }
-               /*function getMap(stepsBySpaceGroup){
-                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "map"));
-                   return _.filter(keys, function(e){return e!= "null";});
-               }
-                function getPDB(stepsBySpaceGroup){
-                   var keys = _.keys(_.keyBy(stepsBySpaceGroup, "pdb"));
-                   return _.filter(keys, function(e){return e!= "null";});
-               }*/
+           
                var node = {};
                node = ({
                    spaceGroup       : spaceGroup,
@@ -158,13 +152,10 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
                    downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
-                   //map              : getMap(stepsBySpaceGroup),
-                   //pdb              : getPDB(stepsBySpaceGroup)
                    
                });
                
-               function getMetrics(phasingStep){  
-                                    
+               function getMetrics(phasingStep){                                      
                     if (phasingStep.metric){                        
                             var singleMetric = phasingStep.metric.split(",");
                             var values = phasingStep.statisticsValue.split(",");                            
@@ -176,6 +167,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                     if (phasingStep.png){
                         phasingStep.pngURL = EXI.getDataAdapter().mx.phasing.getPhasingFilesByPhasingProgramAttachmentIdAsImage(phasingStep.png);
                     }
+                    
+                    
+                    phasingStep.spaceGroup = phasingStep.SpaceGroup_spaceGroupShortName; 
                     return (phasingStep);                     
                }
                
@@ -205,18 +199,11 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
                                     toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
                                 }
-                            }
-                            
-                             
-                   
+                            }                                                                            
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
                    node["phasingStepId"] = modelBuildingSteps[0].PhasingStep_phasingStepId;
-                   
-                 
-           
-                 
                    return node;         
                }
                
@@ -254,14 +241,28 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    count = count + 1;
                }
                
-               node["count"] = count;
-               
+               node["count"] = count;               
                parsed.push(node);
            }
        }
        
         parsed.sort(function(a,b){return a.count < b.count;});
-      
+        /** Parsing the metrics */
+        for(var i =0; i< parsed.length; i++){
+            if (parsed[i]){
+                if (parsed[i].metrics){
+                    parsed[i].metrics.sort(function(a,b){   
+                        try{                                             
+                            return parseFloat(a._CC_of_partial_model) < parseFloat(b._CC_of_partial_model);
+                        }
+                        catch(e){
+                            return false;
+                        }
+                    });
+                }
+            }
+        }
+        
         var html = "";     
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
