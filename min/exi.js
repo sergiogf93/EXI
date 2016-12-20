@@ -1,30 +1,29 @@
-  dust.helpers.decimal = function(chunk, context, bodies, params) {
-      
-        if (params.key){            
-            var value = context.current()[params.key];
-            if (value){
-                if (params.decimals != null){
-                    try{
-                         chunk.write(Number(value).toFixed(params.decimals));
-                    }
-                    catch(e){
-                        
-                        /** There was an error, we leave same value */
-                        chunk.write(context.current()[params.key]);    
-                    }
+dust.helpers.decimal = function(chunk, context, bodies, params) {
+    if (params.key){            
+        var value = context.current()[params.key];
+        if (value){
+            if (params.decimals != null){
+                try{
+                        chunk.write(Number(value).toFixed(params.decimals));
                 }
-                else{
-                    /** No decimals then same value */
-                    chunk.write(context.current()[params.key]);
+                catch(e){
+                    
+                    /** There was an error, we leave same value */
+                    chunk.write(context.current()[params.key]);    
                 }
             }
-         
+            else{
+                /** No decimals then same value */
+                chunk.write(context.current()[params.key]);
+            }
         }
-        else{
-            chunk.write('WARN: NO KEY SET');
-        }
-         return chunk;
         
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+        return chunk;
+    
 };
 
 dust.helpers.sizeOf = function(chunk, context, bodies, params) {
@@ -32,6 +31,79 @@ dust.helpers.sizeOf = function(chunk, context, bodies, params) {
   return (bodies && bodies.block) ? chunk.render(bodies.block, context.push({ isSelect: true, isResolved: false, selectKey: value })) : value;
 };
 
+dust.helpers.exponential = function(chunk, context, bodies, params) {
+    if (params.key){            
+        var value = context.current()[params.key];
+        if (value){
+            if (params.decimals != null){
+                try{
+                        chunk.write(Number(Number(value).toFixed(params.decimals)).toExponential());
+                }
+                catch(e){
+                    
+                    /** There was an error, we leave same value */
+                    chunk.write(context.current()[params.key]);    
+                }
+            }
+            else{
+                /** No decimals then same value */
+                chunk.write(context.current()[params.key]);
+            }
+        }
+        
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+        return chunk;
+    
+};
+
+dust.helpers.mmVolTest = function(chunk, context, bodies, params) {         
+    var value = context.current()["Subtraction_volumePorod"];
+    if (value){
+        try{
+                chunk.write(Number(value / 2).toFixed(1) + " - " + Number(value / 1.5).toFixed(1));
+        }
+        catch(e){
+            
+            /** There was an error, we leave same value */
+            chunk.write(context.current()[params.key]);    
+        }
+    }
+    return chunk;
+    
+};
+
+
+dust.helpers.framesColor = function(chunk, context, bodies, params) {          
+    var merge = context.current()["Merge_framesMerge"];
+    var count = context.current()["Merge_framesCount"];
+    var color = "undefined";
+    if (merge == null || count == null) {
+        color = "orange";
+    } else {
+        if (merge/count >= 0.3) {
+            color = "orange";
+        }
+        if (merge/count >= 0.7) {
+            color = "undefined";
+        }
+        if (merge/count < 0.3) {
+            color = "red"
+        }
+    }
+    try{
+            chunk.write(color);
+    }
+    catch(e){
+        
+        /** There was an error, we leave same value */
+        chunk.write(context.current()[params.key]);    
+    }
+    return chunk;
+    
+};
 //
 //function ExiController(){
 //	this.init();
@@ -6478,3 +6550,90 @@ SessionGrid.prototype.getPanel = function() {
 
 
 
+
+function UploaderWidget(url){
+	this.id = BUI.id();
+
+	this.url = url;
+	if (url == null){
+		 Ext.Msg.alert('Error', 'Please, set an url');
+	}
+	
+	
+	this.onUploaded = new Event(this);
+}
+
+UploaderWidget.prototype.getFileName = function(){
+	var filePath =  Ext.getCmp(this.id).value;
+	return filePath.split("\\")[filePath.split("\\").length - 1];
+};
+
+UploaderWidget.prototype.getForm = function(){
+	var _this = this;
+	return Ext.create('Ext.form.Panel', {
+	    width: 400,
+	    bodyPadding: 20,
+	    border : 0,
+	    frame: true,
+	    items: [{
+	        xtype: 'filefield',
+	        name: 'file',
+	        id : this.id,
+	        fieldLabel: 'File',
+	        labelWidth: 50,
+	        msgTarget: 'side',
+	        allowBlank: false,
+	        anchor: '100%',
+	        buttonText: 'Browse...'
+	    },
+	    {
+			xtype : 'hiddenfield',
+			id : _this.id + 'fileName',
+			name : 'fileName',
+			value : '' }
+	    ],
+
+	    buttons: [{
+	        text: 'Upload',
+	        handler: function() {
+	            var form = this.up('form').getForm();
+	            if(form.isValid()){
+	            	Ext.getCmp(_this.id + "fileName").setValue(_this.getFileName());
+	                form.submit({
+	                    url: _this.url,
+	                    waitMsg: 'Uploading your file...',
+	                    success: function(fp, o) {
+//	                        Ext.Msg.alert('Success', 'Your file has been uploaded.');
+	                    	
+	                    	_this.window.close();
+	                    	_this.onUploaded.notify();
+	                    },
+	                    failure : function(fp, o) {
+//	                    	Ext.Msg.alert('Failure', 'Processed file "' + o.result.file + '" on the server');
+	                    	_this.window.close();
+	                    	_this.onUploaded.notify();
+	                    } });
+	            }
+	        }
+	    }]
+	});
+	
+	
+};
+
+
+
+UploaderWidget.prototype.show = function(){
+	this.window = Ext.create('Ext.window.Window', {
+	    title: 'ISPyB File Uploader Manager',
+	    height: 200,
+	    modal : true,
+	    icon : '../images/icon/upload.svg',
+	    width: 600,
+	    layout: 'fit',
+	    items: this.getForm()
+	});
+	this.window.show();
+	
+	
+};

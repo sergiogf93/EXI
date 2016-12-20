@@ -199,7 +199,6 @@ SpecimenGrid.prototype.getPlugins = function() {
 					var macromoleculeId = e.record.data.macromoleculeId;
 					
 					var onSuccess = (function(sender, specimen) {
-						debugger
 						/** Because macromolecule3VO is fecthed LAZY **/
 						if (macromoleculeId != null) {
 							specimen.macromolecule3VO = EXI.proposalManager.getMacromoleculeById(macromoleculeId);

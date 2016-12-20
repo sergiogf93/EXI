@@ -53,8 +53,9 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 				width		: (this.width/3) - 5, 
 				height		: this.heightPlates + 10 , 
 				nodeSize	: this.nodeSize, 
-				fontSize	: 0, 
-				strokeWidth	: 1.5
+				fontSize	: 8, 
+				strokeWidth	: 1.5,
+				enableClick : false
 			});
 
 	if (this.isVerticalLayout()){
@@ -63,16 +64,28 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 	}
 	
 	samplePlateWidget.draw(experiment, plate, targetId );
-	samplePlateWidget.onVertexUp.attach(function(sender, args){
+
+	samplePlateWidget.onNodeSelected.attach(function(sender, args){
 		_this.onClick.notify(
 				{
 					samplePlate	: args.samplePlate, 
-					row			: args.row, 
-					column		: args.column
+					row			: args.node.row, 
+					column		: args.node.column
 
 				}
 		);
 	});
+
+	// samplePlateWidget.onVertexUp.attach(function(sender, args){
+	// 	_this.onClick.notify(
+	// 			{
+	// 				samplePlate	: args.samplePlate, 
+	// 				row			: args.row, 
+	// 				column		: args.column
+
+	// 			}
+	// 	);
+	// });
 
 	this.samplePlateWidgets.push(samplePlateWidget);
 };
@@ -236,8 +249,6 @@ SamplePlateGroupWidget.prototype.refresh = function(experiment){
 
 	/** We refrsh also the bbar  but it could not exist yet* */
 	this._refreshBbar();	
-	
-
 };
 
 SamplePlateGroupWidget.prototype._getAutoFillButton = function(){
