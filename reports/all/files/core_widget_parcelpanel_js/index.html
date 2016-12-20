@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">116.69</p>
+      <p class="stat">112.75</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">222</p>
+      <p class="stat">255</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">27.15</p>
+      <p class="stat">35.56</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">1.61</p>
+      <p class="stat">2.23</p>
     </div>
   </div>
 </div>
@@ -99,6 +99,7 @@ function ParcelPanel(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.pucksPanelHeight = 200;
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -122,40 +123,91 @@ function ParcelPanel(args) {
 */
 ParcelPanel.prototype.addHeaderPanel = function() {
 	var html = &quot;No information&quot;;
-	dust.render(&quot;parcelformsummary&quot;, this.dewar, function(err, out){
+	dust.render(&quot;parcel.header.shipping.template&quot;, this.dewar, function(err, out){
 		html = out;
     });
-	this.panel.insert(
+    
+	this.panel.add(0,
 				{
+					// cls : &#039;border-grid&#039;,
 					xtype 	: &#039;container&#039;,
-					width	: 200,
+					// width	: this.width - 50,
 					border : 1,
-					padding : 20,
-					items 	: [	{html : html}
-				
-					]
+					padding : 1,
+					items : {
+						xtype : &#039;container&#039;,
+						layout : &#039;hbox&#039;,
+						items : _.concat(this._getTopButtons(),
+											{html : html, margin : 12})
+					}
 				}
 	);
 };
 
 ParcelPanel.prototype.render = function() {
+    var _this = this;
+
 	var dewar = this.dewar;
 	this.panel.removeAll();
-
 	this.addHeaderPanel();
 	
 	if (dewar != null){
 		if (dewar.containerVOs != null){
+
+            var pucksPanel = Ext.create(&#039;Ext.panel.Panel&#039;, {
+                layout      : &#039;hbox&#039;,
+                cls 		: &quot;border-grid&quot;,
+                margin: &#039;0 0 0 6px&#039;,
+                width       : this.width - 15,
+                height       : this.pucksPanelHeight + 20,
+                autoScroll : true,
+                items       : []
+            });
+
+            this.panel.add(pucksPanel);
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
+            var puckPanelsMap = {};
+            var containerIds = [];
+            
 			for (var i = 0; i&lt; dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				/** Adding the puck layout **/
-				var puckPanel = new PuckPanel({height : 200});
-				this.panel.insert(puckPanel.getPanel());
-				puckPanel.load(container);
-				
+                var puckPanel = new PuckParcelPanel({height : this.pucksPanelHeight , containerId : container.containerId, capacity : container.capacity, code : container.code});
+                puckPanel.onPuckRemoved.attach(function (sender, containerId) {
+                    _.remove(_this.dewar.containerVOs, {containerId: containerId});
+                    _this.load(_this.dewar);
+                });
+                puckPanel.onPuckSaved.attach(function (sender, puck) {
+                    _.remove(_this.dewar.containerVOs, {containerId: puck.containerId});
+                    _this.dewar.containerVOs.push(puck);
+                    _this.load(_this.dewar);
+                });
+                puckPanelsMap[container.containerId] = puckPanel;
+                containerIds.push(container.containerId);
+                pucksPanel.insert(puckPanel.getPanel());
 			}
+            
+            if (!_.isEmpty(puckPanelsMap)) {
+                
+                var onSuccess = function (sender, samples) {
+                    if (samples) {
+                        var samplesMap = {};
+                        for (var i = 0 ; i &lt; samples.length ; i++) {
+                            var sample = samples[i];
+                            if (samplesMap[sample.Container_containerId]){
+                                samplesMap[sample.Container_containerId].push(sample);
+                            } else {
+                                samplesMap[sample.Container_containerId] = [sample];
+                            }
+                        }
+                        _.each(samplesMap, function(samples, containerId) {
+                            puckPanelsMap[containerId].load(samples);
+                        });
+                    }
+                }
+
+                EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
+            }
 		}
 	}
 };
@@ -214,6 +266,7 @@ ParcelPanel.prototype.showCaseForm = function() {
 						text : &#039;Save&#039;,
 						handler : function() {
 							_this.onSavedClick.notify(caseForm.getDewar());
+                            _this.render();
 							window.close();
 						}
 					}, {
@@ -231,22 +284,26 @@ ParcelPanel.prototype._getTopButtons = function() {
 	var actions = [];
 	
 	
-	actions.push(this.code);
-	actions.push(this.status);
-	actions.push(this.storageCondition);
+	// actions.push(this.code);
+	// actions.push(this.status);
+	// actions.push(this.storageCondition);
 	
-	actions.push(Ext.create(&#039;Ext.Action&#039;, {
+	actions.push(Ext.create(&#039;Ext.Button&#039;, {
 		icon : &#039;../images/icon/edit.png&#039;,
 		text : &#039;Edit&#039;,
+		cls : &#039;x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left&#039;,
+		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
 					_this.showCaseForm();
 		}
 	}));
 	
-	actions.push(Ext.create(&#039;Ext.Action&#039;, {
+	actions.push(Ext.create(&#039;Ext.Button&#039;, {
 		icon : &#039;../images/print.png&#039;,
 		text : &#039;Print Labels&#039;,
+		cls : &#039;x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left&#039;,
+		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
 			var dewarId = _this.dewar.dewarId;
@@ -256,9 +313,11 @@ ParcelPanel.prototype._getTopButtons = function() {
 		}
 	}));
 	
-	actions.push(Ext.create(&#039;Ext.Action&#039;, {
+	actions.push(Ext.create(&#039;Ext.Button&#039;, {
 		icon : &#039;../images/icon/add.png&#039;,
 		text : &#039;Add puck&#039;,
+		cls : &#039;x-btn x-unselectable x-box-item x-toolbar-item x-btn-default-toolbar-small x-icon-text-left x-btn-icon-text-left x-btn-default-toolbar-small-icon-text-left&#039;,
+		margin : 5,
 		disabled : false,
 		handler : function(widget, event) {
 			_this.addPuckToDewar();
@@ -271,50 +330,24 @@ ParcelPanel.prototype._getTopButtons = function() {
 
 ParcelPanel.prototype.getPanel = function() {
 	var _this = this;
+
 	this.panel = Ext.create(&#039;Ext.panel.Panel&#039;, {
-		layout 		: &#039;hbox&#039;,
 		cls 		: &quot;border-grid&quot;,
 		margin 		: 10,
 		height 		: this.height,
+		width 		: this.width,
 		autoScroll	: true,
 		items 		: [],
-		listeners : {
-			afterrender : function(component, eOpts) {
-						_this.render();
-			}
-	    }
-//	,
-//		toolbar : [ {
-//						text : &#039;Save&#039;,
-//						handler : function() {
-//								var adapter = new DataAdapter();
-//								_this.panel.setLoading();
-//								var dewar = caseForm.getDewar();
-//								var onSuccess = (function(sender, shipment) {
-//									_this.load(shipment);
-//									window.close();
-//									_this.panel.setLoading(false);
-//								});
-//								dewar[&quot;sessionId&quot;] = dewar.firstExperimentId;
-//								dewar[&quot;shippingId&quot;] = _this.shipment.shippingId;
-//								EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
-//						}
-//					}, 
-//					{
-//							text : &#039;Cancel&#039;,
-//							handler : function() {
-//								window.close();
-//							}
-//					}]
 	});
-	
-	this.panel.addDocked({
-		id 		: _this.id + &#039;tbar&#039;,
-		height 	: 45,
-		xtype 	: &#039;toolbar&#039;,
-		items 	: _this._getTopButtons(),
-		cls 	: &#039;exi-top-bar&#039;
-	});
+
+    // this.panel.addDocked({
+	// 	id 		: _this.id + &#039;tbar&#039;,
+	// 	height 	: 45,
+	// 	xtype 	: &#039;toolbar&#039;,
+	// 	items 	: _this._getTopButtons(),
+	// 	cls 	: &#039;exi-top-bar&#039;
+	// });
+
 	return this.panel;
 };</textarea>
   </div>

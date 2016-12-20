@@ -1,13 +1,14 @@
 var ExtISPyB ={
-   version : '0.9.5',
-   release_date : '2016/11/08',
+   version : '0.9.8',
+   release_date : '2016/12/08',
    
-   spaceGroups : ["P1","P2","P21","C2","P21212","P212121","P222","P2221","C222",
-                    "C2221","I212121","I222","F222","P4","P41","P41212","P4122","P42","P4212","P422",
-                    "P42212","P4222","P43","P43212","P4322","I4","I41","I4122","I422","P3","P31",
-                    "P3112","P312","P3121","P32","P321","P3212","P3221","P6","P61","P6122","P62",
-                    "P622","P6222","P63","P6322","P64","P6422","P65","P6522","P213","P23","P4132",
-                    "P4232","P432","P4332","I213","I23","I4132","I432","F23","F4132","F432","R3","R32"],   
+   /**
+    *   P1211 is a synonym for P21
+        P121 is a synonym for P2
+        C121 is a synonym for C2
+
+    */
+   spaceGroups : ["P1", "P121", "P1211", "C121", "P222", "P2221", "P21212", "P212121", "C2221", "C222", "F222", "I222", "I212121", "P4", "P41", "P42", "P43", "I4", "I41", "P422", "P4212", "P4122", "P41212", "P4222", "P42212", "P4322", "P43212", "I422", "I4122", "P3", "P31", "P32", "H3","R3", "P312", "P321", "P3112", "P3121", "P3212", "P3221", "H32", "R32", "P6", "P61", "P65", "P62", "P64", "P63", "P622", "P6122", "P6522", "P6222", "P6422", "P6322", "P23", "F23", "I23", "P213", "I213", "P432", "P4232", "F432", "F4132", "I432", "P4332", "P4132", "I4132"],   
    detectors : {
 
 	"Pilatus3_2M" : {
@@ -54,16 +55,19 @@ var ExtISPyB ={
 
    },
    sites:[
-      {
+        {
          name:'ESRF',
+         description : 'European Synchroton Radiation Facility',
+         icon : '../images/site/esrf.png',
          url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          exiUrl:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
                {
-		   name : 'BM29',
-		   sampleChangerType : ''
+                name : 'BM29',
+                sampleChangerType : ''
    	       }
+
             ],
             MX:[
                { 
@@ -104,76 +108,19 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      },
-      {
-         name:'EMBL',
-         url:'http://ispyb.embl-hamburg.de/ispyb/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               'P12'
-            ],
-            MX:[
-               "P13", "P14"
-            ]
-         }
-      },
+      },    
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
-         // exiUrl:'http://lindemaria:8080/extispyb-ws/rest',
+         icon : '../images/site/dev.esrf.png',
 		 exiUrl:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
-               {name: 'BM29'}
-            ],
-           MX:[
-               { 
-                   name : "ID23-1",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID23-2",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID29",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID30A-1",
-                   sampleChangerType : 'RoboDiff'
-               },
-               { 
-                   name : "ID30A-2",
-                   sampleChangerType : 'SC3'
-               },
-               { 
-                   name : "ID30A-3",
-                   sampleChangerType : 'FlexHCD'
-               },
-               { 
-                   name : "ID30B",
-                   sampleChangerType : 'FlexHCD'
-               },
-               { 
-                   name : "BM14U",
-                   sampleChangerType : 'FlexHCD'
-               },
-               { 
-                   name : "BM30A",
-                   sampleChangerType : 'FlexHCD'
-               }                                             
-            ]
-         }
-      },
-	  {
-         name:'LOCAL (only for developers)',
-         url:'http://localhost:8080/ispyb/ispyb-ws/rest',
-         exiUrl:'http://localhost:8080/ispyb/ispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               {name: 'BM29'}
+
+               {
+		   name : 'BM29',
+		   sampleChangerType : ''
+   	       }
             ],
             MX:[
                { 

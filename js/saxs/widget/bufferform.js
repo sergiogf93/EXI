@@ -145,8 +145,6 @@ BufferForm.prototype.getPanel = function() {
 		layout : 'vbox',
 		buttons : this.getToolBar(),
 		cls : 'border-grid',
-//		margin : '10 0 0 20',
-		layout : 'vbox',
 		items : [ 
 		         {
 						xtype : 'container',

@@ -168,13 +168,13 @@ ShippingExiController.prototype.init = function() {
 		});
 		
 		Path.map(&quot;#/shipping/:shippingId/main&quot;).to(function() {
-			var mainView = new ShippingMainView();
+			var mainView = new ShippingMainViewTest();
 			EXI.addMainPanel(mainView);
 			mainView.load(this.params[&#039;shippingId&#039;]);
 		}).enter(this.setPageBackground);
 
 		Path.map(&quot;#/shipping/main&quot;).to(function() {
-			var mainView = new ShippingMainView();
+			var mainView = new ShippingMainViewTest();
 			EXI.addMainPanel(mainView);
 			mainView.load();
 		}).enter(this.setPageBackground);

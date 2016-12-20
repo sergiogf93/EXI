@@ -19,7 +19,7 @@ function PrepareMainView(args) {
         }
     }
 
-    this.steps = ["","/selectSampleChanger","/loadSampleChanger","/confirm"];
+    this.steps = ["","/selectSampleChanger","/loadSampleChanger"];
 
     this.height = 550;
     this.width = 1300;
@@ -49,8 +49,16 @@ function PrepareMainView(args) {
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
+    this.sampleChangerSelector.onRowSelected.attach(function(sender,beamline){
+        if (beamline) {
+            _this.save("selectedBeamline", beamline);
+        } else {
+            _this.removeFromStorage("selectedBeamline");
+        }
+    });
+
     this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
-        $('#next-button').attr("disabled", false);
+        Ext.getCmp("next-button").enable();
         $('#step-3').attr("disabled", false);
         _this.sampleChangerName = changerName;
         _this.save('sampleChangerName', changerName);
@@ -93,20 +101,27 @@ PrepareMainView.prototype.updateStatus = function(shippingId, status) {
 */
 PrepareMainView.prototype.manageButtons = function () {
     if (this.currentStep == 1) {
-        $('#previous-button-div').hide();
-        $('#next-button').attr("disabled", false); 
+        Ext.getCmp("previous-button").hide();
+        Ext.getCmp("next-button").enable(); 
     } else {
-        $('#previous-button-div').show();
+        Ext.getCmp("previous-button").show();
     }
     if (this.currentStep == 2) {
-        $('#next-button').attr("disabled", true);
+        Ext.getCmp("next-button").disable();
     }
     if (this.currentStep < 3) {
-        $('#next-button-div').show();  
-        $('#done-button-div').hide();
+        Ext.getCmp("next-button").show();  
+        $('#done-button').hide();
     }
     if (this.currentStep == 3) {
-        $('#next-button-div').hide();
+        Ext.getCmp("next-button").hide();
+    }
+    for (var i = 1 ; i <= 3 ; i++){
+        if (i == this.currentStep) {
+            $('#step-' + i).addClass('active-step');
+        } else {
+            $('#step-' + i).removeClass('active-step');
+        }
     }
 };
 
@@ -128,18 +143,18 @@ PrepareMainView.prototype.changeStep = function (direction) {
 * @method manageStepButtons
 * @return 
 */
-PrepareMainView.prototype.manageStepButtons = function () {
-    if (this.loadSampleChangerView.sampleChangerName == "") {
-        $('#step-3').attr("disabled", true);
-    } else {
-        $('#step-3').attr("disabled", false);
-    }
-    for (var i = 1 ; i <= 4 ; i++){
-        if (i == this.currentStep){
-            $('#step-' + i).addClass('active-step');
-        }
-    }
-};
+// PrepareMainView.prototype.manageStepButtons = function () {
+//     if (this.loadSampleChangerView.sampleChangerName == "") {
+//         $('#step-3').attr("disabled", true);
+//     } else {
+//         $('#step-3').attr("disabled", false);
+//     }
+//     for (var i = 1 ; i <= 4 ; i++){
+//         if (i == this.currentStep){
+//             $('#step-' + i).addClass('active-step');
+//         }
+//     }
+// };
 
 /**
 * Loads a Ext.panel.panel constaining a Ext.panel.Panel that will render the steps inside and sets the click events for the buttons
@@ -163,6 +178,7 @@ PrepareMainView.prototype.getPanel = function() {
     );
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+        buttons : this.getButtons(),
         layout: {
             type: 'vbox',
             align: 'center'
@@ -171,31 +187,22 @@ PrepareMainView.prototype.getPanel = function() {
         height : this.height + 200,
         // cls : 'border-grid',
         items : [
-                    this.getToolBar(), this.container,  this.getButtons()
+                    this.getToolBar(), this.container,
+                    //   this.getButtons()
         ]
 	});
 
     this.panel.on('boxready', function() {
-        $('#next-button').unbind('click').click(function (sender){
-            if (_this.currentStep < 4) {
-                _this.changeStep(1);
-            }
-        });
-        $('#previous-button').unbind('click').click(function (sender){
-            if (_this.currentStep > 0) {
-                _this.changeStep(-1);             
-            }
-        });
-        $('.step-btn').unbind('click').click(function (sender){
-            if(sender.target.getAttribute("disabled") != "disabled"){
-                if (_this.loadSampleChangerView.sampleChangerWidget){
-                    _this.storeSampleChangerWidget(_this.loadSampleChangerView.sampleChangerWidget);
-                }
-                var direction = Number(sender.target.innerHTML) - _this.currentStep;
-                _this.changeStep(direction);
-            }
-        });
-        _this.manageStepButtons();
+        // $('#next-button').unbind('click').click(function (sender){
+        //     if (_this.currentStep < 4) {
+        //         _this.changeStep(1);
+        //     }
+        // });
+        // $('#previous-button').unbind('click').click(function (sender){
+        //     if (_this.currentStep > 0) {
+        //         _this.changeStep(-1);             
+        //     }
+        // });
         _this.manageButtons();
     });
         
@@ -224,14 +231,44 @@ PrepareMainView.prototype.getToolBar = function () {
 * @method getButtons
 * @return The buttons html of the prepare experiment process.
 */
-PrepareMainView.prototype.getButtons = function () {
-    var html = "";
-	dust.render("buttons.prepare.template", [], function(err, out){
-		html = out;
-	});
+// PrepareMainView.prototype.getButtons = function () {
+//     var html = "";
+// 	dust.render("buttons.prepare.template", [], function(err, out){
+// 		html = out;
+// 	});
 
-    return {html : html, margin : 10};
-}
+//     return {html : html, margin : 10};
+// }
+
+PrepareMainView.prototype.getButtons = function() {
+	var _this = this;
+    
+	return [
+			{
+			    text: 'Previous',
+			    cls : 'btn btn-lg btn-success',
+                id : 'previous-button',
+                margin : '0 0 0 300',
+			    handler : function(){
+			    	if (_this.currentStep > 0) {
+                        _this.changeStep(-1);             
+                    }
+			    }
+			},
+	        "->",
+	        {
+			    text: 'Next',
+			    cls : 'btn btn-lg btn-success',
+                id : 'next-button',
+                margin : '0 300 0 0',
+			    handler : function(a,b,c){
+			    	if (_this.currentStep < 4) {
+                        _this.changeStep(1);
+                    }
+			    }
+            }
+	];
+};
 
 /**
 * Loads the container according to the current step.
@@ -304,6 +341,19 @@ PrepareMainView.prototype.load = function() {
 PrepareMainView.prototype.save = function (key, value) {
     if (typeof(Storage) != 'undefined') {
         sessionStorage.setItem(key,value);
+    }
+}
+
+/**
+* Removes a key-value pair on the session storage
+*
+* @method removeFromStorage
+* @param {String} key The key of the key-value pair
+* @return 
+*/
+PrepareMainView.prototype.removeFromStorage = function (key) {
+    if (typeof(Storage) != 'undefined') {
+        sessionStorage.removeItem(key);
     }
 }
 

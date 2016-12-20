@@ -24,6 +24,7 @@ function SampleChangerSelector (args) {
     };
 
     this.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
+
     var beamlinesGridData = [];
     for (var i = 0 ; i < this.beamlines.length ; i++) {
         var beamline = this.beamlines[i];
@@ -37,7 +38,7 @@ function SampleChangerSelector (args) {
 
     this.sampleChangerGrid = new BootstrapGrid({template : "bootstrap.grid.template"});
     this.sampleChangerGrid.load(SCtypes);
-    this.beamlinesGrid = new BootstrapGrid({template : "bootstrap.grid.template"});
+    this.beamlinesGrid = new BootstrapGrid({template : "bootstrap.grid.template", height : 1000});
     this.beamlinesGrid.load(beamlines);
 
     this.sampleChangerWidget = null;
@@ -46,13 +47,17 @@ function SampleChangerSelector (args) {
         _this.beamlinesGrid.deselectAll();
         _this.sampleChangerWidget = _this.createSampleChanger(text);
         _this.addSampleChanger(_this.sampleChangerWidget);
+        _this.onRowSelected.notify();
     });
     this.beamlinesGrid.rowSelected.attach(function(sender,text){
         _this.sampleChangerGrid.deselectAll();
         var sampleChangerType = _.filter(_this.beamlines,{'name':text.split(" ")[0]})[0].sampleChangerType;
         _this.sampleChangerWidget = _this.createSampleChanger(sampleChangerType);
         _this.addSampleChanger(_this.sampleChangerWidget);
+        _this.onRowSelected.notify(text.split(" ")[0]);
     });
+
+    this.onRowSelected = new Event(this);
     this.onSampleChangerSelected = new Event(this);
 };
 
@@ -91,7 +96,7 @@ SampleChangerSelector.prototype.getPanel = function() {
                         cls : 'border-grid',
                         margin : 20,
                         items: [
-                                    this.sampleChangerGrid.getPanel(),
+                                    // this.sampleChangerGrid.getPanel(),
                                     this.beamlinesGrid.getPanel()
                         ]
                     },
