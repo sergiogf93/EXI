@@ -100,15 +100,13 @@ SAXSExiController.prototype.notFound = function() {
 SAXSExiController.prototype.routeExperiment = function() {
 	Path.map("#/experiment/experimentId/:experimentId/main").to(function() {
 		var mainView = new ExperimentMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load(this.params['experimentId']);
-		/** Selecting data collections from experiment * */
-		mainView.onSelect.attach(function(sender, element) {
-			EXI.localExtorage.selectedSubtractionsManager.append(element);
-		});
-		mainView.onDeselect.attach(function(sender, element) {
-			EXI.localExtorage.selectedSubtractionsManager.remove(element);
-		});
+		EXI.addMainPanel(mainView);	
+		mainView.panel.setLoading();		
+		var onSuccess = function(sender, dataCollections){			
+			mainView.load(dataCollections);
+			mainView.panel.setLoading(false);				
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(this.params['experimentId']);
 
 	}).enter(this.setPageBackground);
 	
@@ -238,7 +236,6 @@ SAXSExiController.prototype.routeDataCollection = function() {
 			var primaryMainView = new PrimaryDataMainView();
 			EXI.addMainPanel(primaryMainView);
 			primaryMainView.load(data);
-
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
@@ -253,8 +250,6 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 };
-
-
 
 SAXSExiController.prototype.routePrepare = function() {
 	Path.map("#/buffer/:bufferId/main").to(function() {

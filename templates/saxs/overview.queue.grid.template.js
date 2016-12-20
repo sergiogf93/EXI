@@ -89,26 +89,26 @@
                             {@eq key="{.dataCollectionOrder}" value="1"}
                                 <td rowspan="{$len}">
                                     <a href="{.scattering}" data-lightbox="{.scattering}" data-title="Scattering">
-                                        <center><img alt="Image not found" class="img-responsive queue-img" src="{.scattering}" style="display: block;"  height="{imgWidth}px" width="{imgWidth}px"/></center>
+                                        <img alt="Image not found" class="img-responsive queue-img" src="{.scattering}" style="display: block;"  height="{imgWidth}px" width="{imgWidth}px"/>
                                     </a> 
                                 </td>
                                 <td rowspan="{$len}">
                                     <a href="{.kratky}" data-lightbox="{.kratky}" data-title="Kratky">
-                                        <center><img alt="Image not found" class="img-responsive queue-img" src="{.kratky}" style="display: block;"  height="{imgWidth}px" width="{imgWidth}px"/></center>
+                                        <img alt="Image not found" class="img-responsive queue-img" src="{.kratky}" style="display: block;"  height="{imgWidth}px" width="{imgWidth}px"/>
                                     </a>  
                                 </td>
                                 <td rowspan="{$len}">
                                     <a href="{.density}" data-lightbox="{.density}" data-title="Density">
-                                        <center><img alt="Image not found" class="img-responsive queue-img" src="{.density}" style="display: block;" height="{imgWidth}px" width="{imgWidth}px"/></center>
+                                        <img alt="Image not found" class="img-responsive queue-img" src="{.density}" style="display: block;" height="{imgWidth}px" width="{imgWidth}px"/>
                                     </a> 
                                 </td>
                                 <td rowspan="{$len}">
                                     <a href="{.guinier}" data-lightbox="{.guinier}" data-title="Guinier">
-                                        <center><img alt="Image not found" class="img-responsive queue-img" src="{.guinier}" style="display: block;" height="{imgWidth}px" width="{imgWidth}px" /></center>
+                                        <img alt="Image not found" class="img-responsive queue-img" src="{.guinier}" style="display: block;" height="{imgWidth}px" width="{imgWidth}px" />
                                     </a> 
                                 </td>
                                 <td rowspan="{$len}">
-                                    <table class="table queue-small-padding-table table-queue-grid-borderless">
+                                    <table class="table queue-small-padding-table table-queue-grid-borderless valign-middle-rows">
                                         <tbody>
                                                 <tr>
                                                     <td>

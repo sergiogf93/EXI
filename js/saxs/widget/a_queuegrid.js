@@ -55,59 +55,17 @@ function QueueGrid(args) {
 	this.onSelect = new Event(this)
 }
 
-// QueueGrid.prototype.getPercentage = function(averaged, total) {
-	
-// 	var color = "undefined";
-// 	if (averaged == null){
-// 		averaged = "NA";
-// 		color = "orange";
-// 	}
-// 	if (total == null){
-// 		total = "NA";
-// 		color = "orange";
-// 	}
-	
-// 	if ((averaged != "NA")&(total != "NA")){
-// 		if (averaged/total >= 0.3){
-// 			color = "orange";
-// 		}
-// 		if (averaged/total > 0.7){
-// 			// color = "#BCF5A9";
-// 			color = "undefined";
-// 		}
-		
-// 		if (averaged/total < 0.3){
-// 			color = "red";
-// 		}
-		
-		
-// 	}
-	
-// 	return {color : color,
-// 			text : averaged + " / " + total};
-// };
 
-QueueGrid.prototype.getImage = function(sample, name) {
-	if (sample.Subtraction_subtractionId != null) {
-		var url = EXI.getDataAdapter().saxs.subtraction.getImage(sample.Subtraction_subtractionId, name);
-		return url;
-	}
+/**
+* It loads a set of data collections
+*
+* @method getImage
+* @param {subtractionId} subtractionId
+* @param {category} ['scattering' | 'kratky' | 'density' | 'guinier']
+*/
+QueueGrid.prototype.getImage = function(subtractionId, category) {	
+		return EXI.getDataAdapter().saxs.subtraction.getImage(subtractionId, category);
 };
-
-// QueueGrid.prototype.parseDataById = function (data) {
-// 	var parsed = {};
-// 	// data.sort(function (a,b){
-// 	// 	return b.Measurement_measurementId - a.Measurement_measurementId;
-// 	// });
-// 	var byDataCollectionId = _.keyBy(data,'MeasurementToDataCollection_dataCollectionId');
-// 	var keys = _.keys(byDataCollectionId);
-// 	for (var i=0 ; i < keys.length ; i++) {
-// 		var dataCollectionId = Number(keys[i]);
-// 		parsed[dataCollectionId] = _.filter(data,{'MeasurementToDataCollection_dataCollectionId' : dataCollectionId});
-// 	}
-// 	return parsed;
-// }
-
 
 /**
 * Attaches the events to lazy load to the images. Images concerned are with the class queue-img

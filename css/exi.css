@@ -50,12 +50,20 @@
 
 /** SAXS queue grid **/
 
+.blue-bottom-border-row {
+	border-bottom: 2px solid #3892d3 !important;
+}
+
 div.border-columns {
 	border: 1px solid #ccc;
 }
 
-div.border-right-columns {
+div.queue-border-right-columns {
 	border-right: 1px solid #ccc;
+}
+
+div.queue-border-bottom-columns {
+	border-bottom: 1px solid #ccc;
 }
 
 table.border-header thead>tr>th{
@@ -65,7 +73,7 @@ table.border-header thead>tr>th{
 	border-right: 1px solid #ccc !important;
 }
 
-div.border-top-columns {
+div.queue-border-top-columns {
 	border-top: 1px solid #ccc;
 }
 

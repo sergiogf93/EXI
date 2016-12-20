@@ -1,4 +1,4 @@
-<div class="container-fluid persist-header">
+<div class="container-fluid persist-header" align="center">
     <div class="row text-center" style="border : 1px solid #ccc;">
         <div class="col-sm-3 queue-border-right-columns ">
             <div>&nbsp;</div>
@@ -52,52 +52,52 @@
     </div>  
 </div>  
 
-<div id="{id}-scrollable" style="display: block; height: {height}px; overflow-y: auto">
-    {#rows}
+<div id="{id}-scrollable" style="display: block;">
+    {#.}
     <div class="container-fluid persist-header">
-        <div class="row queue-border-bottom-columns" {@eq key=status value="DONE"}style="background:rgb(188,245,169);"{/eq}>
+        <div class="row queue-border-bottom-columns" {?Run_runId}style="background:rgb(188,245,169);"{/Run_runId}>
             <div class="col-sm-3 ">
                 <div class="row">
                     <div class="col-sm-4">
-                        {.acronym}
+                        {.Macromolecule_acronym}
                     </div>
                     <div class="col-sm-4">
-                        {.concentration}
+                        {.Specimen_concentration}
                     </div>
                     <div class="col-sm-4 ">
-                        {.buffer_acronym}<span style='font-style:oblique;'> Plate: [{.bufferSampleplate.slotPositionColumn},{.samplePlateLetter}-{.bufferSampleplateposition3VO.columnNumber}]</span>
+                        {.Buffer_acronym}<span style='font-style:oblique;'> Plate: [{.SamplePlate_slotPositionColumn},{.samplePlateLetter}-{.SamplePlatePosition_columnNumber}]</span>
                     </div>
                 </div>
             </div> 
             <div class="col-sm-5 ">
                 <div class="row">
                     <div class="col-sm-2 ">
-                        {.exposureTemperature}
+                        {.Run_exposureTemperature}
                     </div>
                     <div class="col-sm-2 ">
-                        {.volumeToLoad}
+                        {.Measurement_volumeToLoad}
                     </div>
                     <div class="col-sm-2 ">
-                        {.transmission}
+                        {.Measurement_transmission}
                     </div>
                     <div class="col-sm-2 ">
-                        {.waitTime}
+                        {.Measurement_waitTime}
                     </div>
                     <div class="col-sm-2 ">
-                        {.flow}
+                        {.Measurement_flow}
                     </div>
                     <div class="col-sm-2 ">
-                        {.viscosity}
+                        {.Measurement_viscosity}
                     </div>
                 </div>
             </div> 
             <div class="col-sm-2 ">
-                <span style='font-weight: bold;'>{.status}</span>
+                <span style='font-weight: bold;'>{?Run_runId}DONE{/Run_runId}</span>
             </div>
             <div class="col-sm-2 ">
                 
             </div>
         </div>  
     </div>
-    {/rows}
+    {/.}
 </div>

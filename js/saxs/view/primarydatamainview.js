@@ -17,9 +17,7 @@ function PrimaryDataMainView() {
 	this.plotter = new CurvePlotter({
 	});
 
-	this.grid = new QueueGrid({
-		maxHeight : 300
-	});
+	this.grid = new OverviewQueueGrid({height : 220});
 	
 	
 	/** Abinitio **/
@@ -29,7 +27,7 @@ function PrimaryDataMainView() {
 	
 }
 
-PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
+// PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
@@ -68,12 +66,23 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 
 };
 
+// PrimaryDataMainView.prototype.getPanel = function() {
+// 	this.panel = Ext.create('Ext.panel.Panel', {
+// 	    margin : 10,
+// 		layout : 'fit',
+// 		autoScroll : true,
+// 		// tbar : this.getToolBar(),
+// 	    items: [this.grid.getPanel(), this.getSlavePanel()]
+// 	});
 
-PrimaryDataMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('tabpanel',
+// 	return this.panel;
+// };
+
+PrimaryDataMainView.prototype.getPanel = function() {
+	return Ext.createWidget('tabpanel',
 			{
 				plain : true,
-				height : 900,
+				layout : 'fit',
 				margin : '10 0 0 0',
 				items : [
 					{
@@ -82,8 +91,8 @@ PrimaryDataMainView.prototype.getContainer = function() {
 						},
 						items : [ {
 							xtype : 'container',
+							autoScroll : true,
 							layout : 'fit',
-							height : 850,
 							padding : 20,
 							style : {
 								borderColor : 'gray',
@@ -111,6 +120,7 @@ PrimaryDataMainView.prototype.getContainer = function() {
 						items : [ {
 							xtype : 'container',
 							layout : 'fit',
+							autoScroll : true,
 							height : 850,
 							padding : 20,
 							style : {
@@ -135,44 +145,38 @@ PrimaryDataMainView.prototype.getContainer = function() {
 			});
 };
 
-
-//PrimaryDataMainView.prototype.getContainer = function() {
-//	return {
-//		xtype : 'container',
-//		items : [
-//		         	this.grid.getPanel(),
-//		        	this.getSlavePanel()         
-//		]
-//	};
-//};
-
 PrimaryDataMainView.prototype.load = function(selected) {
 	var _this = this;
-	this.panel.setTitle(" Data Collection");
-	this.grid.panel.setLoading();
-	var onSuccess = function(sender, data) {
-		_this.grid.load(data);
-		_this.grid.panel.setLoading(false);
-		/** Measurements Grid * */
-		_this.frameSelectorGrid.load(data);
-		
-		/** Getting abinitio **/
-		if (data[0].subtractionId){
-			var onSuccessSubtraction = function(sender, subtractions) {
-				_this.abinitioForm.load(subtractions);
-			};
-			
-			EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
-			
-		}
-	};
+	// this.panel.setTitle(" Data Collection");
 
-	var dataCollectionIds = [];
-	for (var i = 0; i < selected.length; i++) {
-		dataCollectionIds.push(selected[i].dataCollectionId);
-
+	var onSuccess = function (sender, dataCollections) {
+		_this.grid.load(dataCollections);
 	}
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
+
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(11682);
+	// var onSuccess = function(sender, data) {
+	// 	_this.grid.load(data);
+	// 	_this.grid.panel.setLoading(false);
+	// 	/** Measurements Grid * */
+	// 	_this.frameSelectorGrid.load(data);
+		
+	// 	/** Getting abinitio **/
+	// 	if (data[0].subtractionId){
+	// 		var onSuccessSubtraction = function(sender, subtractions) {
+	// 			_this.abinitioForm.load(subtractions);
+	// 		};
+			
+	// 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
+			
+	// 	}
+	// };
+
+	// var dataCollectionIds = [];
+	// for (var i = 0; i < selected.length; i++) {
+	// 	dataCollectionIds.push(selected[i].dataCollectionId);
+
+	// }
+	// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
 	
 	
 	

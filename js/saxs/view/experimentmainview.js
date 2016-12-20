@@ -16,13 +16,13 @@ function ExperimentMainView() {
 	});
 
 	// Create the combo box, attached to the states data store
-	var viscosityEditor = Ext.create('Ext.form.ComboBox', {
-		fieldLabel : '',
-		store : storeViscosity,
-		queryMode : 'local',
-		displayField : 'name',
-		valueField : 'name'
-	});
+	// var viscosityEditor = Ext.create('Ext.form.ComboBox', {
+	// 	fieldLabel : '',
+	// 	store : storeViscosity,
+	// 	queryMode : 'local',
+	// 	displayField : 'name',
+	// 	valueField : 'name'
+	// });
 	
 	
 	/** Specimen Widget contains a specimenGrid and a sampleChangerWidget than can be displayed with are vertical or horizontal layout **/
@@ -31,81 +31,7 @@ function ExperimentMainView() {
 		width : 1200
 	});
 	
-	this.measurementGrid = new MeasurementGrid({
-//		maxWidth : 1500,
-//		width : 1200,
-		height : 600,
-		minHeight : 600,
-		maxHeight : 600,
-		estimateTime : false,
-		positionColumnsHidden : false,
-		isPriorityColumnHidden : true,
-		isStatusColumnHidden : false,
-		addBtnEnable : false,
-		isTimeColumnHidden : false,
-		updateRowEnabled : false,
-		collapsed : false,
-		removeBtnEnabled : false,
-		showTitle : false,
-		collapseBtnEnable : false,
-		addBtnMultipleEdit : false,
-		sortingBtnEnable : false,
-		editor : {
-			exposureTemperature : {
-				xtype : 'textfield',
-				allowBlank : true
-			},
-			comments : {
-				xtype : 'textfield',
-				allowBlank : true
-			},
-			volumeToLoad : {
-				xtype : 'numberfield',
-				allowBlank : true
-			},
-			transmission : {
-				xtype : 'numberfield',
-				allowBlank : true
-			},
-			viscosity : viscosityEditor,
-			waitTime : {
-				xtype : 'numberfield',
-				allowBlank : true
-			},
-			flow : {
-				xtype : 'checkbox',
-				allowBlank : true
-			}
-		}
-	});
-
-//	this.measurementGrid.onSelected.attach(function(sender, measurements) {
-//		var specimens = [];
-//		for ( var i = 0; i < measurements.length; i++) {
-//			specimens.push(_this.experiment.getSampleById(measurements[i].specimenId));
-//		}
-//	});
-
-	this.measurementGrid.onMeasurementChanged.attach(function(sender, measurement) {
-//		debugger
-		_this.experiment.setMeasurement(measurement);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.volumePlanificator.load(_this.experiment);
-	});
-
-	this.measurementGrid.onExperimentChanged.attach(function(sender, json) {
-		_this.experiment = new Experiment(json);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.specimenWidget.refresh(_this.experiment);
-		_this.volumePlanificator.load(_this.experiment);
-	});
-
-	this.measurementGrid.onRemoved.attach(function(sender, experiments) {
-		_this.experiment = new Experiment(experiments[0]);
-		_this.specimenWidget.refresh(_this.experiment);
-		_this.volumePlanificator.load(_this.experiment);
-	});
-
+	this.measurementGrid = new MeasurementGrid();
 	
 	this.queueGrid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
@@ -122,14 +48,13 @@ function ExperimentMainView() {
 	
 }
 
-ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 ExperimentMainView.prototype.getToolBar = function() {
     var _this = this;
     function onMenuClicked(widget){
         if (_this.activePanel != widget){
             _this.activePanel = widget;
-			_this.load(_this.experimentId);
+			_this.load(_this.dataCollections);
         }
     }
 
@@ -158,6 +83,7 @@ ExperimentMainView.prototype.getToolBar = function() {
    });
     return Ext.create('Ext.toolbar.Toolbar', {
         width: 500,
+		
         items: [
            {
                 text:'View',
@@ -168,131 +94,21 @@ ExperimentMainView.prototype.getToolBar = function() {
     });
 };
 
-ExperimentMainView.prototype.getContainer = function() {
-
-	this.container = Ext.create('Ext.container.Container',{
+ExperimentMainView.prototype.getPanel = function() {
+	this.panel = Ext.create('Ext.panel.Panel', {
+	    margin : 10,
 		layout : 'fit',
-		height : 700,
-		padding : 20,
-		style : {
-			borderColor : 'gray',
-			borderStyle : 'solid',
-			borderWidth : '1px',
-			'background-color' : 'white' 
-		},
-		items : [this.activePanel.getPanel()]
-	});
-
-	return Ext.create('Ext.panel.Panel', {
-	    margin : 30,
-		bodyStyle : {
-			"background-color" : "#E6E6E6" 
-		},
+		height : 600,	
 		tbar : this.getToolBar(),
-	    items: [this.container]
+	    items: []
 	});
+
+	return this.panel;
 };
 
-ExperimentMainView.prototype.getSelected = function() {
-	var selected = [];
-	for (var i = 0; i < this.queueGridList.length; i++) {
-		selected = this.queueGridList[i].getSelected().concat(selected);
-	}
-	return selected;
+ExperimentMainView.prototype.load = function(dataCollections) {
+	this.dataCollections = dataCollections;
+	this.panel.removeAll();
+	this.panel.insert(this.activePanel.getPanel());
+	this.activePanel.load(dataCollections);	
 };
-
-ExperimentMainView.prototype.getTabs = function() {
-	return  Ext.createWidget('tabpanel',
-			{
-				plain : true,
-				margin : '20 0 0 0',
-				activeTab: 2,
-				items : [
-					{
-						tabConfig : {
-							title : "Sample Plate Setup"
-						},
-						items : [  
-									{
-										xtype : 'container',
-										layout : 'vbox',
-										height : 700,
-										padding : 20,
-										style : {
-											borderColor : 'gray',
-											borderStyle : 'solid',
-											borderWidth : '1px',
-											'background-color' : 'white' 
-										},
-										items : [ 
-										     	this.specimenWidget.getPanel()
-										     	]
-									}
-									]
-					},
-					{
-						tabConfig : {
-							title : 'Measurements'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							height : 700,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-							         
-							         this.measurementGrid.getPanel()
-							]
-						}
-
-						]
-					},
-					{
-						tabConfig : {
-							title : 'Online Data Analysis'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							height : 700,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-							     this.queueGrid.getPanel()    
-							]
-						}
-					
-						]
-					}
-			]
-	}
-	);
-};
-
-ExperimentMainView.prototype.load = function(experimentId) {
-	var _this = this;
-	_this.experimentId = experimentId;
-	_this.container.removeAll();
-	_this.container.add(_this.activePanel.getPanel());
-	_this.panel.setLoading();
-	var onSuccess = function(sender, experiments){
-		_this.experiment = new Experiment(experiments[0]);
-		_this.activePanel.load(_this.experiment);
-		_this.panel.setTitle(experiments[0].name);
-		_this.panel.setLoading(false);
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experimentId);
-};
-
-
