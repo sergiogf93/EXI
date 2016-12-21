@@ -229,13 +229,11 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 
-	Path.map("#/saxs/datacollection/:key/:value/primaryviewer").to(function() {
-		var onSuccess = function(sender, data) {
-			var primaryMainView = new PrimaryDataMainView();
-			EXI.addMainPanel(primaryMainView);
-			primaryMainView.load(data);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
+	Path.map("#/saxs/datacollection/dataCollectionId/:dataCollectionId/primaryviewer").to(function() {		
+			var primaryMainView = new PrimaryDataMainView();    
+            EXI.addMainPanel(primaryMainView);        		            
+			primaryMainView.load(this.params['dataCollectionId']);		
+		
 	}).enter(this.setPageBackground);
 	
 	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
@@ -1441,13 +1439,8 @@ function HPLCMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGrid({
-		collapsed : true,
-		positionColumnsHidden : true,
-		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
-		sorters : [ {
-			property : 'macromoleculeAcronym',
-			direction : 'ASC' } ] });
+	this.grid = new OverviewQueueGrid({
+		height : 220 });
 
 	this.grid.onSelectionChange.attach(function(sender, elements) {
 		_this.onSelectionChange.notify(elements);
@@ -1466,20 +1459,20 @@ function HPLCMainView() {
 	_this.selectedFrameNumber = [];
 	this.hplcGraph = new HPLCGraph({
 		title : 'I0',
-		width : 800,
-		height : 350,
+		width : 300,
+		height : 300,
 		bbar : true,
 		plots : {
 			"I0" : true,
 			"Rg" : true },
-		xlabel : "HPLC Frames",
+		xlabel : "Frames",
 		scaled : true,
 		interactionModel : {
 			'dblclick' : function(event, g, context) {
-				_this.selectedFrameNumber.push(g.lastx_);
+				//_this.selectedFrameNumber.push(g.lastx_);
+                _this.selectedFrameNumber = [g.lastx_];
 				_this.plotter.loadHPLCFrame(_this.experimentId, _this.selectedFrameNumber);
-
-				_this.annotations.push({
+				/*_this.annotations.push({
 					series : g.selPoints_[0].name,
 					x : g.lastx_,
 					width : 30,
@@ -1487,10 +1480,43 @@ function HPLCMainView() {
 					tickHeight : 2,
 					shortText : g.lastx_,
 					text : g.lastx_,
-					attachAtBottom : true });
+					attachAtBottom : true });*/
+                    _this.annotations= [({
+					series : g.selPoints_[0].name,
+					x : g.lastx_,
+					width : 30,
+					height : 23,
+					tickHeight : 2,
+					shortText : g.lastx_,
+					text : g.lastx_,
+					attachAtBottom : true })];
 				g.setAnnotations(_this.annotations);
-
-			} } });
+                
+                /** Summary Panel */
+                var summary = {
+                        frame :  _this.selectedFrameNumber,
+                        quality : _.find(_this.hplcGraph.hplcData, {param : 'quality'}).data[_this.selectedFrameNumber],
+                        Qr : _.find(_this.hplcGraph.hplcData, {param : 'Qr'}).data[_this.selectedFrameNumber],
+                        Vc : _.find(_this.hplcGraph.hplcData, {param : 'Vc'}).data[_this.selectedFrameNumber],
+                        Mass : _.find(_this.hplcGraph.hplcData, {param : 'Mass'}).data[_this.selectedFrameNumber],
+                        Rg : _.find(_this.hplcGraph.hplcData, {param : 'Rg'}).data[_this.selectedFrameNumber],
+                        I0 : _.find(_this.hplcGraph.hplcData, {param : 'I0'}).data[_this.selectedFrameNumber],
+                        downloadURL : EXI.getDataAdapter().saxs.hplc.getDownloadHDF5FramesURL(_this.experimentId, _this.selectedFrameNumber, _this.selectedFrameNumber)
+                }
+                
+                
+                
+               
+                var html = "";
+                dust.render("summary.hplcmainview.template", [summary], function(err, out) {
+                                                                                                                                       
+                    html = html + out;
+                });
+                $('#' + _this.id + "summary").html(html);
+                
+			} 
+        } 
+    });
 
 	this.hplcGraph.onClearSelection.attach(function(sender) {
 		_this.annotations = [];
@@ -1499,7 +1525,9 @@ function HPLCMainView() {
 	});
 
 	this.plotter = new CurvePlotter({
-		margin : '10 0 0 0' });
+		margin : 10,
+        width : 300
+     });
 
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
@@ -1513,21 +1541,66 @@ HPLCMainView.prototype.getHeader = function(beamlineName, startDate) {
 };
 
 HPLCMainView.prototype.getPlotContainer = function() {
-	return {
-		xtype : 'container',
-		cls : 'defaultGridPanel',
-		border : 0,
-		defaults : {
-			height : 450 },
-		items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
+	return  {
+                xtype : 'container',
+                cls : 'defaultGridPanel',
+                layout : 'hbox',
+                border : 1,
+                defaults : {height : 400 },
+		        items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
 		] };
 };
 
-HPLCMainView.prototype.getContainer = function() {
 
+HPLCMainView.prototype.getSecondaryContainer = function() {
+	return  {
+                xtype : 'container',
+                cls : 'defaultGridPanel',
+                layout : 'hbox',
+                border : 0,
+                defaults : {height : 400 },
+		        items : [
+                    {
+                        html : '<div style="text-align:center;" class="alert alert-info" role="alert">Select a frame by double-clicking on the HPLC Frames plot</div>',
+                        margin : 10,
+                        flex : 1
+                    },
+                    {
+                        html : '<div id="' + this.id + 'summary"></div>',
+                        margin : 10,
+                        flex : 1
+                    }
+                    
+                ] };
+};
+
+HPLCMainView.prototype.getContainer = function() {
+    
 	return {
 		xtype : 'container',
-		items : [ this.grid.getPanel(), this.getPlotContainer() ] };
+        margin : 10,
+		items : [ 
+            
+            {
+              html : '<div id="' + this.id +'header"></div>',
+              margin : 10 ,
+              height : 160 
+            },
+            {
+              html : ' <div class="panel panel-primary"><div class="panel-heading">Data Collection</div></div>',
+              margin : 10 ,
+              height : 40 
+            },
+           
+            this.grid.getPanel(), 
+              {
+              html : '<div class="panel panel-primary"><div class="panel-heading">Size-exclusion chromatography</div></div>',
+              margin : 10 ,
+              height : 40 
+            },
+            this.getPlotContainer(), 
+            this.getSecondaryContainer()
+             ] };
 };
 
 HPLCMainView.prototype.getSelected = function() {
@@ -1582,8 +1655,8 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 			color : "#FF00FF",
 			data : data.quality,
 			std : zeroArray } ];
-		_this.hplcGraph.loadData(data);
-
+		_this.hplcGraph.loadData(data, experimentId);
+        
 	};
 
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.hplc.getHPLCOverviewByExperimentId(experimentId);
@@ -1592,15 +1665,32 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 HPLCMainView.prototype.load = function(experimentId) {
 		var _this = this;
 		this.experimentId = experimentId;
-
-		this.grid.panel.setLoading();
-
-		var onSuccess = function(sender, data) {
-			_this.grid.load(data);
-			_this.grid.panel.setLoading(false);
+	
+		var onSuccess = function(sender, data) {  
+            if (data){          
+			    _this.grid.load(data);
+                if (data[0]){
+                    var header = {
+                        creationDate : data[0].Experiment_creationDate,
+                        name : data[0].Experiment_name,
+                        type : data[0].Experiment_experimentType,
+                        hdf5 : data[0].Experiment_dataAcquisitionFilePath,
+                        url : EXI.getDataAdapter().saxs.hplc.getDownloadHDF5URL(data[0].Experiment_experimentId)
+                    }
+                    
+                    /** Renedering header */
+                     var html = "";
+                     
+                    dust.render("header.hplcmainview.template", header, function(err, out) {
+                                                                                                                                        
+                        html = html + out;
+                    });
+                    $('#' + _this.id + "header").html(html);
+                }
+            }			
 		};
 
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(experimentId);
 		this.loadHPLCGraph(experimentId);
 };
 
@@ -2127,7 +2217,7 @@ function PrimaryDataMainView() {
 	var _this = this;
 	
 	this.frameSelectorGrid = new FrameSelectorGrid();
-	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
+	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){        
 		_this.plotter.load(selections);
 	});
 	
@@ -2145,7 +2235,7 @@ function PrimaryDataMainView() {
 	
 }
 
-// PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
+
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
@@ -2184,17 +2274,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 
 };
 
-// PrimaryDataMainView.prototype.getPanel = function() {
-// 	this.panel = Ext.create('Ext.panel.Panel', {
-// 	    margin : 10,
-// 		layout : 'fit',
-// 		autoScroll : true,
-// 		// tbar : this.getToolBar(),
-// 	    items: [this.grid.getPanel(), this.getSlavePanel()]
-// 	});
 
-// 	return this.panel;
-// };
 
 PrimaryDataMainView.prototype.getPanel = function() {
 	return Ext.createWidget('tabpanel',
@@ -2263,7 +2343,7 @@ PrimaryDataMainView.prototype.getPanel = function() {
 			});
 };
 
-PrimaryDataMainView.prototype.load = function(selected) {
+PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
 	
 
@@ -2271,28 +2351,19 @@ PrimaryDataMainView.prototype.load = function(selected) {
 		_this.grid.load(dataCollections);
 	}
 
-	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(selected[0].dataCollectionId);
+	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
     
     
-	 var onSuccess = function(sender, data) {
-	 	//_this.grid.load(data);
-	 	//_this.grid.panel.setLoading(false);	 	
-	 	_this.frameSelectorGrid.load(data);
-			 	
+	 var onSuccess = function(sender, data) { 	
+	 	_this.frameSelectorGrid.load(data);			 	
 	 	if (data[0].substraction3VOs[0].subtractionId){             
 	 		var onSuccessSubtraction = function(sender, subtractions) {                 
 	 			_this.abinitioForm.load(subtractions);
 	 		};			
 	 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
 		}
-	 };
-
-	 var dataCollectionIds = [];
-	 for (var i = 0; i < selected.length; i++) {
-	 	dataCollectionIds.push(selected[i].dataCollectionId);
-	 }
-    
-	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
+	 };	    
+	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
 	
 	
 };
@@ -6476,10 +6547,7 @@ function HPLCGraph(args) {
 	if (args != null) {
 		if (args.interactionModel != null) {
 			this.interactionModel = args.interactionModel;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
+		}		
 		if (args.height != null) {
 			this.height = args.height;
 		}
@@ -6624,8 +6692,7 @@ HPLCGraph.prototype.getPoint = function(data, i) {
 			return [ data.fstd(y - error), data.fdata(y), data.fstd(y + error) ];
 		}
 		return [ data.fdata(y) - error, data.fdata(y), data.fdata(y) + error ];
-	}
-	return point;
+	}	
 };
 
 HPLCGraph.prototype.reloadData = function(hplcData) {
@@ -6724,8 +6791,9 @@ HPLCGraph.prototype._renderDygraph = function(parsed, colors, labels) {
 
 };
 
-HPLCGraph.prototype.loadData = function(data) {
+HPLCGraph.prototype.loadData = function(data,experimentId) {
 	var _this = this;
+    this.experimentId = experimentId;
 	this.reloadData(data);
 	this.panel.addDocked({
 		cls : 'hplcMenu',
@@ -6775,6 +6843,28 @@ HPLCGraph.prototype.loadData = function(data) {
 						isZoomedIgnoreProgrammaticZoom : true,
 						dateWindow : [ start, end ] });
 				} },
+                {
+				xtype : 'button',
+				text : 'Download Range',
+                icon : '../images/icon/ic_get_app_black_24dp.png',
+				handler : function() {
+					var start = parseFloat(Ext.getCmp("main_field_start").getValue());
+					var end = parseFloat(Ext.getCmp("main_field_end").getValue());
+
+					if (start < 0) {
+						start = 0;
+					}
+					if (end < 0) {
+						end = 0;
+					}
+					if (start > end) {
+						var aux = end;
+						end = start;
+						start = aux;
+					}
+
+					location.href = EXI.getDataAdapter().saxs.hplc.getDownloadHDF5FramesURL(_this.experimentId,start, end)
+				} },
 				"->",
 				 {
 					xtype : 'button',
@@ -6789,13 +6879,11 @@ HPLCGraph.prototype.loadData = function(data) {
 HPLCGraph.prototype.getPanel = function() {
 	var _this = this;
 	this.panel = Ext.create('Ext.panel.Panel', {
-		padding : this.plotPanelPadding,
-		//		width : this.width + 4 * this.plotInnerPanelPadding,
-		//		height : this.height + 4 * this.plotInnerPanelPadding - 100,
+		margin : this.plotPanelPadding, 
+        flex : 1,       		
 		items : [ {
 			html : "",
-			id : this.id,
-			flex : 1,
+			id : this.id,			
 			height : this.height } ] });
 
 	this.panel.on("afterrender", function(panel) {
@@ -6807,9 +6895,7 @@ HPLCGraph.prototype.getPanel = function() {
 	return this.panel;
 };
 
-HPLCGraph.prototype.input = function() {
-	return DATADOC.getHPLCData();
-};
+
 
 HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	var data = {};
@@ -6820,23 +6906,6 @@ HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	return data;
 };
 
-HPLCGraph.prototype.test = function(targetId) {
-	var mainPlotPanel = new HPLCGraph({
-		title : 'I0',
-		width : 800,
-		height : 400,
-		plots : {
-			"I0" : true,
-			"Rg" : true,
-			"Mass" : true },
-		xlabel : "HPLC Frames",
-		scaled : this.scaled,
-		interactionModel : {
-			'dblclick' : function(event, g, context) {} } });
-	mainPlotPanel.getPanel().render(targetId);
-	mainPlotPanel.loadData(mainPlotPanel.input());
-
-};
 
 function MergesHPLCGraph(args) {
 	HPLCGraph.prototype.constructor.call(this, args);
@@ -6937,7 +7006,7 @@ MergesHPLCGraph.prototype.getMenu = function() {
 	actions.push({
 		text : "Save",
 		scope : this,
-		icon : 'images/icon/ic_get_app_black_24dp.png',
+		icon : '../images/icon/ic_get_app_black_24dp.png',
 		handler : function(item, pressed) {
 			var largeImage = document.createElement("img");
 			largeImage.style.display = 'block';
@@ -6948,26 +7017,6 @@ MergesHPLCGraph.prototype.getMenu = function() {
 		} });
 
 	return actions;
-};
-
-MergesHPLCGraph.prototype.input = function() {
-	return DATADOC.getScatteringHPLCFrameData();
-};
-
-MergesHPLCGraph.prototype.test = function(targetId) {
-	var mainPlotPanel = new MergesHPLCGraph({
-		title : 'Scattering',
-		width : this.plotWidth,
-		height : 500,
-		showRangeSelector : false,
-		xParam : 0,
-		xlabel : "scattering_I",
-		plots : {
-			"scattering_I" : true,
-			"subtracted_I" : true,
-			"buffer_I" : true } });
-	mainPlotPanel.getPanel().render(targetId);
-	mainPlotPanel.loadData(mainPlotPanel.input());
 };
 
 /**

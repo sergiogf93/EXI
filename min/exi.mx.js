@@ -7455,7 +7455,7 @@ function CurvePlotter(args) {
 
     this.backgroundColor = "#FFFFFF";
 
-    this.margin = '0 0 0 5';
+    this.margin = 10;
     this.ruleColor = "black";
     this.targetId = "plotCanvas" + BUI.id();
     this.legend = 'onmouseover';
@@ -7470,6 +7470,7 @@ function CurvePlotter(args) {
         if (args.targetId != null) {
             this.targetId = args.targetId;
         }
+        
     }
 
     this.onRendered = new Event(this);
@@ -7478,11 +7479,8 @@ function CurvePlotter(args) {
 }
 
 CurvePlotter.prototype.getPanel = function() {
-    this.plotPanel = Ext.create('Ext.container.Container', {
-        layout: {
-            type: 'hbox'
-        },
-        flex: 0.7,
+    this.plotPanel = Ext.create('Ext.container.Container', {       
+        flex: 1,
         margin: this.margin,
         items: [{
             html: '<div id="' + this.targetId + '"></div>',

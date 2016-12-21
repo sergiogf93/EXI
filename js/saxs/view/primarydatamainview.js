@@ -9,8 +9,7 @@ function PrimaryDataMainView() {
 	var _this = this;
 	
 	this.frameSelectorGrid = new FrameSelectorGrid();
-	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
-        debugger
+	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){        
 		_this.plotter.load(selections);
 	});
 	
