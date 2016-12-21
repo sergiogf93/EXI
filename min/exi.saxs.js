@@ -110,6 +110,19 @@ SAXSExiController.prototype.routeExperiment = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(this.params['experimentId']);
 
 	}).enter(this.setPageBackground);
+    
+    Path.map("#/experiment/session/:sessionId/main").to(function() {
+		var mainView = new ExperimentMainView();
+		EXI.addMainPanel(mainView);	
+		mainView.panel.setLoading();		
+		var onSuccess = function(sender, dataCollections){			
+			mainView.load(dataCollections);
+			mainView.panel.setLoading(false);				
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsBySessionId(this.params['sessionId']);
+
+	}).enter(this.setPageBackground);
+    
 	
 	Path.map("#/experiment/hplc/:experimentId/main").to(function() {
 		var mainView = new HPLCMainView();
@@ -176,40 +189,24 @@ SAXSExiController.prototype.routeExperiment = function() {
 SAXSExiController.prototype.routeDataCollection = function() {
 	Path.map("#/datacollection/macromoleculeAcronym/:value/main").to(function() {
 		/** Loading navidation menu **/
-		EXI.setLoadingMainPanel("Searching " + this.params['value']+  "...");
-		var onSuccess = function(sender, dataCollections) {
-			if (dataCollections != null){
-				if (dataCollections.length > 0){
-					var mainView = new DataCollectionMainView();
-					EXI.addMainPanel(mainView);
-					mainView.load(dataCollections);
-					/** Selecting data collections from experiment * */
-					mainView.onSelect.attach(function(sender, element) {
-						EXI.localExtorage.selectedSubtractionsManager.append(element);
-					});
-					mainView.onDeselect.attach(function(sender, element) {
-						EXI.localExtorage.selectedSubtractionsManager.remove(element);
-					});
-					
-					var listView = new DataCollectionListView();
-					listView.onSelect.attach(function(sender, selected) {
-						mainView.filter( selected[0].macromoleculeId, selected[0].bufferAcronym);
-					});
-					EXI.addNavigationPanel(listView);
-					listView.load(dataCollections);
-					EXI.setLoadingNavigationPanel(false);
-				}
-				else{
-					BUI.showWarning("No macromolecule has been found");
-				}
-			}
-			else{
-				BUI.showWarning("No data to display");
-			}
-//			EXI.setLoadingNavigationPanel(false);
-			EXI.setLoadingMainPanel(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
+		    EXI.setLoadingMainPanel("Searching " + this.params['value']+  "...");
+
+			var mainView = new ExperimentMainView();
+            EXI.addMainPanel(mainView);	
+           		
+            var onSuccess = function(sender, dataCollections){			                
+                mainView.load(dataCollections);
+               
+                EXI.setLoadingMainPanel(false);				
+            };            
+            if (EXI.proposalManager.getMacromoleculeByAcronym(this.params['value']) != null){
+                EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByMacromoleculeId(EXI.proposalManager.getMacromoleculeByAcronym(this.params['value']).macromoleculeId);
+            }
+            else{
+                BUI.showError("No Macromolecule Found");
+                 EXI.setLoadingMainPanel(false);	
+            }
+
 
 	}).enter(this.setPageBackground);
 	
@@ -498,7 +495,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 			hidden : this.isHidden,
 			listeners : {
 				specialkey : function(field, e) {
-					if (e.getKey() == e.ENTER) {
+					if (e.getKey() == e.ENTER) {                        
 						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
 					}
 				} 
@@ -2268,37 +2265,34 @@ PrimaryDataMainView.prototype.getPanel = function() {
 
 PrimaryDataMainView.prototype.load = function(selected) {
 	var _this = this;
-	// this.panel.setTitle(" Data Collection");
+	
 
-	var onSuccess = function (sender, dataCollections) {
+	var onSuccessA = function (sender, dataCollections) {        
 		_this.grid.load(dataCollections);
 	}
 
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(11682);
-	// var onSuccess = function(sender, data) {
-	// 	_this.grid.load(data);
-	// 	_this.grid.panel.setLoading(false);
-	// 	/** Measurements Grid * */
-	// 	_this.frameSelectorGrid.load(data);
-		
-	// 	/** Getting abinitio **/
-	// 	if (data[0].subtractionId){
-	// 		var onSuccessSubtraction = function(sender, subtractions) {
-	// 			_this.abinitioForm.load(subtractions);
-	// 		};
-			
-	// 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
-			
-	// 	}
-	// };
+	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(selected[0].dataCollectionId);
+    
+    
+	 var onSuccess = function(sender, data) {
+	 	//_this.grid.load(data);
+	 	//_this.grid.panel.setLoading(false);	 	
+	 	_this.frameSelectorGrid.load(data);
+			 	
+	 	if (data[0].substraction3VOs[0].subtractionId){             
+	 		var onSuccessSubtraction = function(sender, subtractions) {                 
+	 			_this.abinitioForm.load(subtractions);
+	 		};			
+	 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
+		}
+	 };
 
-	// var dataCollectionIds = [];
-	// for (var i = 0; i < selected.length; i++) {
-	// 	dataCollectionIds.push(selected[i].dataCollectionId);
-
-	// }
-	// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
-	
+	 var dataCollectionIds = [];
+	 for (var i = 0; i < selected.length; i++) {
+	 	dataCollectionIds.push(selected[i].dataCollectionId);
+	 }
+    
+	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
 	
 	
 };
@@ -6192,13 +6186,15 @@ function FrameSelectorGrid(args) {
  */
 FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
 	var _this = this;
+    
 	/**
 	 * Given a data collection return the run numbers, sample and buffer
 	 * acronym *
 	 */
 	function getSubtractionTitleByDataCollection(dataCollection) {
-		var title = "";
-		/** Sorts datacollection by data collection order * */
+        
+		return  "DataCollection";
+		/** Sorts datacollection by data collection order 
 		dataCollection.measurementtodatacollection3VOs.sort(function(a, b) {
 			return a.dataCollectionOrder - b.dataCollectionOrder;
 		});
@@ -6215,7 +6211,7 @@ FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
 			};
 			title = title + " " + getMeasurementTitle(dataCollection.measurementtodatacollection3VOs[i].measurementId);
 		}
-		return title;
+		return title;**/
 	}
 
 	/** Gets the sample and buffer frames * */
@@ -6325,7 +6321,7 @@ FrameSelectorGrid.prototype.load = function(data) {
 		}
 
 	});
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByIdList(dataCollectionIdList);
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIdList);
 
 };
 
@@ -12961,21 +12957,28 @@ OverviewQueueGrid.prototype.render = function(data) {
 
 	/** Calculates the rowSpan so the template knows when to plot the images. Alsp finds where to draw stronger borders*/	
 	var grouped = _.groupBy(data, "MeasurementToDataCollection_dataCollectionId");
+    
 	_.map(data, function(o){ 
-		o.urlDownload = EXI.getDataAdapter().saxs.subtraction.getZip(o.Subtraction_subtractionId);
-		o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
+        if(o.Subtraction_subtractionId){
+		    o.urlDownload = EXI.getDataAdapter().saxs.subtraction.getZip(o.Subtraction_subtractionId);
+        }
+        if(o.Merge_mergeId){
+		    o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
+        }
 	});
+    
 	for (var dataCollectionId in grouped){
 		var last = _.maxBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder');
-			
-		last.rowSpan = grouped[dataCollectionId].length;
-		last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
-		last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
-		last.density = this.getImage(last.Subtraction_subtractionId,"density");
-		last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
-		if (last.Run_creationDate) {
-			last.dataReduction = true;
-		}
+		if (last.Subtraction_subtractionId){
+            last.rowSpan = grouped[dataCollectionId].length;
+            last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
+            last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
+            last.density = this.getImage(last.Subtraction_subtractionId,"density");
+            last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
+            if (last.Run_creationDate) {
+                last.dataReduction = true;
+            }
+        }
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
 	}
 

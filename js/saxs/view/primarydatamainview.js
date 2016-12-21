@@ -10,6 +10,7 @@ function PrimaryDataMainView() {
 	
 	this.frameSelectorGrid = new FrameSelectorGrid();
 	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
+        debugger
 		_this.plotter.load(selections);
 	});
 	
@@ -27,7 +28,7 @@ function PrimaryDataMainView() {
 	
 }
 
-// PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
+
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
@@ -66,17 +67,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 
 };
 
-// PrimaryDataMainView.prototype.getPanel = function() {
-// 	this.panel = Ext.create('Ext.panel.Panel', {
-// 	    margin : 10,
-// 		layout : 'fit',
-// 		autoScroll : true,
-// 		// tbar : this.getToolBar(),
-// 	    items: [this.grid.getPanel(), this.getSlavePanel()]
-// 	});
 
-// 	return this.panel;
-// };
 
 PrimaryDataMainView.prototype.getPanel = function() {
 	return Ext.createWidget('tabpanel',
@@ -145,39 +136,27 @@ PrimaryDataMainView.prototype.getPanel = function() {
 			});
 };
 
-PrimaryDataMainView.prototype.load = function(selected) {
+PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
-	// this.panel.setTitle(" Data Collection");
+	
 
-	var onSuccess = function (sender, dataCollections) {
+	var onSuccessA = function (sender, dataCollections) {        
 		_this.grid.load(dataCollections);
 	}
 
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(11682);
-	// var onSuccess = function(sender, data) {
-	// 	_this.grid.load(data);
-	// 	_this.grid.panel.setLoading(false);
-	// 	/** Measurements Grid * */
-	// 	_this.frameSelectorGrid.load(data);
-		
-	// 	/** Getting abinitio **/
-	// 	if (data[0].subtractionId){
-	// 		var onSuccessSubtraction = function(sender, subtractions) {
-	// 			_this.abinitioForm.load(subtractions);
-	// 		};
-			
-	// 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
-			
-	// 	}
-	// };
-
-	// var dataCollectionIds = [];
-	// for (var i = 0; i < selected.length; i++) {
-	// 	dataCollectionIds.push(selected[i].dataCollectionId);
-
-	// }
-	// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
-	
+	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
+    
+    
+	 var onSuccess = function(sender, data) { 	
+	 	_this.frameSelectorGrid.load(data);			 	
+	 	if (data[0].substraction3VOs[0].subtractionId){             
+	 		var onSuccessSubtraction = function(sender, subtractions) {                 
+	 			_this.abinitioForm.load(subtractions);
+	 		};			
+	 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
+		}
+	 };	    
+	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
 	
 	
 };
