@@ -45,7 +45,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		defaults : {
 			height : 600 
 		},
-		items : [ 
+		items : [
 		         {
 		        	 xtype : 'panel',
 		        	 layout: {
@@ -54,7 +54,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
-		        	    flex : 0.3,
+		        	    flex : 0.1,
 		        		border : 1,
 		        		style : {
 		        			borderColor : '#000000',
@@ -69,7 +69,6 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        
 		    ]
 	};
-
 };
 
 

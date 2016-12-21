@@ -46,13 +46,13 @@ FramesGrid.prototype.setClickListeners = function () {
             }
         } else {
             if (event.ctrlKey) {
-                if (_this.selectedFrames.indexOf(fileName) >= 0) {
+                if (_this.selectedFrames.indexOf(_this.getFrameByFileName(fileName)) >= 0) {
                     _this.deselect(fileName);
                 } else {
                     _this.select(fileName);
                 }
             } else {
-                if (_this.selectedFrames.length == 1 && _this.selectedFrames[0] == fileName) {
+                if (_this.selectedFrames.length == 1 && _this.getFileName(_this.selectedFrames[0].filePath) == fileName) {
                     _this.deselect(fileName);
                 } else {
                     _this.deselectAll();
@@ -70,7 +70,8 @@ FramesGrid.prototype.select = function (fileName) {
 }
 
 FramesGrid.prototype.deselect = function (fileName) {
-    _.remove(this.selectedFrames,function(o) {return this.getFileName(o.filePath) == fileName});
+    var _this = this;
+    _.remove(this.selectedFrames,function(o) {return _this.getFileName(o.filePath) == fileName});
     $("#" + fileName).removeClass('x-grid-item-selected');
 }
 
