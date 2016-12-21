@@ -89,6 +89,7 @@ QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
     };
        
     var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
+	var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
 
 };
 
