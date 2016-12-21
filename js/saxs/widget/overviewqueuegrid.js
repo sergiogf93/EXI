@@ -40,21 +40,28 @@ OverviewQueueGrid.prototype.render = function(data) {
 
 	/** Calculates the rowSpan so the template knows when to plot the images. Alsp finds where to draw stronger borders*/	
 	var grouped = _.groupBy(data, "MeasurementToDataCollection_dataCollectionId");
+    
 	_.map(data, function(o){ 
-		o.urlDownload = EXI.getDataAdapter().saxs.subtraction.getZip(o.Subtraction_subtractionId);
-		o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
+        if(o.Subtraction_subtractionId){
+		    o.urlDownload = EXI.getDataAdapter().saxs.subtraction.getZip(o.Subtraction_subtractionId);
+        }
+        if(o.Merge_mergeId){
+		    o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
+        }
 	});
+    
 	for (var dataCollectionId in grouped){
 		var last = _.maxBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder');
-			
-		last.rowSpan = grouped[dataCollectionId].length;
-		last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
-		last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
-		last.density = this.getImage(last.Subtraction_subtractionId,"density");
-		last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
-		if (last.Run_creationDate) {
-			last.dataReduction = true;
-		}
+		if (last.Subtraction_subtractionId){
+            last.rowSpan = grouped[dataCollectionId].length;
+            last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
+            last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
+            last.density = this.getImage(last.Subtraction_subtractionId,"density");
+            last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
+            if (last.Run_creationDate) {
+                last.dataReduction = true;
+            }
+        }
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
 	}
 

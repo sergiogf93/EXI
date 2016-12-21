@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">114.52</p>
+      <p class="stat">113.94</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">228</p>
+      <p class="stat">215</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">28.75</p>
+      <p class="stat">29.70</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">2.01</p>
+      <p class="stat">2.04</p>
     </div>
   </div>
 </div>
@@ -97,13 +97,16 @@
 */
 function DewarListSelectorGrid(args){
     this.height = 600;
+    this.width = 1000;
     if (args != null){
-        if (args.height  != null){
+        if (args.height){
             this.height = args.height;
-            
+        }
+        if (args.width){
+            this.width = args.width;
         }
     }
-    
+
     this.filterByDate = true;
     
     this.onSelect = new Event(this);
@@ -113,8 +116,7 @@ function DewarListSelectorGrid(args){
 
 
 /**
-* My method description.  Like other pieces of your comment blocks, 
-* this can span multiple lines.
+* Loads a set if shipments
 *
 * @method load
 * @param {Object} dewars Array of containers
@@ -197,29 +199,28 @@ DewarListSelectorGrid.prototype.getPanel = function(){
     var _this = this;
    
     this.tbar = Ext.create(&#039;Ext.toolbar.Toolbar&#039;, {
-    
-    items: [
-       
-        {
-            xtype       : &#039;checkboxfield&#039;,
-            boxLabel    : &#039;Display only shipments scheduled for future sessions&#039;,
-            checked     : this.filterByDate,
-            listeners : {
-                change : function( cb, newValue, oldValue, eOpts ){
-                    _this.filterByDate = newValue;
-                    _this.load(_this.dewars);
+        items: [
+            {
+                xtype       : &#039;checkboxfield&#039;,
+                boxLabel    : &#039;Display only shipments scheduled for future sessions&#039;,
+                checked     : this.filterByDate,
+                listeners : {
+                    change : function( cb, newValue, oldValue, eOpts ){
+                        _this.filterByDate = newValue;
+                        _this.load(_this.dewars);
+                    }
+                    
                 }
-                
             }
-        }
-    ]
+        ]
     });
 
     this.panel = Ext.create(&#039;Ext.grid.Panel&#039;, {
             title: &#039;Select dewars&#039;,
             store: this.getStore(),
-            cls : &#039;border-grid&#039;,           
+            // cls : &#039;border-grid&#039;,           
             height : this.height, 
+            width : this.width,  
             flex : 0.5, 
             tbar : this.tbar,                 
             margin : 5,
@@ -227,7 +228,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 {
                     text    : &#039;Shipment&#039;,
                     columns : [
-                         { text: &#039;Name&#039;,  dataIndex: &#039;shippingName&#039;, width: 150 },
+                         { text: &#039;Name&#039;,  dataIndex: &#039;shippingName&#039;, flex : 1 },
                          { text: &#039;Status&#039;,  dataIndex: &#039;shippingStatus&#039;, flex: 1 },
                          { text: &#039;Created on&#039;,  dataIndex: &#039;creationDate&#039;, flex: 1,   hidden : true,
                             renderer : function(grid, a, record){
@@ -236,8 +237,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                                 }     
                                 
                             } 
-                        },
-                                                 
+                        },                     
                     ]                                         
                 },
                 {
@@ -256,56 +256,44 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     ]                                         
                 },              
                  {      
-                        text: &#039;#Dewars/#Parcels (#Samples)&#039;,     
+                        text: &#039;#&#039;,     
                         flex: 1,
                         renderer : function(grid, e, record){
                             var stats =  _this.getStatsByDewarId(record.data.shippingId);
-                            return stats.dewars + &quot; / &quot; + stats.containers + &quot; (&quot; +  stats.samples + &quot;)&quot;;
+                            return stats.dewars + &quot; parcels / &quot; + stats.containers + &quot; containers (&quot; +  stats.samples + &quot; samples)&quot;;
                             
                         }
                 },
                 {
                     xtype: &#039;actioncolumn&#039;,
                     flex : 0.3,
-                    items: [
-                               
+                    items: [                               
                                  {
                                     icon: &#039;../images/icon/add.png&#039;,
                                     handler: function (grid, rowIndex, colIndex) {
-                                        
                                             grid.getSelectionModel().select(rowIndex);
-                                            
                                             _this.onSelect.notify(_this.store.getAt(rowIndex).data);
                                     },
                                      isDisabled : function(view, rowIndex, colIndex, item, record) {
-                                            // Returns true if &#039;editable&#039; is false (, null, or undefined)
                                             return record.data.shippingStatus == &quot;processing&quot;;
                                     }
-                                 }
-                                   
-                            
+                                 }                                                               
                     ]
                 },
                   {
                     xtype: &#039;actioncolumn&#039;,
                      flex : 0.3,
-                    items: [
-                              
+                    items: [                              
                                  {
                                     icon: &#039;../images/icon/ic_highlight_remove_black_48dp.png&#039;,
-                                    handler: function (grid, rowIndex, colIndex) {
-                                        
-                                            grid.getSelectionModel().select(rowIndex);
-                                            
+                                    handler: function (grid, rowIndex, colIndex) {                                        
+                                            grid.getSelectionModel().select(rowIndex);                                            
                                             _this.onSelect.notify(_this.store.getAt(rowIndex).data);
                                     },
-                                     isDisabled : function(view, rowIndex, colIndex, item, record) {
-                                            // Returns true if &#039;editable&#039; is false (, null, or undefined)
+                                     isDisabled : function(view, rowIndex, colIndex, item, record) {                                            
                                             return record.data.shippingStatus != &quot;processing&quot;;
                                     }
                                  }
-                                   
-                            
                     ]
                 }
             ],
@@ -320,8 +308,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 }
 	    	},
     });
-    return this.panel;
-    
+    return this.panel;    
 };</textarea>
   </div>
 </div>

@@ -40,6 +40,7 @@ DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
         border: 1,        
         store: this.store,       
         disableSelection: true,
+       
         columns: this.getColumns(),
         viewConfig: {
             enableTextSelection: true,
@@ -94,7 +95,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
                 spaceGroup: autoProc_spaceGroups[i]
             };
         }
-
+        
         data[autoProcIds[i]][scalingStatisticsTypes[i]] = ({
             autoProcId: autoProcIds[i],
             scalingStatisticsType: scalingStatisticsTypes[i],
@@ -113,27 +114,15 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         });
 
     }
-
+    
     /** Convert from map to array */
     var ids = _.map(data, 'autoProcId');
     var result = [];
     for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
-
-    function sortByBest(a, b) {
-        var spaceGroupA = a.spaceGroup.replace(/\s/g, "");
-        var spaceGroupB = b.spaceGroup.replace(/\s/g, "");              
-        return (_.indexOf(ExtISPyB.spaceGroups, spaceGroupA) > _.indexOf(ExtISPyB.spaceGroups, spaceGroupB));
-    }
-
-    var sorted = result.sort(sortByBest).reverse();    
-    /** Add new attribute for ranking order */
-    for ( i = 0; i < sorted.length; i++) {
-        sorted[i]["rank"] = i + 1;
-    }
-
-    return sorted;
+    
+    return new AutoprocessingRanker().rank(result, "spaceGroup");  
 };
 
 
@@ -184,7 +173,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 data.xtal4 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 4);
 
                 /** Image quality indicator **/
-                data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);              
+                data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
                 
                 /** We dont show screen if there are results of autoprocessing */

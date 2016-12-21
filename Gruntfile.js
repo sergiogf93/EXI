@@ -26,12 +26,13 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				 'min/exi.js' 		            : [ "js/dust/**/*js", "js/core/**/*js"],  
+		  
+		 'min/exi.js' 		                : [ "js/dust/**/*js", "js/core/**/*js"],  
                  'min/exi.mx.js' 		        : ["js/mx/**/*js"], 
-                 'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],  
+                 'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],
                  'min/exi.test.js' 		        : ["js/test/**/*js"],               				
-				 'min/bower_components.min.js'  : [ 
-								                    "bower_components/jquery/dist/jquery.min.js",
+		 'min/bower_components.min.js'  : [ 
+						                            "bower_components/jquery/dist/jquery.min.js",
                                                     "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
                                                     "bower_components/dustjs-linkedin/dist/dust-full.min.js",
@@ -48,7 +49,8 @@ module.exports = function(grunt) {
                                                     "bower_components/pathjs-amd/dist/path.min.js",                                                    
                                                     "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
                                                     "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
-                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js"                                                    								  								    								 
+                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
+                                                    " bower_components/three/build/three.min.js"                                                      								  								    								 
                 ]
 			  }
 		  }
@@ -59,8 +61,8 @@ module.exports = function(grunt) {
 			  files : {
 				   'min/exi.min.js' 		: [				 
 				                   		    'min/exi.js', 
-                                            'min/exi.mx.js',
-                                            'min/exi.test.js',
+						                    'min/exi.mx.js',
+						                    'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
 				                   		   ],
                    'min/exi.saxs.min.js' 		: [				 
@@ -68,7 +70,7 @@ module.exports = function(grunt) {
                                             'min/exi.saxs.js',
                                             'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
-				                   		   ],                           
+				                   		   ],
                   'min/lightbox.js' 		: [				 
 				                   		    'bower_components/lightbox2/dist/js/lightbox.js'
 				                   		    
@@ -106,7 +108,7 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js', 'js/viewer/**/*.js']
 	},
     plato: {
                   all : {
@@ -148,6 +150,10 @@ module.exports = function(grunt) {
                             'reports/saxs': ['js/saxs/**/*.js'],                           
                     }
                 },
+                    files: {
+                            'reports/viewer': ['js/viewer/**/*.js'],                           
+                    }
+                },
                 core: {
                     options : {
                     complexity : {
@@ -155,13 +161,13 @@ module.exports = function(grunt) {
                         switchcase : true,
                         forin : true,
                         trycatch : true
-                    }
+                    	}
                     },
                     files: {
                             'reports/core': ['js/core/**/*.js'],                           
                     }
-                }
-    },
+                
+    	},
 	includeSource: {
 	    	options: {
 		      basePath: '',
@@ -212,7 +218,7 @@ module.exports = function(grunt) {
   
   /** TASKS */
   grunt.task.registerTask('doc', ['yuidoc:compile']);
-  grunt.task.registerTask('report', ['plato:prod']);
+  grunt.task.registerTask('report', ['plato:all','plato:saxs','plato:mx']);
   grunt.task.registerTask('default', [ 'dustjs', 'jshint:prod' ,  'concat:prod', 'uglify:prod', 'cssmin:prod', 'yuidoc:compile']);
   grunt.task.registerTask('dev', ['dustjs','includeSource:dev', 'cssmin:prod', 'wiredep']);
   

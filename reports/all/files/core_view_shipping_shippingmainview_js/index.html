@@ -44,11 +44,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
-      <p class="stat">115.15</p>
+      <p class="stat">118.03</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
-      <p class="stat">77</p>
+      <p class="stat">57</p>
     </div>
   </div>
   <div class="row historical">
@@ -62,11 +62,11 @@
   <div class="row">
     <div class="col-md-6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
-      <p class="stat">16.70</p>
+      <p class="stat">15.95</p>
     </div>
     <div class="col-md-6">
       <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
-      <p class="stat">0.51</p>
+      <p class="stat">0.45</p>
     </div>
   </div>
 </div>
@@ -98,59 +98,39 @@
 function ShippingMainView() {
 	MainView.call(this);
 	var _this = this;
-	
-	/**
+
+    /**
 	* 
 	* @property shipmentForm
 	*/
-	this.shipmentForm = new ShipmentForm();
+    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = &quot;#/proposal/shipping/nav?nomain&quot;;
 	});
-	
-	/**
+
+    /**
 	* 
 	* @property parcelGrid
 	*/
-	this.parcelGrid = new ParcelGrid({
-		height : 300
-	});
+	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 200});
+	
 }
 
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingMainView.prototype.getContainer = MainView.prototype.getContainer;
+ShippingMainView.prototype.getPanel = function() {
+	
+    this.panel =  Ext.create(&#039;Ext.panel.Panel&#039;, {
+        layout: {
+            type: &#039;vbox&#039;,
+            align: &#039;center&#039;
+        },
+        cls : &#039;border-grid&#039;,
+        items : [
+                    this.shipmentForm.getPanel(),
+                    this.parcelGrid.getPanel()
+        ]
+	});
 
-ShippingMainView.prototype.getContainer = function() {
-	this.tabPanel =  Ext.createWidget(&#039;tabpanel&#039;,
-			{
-				margin : 10,
-				defaults : {
-						anchor : &#039;100%&#039;
-				},
-				items : [
-				     		{
-							tabConfig : {
-								title : &#039;Delivery Details&#039;
-							},
-							items : [ 
-							         	this.shipmentForm.getPanel()
-							]
-						},
-						{
-							tabConfig : {
-								id : this.id + &quot;grid&quot;,
-								title : &#039;Parcels&#039;,
-								icon : &#039;../images/icon/shipping.png&#039;
-							},
-							items : [ 
-							         	this.parcelGrid.getPanel()
-							]
-						}
-					]
-			});
-
-	return this.tabPanel;
-
+    return this.panel;
 };
 
 

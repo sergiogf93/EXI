@@ -165,11 +165,11 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     ]                                         
                 },              
                  {      
-                        text: '#Dewars/#Parcels (#Samples)',     
+                        text: '#',     
                         flex: 1,
                         renderer : function(grid, e, record){
                             var stats =  _this.getStatsByDewarId(record.data.shippingId);
-                            return stats.dewars + " / " + stats.containers + " (" +  stats.samples + ")";
+                            return stats.dewars + " parcels / " + stats.containers + " containers (" +  stats.samples + " samples)";
                             
                         }
                 },
