@@ -341,7 +341,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var _this = this;
     
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
-    
+    debugger
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/

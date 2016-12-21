@@ -75,7 +75,7 @@ QueueGrid.prototype.getImage = function(subtractionId, category) {
 QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
     
     var _this = this;
-	
+	debugger
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/

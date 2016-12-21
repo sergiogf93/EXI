@@ -88,7 +88,8 @@ PrimaryDataMainView.prototype.getPanel = function() {
 						items : [ {
 							xtype : 'container',
 							autoScroll : true,
-							layout : 'fit',
+							height : 700,
+							// layout : 'fit',
 							padding : 20,
 							style : {
 								borderColor : 'gray',
