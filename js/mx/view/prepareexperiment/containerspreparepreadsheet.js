@@ -335,15 +335,18 @@ ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (co
         var record = recordsByContainerId[i];
         if (record.get('containerId') == containerId) {
             var beamlineName = record.get('beamlineName');
+            if (beamlineName) {
+                var onSuccess = function(sender, containers) {
+                    _this.loadProcessingDewars();
+                };
+                var onError = function(sender, error) {        
+                    EXI.setError("Ops, there was an error");
+                };
 
-            var onSuccess = function(sender, containers) {
-                _this.loadProcessingDewars();
-            };
-            var onError = function(sender, error) {        
-                EXI.setError("Ops, there was an error");
-            };
-
-            EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
+                EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
+            } else {
+                $.notify("The beamline is not defined", "error");
+            }
             return
         }
     }
