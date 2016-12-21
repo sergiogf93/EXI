@@ -133,7 +133,7 @@
                                         <tr>
                                             <td>
                                                 {?dataReduction}
-                                                    <a href="#/saxs/datacollection/dataCollectionId/{.MeasurementToDataCollection_dataCollectionId}/primaryviewer">
+                                                    <a onclick="window.open('#/saxs/datacollection/dataCollectionId/{.MeasurementToDataCollection_dataCollectionId}/primaryviewer','_blank');window.close();return false">
                                                     <button class="btn-green" type="submit" style="font-size:9px;width:90px; height:15px">
                                                     <span class="glyphicon glyphicon-ok" style="color:black;"></span>
                                                 {:else}

@@ -229,13 +229,11 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 
-	Path.map("#/saxs/datacollection/:key/:value/primaryviewer").to(function() {
-		var onSuccess = function(sender, data) {
-			var primaryMainView = new PrimaryDataMainView();
-			EXI.addMainPanel(primaryMainView);
-			primaryMainView.load(data);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
+	Path.map("#/saxs/datacollection/dataCollectionId/:dataCollectionId/primaryviewer").to(function() {		
+			var primaryMainView = new PrimaryDataMainView();    
+            EXI.addMainPanel(primaryMainView);        		            
+			primaryMainView.load(this.params['dataCollectionId']);		
+		
 	}).enter(this.setPageBackground);
 	
 	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
@@ -2128,6 +2126,7 @@ function PrimaryDataMainView() {
 	
 	this.frameSelectorGrid = new FrameSelectorGrid();
 	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
+        debugger
 		_this.plotter.load(selections);
 	});
 	
@@ -2145,7 +2144,7 @@ function PrimaryDataMainView() {
 	
 }
 
-// PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
+
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
@@ -2184,17 +2183,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 
 };
 
-// PrimaryDataMainView.prototype.getPanel = function() {
-// 	this.panel = Ext.create('Ext.panel.Panel', {
-// 	    margin : 10,
-// 		layout : 'fit',
-// 		autoScroll : true,
-// 		// tbar : this.getToolBar(),
-// 	    items: [this.grid.getPanel(), this.getSlavePanel()]
-// 	});
 
-// 	return this.panel;
-// };
 
 PrimaryDataMainView.prototype.getPanel = function() {
 	return Ext.createWidget('tabpanel',
@@ -2263,7 +2252,7 @@ PrimaryDataMainView.prototype.getPanel = function() {
 			});
 };
 
-PrimaryDataMainView.prototype.load = function(selected) {
+PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
 	
 
@@ -2271,28 +2260,19 @@ PrimaryDataMainView.prototype.load = function(selected) {
 		_this.grid.load(dataCollections);
 	}
 
-	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(selected[0].dataCollectionId);
+	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
     
     
-	 var onSuccess = function(sender, data) {
-	 	//_this.grid.load(data);
-	 	//_this.grid.panel.setLoading(false);	 	
-	 	_this.frameSelectorGrid.load(data);
-			 	
+	 var onSuccess = function(sender, data) { 	
+	 	_this.frameSelectorGrid.load(data);			 	
 	 	if (data[0].substraction3VOs[0].subtractionId){             
 	 		var onSuccessSubtraction = function(sender, subtractions) {                 
 	 			_this.abinitioForm.load(subtractions);
 	 		};			
 	 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
 		}
-	 };
-
-	 var dataCollectionIds = [];
-	 for (var i = 0; i < selected.length; i++) {
-	 	dataCollectionIds.push(selected[i].dataCollectionId);
-	 }
-    
-	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
+	 };	    
+	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
 	
 	
 };
