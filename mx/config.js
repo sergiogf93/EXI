@@ -1,6 +1,6 @@
 var ExtISPyB ={
    version : '0.9.8',
-   release_date : '2016/12/08',
+   release_date : '2016/12/22',
    
    /**
     *   P1211 is a synonym for P21
@@ -105,7 +105,8 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      },    
+      }
+	/*,    
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
@@ -155,7 +156,7 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      }
+      }*/
    ]
 };
 
