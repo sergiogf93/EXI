@@ -173,7 +173,9 @@
                         
                          <div class="col-xs-12 col-md-2">
                            <div id='sample_puck_layout_{.DataCollection_dataCollectionId}'>
-                           </div>                          
+                           </div>
+                           <div id='sample_puck_legend_{.DataCollection_dataCollectionId}' style="height:60px">
+                           </div>                     
                         </div>
                         
                        

@@ -1,8 +1,14 @@
-function UploaderWidget(url){
+
+function UploaderWidget(args){
 	this.id = BUI.id();
 
-	this.url = url;
-	if (url == null){
+	this.url = null;
+	if (args) {
+		if (args.url) {
+			this.url = args.url;
+		}
+	}
+	if (this.url == null){
 		 Ext.Msg.alert('Error', 'Please, set an url');
 	}
 	
@@ -18,40 +24,44 @@ UploaderWidget.prototype.getFileName = function(){
 UploaderWidget.prototype.getForm = function(){
 	var _this = this;
 	return Ext.create('Ext.form.Panel', {
-	    width: 400,
+		layout: {
+			type: 'hbox',
+			align: 'stretch'
+		},
 	    bodyPadding: 20,
 	    border : 0,
 	    frame: true,
-	    items: [{
-	        xtype: 'filefield',
-	        name: 'file',
-	        id : this.id,
-	        fieldLabel: 'File',
-	        labelWidth: 50,
-	        msgTarget: 'side',
-	        allowBlank: false,
-	        anchor: '100%',
-	        buttonText: 'Browse...'
-	    },
-	    {
-			xtype : 'hiddenfield',
-			id : _this.id + 'fileName',
-			name : 'fileName',
-			value : '' }
-	    ],
-
-	    buttons: [{
+	    items: [
+			{
+				xtype: 'filefield',
+				name: 'file',
+				width: 400,
+				id : this.id,
+				fieldLabel: 'File',
+				labelWidth: 30,
+				msgTarget: 'side',
+				allowBlank: false,
+				buttonText: 'Browse...'
+			},
+			// {
+			// 	xtype : 'hiddenfield',
+			// 	id : _this.id + 'fileName',
+			// 	name : 'fileName',
+			// 	value : '' 
+			// },
+			{
+			xtype : 'button',
+			margin: '0 0 0 2',
 	        text: 'Upload',
 	        handler: function() {
 	            var form = this.up('form').getForm();
 	            if(form.isValid()){
-	            	Ext.getCmp(_this.id + "fileName").setValue(_this.getFileName());
+	            	// Ext.getCmp(_this.id + "fileName").setValue(_this.getFileName());
 	                form.submit({
 	                    url: _this.url,
 	                    waitMsg: 'Uploading your file...',
 	                    success: function(fp, o) {
 //	                        Ext.Msg.alert('Success', 'Your file has been uploaded.');
-	                    	
 	                    	_this.window.close();
 	                    	_this.onUploaded.notify();
 	                    },
@@ -62,7 +72,8 @@ UploaderWidget.prototype.getForm = function(){
 	                    } });
 	            }
 	        }
-	    }]
+	    }
+	    ],
 	});
 	
 	
@@ -81,6 +92,4 @@ UploaderWidget.prototype.show = function(){
 	    items: this.getForm()
 	});
 	this.window.show();
-	
-	
 };

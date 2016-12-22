@@ -14,6 +14,7 @@ function SampleChangerWidget (args) {
 	this.name = '';
 	this.onPuckSelected = new Event(this);
 	this.sampleChangerCapacity = 0; //This is set in each sample changer type
+	this.beamlineName = "";
 
     this.data = {};
 	if (args) {
@@ -23,16 +24,23 @@ function SampleChangerWidget (args) {
 		if (args.isLoading != null){
 			this.isLoading = args.isLoading;
 		}
+		if (args.beamlineName){
+			this.beamlineName = args.beamlineName;
+		}
 	}
 };
 
 /**
 * It blinks the sample changer by fading IN and OUT
 *
-* @method blink` 
+* @method blink
 */
 SampleChangerWidget.prototype.blink = function () {
-    $('#' + this.id).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+    $('#' + this.id).fadeIn().fadeOut().fadeIn();
+	var allPucks = this.getAllPucks();
+	for (var i = 0 ; i < allPucks.length ; i++) {
+		allPucks[i].blink();
+	}
 }
 
 /**
