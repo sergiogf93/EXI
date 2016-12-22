@@ -53,9 +53,30 @@ var ExtISPyB ={
          name:'ESRF',
          url:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
+	 plateGroup : [
+			{
+				type: 'Deep Well',
+				rowCount : 8,
+				columnCount : 12
+			},
+			{
+				type: '4 x ( 8 + 3 ) Block',
+				rowCount : 4,
+				columnCount : 11
+			},
+			{
+				type: '96 Well plate',
+				rowCount : 8,
+				columnCount : 12
+			}
+
+	],
          beamlines:{
             SAXS:[
-               'BM29'
+		 {
+		   name : 'BM29',
+		   sampleChangerType : ''
+   	       }
             ],
             MX:[ ]
          }
@@ -66,7 +87,10 @@ var ExtISPyB ={
          exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
          beamlines:{
             SAXS:[
-               'BM29'
+               {
+		   name : 'BM29',
+		   sampleChangerType : ''
+   	       }
             ],
             MX:[
                
