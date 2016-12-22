@@ -64,12 +64,14 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },{
-            text: 'Online Data Analysis (v2)',            
-            handler: function(){
-                onMenuClicked(_this.queueGridVersion2);
-            }
-        },{
+        },
+		// {
+        //     text: 'Online Data Analysis (v2)',            
+        //     handler: function(){
+        //         onMenuClicked(_this.queueGridVersion2);
+        //     }
+        // }
+		,{
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);

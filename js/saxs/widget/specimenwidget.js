@@ -145,8 +145,8 @@ function SpecimenWidget(args){
 /**
  * Return vbox or hbox depending on the slot positions of the plates
  */
-SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
-	var dimensions = this.samplePlateGroupWidget.getDimensions(experiment.getSamplePlates());
+SpecimenWidget.prototype.getContainerLayoutConfiguration = function(dataCollections){
+	// var dimensions = this.samplePlateGroupWidget.getDimensions(experiment.getSamplePlates());
 //	if (dimensions.maxSlotPositionRow < dimensions.maxSlotPositionColumn){
 //		return {
 //					layout 					: "vbox",
@@ -167,13 +167,13 @@ SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
 };
 
 
-SpecimenWidget.prototype.load = function(experiment){
-	this.experiment = experiment;
+SpecimenWidget.prototype.load = function(dataCollections){
+	this.dataCollections = _.uniqBy(dataCollections,"Specimen_specimenId");
 	
 	/** Removing all components **/
 	this.panel.removeAll();
-	
-	var layoutConfiguration = this.getContainerLayoutConfiguration(experiment);
+
+	var layoutConfiguration = this.getContainerLayoutConfiguration(dataCollections);
 
 	/** Setting new width and height for layout vbox and hbox **/
 	this.specimenGrid.width = layoutConfiguration.specimenGridWidth;
@@ -207,8 +207,8 @@ SpecimenWidget.prototype.load = function(experiment){
    	this.panel.insert(container);
    	
 	/** Load data **/
-	this.specimenGrid.refresh(experiment);
-	this.samplePlateGroupWidget.refresh(experiment);
+	this.specimenGrid.refresh(this.dataCollections);
+	this.samplePlateGroupWidget.refresh(this.dataCollections);
 	
 	
 };

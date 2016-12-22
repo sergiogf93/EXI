@@ -108,6 +108,7 @@ SAXSExiController.prototype.routeExperiment = function() {
 			mainView.panel.setLoading(false);				
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(this.params['experimentId']);
+		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(this.params['experimentId']);
 
 	}).enter(this.setPageBackground);
     

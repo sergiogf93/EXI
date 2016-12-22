@@ -104,3 +104,18 @@ dust.helpers.framesColor = function(chunk, context, bodies, params) {
     return chunk;
     
 };
+
+dust.helpers.fileName = function (chunk, context, bodies, params) {
+    var filePath = context.current()["filePath"];
+    if (filePath) {
+        try{
+            var withExtension = filePath.substring(filePath.lastIndexOf('/')+1);
+            chunk.write(withExtension.substring(0,withExtension.indexOf(".")));
+        }
+        catch(e){
+            /** There was an error, we leave same value */
+            chunk.write(context.current()[params.key]);    
+        }
+    }
+    return chunk;
+}

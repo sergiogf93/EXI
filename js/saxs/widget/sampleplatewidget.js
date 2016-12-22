@@ -89,35 +89,36 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 	}
 };
 
-SamplePlateWidget.prototype.load = function (experiment) {
-	for (var i = 0 ; i < experiment.getSamples().length ; i++) {
-		var specimen = experiment.getSamples()[i];
-		if (specimen.sampleplateposition3VO.samplePlateId == this.samplePlate.samplePlateId) {
-			var nodeId = this.id + "-node-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber;
-			var color = experiment.getSpecimenColorByBufferId(specimen.specimenId);
-			if (specimen.macromolecule3VO != null) {
-				color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
-			}
+SamplePlateWidget.prototype.load = function (dataCollections) {
+	for (var i = 0 ; i < dataCollections.length ; i++) {
+		var specimen = dataCollections[i];
+		if (specimen.SamplePlate_name == this.samplePlate.type) {
+			var nodeId = this.id + "-node-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
+			// var color = experiment.getSpecimenColorByBufferId(specimen.Specimen_specimenId);
+			// if (specimen.Macromolecule_macromoleculeId != null) {
+			// 	color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
+			// }
+			var color = "blue";
 			$("#" + nodeId).attr("fill",color);
-			if (specimen.measurements && specimen.measurements.length > 0) {
-				if (specimen.measurements[0].run3VO.runId != null) {
-					$("#" + this.id + "-square-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber).attr("visibility","visible");
+			if (specimen.Measurement_measurementId) {
+				if (specimen.Run_runId != null) {
+					$("#" + this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber).attr("visibility","visible");
 				}
 			}
 		}
 	}
 };
 
-SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
+SamplePlateWidget.prototype.draw = function(dataCollections, samplePlate, targetId, windowContainerId) {
 	this.onVertexUp = new Event(this);
 	this.samplePlate = samplePlate;
-	this.experiment = experiment;
+	this.dataCollections = dataCollections;
 
 	this.targetId = targetId;
 	$("#" + this.targetId).append( "<div id='" + this.targetId + "-div-svg" + "'></div>" );
 
-	var rows = this.samplePlate.platetype3VO.rowCount;
-	var columns = this.samplePlate.platetype3VO.columnCount;
+	var rows = this.samplePlate.rowCount;
+	var columns = this.samplePlate.columnCount;
 
 	var formatter = {
 			// type : "LineEdgeNetworkFormatter",
@@ -156,7 +157,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 	for ( var i = 1; i <= rows; i++) {
 		for ( var j = 1; j <= columns; j++) {
 			var factor = 0.8;
-			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
+			if (this.samplePlate.type == " 4 x ( 8 + 3 ) Block") {
 				if (j >= 9) {
 					factor = 1.0;
 				} else {
@@ -214,7 +215,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 		this.attachClickListeners();
 	}
 
-	this.load(this.experiment);
+	this.load(this.dataCollections);
 
 };
 
@@ -249,104 +250,9 @@ SamplePlateWidget.prototype.clearSelection = function() {
 };
 
 SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var squareId = this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+	var squareId = this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
 	$("#" + squareId).addClass("plate-square-selected");
 };
-
-// SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
-// 	var _this = this;
-// 	debugger
-// 	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
-// 	this.windowContainerId = windowContainerId;
-// 	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
-// 		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
-// 		return;
-// 	}
-
-// 	this.onVertexUp = new Event(this);
-// 	this.samplePlate = samplePlate;
-// 	this.experiment = experiment;
-
-// 	this.targetId = targetId;
-
-// 	var rows = this.samplePlate.platetype3VO.rowCount;
-// 	var columns = this.samplePlate.platetype3VO.columnCount;
-
-// 	this.network = new NetworkWidget({
-// 		targetId : targetId
-// 	});
-// 	var dataset = new GraphDataset();
-// 	var formatter = new NetworkDataSetFormatter({
-// 		defaultFormat : {
-// 			type : "LineEdgeNetworkFormatter",
-// 			'fill-opacity' : 1,
-// 			fill : this.wellColor,
-// 			'stroke-width' : this.strokeWidth,
-// 			'stroke-opacity' : 1,
-           
-// 			stroke : "#000000",
-// 			size : this.nodeSize,
-// 			title : {
-// 				fontSize : this.fontSize,
-// 				fill : "#000000"
-// 			}
-// 		}
-// 	}, null, {
-// 		labeled : false,
-// 		height : this.height,
-// 		width : this.width,
-       
-// 		right : this.width,
-// 		backgroundColor : this.backgroundColor,
-// 		balanceNodes : false,
-// 		nodesMaxSize : 12,
-// 		nodesMinSize : 2
-// 	});
-
-// 	formatter.dataBind(dataset);
-// 	var layout = new LayoutDataset();
-// 	layout.dataBind(dataset);
-// 	this.network.draw(dataset, formatter, layout);
-
-// 	for ( var i = 1; i <= rows; i++) {
-// 		for ( var j = 1; j <= columns; j++) {
-// 			this.network.getDataset().addNode("", {
-// 				row : i,
-// 				column : j
-// 			});
-
-// 			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
-// 				if (j < 9) {
-// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
-// 				} else {
-// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
-// 				}
-// 			}
-
-// 		}
-// 	}
-
-// 	/** EVENT WHEN USER CLICK ON A WELL **/
-// 	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
-// 		_this.onVertexUp.notify({
-// 			samplePlate : _this.samplePlate,
-// 			row : _this.network.getDataset().getVertexById(nodeId).args.row,
-// 			column : _this.network.getDataset().getVertexById(nodeId).args.column
-
-// 		});
-// 	});
-
-// 	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
-// 	});
-
-// 	this.relayout(this.network, rows, columns);
-// 	this.fillSimulator(this.experiment.getSamples());
-
-// 	if (this.showBorderLabels) {
-// 		this.drawBorders();
-// 	}
-
-// };
 
 SamplePlateWidget.prototype.drawBorders = function() {
 	var xArray = {};
@@ -391,40 +297,10 @@ SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
 	var id = id + "_marked";
 	if (this.markedSpecimenId[id] == null) {
 		SVG.drawRectangle(x - 10, y - 10, 22, 22, svg, [ [ "id", id ], [ "fill", "gray" ],["stroke-opacity", "0.5"], [ "fill-opacity", "0.2" ], [ 'stroke', 'black' ] ]);
-//		$('#' + id).qtip({
-//			content : {
-//				text : _this._getToolTipContent(specimen)
-//			},
-//			position : {
-//				adjust : {
-//					x : 0,
-//					y : 20
-//				}
-//			},
-//			style : {
-//				width : true,
-//				classes : 'ui-tooltip-shadow'
-//			}
-//		});
 		this.markedSpecimenId[id] = true;
 	}
 };
 
-// SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-// 	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
-// 	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
-// 	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
-// 	var svg = this.network.graphCanvas._svg;
-// 	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
-// };
-
-// SamplePlateWidget.prototype.clearSelection = function() {
-// 	var svg = this.network.graphCanvas._svg;
-// 	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
-// 		svg.removeChild(this.selectedSVGNodes[i]);
-// 	}
-// 	this.selectedSVGNodes = [];
-// };
 
 SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	var vertices = this.network.getDataset().getVertices();
@@ -435,20 +311,6 @@ SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	}
 	return null;
 };
-
-//SamplePlateWidget.prototype.getOpacity = function(specimen) {
-//	var concentrations = this.experiment.getConcentrationsBysample(specimen);
-//	var normalized = Normalizer.normalizeArray(concentrations);
-//	for ( var i = 0; i < concentrations.length; i++) {
-//		if (concentrations[i] == specimen.concentration) {
-//			if (normalized[i] == 0)
-//				return 0.2;
-//			return 0.2 + normalized[i] * 0.6;
-//		}
-//	}
-//	return 1;
-//
-//};
 
 SamplePlateWidget.prototype.showLabel = function(row, column, specimen) {
 	if (specimen != null) {
@@ -566,32 +428,6 @@ SamplePlateWidget.prototype.fillWell = function(row, column, specimen) {
 
 		if (this.showTooltip) {
 			var id = this.network.getGraphCanvas().getSVGNodeId(vertex.id);
-//			if (_this.windowContainerId != null) {
-//				$('#' + id).qtip({
-//					content : {
-//						text : _this._getToolTipContent(specimen)
-//					},
-//					position : {
-//						adjust : {
-//							x : 0,
-//							y : 20
-//						}
-//					}
-//				});
-//			} else {
-//				$('#' + id).qtip({
-//					content : {
-//						text : _this._getToolTipContent(specimen)
-//					},
-//					position : {
-//						adjust : {
-//							x : 0,
-//							y : 20
-//						}
-//					}
-//				});
-//
-//			}
 		}
 	}
 };

@@ -58,7 +58,7 @@ OverviewQueueGrid.prototype.render = function(data) {
             last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
             last.density = this.getImage(last.Subtraction_subtractionId,"density");
             last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
-            if (last.Run_creationDate) {
+            if (last.Run_runId) {
                 last.dataReduction = true;
             }
         }
@@ -71,7 +71,10 @@ OverviewQueueGrid.prototype.render = function(data) {
 	});
 	
 	$('#' + this.id).html(html);
-	this.attachCallBackAfterRender(document.getElementById("xx"));
+
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+	
+	this.attachCallBackAfterRender(nodeWithScroll);
 };
 
 
