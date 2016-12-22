@@ -32,7 +32,8 @@ module.exports = function(grunt) {
                  'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],
                  'min/exi.test.js' 		        : ["js/test/**/*js"],               				
 		 'min/bower_components.min.js'  : [ 
-						                            "bower_components/jquery/dist/jquery.min.js",
+						                            
+                                                    "bower_components/jquery/dist/jquery.min.js",
                                                     "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
                                                     "bower_components/dustjs-linkedin/dist/dust-full.min.js",
@@ -50,7 +51,8 @@ module.exports = function(grunt) {
                                                     "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
                                                     "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
                                                     "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
-                                                    " bower_components/three/build/three.min.js"                                                      								  								    								 
+                                                    "bower_components/three/build/three.min.js",
+                                                    "bower_components/notifyjs/dist/notify.js"                                                      								  								    								 
                 ]
 			  }
 		  }
