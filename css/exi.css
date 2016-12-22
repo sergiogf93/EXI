@@ -59,6 +59,11 @@
 
 /** SAXS queue grid **/
 
+.plate-square {
+	stroke : black;
+	stroke-width : 1
+}
+
 .blue-bottom-border-row {
 	border-bottom: 2px solid #3892d3 !important;
 }
