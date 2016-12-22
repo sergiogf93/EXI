@@ -172,7 +172,7 @@ SpecimenWidget.prototype.load = function(experiment){
 	
 	/** Removing all components **/
 	this.panel.removeAll();
-	
+	debugger
 	var layoutConfiguration = this.getContainerLayoutConfiguration(experiment);
 
 	/** Setting new width and height for layout vbox and hbox **/
