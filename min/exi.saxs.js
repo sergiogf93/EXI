@@ -108,6 +108,7 @@ SAXSExiController.prototype.routeExperiment = function() {
 			mainView.panel.setLoading(false);				
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(this.params['experimentId']);
+		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(this.params['experimentId']);
 
 	}).enter(this.setPageBackground);
     
@@ -1311,12 +1312,14 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },{
-            text: 'Online Data Analysis (v2)',            
-            handler: function(){
-                onMenuClicked(_this.queueGridVersion2);
-            }
-        },{
+        },
+		// {
+        //     text: 'Online Data Analysis (v2)',            
+        //     handler: function(){
+        //         onMenuClicked(_this.queueGridVersion2);
+        //     }
+        // }
+		,{
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);
@@ -2129,6 +2132,11 @@ function PrimaryDataMainView() {
         debugger
 		_this.plotter.load(selections);
 	});
+
+	this.framesGrid = new FramesGrid();
+	this.framesGrid.onSelectionChange.attach(function(sender, selections){
+		_this.plotter.load(selections);
+	});
 	
 	/** Curve plotter * */
 	this.plotter = new CurvePlotter({
@@ -2156,7 +2164,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		defaults : {
 			height : 600 
 		},
-		items : [ 
+		items : [
 		         {
 		        	 xtype : 'panel',
 		        	 layout: {
@@ -2165,22 +2173,21 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
-		        	    flex : 0.3,
+		        	    flex : 0.1,
 		        		border : 1,
 		        		style : {
 		        			borderColor : '#000000',
 		        			borderStyle : 'solid',
 		        			borderWidth : '1px' },
 		        	 items : [
-		        	          this.frameSelectorGrid.getPanel()
-		        	         
+		        	        //   this.frameSelectorGrid.getPanel()
+		        	         this.framesGrid.getPanel()
 		        	          ]
 		         },
 		         this.plotter.getPanel()
 		        
 		    ]
 	};
-
 };
 
 
@@ -2199,7 +2206,8 @@ PrimaryDataMainView.prototype.getPanel = function() {
 						items : [ {
 							xtype : 'container',
 							autoScroll : true,
-							layout : 'fit',
+							height : 700,
+							// layout : 'fit',
 							padding : 20,
 							style : {
 								borderColor : 'gray',
@@ -2228,7 +2236,6 @@ PrimaryDataMainView.prototype.getPanel = function() {
 							xtype : 'container',
 							layout : 'fit',
 							autoScroll : true,
-							height : 850,
 							padding : 20,
 							style : {
 								borderColor : 'gray',
@@ -2258,21 +2265,79 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 
 	var onSuccessA = function (sender, dataCollections) {        
 		_this.grid.load(dataCollections);
-	}
+		console.log(dataCollections);
+		
 
+		var onSuccessFrames = function (sender, averages){
+			var allFrames = _.map(_.flatten(_.map(_.map(JSON.parse(averages), 'framelist3VO'), 'frametolist3VOs')), 'frame3VO');
+			/** Retrieve subtraction */
+
+			 var onSuccessSubtractions = function(sender, data) {				 				 
+				 if (data){
+					 if (data[0].substraction3VOs){
+						 var subtraction = data[0].substraction3VOs[0];						 
+						 var frameFromSampleAveraged = _.map(subtraction.sampleOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						 var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						
+						/** Identify discarded frames */
+						for (var frameId in allFrames){
+							var frame = allFrames[frameId];
+							if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
+								frame.discarded = false;
+							}
+							else{
+								frame.discarded = true;								
+							}
+							frame.type = 'Frame';
+						}
+						allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
+						allFrames.unshift({
+							filePath : subtraction.substractedFilePath,
+							frameId : subtraction.subtractionId,
+							type : 'Subtraction'
+						});
+						allFrames.unshift({
+							filePath : subtraction.bufferAverageFilePath,
+							frameId : subtraction.subtractionId,
+							type : 'BufferAverage'
+						});
+						allFrames.unshift({
+							filePath : subtraction.sampleAverageFilePath,
+							frameId : subtraction.subtractionId,
+							type : 'SampleAverage'
+						});
+						_this.framesGrid.load(allFrames);
+						// _this.frameSelectorGrid.load(data);	
+						if (subtraction.subtractionId){
+							var onSuccessSubtraction = function(sender, subtractions) {                 
+								_this.abinitioForm.load(subtractions);
+							};			
+							EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
+						}
+					 }
+				 }
+			 };
+
+ 			EXI.getDataAdapter({onSuccess : onSuccessSubtractions}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
+		}
+		
+		EXI.getDataAdapter({onSuccess : onSuccessFrames}).saxs.frame.getFramesByAverageId(_.map(dataCollections, 'Merge_mergeId'));
+
+	}
 	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
     
     
-	 var onSuccess = function(sender, data) { 	
-	 	_this.frameSelectorGrid.load(data);			 	
-	 	if (data[0].substraction3VOs[0].subtractionId){             
-	 		var onSuccessSubtraction = function(sender, subtractions) {                 
-	 			_this.abinitioForm.load(subtractions);
-	 		};			
-	 		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
-		}
-	 };	    
-	 EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
+	//  var onSuccess = function(sender, data) { 	
+	//  	// _this.frameSelectorGrid.load(data);	
+	// 	// _this.framesGrid.load(data);		 	
+	//  	if (data[0].substraction3VOs[0].subtractionId){             
+	//  		var onSuccessSubtraction = function(sender, subtractions) {                 
+	//  			_this.abinitioForm.load(subtractions);
+	//  		};			
+	//  		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
+	// 	}
+	//  };	    
+	
 	
 	
 };
@@ -2280,7 +2345,7 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 
 
 
-function ShippingMainView() {
+function ShipmentPreparationMainView() {
 	
 	MainView.call(this);
 	
@@ -2305,10 +2370,10 @@ function ShippingMainView() {
 	});
 }
 
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
+ShipmentPreparationMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
-ShippingMainView.prototype.getContainer = function() {
+ShipmentPreparationMainView.prototype.getContainer = function() {
 	this.tabPanel =  Ext.createWidget('tabpanel',
 			{
 				margin : 10,
@@ -2342,7 +2407,7 @@ ShippingMainView.prototype.getContainer = function() {
 };
 
 
-ShippingMainView.prototype.load = function(shippingId) {
+ShipmentPreparationMainView.prototype.load = function(shippingId) {
 	this.shippingId = shippingId;
 	
 	if (shippingId == null){
@@ -2936,7 +3001,6 @@ QueueGrid.prototype.getImage = function(subtractionId, category) {
 QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
     
     var _this = this;
-	
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/
@@ -2950,6 +3014,7 @@ QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
     };
        
     var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
+	var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
 
 };
 
@@ -6400,6 +6465,125 @@ FrameSelectorGrid.prototype.getPanel = function() {
 	return this.treePanel;
 };
 
+function FramesGrid (args) {
+    this.id = BUI.id();
+    this.selectedFrames = [];
+
+    this.onSelectionChange = new Event(this);
+}
+
+FramesGrid.prototype.getPanel = function () {
+    return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : true
+	}
+};
+
+FramesGrid.prototype.load = function (frames) {
+    if (frames) {
+        this.frames = frames;
+        this.frames.id = this.id;
+
+        var html = "";
+        dust.render("frames.grid.template",frames,function (err,out){
+            html += out;
+        });
+
+        $("#" + this.id).html(html);
+
+        this.setClickListeners();
+    }
+};
+
+FramesGrid.prototype.setClickListeners = function () {
+    var _this = this;
+    $('#' + this.id + '-frames-table').unbind('click').on('click', '.frame-cell-element', function(event) {
+        var fileName = event.target.id;
+        if (event.shiftKey && _this.selectedFrames.length > 0){
+            var last = _this.getFileName(_this.selectedFrames[_this.selectedFrames.length-1].filePath);
+            if (last != fileName) {
+                var lastIndex = _this.frames.indexOf(_this.getFrameByFileName(last));
+                var currentIndex = _this.frames.indexOf(_this.getFrameByFileName(fileName));
+                var begin = Math.min(lastIndex, currentIndex);
+                var end = Math.max(lastIndex, currentIndex);
+                _this.deselectAll();
+                for (var i = begin ; i <= end ; i++) {
+                    _this.select(_this.getFileName(_this.frames[i].filePath));
+                }
+            }
+        } else {
+            if (event.ctrlKey) {
+                if (_this.selectedFrames.indexOf(_this.getFrameByFileName(fileName)) >= 0) {
+                    _this.deselect(fileName);
+                } else {
+                    _this.select(fileName);
+                }
+            } else {
+                if (_this.selectedFrames.length == 1 && _this.getFileName(_this.selectedFrames[0].filePath) == fileName) {
+                    _this.deselect(fileName);
+                } else {
+                    _this.deselectAll();
+                    _this.select(fileName);
+                }
+            }
+        }
+        _this.onSelectionChange.notify(_this.parseSelected());
+    });
+}
+
+FramesGrid.prototype.select = function (fileName) {
+    this.selectedFrames.push(this.getFrameByFileName(fileName));
+    $("#" + fileName).addClass('x-grid-item-selected');
+}
+
+FramesGrid.prototype.deselect = function (fileName) {
+    var _this = this;
+    _.remove(this.selectedFrames,function(o) {return _this.getFileName(o.filePath) == fileName});
+    $("#" + fileName).removeClass('x-grid-item-selected');
+}
+
+FramesGrid.prototype.deselectAll = function () {
+    this.selectedFrames = [];
+    $(".frame-cell-element").removeClass("x-grid-item-selected");
+}
+
+FramesGrid.prototype.getFileName = function (filePath) {
+    var withExtension = filePath.substring(filePath.lastIndexOf('/')+1);
+    return withExtension.substring(0,withExtension.indexOf("."));
+}
+
+FramesGrid.prototype.getFrameByFileName = function (fileName) {
+    var _this = this;
+    return _.filter(this.frames,function (o) {return _this.getFileName(o.filePath) == fileName})[0];
+};
+
+FramesGrid.prototype.parseSelected = function () {
+    var parsed = {
+                    average         : [],
+                    bufferaverage   : [],
+                    frame           : [],
+                    sampleaverage   : [],
+                    subtracted      : []
+                };
+    for (var i = 0 ; i < this.selectedFrames.length ; i++) {
+        var frame = this.selectedFrames[i];
+        switch (frame.type) {
+            case 'Frame':
+                parsed.frame.push(frame.frameId);
+                break;
+            case 'Subtraction':
+                parsed.subtracted.push(frame.frameId);
+                break;
+            case 'BufferAverage':
+                parsed.bufferaverage.push(frame.frameId);
+                break;
+            case 'SampleAverage':
+                parsed.sampleaverage.push(frame.frameId);
+                break;
+        }
+    }
+    return parsed;
+}
 /**
  * Class for managing wizards
  * 
@@ -8471,67 +8655,67 @@ MeasurementGrid.prototype.getPanel = function(){
 	}
 };
 
-MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
-	var data = [];
+// MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
+// 	var data = [];
 	
-	for (var i = 0; i < measurements.length; i++) {
-		var measurement = measurements[i];
-		var specimen = experiments.getSampleById(measurement.specimenId);
-		var buffer = EXI.proposalManager.getBufferById(specimen.bufferId);
-		measurement.buffer_acronym = buffer.acronym;
-		measurement.bufferId = buffer.bufferId;
-		measurement.volume = specimen.volume;
-		if (specimen.macromolecule3VO != null) {
-			measurement.acronym = specimen.macromolecule3VO.acronym;
-			measurement.macromoleculeId = specimen.macromolecule3VO.macromoleculeId;
-		}
-		measurement.concentration = specimen.concentration;
-		if (measurement.run3VO != null) {
-			measurement.energy = measurement.run3VO.energy;
-			measurement.expExposureTemperature = measurement.run3VO.exposureTemperature;
-			measurement.storageTemperature = measurement.run3VO.storageTemperature;
-			measurement.timePerFrame = measurement.run3VO.timePerFrame;
-			measurement.radiationAbsolute = measurement.run3VO.radiationAbsolute;
-			measurement.radiationRelative = measurement.run3VO.radiationRelative;
-			measurement.status = "DONE";
+// 	for (var i = 0; i < measurements.length; i++) {
+// 		var measurement = measurements[i];
+// 		var specimen = experiments.getSampleById(measurement.specimenId);
+// 		var buffer = EXI.proposalManager.getBufferById(specimen.bufferId);
+// 		measurement.buffer_acronym = buffer.acronym;
+// 		measurement.bufferId = buffer.bufferId;
+// 		measurement.volume = specimen.volume;
+// 		if (specimen.macromolecule3VO != null) {
+// 			measurement.acronym = specimen.macromolecule3VO.acronym;
+// 			measurement.macromoleculeId = specimen.macromolecule3VO.macromoleculeId;
+// 		}
+// 		measurement.concentration = specimen.concentration;
+// 		if (measurement.run3VO != null) {
+// 			measurement.energy = measurement.run3VO.energy;
+// 			measurement.expExposureTemperature = measurement.run3VO.exposureTemperature;
+// 			measurement.storageTemperature = measurement.run3VO.storageTemperature;
+// 			measurement.timePerFrame = measurement.run3VO.timePerFrame;
+// 			measurement.radiationAbsolute = measurement.run3VO.radiationAbsolute;
+// 			measurement.radiationRelative = measurement.run3VO.radiationRelative;
+// 			measurement.status = "DONE";
 
-			try {
+// 			try {
 				
-				if (measurement.run3VO.timeStart != null) {
-					if (measurement.run3VO.timeStart != "") {
-						measurement.miliseconds = moment(measurement.run3VO.timeStart).format("X");
-					}
-				}
-			} catch (E) {
-				console.log(E);
-			}
-		}
+// 				if (measurement.run3VO.timeStart != null) {
+// 					if (measurement.run3VO.timeStart != "") {
+// 						measurement.miliseconds = moment(measurement.run3VO.timeStart).format("X");
+// 					}
+// 				}
+// 			} catch (E) {
+// 				console.log(E);
+// 			}
+// 		}
 
-		if (experiments.getDataCollectionByMeasurementId(measurement.measurementId).length > 0) {
-			var measurementtodatacollection3VOs = experiments.getDataCollectionByMeasurementId(measurement.measurementId)[0].measurementtodatacollection3VOs;
-			for (var k = 0; k < measurementtodatacollection3VOs.length; k++) {
-				if (measurementtodatacollection3VOs[k].dataCollectionOrder == 1) {
-					var specimenBuffer = experiments.getSampleById(experiments.getMeasurementById(measurementtodatacollection3VOs[k].measurementId).specimenId);
-					if (specimenBuffer.sampleplateposition3VO != null) {
-						measurement.bufferSampleplateposition3VO = specimenBuffer.sampleplateposition3VO;
-						measurement.bufferSampleplate = (experiments.getSamplePlateById(specimenBuffer.sampleplateposition3VO.samplePlateId));
-					}
-				}
-			}
-		}
+// 		if (experiments.getDataCollectionByMeasurementId(measurement.measurementId).length > 0) {
+// 			var measurementtodatacollection3VOs = experiments.getDataCollectionByMeasurementId(measurement.measurementId)[0].measurementtodatacollection3VOs;
+// 			for (var k = 0; k < measurementtodatacollection3VOs.length; k++) {
+// 				if (measurementtodatacollection3VOs[k].dataCollectionOrder == 1) {
+// 					var specimenBuffer = experiments.getSampleById(experiments.getMeasurementById(measurementtodatacollection3VOs[k].measurementId).specimenId);
+// 					if (specimenBuffer.sampleplateposition3VO != null) {
+// 						measurement.bufferSampleplateposition3VO = specimenBuffer.sampleplateposition3VO;
+// 						measurement.bufferSampleplate = (experiments.getSamplePlateById(specimenBuffer.sampleplateposition3VO.samplePlateId));
+// 					}
+// 				}
+// 			}
+// 		}
 
-		if (this.collapsed) {
-			/** If collapsed only the samples * */
-			if (specimen.macromolecule3VO != null) {
-				data.push(measurement);
-			}
-		} else {
-			data.push(measurement);
-		}
+// 		if (this.collapsed) {
+// 			/** If collapsed only the samples * */
+// 			if (specimen.macromolecule3VO != null) {
+// 				data.push(measurement);
+// 			}
+// 		} else {
+// 			data.push(measurement);
+// 		}
 
-	}
-	return data;
-};
+// 	}
+// 	return data;
+// };
 /**
  * Example form
  * 
@@ -12955,7 +13139,7 @@ OverviewQueueGrid.prototype.render = function(data) {
             last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
             last.density = this.getImage(last.Subtraction_subtractionId,"density");
             last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
-            if (last.Run_creationDate) {
+            if (last.Run_runId) {
                 last.dataReduction = true;
             }
         }
@@ -12968,7 +13152,10 @@ OverviewQueueGrid.prototype.render = function(data) {
 	});
 	
 	$('#' + this.id).html(html);
-	this.attachCallBackAfterRender(document.getElementById("xx"));
+
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+	
+	this.attachCallBackAfterRender(nodeWithScroll);
 };
 
 
@@ -14801,10 +14988,29 @@ function SamplePlateGroupWidget(args){
 	/** Events * */
 	this.onClick = new Event(this);
 	this.onExperimentChanged = new Event(this);
+
+	this.plateGroup = [{
+				type: 'Deep Well',
+				rowCount : 8,
+				columnCount : 12,
+				id : 'deep-well'
+			},
+			{
+				type: ' 4 x ( 8 + 3 ) Block',
+				rowCount : 4,
+				columnCount : 11,
+				id : 'block'
+			},
+			{
+				type: '96 Well plate',
+				rowCount : 8,
+				columnCount : 12,
+				id : 'well-plate'
+			}];
 }
 
 
-SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetId){
+SamplePlateGroupWidget.prototype.drawPlate = function(dataCollections, plate, targetId){
 	var _this = this;
 	
 	var samplePlateWidget = new SamplePlateWidget(
@@ -14822,7 +15028,7 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 		samplePlateWidget.height = this.heightPlates - 10;
 	}
 	
-	samplePlateWidget.draw(experiment, plate, targetId );
+	samplePlateWidget.draw(dataCollections, plate, targetId );
 
 	samplePlateWidget.onNodeSelected.attach(function(sender, args){
 		_this.onClick.notify(
@@ -14849,19 +15055,15 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 	this.samplePlateWidgets.push(samplePlateWidget);
 };
 
-SamplePlateGroupWidget.prototype.drawPlates = function(experiment){
-	if (experiment){
-		var plateGroups = experiment.getPlateGroups();
-		for ( var i = 0; i < plateGroups.length; i++) {
-			var id = plateGroups[i].plateGroupId;
-			var plates = experiment.getPlatesByPlateGroupId(id);
-			for ( var j = 0; j < plates.length; j++) {
-				var targetId = ('id', this.id + "_" + plates[j].samplePlateId);
-				if (document.getElementById(targetId) != null){
-					this.drawPlate(experiment, plates[j], targetId);
-				}
+SamplePlateGroupWidget.prototype.drawPlates = function(dataCollections){
+	if (dataCollections){
+		for (var i = 0 ; i < this.plateGroup.length ; i++){
+			var plate = this.plateGroup[i];
+			var targetId = ('id', this.id + "_" + plate.id);
+			if (document.getElementById(targetId) != null){
+				this.drawPlate(dataCollections, plate, targetId);
 			}
-		} 
+		}
 	}
 };
 
@@ -14872,11 +15074,11 @@ SamplePlateGroupWidget.prototype._sortPlates = function(a, b) {
 */
 
 /** This returns maxSlotPositionRow and maxSlotPositionColumn to set visually the sample changer layout **/
-SamplePlateGroupWidget.prototype.getDimensions = function(plates) {
+SamplePlateGroupWidget.prototype.getDimensions = function(sample) {
 	var maxSlotPositionRow = 0;
 	var maxSlotPositionColumn = 0;
 	
-	if (plates != null){
+	if (sample != null){
 		for (var i = 0; i < plates.length; i++) {
 			/** Row **/
 			var slotPositionRow = plates[i].slotPositionRow;
@@ -14925,12 +15127,8 @@ SamplePlateGroupWidget.prototype.getPlateBySlotPosition = function(plates, row, 
 };
 
 /** Returns the html that will be used to display the plates **/
-SamplePlateGroupWidget.prototype.getPlatesContainer = function(experiment){
+SamplePlateGroupWidget.prototype.getPlatesContainer = function(dataCollections){
 	var plateGroups = [];
-	
-	if (experiment!= null){
-		plateGroups = experiment.getPlateGroups();
-	}
 
 	var div  = document.createElement("div");
 	var table  = document.createElement("table");
@@ -14938,30 +15136,25 @@ SamplePlateGroupWidget.prototype.getPlatesContainer = function(experiment){
 	table.setAttribute('width', this.width - 30 + 'px');
 	table.setAttribute('height', this.heightPlates + 'px');
 	
-	for ( var i = 0; i < plateGroups.length; i++) {
-		var id = plateGroups[i].plateGroupId;
-		var plates = experiment.getPlatesByPlateGroupId(id);
-		var dimensions = this.getDimensions(plates);
-		
-		for ( var j = 1; j <= dimensions.maxSlotPositionRow; j++) {
-			for ( var k = 1; k <= dimensions.maxSlotPositionColumn; k++) {
+	if (dataCollections!= null){
+		for (var i = 0 ; i < this.plateGroup.length ; i++) {
 			var tr = document.createElement("tr");
-				var plate = this.getPlateBySlotPosition(plates,j,k);
-				var td = document.createElement("td");
-				td.setAttribute('id', this.id + "_" + plate.samplePlateId);
-				td.setAttribute('style', "background-color:#E6E6E6;border-width:1px;border-style:solid;");
-				/** plate Type title * */
-				var divTitle = document.createElement("div");
-				divTitle.setAttribute("class", "menu-title");
-				var text = document.createTextNode(plate.platetype3VO.name);
-				divTitle.appendChild(text);
-				
-				td.appendChild(divTitle);
-				tr.appendChild(td);
-				table.appendChild(tr);
-			}
+			// var plate = this.getPlateBySlotPosition(plates,j,k);
+			var td = document.createElement("td");
+			// td.setAttribute('id', this.id + "_" + plate.samplePlateId);
+			td.setAttribute('id', this.id + "_" + this.plateGroup[i].id);
+			td.setAttribute('style', "background-color:#E6E6E6;border-width:1px;border-style:solid;");
+			/** plate Type title * */
+			var divTitle = document.createElement("div");
+			divTitle.setAttribute("class", "menu-title");
+			var text = document.createTextNode(this.plateGroup[i].type);
+			divTitle.appendChild(text);
+			
+			td.appendChild(divTitle);
+			tr.appendChild(td);
+			table.appendChild(tr);
 		}
-	} 
+	}
 	div.appendChild(table);
 	return div.innerHTML;
 };
@@ -14977,11 +15170,9 @@ SamplePlateGroupWidget.prototype.selectSpecimens = function(specimens){
 };
 
 SamplePlateGroupWidget.prototype.selectSpecimen = function(specimen){
-	if (specimen.sampleplateposition3VO != null){
-//		var samplePlateId = specimen.sampleplateposition3VO.samplePlateId;
+	if (specimen.SamplePlatePosition_samplePlateId != null){
 		for ( var i = 0; i < this.samplePlateWidgets.length; i++) {
-//			var samplePlateId = this.samplePlateWidgets[i].samplePlate.samplePlateId;
-			if ( this.samplePlateWidgets[i].samplePlate.samplePlateId == specimen.sampleplateposition3VO.samplePlateId){
+			if ( this.samplePlateWidgets[i].samplePlate.type == specimen.SamplePlate_name){
 				this.samplePlateWidgets[i].selectSpecimen(specimen);
 				return;
 			}
@@ -14996,14 +15187,13 @@ SamplePlateGroupWidget.prototype._refreshBbar = function(){
 	}
 };
 
-SamplePlateGroupWidget.prototype.refresh = function(experiment){
-	this.experiment = experiment;
+SamplePlateGroupWidget.prototype.refresh = function(dataCollections){
+	this.dataCollections = dataCollections;
 	this.samplePlateWidgets = [];
-
 	if (document.getElementById(this.id + "_container") != null){
 		document.getElementById(this.id + "_container").innerHTML = "";
-		document.getElementById(this.id + "_container").innerHTML = this.getPlatesContainer(experiment);
-		this.drawPlates(experiment);
+		document.getElementById(this.id + "_container").innerHTML = this.getPlatesContainer(dataCollections);
+		this.drawPlates(dataCollections);
 	}
 
 	/** We refrsh also the bbar  but it could not exist yet* */
@@ -15411,35 +15601,36 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 	}
 };
 
-SamplePlateWidget.prototype.load = function (experiment) {
-	for (var i = 0 ; i < experiment.getSamples().length ; i++) {
-		var specimen = experiment.getSamples()[i];
-		if (specimen.sampleplateposition3VO.samplePlateId == this.samplePlate.samplePlateId) {
-			var nodeId = this.id + "-node-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber;
-			var color = experiment.getSpecimenColorByBufferId(specimen.specimenId);
-			if (specimen.macromolecule3VO != null) {
-				color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
-			}
+SamplePlateWidget.prototype.load = function (dataCollections) {
+	for (var i = 0 ; i < dataCollections.length ; i++) {
+		var specimen = dataCollections[i];
+		if (specimen.SamplePlate_name == this.samplePlate.type) {
+			var nodeId = this.id + "-node-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
+			// var color = experiment.getSpecimenColorByBufferId(specimen.Specimen_specimenId);
+			// if (specimen.Macromolecule_macromoleculeId != null) {
+			// 	color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
+			// }
+			var color = "blue";
 			$("#" + nodeId).attr("fill",color);
-			if (specimen.measurements && specimen.measurements.length > 0) {
-				if (specimen.measurements[0].run3VO.runId != null) {
-					$("#" + this.id + "-square-"+ specimen.sampleplateposition3VO.rowNumber + "-" +specimen.sampleplateposition3VO.columnNumber).attr("visibility","visible");
+			if (specimen.Measurement_measurementId) {
+				if (specimen.Run_runId != null) {
+					$("#" + this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber).attr("visibility","visible");
 				}
 			}
 		}
 	}
 };
 
-SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
+SamplePlateWidget.prototype.draw = function(dataCollections, samplePlate, targetId, windowContainerId) {
 	this.onVertexUp = new Event(this);
 	this.samplePlate = samplePlate;
-	this.experiment = experiment;
+	this.dataCollections = dataCollections;
 
 	this.targetId = targetId;
 	$("#" + this.targetId).append( "<div id='" + this.targetId + "-div-svg" + "'></div>" );
 
-	var rows = this.samplePlate.platetype3VO.rowCount;
-	var columns = this.samplePlate.platetype3VO.columnCount;
+	var rows = this.samplePlate.rowCount;
+	var columns = this.samplePlate.columnCount;
 
 	var formatter = {
 			// type : "LineEdgeNetworkFormatter",
@@ -15478,7 +15669,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 	for ( var i = 1; i <= rows; i++) {
 		for ( var j = 1; j <= columns; j++) {
 			var factor = 0.8;
-			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
+			if (this.samplePlate.type == " 4 x ( 8 + 3 ) Block") {
 				if (j >= 9) {
 					factor = 1.0;
 				} else {
@@ -15536,7 +15727,7 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 		this.attachClickListeners();
 	}
 
-	this.load(this.experiment);
+	this.load(this.dataCollections);
 
 };
 
@@ -15571,104 +15762,9 @@ SamplePlateWidget.prototype.clearSelection = function() {
 };
 
 SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var squareId = this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+	var squareId = this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
 	$("#" + squareId).addClass("plate-square-selected");
 };
-
-// SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
-// 	var _this = this;
-// 	debugger
-// 	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
-// 	this.windowContainerId = windowContainerId;
-// 	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
-// 		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
-// 		return;
-// 	}
-
-// 	this.onVertexUp = new Event(this);
-// 	this.samplePlate = samplePlate;
-// 	this.experiment = experiment;
-
-// 	this.targetId = targetId;
-
-// 	var rows = this.samplePlate.platetype3VO.rowCount;
-// 	var columns = this.samplePlate.platetype3VO.columnCount;
-
-// 	this.network = new NetworkWidget({
-// 		targetId : targetId
-// 	});
-// 	var dataset = new GraphDataset();
-// 	var formatter = new NetworkDataSetFormatter({
-// 		defaultFormat : {
-// 			type : "LineEdgeNetworkFormatter",
-// 			'fill-opacity' : 1,
-// 			fill : this.wellColor,
-// 			'stroke-width' : this.strokeWidth,
-// 			'stroke-opacity' : 1,
-           
-// 			stroke : "#000000",
-// 			size : this.nodeSize,
-// 			title : {
-// 				fontSize : this.fontSize,
-// 				fill : "#000000"
-// 			}
-// 		}
-// 	}, null, {
-// 		labeled : false,
-// 		height : this.height,
-// 		width : this.width,
-       
-// 		right : this.width,
-// 		backgroundColor : this.backgroundColor,
-// 		balanceNodes : false,
-// 		nodesMaxSize : 12,
-// 		nodesMinSize : 2
-// 	});
-
-// 	formatter.dataBind(dataset);
-// 	var layout = new LayoutDataset();
-// 	layout.dataBind(dataset);
-// 	this.network.draw(dataset, formatter, layout);
-
-// 	for ( var i = 1; i <= rows; i++) {
-// 		for ( var j = 1; j <= columns; j++) {
-// 			this.network.getDataset().addNode("", {
-// 				row : i,
-// 				column : j
-// 			});
-
-// 			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
-// 				if (j < 9) {
-// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
-// 				} else {
-// 					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
-// 				}
-// 			}
-
-// 		}
-// 	}
-
-// 	/** EVENT WHEN USER CLICK ON A WELL **/
-// 	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
-// 		_this.onVertexUp.notify({
-// 			samplePlate : _this.samplePlate,
-// 			row : _this.network.getDataset().getVertexById(nodeId).args.row,
-// 			column : _this.network.getDataset().getVertexById(nodeId).args.column
-
-// 		});
-// 	});
-
-// 	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
-// 	});
-
-// 	this.relayout(this.network, rows, columns);
-// 	this.fillSimulator(this.experiment.getSamples());
-
-// 	if (this.showBorderLabels) {
-// 		this.drawBorders();
-// 	}
-
-// };
 
 SamplePlateWidget.prototype.drawBorders = function() {
 	var xArray = {};
@@ -15713,40 +15809,10 @@ SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
 	var id = id + "_marked";
 	if (this.markedSpecimenId[id] == null) {
 		SVG.drawRectangle(x - 10, y - 10, 22, 22, svg, [ [ "id", id ], [ "fill", "gray" ],["stroke-opacity", "0.5"], [ "fill-opacity", "0.2" ], [ 'stroke', 'black' ] ]);
-//		$('#' + id).qtip({
-//			content : {
-//				text : _this._getToolTipContent(specimen)
-//			},
-//			position : {
-//				adjust : {
-//					x : 0,
-//					y : 20
-//				}
-//			},
-//			style : {
-//				width : true,
-//				classes : 'ui-tooltip-shadow'
-//			}
-//		});
 		this.markedSpecimenId[id] = true;
 	}
 };
 
-// SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-// 	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
-// 	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
-// 	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
-// 	var svg = this.network.graphCanvas._svg;
-// 	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
-// };
-
-// SamplePlateWidget.prototype.clearSelection = function() {
-// 	var svg = this.network.graphCanvas._svg;
-// 	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
-// 		svg.removeChild(this.selectedSVGNodes[i]);
-// 	}
-// 	this.selectedSVGNodes = [];
-// };
 
 SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	var vertices = this.network.getDataset().getVertices();
@@ -15757,20 +15823,6 @@ SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	}
 	return null;
 };
-
-//SamplePlateWidget.prototype.getOpacity = function(specimen) {
-//	var concentrations = this.experiment.getConcentrationsBysample(specimen);
-//	var normalized = Normalizer.normalizeArray(concentrations);
-//	for ( var i = 0; i < concentrations.length; i++) {
-//		if (concentrations[i] == specimen.concentration) {
-//			if (normalized[i] == 0)
-//				return 0.2;
-//			return 0.2 + normalized[i] * 0.6;
-//		}
-//	}
-//	return 1;
-//
-//};
 
 SamplePlateWidget.prototype.showLabel = function(row, column, specimen) {
 	if (specimen != null) {
@@ -15888,32 +15940,6 @@ SamplePlateWidget.prototype.fillWell = function(row, column, specimen) {
 
 		if (this.showTooltip) {
 			var id = this.network.getGraphCanvas().getSVGNodeId(vertex.id);
-//			if (_this.windowContainerId != null) {
-//				$('#' + id).qtip({
-//					content : {
-//						text : _this._getToolTipContent(specimen)
-//					},
-//					position : {
-//						adjust : {
-//							x : 0,
-//							y : 20
-//						}
-//					}
-//				});
-//			} else {
-//				$('#' + id).qtip({
-//					content : {
-//						text : _this._getToolTipContent(specimen)
-//					},
-//					position : {
-//						adjust : {
-//							x : 0,
-//							y : 20
-//						}
-//					}
-//				});
-//
-//			}
 		}
 	}
 };
@@ -16276,45 +16302,42 @@ function SpecimenGrid(args) {
 	this.onSpecimenChanged = new Event();
 }
 
-SpecimenGrid.prototype._prepareData = function(experiment) {
+SpecimenGrid.prototype._prepareData = function(dataCollections) {
 	var data = [];
 
-	var samples = experiment.getSamples();
-	for ( var i = 0; i < samples.length; i++) {
-		var sample = samples[i];
-		if (sample.macromolecule3VO != null) {
-			sample.macromolecule = sample.macromolecule3VO.acronym;
+	for ( var i = 0; i < dataCollections.length; i++) {
+		var sample = dataCollections[i];
+		if (sample.Macromolecule_macromoleculeId != null) {
+			sample.macromolecule = sample.Macromolecule_acronym;
 			sample.exposureTemperature = [];
-			sample.macromoleculeId = sample.macromolecule3VO.macromoleculeId;
+			sample.macromoleculeId = sample.Macromolecule_macromoleculeId;
 		}
 
-		if (sample.sampleplateposition3VO != null) {
-			if (sample.sampleplateposition3VO.samplePlateId != null) {
-				sample.samplePlateId = sample.sampleplateposition3VO.samplePlateId;
-				sample.rowNumber = sample.sampleplateposition3VO.rowNumber;
-				sample.columnNumber = sample.sampleplateposition3VO.columnNumber;
-				if (experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).plategroup3VO != null) {
-					sample.plateGroupName = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).plategroup3VO.name;
-					sample.samplePlateName = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).name + "  [" + sample.plateGroupName + "]";
-					sample.slotPositionColumn = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).slotPositionColumn;
-				}
+		if (sample.SamplePlatePosition_samplePlatePositionId != null) {
+			if (sample.SamplePlatePosition_samplePlateId != null) {
+				sample.samplePlateId = sample.SamplePlatePosition_samplePlateId;
+				sample.rowNumber = sample.SamplePlatePosition_rowNumber;
+				sample.columnNumber = sample.SamplePlatePosition_columnNumber;
+				// sample.plateGroupName = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).plategroup3VO.name;
+				sample.samplePlateName = sample.SamplePlate_name;
+				sample.slotPositionColumn = sample.SamplePlate_slotPositionColumn;
 			}
 		} else {
 			sample.samplePlateName = "Unallocated Specimens";
 		}
 
 		/** For grouping, because sencha has not option for multiple grouping I add a field to your store with a convert function that concatenates these two fields and then group by that field.**/
-		sample.groupIndex = sample.bufferId + sample.macromoleculeId;
-		var macromolecule = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId);
+		sample.groupIndex = sample.Buffer_bufferId + sample.Macromolecule_macromoleculeId;
+		var macromolecule = EXI.proposalManager.getMacromoleculeById(sample.Macromolecule_macromoleculeId);
 
 		sample.acronym = "Buffers";
 		if (macromolecule != null) {
-			sample.acronym = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId).acronym;
+			sample.acronym = EXI.proposalManager.getMacromoleculeById(sample.Macromolecule_macromoleculeId).acronym;
 		}
 
-		sample.buffer = experiment.getBufferById(sample.bufferId);
+		sample.buffer = EXI.proposalManager.getBufferById(sample.Buffer_bufferId);
 
-		sample.volumeToLoad = experiment.getVolumeToLoadBySampleId(sample.sampleId);
+		sample.volumeToLoad = sample.Measurement_volumeToLoad;
 		data.push(sample);
 	}
 	return data;
@@ -16506,26 +16529,37 @@ SpecimenGrid.prototype.getPanelByExperiment = function(experiment) {
 	return this.getPanel(data);
 };
 
-SpecimenGrid.prototype.refresh = function(experiment) {
-	this.experiment = experiment;
-	var data = this._prepareData(experiment);
-	this.store.loadData(data);
+SpecimenGrid.prototype.refresh = function(dataCollections) {
+	// debugger
+	this.dataCollections = dataCollections;
+	_.map(dataCollections, function(o){ 
+        if(o.Macromolecule_macromoleculeId){
+		    o.acronym = EXI.proposalManager.getMacromoleculeById(o.Macromolecule_macromoleculeId).acronym;
+        } else {
+			o.acronym = "Buffers";
+		}
+		o.groupIndex = o.Buffer_bufferId + o.Macromolecule_macromoleculeId;
+	});
+	// var data = this._prepareData(dataCollections);
+
+	this.store.loadData(dataCollections);
 };
 
 SpecimenGrid.prototype.getPanel = function() {
+	
 	var _this = this;
 	this.store = Ext.create('Ext.data.Store', {
 		fields : [
-			'buffer', 'bufferId', 'code', 'macromolecule', 'acronym', 'macromoleculeId', 'concentration', 'volume', 'samplePlateId',
-			'slotPositionColumn', 'rowNumber', 'columnNumber', 'groupIndex' ],
+			'Buffer_acronym', 'Buffer_bufferId', 'Measurement_code', 'Macromolecule_acronym', 'acronym', 'Macromolecule_macromoleculeId', 'Specimen_concentration', 'Specimen_volume', 'SamplePlatePosition_samplePlateId',
+			'SamplePlate_slotPositionColumn', 'SamplePlatePosition_rowNumber', 'SamplePlatePosition_columnNumber', 'groupIndex' ],
 		data : [],
 		groupField : 'acronym'
 	});
 	this.store.sort([ {
-		property : 'concentration',
+		property : 'Specimen_concentration',
 		direction : 'ASC'
 	}, {
-		property : 'buffer',
+		property : 'Buffer_acronym',
 		direction : 'ASC'
 	} ]);
 
@@ -16534,12 +16568,10 @@ SpecimenGrid.prototype.getPanel = function() {
 //		mode : this.selectionMode,
 		listeners : {
 			select : function(sm, record, index, eOpts ) {
-//				debugger
-//				var selected = [];
-//				for ( var i = 0; i < selections.length; i++) {
-//					selected.push(selections[i].data);
-//				}
 				_this.onSelected.notify([record.data]);
+			},
+			deselect : function(sm, record, index, eOpts ) {
+				_this.onSelected.notify([]);
 			}
 		}
 	});
@@ -16571,43 +16603,37 @@ SpecimenGrid.prototype.getPanel = function() {
 						columns : [
 							{
 								text : '',
-								dataIndex : 'macromolecule',
+								dataIndex : 'Macromolecule_acronym',
 								width : 20,
 								renderer : function(val, y, sample) {
-									var macromoleculeId = null;
-									if (sample.data.macromolecule3VO != null) {
-										macromoleculeId = sample.data.macromolecule3VO.macromoleculeId;
-									}
-									else{
-										macromoleculeId = sample.data.macromoleculeId;
-									}
-									
+									var macromoleculeId = sample.data.Macromolecule_macromoleculeId;
 									if (macromoleculeId == null) return; 
-									return BUI.getRectangleColorDIV(_this.experiment.macromoleculeColors[macromoleculeId], 10, 10);
+									// return BUI.getRectangleColorDIV(_this.experiment.macromoleculeColors[macromoleculeId], 10, 10);
+									return BUI.getRectangleColorDIV("red", 10, 10);
 								}
 							},
 							{
 								text : 'Macromolecule',
-								dataIndex : 'macromolecule',
+								dataIndex : 'Macromolecule_acronym',
 								width : 100
 							},
 							{
 								text : '',
-								dataIndex : 'buffer',
+								dataIndex : 'Buffer_acronym',
 								width : 20,
 								renderer : function(val, y, sample) {
 									var color = "black";
-									if (sample.data.bufferId != null) {
-										if (_this.experiment.getDataCollectionsBySpecimenId(sample.data.specimenId)[0] != null){
-											color = _this.experiment.getSpecimenColorByBufferId(_this.experiment.getMeasurementById(_this.experiment.getDataCollectionsBySpecimenId(sample.data.specimenId)[0].measurementtodatacollection3VOs[0].measurementId).specimenId);
-										}
+									if (sample.data.Buffer_bufferId != null) {
+										// if (_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0] != null){
+										// 	color = _this.experiment.getSpecimenColorByBufferId(_this.experiment.getMeasurementById(_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0].measurementtodatacollection3VOs[0].measurementId).specimenId);
+										// }
 										return BUI.getRectangleColorDIV(color, 10, 10);
 									}
 								}
 							}
 							, {
 								text : 'Buffer',
-								dataIndex : 'bufferId',
+								dataIndex : 'Buffer_bufferId',
 								width : 140,
 								editor : BIOSAXS_COMBOMANAGER.getComboBuffers(EXI.proposalManager.getBuffers(), {
 									noLabel : true,
@@ -16621,7 +16647,7 @@ SpecimenGrid.prototype.getPanel = function() {
 							}, 
 							{
 								text : 'Conc.',
-								dataIndex : 'concentration',
+								dataIndex : 'Specimen_concentration',
 								width : 100,
 								editor : {
 									allowBlank : false
@@ -16645,35 +16671,36 @@ SpecimenGrid.prototype.getPanel = function() {
 							},
 							{
 								text : 'Vol. Well',
-								dataIndex : 'volume',
+								dataIndex : 'Specimen_volume',
 								width : 70,
 								editor : {
 									allowBlank : true
 								},
 								renderer : function(val, y, sample) {
-									return BUI.formatValuesUnits(sample.data.volume, '&#181l', {
+									return BUI.formatValuesUnits(sample.data.Specimen_volume, '&#181l', {
 										fontSize : 12,
 										decimals : 2,
 										unitsFontSize : this.unitsFontSize
 									});
 								}
 							}, 
+							// {
+							// 	text : 'Position',
+							// 	hidden : true,
+							// 	flex : 1,
+							// 	renderer : function(val, y, sample) {
+							// 		return BUI.getSamplePositionHTML(sample.data, _this.experiment);
+							// 	}
+							// }, 
 							{
-								text : 'Position',
-								hidden : true,
-								flex : 1,
-								renderer : function(val, y, sample) {
-									return BUI.getSamplePositionHTML(sample.data, _this.experiment);
-								}
-							}, {
 								text : 'samplePlateId',
-								dataIndex : 'samplePlateId',
+								dataIndex : 'SamplePlatePosition_samplePlateId',
 								hidden : true
 							}, 
 							{
 								text : 'Plate',
 								hidden : this.isPositionColumnHidden,
-								dataIndex : 'slotPositionColumn',
+								dataIndex : 'SamplePlate_slotPositionColumn',
 								editor : _this._getSlotColumBombo(),
 								flex : 1,
 								renderer : function(val, meta, sample) {
@@ -16686,7 +16713,7 @@ SpecimenGrid.prototype.getPanel = function() {
 							}, {
 								text : 'Row',
 								hidden : this.isPositionColumnHidden,
-								dataIndex : 'rowNumber',
+								dataIndex : 'SamplePlatePosition_rowNumber',
 								editor : this._getRowCombo(),
 								flex : 1,
 								renderer : function(val, meta, sample) {
@@ -16699,7 +16726,7 @@ SpecimenGrid.prototype.getPanel = function() {
 							}, {
 								text : 'Well',
 								hidden : this.isPositionColumnHidden,
-								dataIndex : 'columnNumber',
+								dataIndex : 'SamplePlatePosition_columnNumber',
 								editor : this._getColumnCombo(),
 								flex : 1,
 								renderer : function(val, meta, sample) {
@@ -16738,8 +16765,9 @@ SpecimenGrid.prototype.getPanel = function() {
 							preserveScrollOnRefresh : true,
 							stripeRows : true,
 							getRowClass : function(record) {
-								var specimens = _this.experiment.getSampleByPosition(record.data.samplePlateId, record.data.rowNumber,
-										record.data.columnNumber);
+								var specimens = _.filter(_this.dataCollections,{"SamplePlatePosition_rowNumber":record.data.SamplePlatePosition_rowNumber,
+																				"SamplePlatePosition_columnNumber":record.data.SamplePlatePosition_columnNumber,
+																				"SamplePlatePosition_samplePlateId":record.data.SamplePlatePosition_samplePlateId});
 								if (specimens.length > 1) {
 									return 'red-row';
 
@@ -16933,8 +16961,8 @@ function SpecimenWidget(args){
 /**
  * Return vbox or hbox depending on the slot positions of the plates
  */
-SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
-	var dimensions = this.samplePlateGroupWidget.getDimensions(experiment.getSamplePlates());
+SpecimenWidget.prototype.getContainerLayoutConfiguration = function(dataCollections){
+	// var dimensions = this.samplePlateGroupWidget.getDimensions(experiment.getSamplePlates());
 //	if (dimensions.maxSlotPositionRow < dimensions.maxSlotPositionColumn){
 //		return {
 //					layout 					: "vbox",
@@ -16955,13 +16983,13 @@ SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
 };
 
 
-SpecimenWidget.prototype.load = function(experiment){
-	this.experiment = experiment;
+SpecimenWidget.prototype.load = function(dataCollections){
+	this.dataCollections = _.uniqBy(dataCollections,"Specimen_specimenId");
 	
 	/** Removing all components **/
 	this.panel.removeAll();
-	
-	var layoutConfiguration = this.getContainerLayoutConfiguration(experiment);
+
+	var layoutConfiguration = this.getContainerLayoutConfiguration(dataCollections);
 
 	/** Setting new width and height for layout vbox and hbox **/
 	this.specimenGrid.width = layoutConfiguration.specimenGridWidth;
@@ -16995,8 +17023,8 @@ SpecimenWidget.prototype.load = function(experiment){
    	this.panel.insert(container);
    	
 	/** Load data **/
-	this.specimenGrid.refresh(experiment);
-	this.samplePlateGroupWidget.refresh(experiment);
+	this.specimenGrid.refresh(this.dataCollections);
+	this.samplePlateGroupWidget.refresh(this.dataCollections);
 	
 	
 };

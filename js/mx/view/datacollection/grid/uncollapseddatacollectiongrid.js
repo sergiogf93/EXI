@@ -310,14 +310,18 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                                                 enableClick : false,
                                                 dataCollectionIds : dataCollectionIds
                 };
-                                            
+
+                var puckLegend = new PuckLegend();
+
+                $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
+    
                 var puck = new UniPuckWidget(attributesContainerWidget);
                 
                 if (dc.Container_capacity == 10){
                     puck = new SpinePuckWidget(attributesContainerWidget);
                 }
                 
-                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel());
+                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                 
                 var onSuccess = function(sender, samples){
                     if (samples){

@@ -311,16 +311,16 @@ MxPrepare.prototype.init = function() {
 	    mainView.load();
 	}).enter(this.setPageBackground);
 
-	Path.map("#/mx/prepare/main/selectSampleChanger").to(function() {
-		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainView({currentStep : 2});
-		EXI.addMainPanel(mainView);
-	    mainView.load();
-	}).enter(this.setPageBackground);
+	// Path.map("#/mx/prepare/main/selectSampleChanger").to(function() {
+	// 	EXI.clearNavigationPanel();
+	//     var mainView = new PrepareMainView({currentStep : 2});
+	// 	EXI.addMainPanel(mainView);
+	//     mainView.load();
+	// }).enter(this.setPageBackground);
 
 	Path.map("#/mx/prepare/main/loadSampleChanger").to(function() {
 		EXI.clearNavigationPanel();
-	    var mainView = new PrepareMainView({currentStep : 3});
+	    var mainView = new PrepareMainView({currentStep : 2});
 		EXI.addMainPanel(mainView);
 	    mainView.load();
 	}).enter(this.setPageBackground);
@@ -2865,7 +2865,6 @@ DataCollectionGrid.prototype.load = function(dataCollectionGroup){
 };
 
 DataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
-    var _this = this;
     this.panel = Ext.create('Ext.grid.Panel', {
         border: 1,        
         store: this.store,       
@@ -3196,6 +3195,201 @@ CollapsedDataCollectionGrid.prototype.load = DataCollectionGrid.prototype.load;
 CollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prototype.loadMagnifiers;
 CollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.getPanel;
 
+/**
+* Displays the containers of the data collections by session or acronym of the protein
+*
+* @class ContainersDataCollectionGrid
+* @constructor
+*/
+function ContainersDataCollectionGrid(args) {
+    this.legend = new PuckLegend({width : 300, height : 50, cy : "12.5%", tOffset : 30});
+}
+
+ContainersDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
+    var _this = this;
+    this.store = Ext.create('Ext.data.Store', {
+            fields: ["dataCollectionGroup"]
+    });
+        
+    this.panel = Ext.create('Ext.grid.Panel', {
+        border: 1,        
+        store: this.store,            
+        columns: this.getColumns(),
+        disableSelection: true,
+        viewConfig : {
+            trackOver : false
+        }
+    });
+
+    this.container = Ext.create('Ext.panel.Panel', {
+        items : [
+                this.legend.getPanel(),
+                this.panel]
+    });
+
+
+    return this.container;
+};
+
+ContainersDataCollectionGrid.prototype.getColumns = function() {
+    var _this = this;
+    var columns = [
+        {
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            flex: 1.5,
+            hidden: false,
+            renderer: function(grid, e, record) {
+
+                var data = record.data;  
+                var nContainers = data.containerIds.length;
+
+                var html = "";          
+                
+                dust.render("containers.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
+                    html = html + out;
+                }); 
+                
+                var onSuccess = function (sender, samples) {
+                    if (samples){
+                        var cells = {};
+                        for (var i = 0; i < samples.length; i++) {
+                            var sample = samples[i];
+                            var selected = false;
+                            if (!_.isEmpty(pucks[sample.Container_containerId].initSelected)){
+                                selected = pucks[sample.Container_containerId].initSelected.includes(sample.BLSample_location);
+                            }
+                            var dataCollectionIds = pucks[sample.Container_containerId].dataCollectionIds[sample.BLSample_location];
+                            var state = "FILLED";
+                            if (dataCollectionIds != null && dataCollectionIds.length > 0){
+                                state = "COLLECTED";
+                            }
+                            // Parse data
+                            if (cells[sample.Container_containerId] == null){
+                                cells[sample.Container_containerId] = [];
+                            }
+                            
+                            cells[sample.Container_containerId].push({
+                                location : sample.BLSample_location,
+                                state : state,
+                                selected : selected,
+                                sample_name : sample.BLSample_name,
+                                protein_acronym : sample.Protein_acronym,
+                                protein_name : sample.Protein_name,
+                                containerId : sample.Container_containerId,
+                                container_code : sample.Container_code,
+                                dewarId : sample.Dewar_dewarId,
+                                dataCollectionIds : dataCollectionIds
+                            });
+                        }
+                        
+                        for (containerId in pucks){
+                            pucks[containerId].load(cells[containerId]);
+                            var infoHtml = "";
+                            
+                            dust.render("containers.info.mxdatacollectiongrid.template", cells[containerId][0], function(err, out) {                                                                       
+                                infoHtml = infoHtml + out;
+                            }); 
+                            
+                            $("#puck-panel-" + containerId + "-info").html(infoHtml);
+                        }
+                    }
+                };
+                
+                if (data.containerIds.length > 0){
+                    var pucksPanelHeight = 300;
+                    var pucks = {};
+
+                    var tree = $("<div ><div id='a' style='display: block;overflow-y: scroll;height:" + (2*pucksPanelHeight)+"px;'>" + html + "</div></div>");
+
+
+
+                    for (id in data.containerIds){
+                        var containerIdNumber = Number(data.containerIds[id]);
+                        var container = _.filter(_this.dataCollectionGroup,{"Container_containerId" : containerIdNumber});
+                        
+                        if(container){
+                            var dataCollectionIds = {};
+                            for (var i = 1 ; i <= container[0].Container_capacity ; i++) {
+                                var sampleByLocation = _.filter(container,{"BLSample_location":i.toString()});
+                                if (sampleByLocation.length > 0) {
+                                    var ids = [];
+                                    for (sample in sampleByLocation){
+                                        ids.push(sampleByLocation[sample].DataCollection_dataCollectionId);
+                                    }
+                                    dataCollectionIds[i] = ids.toString();
+                                }
+                            }
+                            
+                            pucks[containerIdNumber] = new UniPuckWidget({mainRadius : pucksPanelHeight/4, 
+                                                                        enableMouseOver : true, 
+                                                                        enableClick : true, 
+                                                                        containerId : containerIdNumber, 
+                                                                        initSelected : data.selected[containerIdNumber],
+                                                                        dataCollectionIds : dataCollectionIds
+                                                                    });
+                            if (container[0].Container_capacity == 10){
+                                pucks[containerIdNumber] = new SpinePuckWidget({mainRadius :  pucksPanelHeight/4, 
+                                                                                enableMouseOver : true, 
+                                                                                enableClick : true, 
+                                                                                containerId : containerIdNumber, 
+                                                                                dataCollectionId : container.DataCollection_dataCollectionId, 
+                                                                                initSelected : data.selected[containerIdNumber],
+                                                                                dataCollectionIds : dataCollectionIds
+                                                                            });
+                            }
+                            
+                            tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel().html);
+                        }
+                    }
+                    
+                    EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(data.containerIds);
+                    html = tree.html();
+                };
+
+                return html;
+            }
+        },
+        {
+            header: 'IDs',
+            dataIndex: 'dataCollectionGroup',
+            name: 'dataCollectionGroup',
+            flex: 1.5,
+            hidden: true,
+            renderer: function(grid, e, record) {
+                var html = "";
+                dust.render("ids.mxdatacollectiongrid.template", record.data, function(err, out) {
+                    html = out;
+                });
+                return html;
+
+            }
+        }
+    ];
+    return columns;
+};
+
+ContainersDataCollectionGrid.prototype.select = function(selectedDataCollectionGroup) {      
+    var selected = {};   
+    for (sample in selectedDataCollectionGroup){
+        if (selected[selectedDataCollectionGroup[sample].Container_containerId] == null){
+            selected[selectedDataCollectionGroup[sample].Container_containerId] = [selectedDataCollectionGroup[sample].BLSample_location];
+        } else {
+            selected[selectedDataCollectionGroup[sample].Container_containerId].push(selectedDataCollectionGroup[sample].BLSample_location);
+        }
+    }                                                                      
+    this.store.loadData([{containerIds : this.getContainersId(this.dataCollectionGroup), selected : selected}]);
+};
+
+ContainersDataCollectionGrid.prototype.getContainersId = function(dataCollectionGroup) {         
+   return _.filter(Object.keys(_.keyBy(dataCollectionGroup, "Container_containerId")), function(element){return isNumber(element);});                                                              
+};
+
+ContainersDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
+    this.dataCollectionGroup = dataCollectionGroup;    
+    this.store.loadData([{containerIds:  this.getContainersId(this.dataCollectionGroup), selected :{}}]);
+};
+
 function CustomSectionDataCollection(args) {
 	this.noFoundClass = "summary_datacollection_noFound";
 	this.failedClass = "summary_datacollection_failed";
@@ -3293,7 +3487,7 @@ function MXDataCollectionGrid(args) {
 
     this.uncollapsedDataCollectionGrid = new UncollapsedDataCollectionGrid();
     this.collapsedDataCollectionGrid = new CollapsedDataCollectionGrid();
-    this.platesDataCollectionGrid = new PlatesDataCollectionGrid();  
+    this.containersDataCollectionGrid = new ContainersDataCollectionGrid();  
                                                                     
     this.activePanel = this.uncollapsedDataCollectionGrid;
 }
@@ -3338,15 +3532,15 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                 onMenuClicked(_this.collapsedDataCollectionGrid);
             }
         },{
-            text: 'Plates',            
+            text: 'Containers',            
             handler: function(){
-                _this.renderingType = "PLATES";
+                _this.renderingType = "CONTAINERS";
                 
-                if (_this.activePanel != _this.platesDataCollectionGrid){
-                    _this.activePanel = _this.platesDataCollectionGrid;
+                if (_this.activePanel != _this.containersDataCollectionGrid){
+                    _this.activePanel = _this.containersDataCollectionGrid;
                     _this.reloadData(_this.dataCollectionGroup);                 
                     if (Ext.getCmp(_this.id + "_search").getValue() != "") {
-                       _this.platesDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
+                       _this.containersDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
                     }
                 }
             }
@@ -3372,9 +3566,9 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                         if (e.getKey() == e.ENTER) {
                             _this.filter = field.getValue();
 
-                            if (_this.renderingType == "PLATES"){     
+                            if (_this.renderingType == "CONTAINERS"){     
                                 if (Ext.getCmp(_this.id + "_search").getValue() != "") {                        
-                                    _this.platesDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
+                                    _this.containersDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
                                 } else {
                                     Ext.getCmp(_this.id + "_found").setText("");
                                     _this.reloadData(_this.dataCollectionGroup);
@@ -3693,188 +3887,6 @@ OnlineResultSectionDataCollection.prototype.getPhasingHTML = function(dataCollec
 		}
 	}
 	return html;
-};
-
-/**
-* Displays the plates of the data collections by session or acronym of the protein
-*
-* @class PlatesDataCollectionGrid
-* @constructor
-*/
-function PlatesDataCollectionGrid(args) {
-    
-}
-
-PlatesDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
-    var _this = this;
-    this.store = Ext.create('Ext.data.Store', {
-            fields: ["dataCollectionGroup"]
-    });
-        
-    this.panel = Ext.create('Ext.grid.Panel', {
-        border: 1,        
-        store: this.store,            
-        columns: this.getColumns(),
-        disableSelection: true,
-        viewConfig : {
-            trackOver : false
-        }
-    });
-    return this.panel;
-};
-
-PlatesDataCollectionGrid.prototype.getColumns = function() {
-    var _this = this;
-    var columns = [
-        {
-            dataIndex: 'dataCollectionGroup',
-            name: 'dataCollectionGroup',
-            flex: 1.5,
-            hidden: false,
-            renderer: function(grid, e, record) {
-
-                var data = record.data;  
-                var nContainers = data.containerIds.length;
-
-                var html = "";          
-                
-                dust.render("plates.mxdatacollectiongrid.template", data, function(err, out) {                                                                       
-                    html = html + out;
-                }); 
-                
-                var onSuccess = function (sender, samples) {
-                    if (samples){
-                        var cells = {};
-                        for (var i = 0; i < samples.length; i++) {
-                            var sample = samples[i];
-                            var selected = false;
-                            if (!_.isEmpty(pucks[sample.Container_containerId].initSelected)){
-                                selected = pucks[sample.Container_containerId].initSelected.includes(sample.BLSample_location);
-                            }
-                            var dataCollectionIds = pucks[sample.Container_containerId].dataCollectionIds[sample.BLSample_location];
-                            var state = "FILLED";
-                            if (dataCollectionIds != null && dataCollectionIds.length > 0){
-                                state = "COLLECTED";
-                            }
-                            // Parse data
-                            if (cells[sample.Container_containerId] == null){
-                                cells[sample.Container_containerId] = [];
-                            }
-                            
-                            cells[sample.Container_containerId].push({
-                                location : sample.BLSample_location,
-                                state : state,
-                                selected : selected,
-                                sample_name : sample.BLSample_name,
-                                protein_acronym : sample.Protein_acronym,
-                                protein_name : sample.Protein_name,
-                                containerId : sample.Container_containerId,
-                                container_code : sample.Container_code,
-                                dewarId : sample.Dewar_dewarId,
-                                dataCollectionIds : dataCollectionIds
-                            });
-                        }
-                        
-                        for (containerId in pucks){
-                            pucks[containerId].load(cells[containerId]);
-                            var infoHtml = "";
-                            
-                            dust.render("plates.info.mxdatacollectiongrid.template", cells[containerId][0], function(err, out) {                                                                       
-                                infoHtml = infoHtml + out;
-                            }); 
-                            
-                            $("#puck-panel-" + containerId + "-info").html(infoHtml);
-                        }
-                    }
-                };
-                
-                if (data.containerIds.length > 0){
-                    var pucksPanelHeight = 300;
-                    var pucks = {};
-                    var tree = $("<div ><div id='a' style='display: block;overflow-y: scroll;height:" + (2*pucksPanelHeight)+"px;'>" + html + "</div></div>");
-                    for (id in data.containerIds){
-                        var containerIdNumber = Number(data.containerIds[id]);
-                        var container = _.filter(_this.dataCollectionGroup,{"Container_containerId" : containerIdNumber});
-                        
-                        if(container){
-                            var dataCollectionIds = {};
-                            for (var i = 1 ; i <= container[0].Container_capacity ; i++) {
-                                var sampleByLocation = _.filter(container,{"BLSample_location":i.toString()});
-                                if (sampleByLocation.length > 0) {
-                                    var ids = [];
-                                    for (sample in sampleByLocation){
-                                        ids.push(sampleByLocation[sample].DataCollection_dataCollectionId);
-                                    }
-                                    dataCollectionIds[i] = ids.toString();
-                                }
-                            }
-                            
-                            pucks[containerIdNumber] = new UniPuckWidget({mainRadius : pucksPanelHeight/4, 
-                                                                        enableMouseOver : true, 
-                                                                        enableClick : true, 
-                                                                        containerId : containerIdNumber, 
-                                                                        initSelected : data.selected[containerIdNumber],
-                                                                        dataCollectionIds : dataCollectionIds
-                                                                    });
-                            if (container[0].Container_capacity == 10){
-                                pucks[containerIdNumber] = new SpinePuckWidget({mainRadius :  pucksPanelHeight/4, 
-                                                                                enableMouseOver : true, 
-                                                                                enableClick : true, 
-                                                                                containerId : containerIdNumber, 
-                                                                                dataCollectionId : container.DataCollection_dataCollectionId, 
-                                                                                initSelected : data.selected[containerIdNumber],
-                                                                                dataCollectionIds : dataCollectionIds
-                                                                            });
-                            }
-                            tree.find("#puck-panel-" + data.containerIds[id]).html(pucks[containerIdNumber].getPanel());
-                        }
-                    }
-                    
-                    EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(data.containerIds);
-                    html = tree.html();
-                };
-
-                return html;
-            }
-        },
-        {
-            header: 'IDs',
-            dataIndex: 'dataCollectionGroup',
-            name: 'dataCollectionGroup',
-            flex: 1.5,
-            hidden: true,
-            renderer: function(grid, e, record) {
-                var html = "";
-                dust.render("ids.mxdatacollectiongrid.template", record.data, function(err, out) {
-                    html = out;
-                });
-                return html;
-
-            }
-        }
-    ];
-    return columns;
-};
-
-PlatesDataCollectionGrid.prototype.select = function(selectedDataCollectionGroup) {      
-    var selected = {};   
-    for (sample in selectedDataCollectionGroup){
-        if (selected[selectedDataCollectionGroup[sample].Container_containerId] == null){
-            selected[selectedDataCollectionGroup[sample].Container_containerId] = [selectedDataCollectionGroup[sample].BLSample_location];
-        } else {
-            selected[selectedDataCollectionGroup[sample].Container_containerId].push(selectedDataCollectionGroup[sample].BLSample_location);
-        }
-    }                                                                      
-    this.store.loadData([{containerIds : this.getContainersId(this.dataCollectionGroup), selected : selected}]);
-};
-
-PlatesDataCollectionGrid.prototype.getContainersId = function(dataCollectionGroup) {         
-   return _.filter(Object.keys(_.keyBy(dataCollectionGroup, "Container_containerId")), function(element){return isNumber(element);});                                                              
-};
-
-PlatesDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
-    this.dataCollectionGroup = dataCollectionGroup;    
-    this.store.loadData([{containerIds:  this.getContainersId(this.dataCollectionGroup), selected :{}}]);
 };
 
 function ThumbnailSectionDatacollection(args) {
@@ -4213,14 +4225,18 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                                                 enableClick : false,
                                                 dataCollectionIds : dataCollectionIds
                 };
-                                            
+
+                var puckLegend = new PuckLegend();
+
+                $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
+    
                 var puck = new UniPuckWidget(attributesContainerWidget);
                 
                 if (dc.Container_capacity == 10){
                     puck = new SpinePuckWidget(attributesContainerWidget);
                 }
                 
-                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel());
+                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                 
                 var onSuccess = function(sender, samples){
                     if (samples){
@@ -4244,7 +4260,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var _this = this;
     
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
-    
+    debugger
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/
@@ -5223,6 +5239,8 @@ function ContainerPrepareSpreadSheet(args){
 
     this.onSelectRow = new Event(this);
     this.onLoaded = new Event(this);
+    this.onBeamlineChanged = new Event(this);
+    this.onUnloadAllButtonClicked = new Event(this);
 };
 
 /**
@@ -5236,12 +5254,31 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     this.store = Ext.create('Ext.data.Store', {
         storeId:'spreadSheedStore',
-        fields:['shippingName', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','sampleChangerLocation','dewarId','containerId','capacity'],
+        fields:['shippingName', 'shippingId', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
         data: []
     });
 
     this.panel = Ext.create('Ext.grid.Panel', {
         title: 'Loaded or to be Loaded on MxCube',
+        buttons: [
+                            {
+                                xtype: 'button',
+                                text: '<div style="color: white">Unload all</div>',
+                                width: 200,
+                                color: '#FFFFFF',
+                                scale: 'large',
+                                style: {
+                                    background: '#444444',
+                                },
+                                handler : function(){
+                                    var onSuccess = function (sender,c) {
+                                        _this.onUnloadAllButtonClicked.notify();
+                                        _this.loadProcessingDewars(_this.sampleChangerWidget);
+                                    }
+                                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(_.map(_this.dewars,"containerId"));
+                                }
+                            }
+        ],
         store: this.store,
         cls : 'border-grid',
         height  : this.height,
@@ -5272,7 +5309,15 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 flex: 1,
                 hidden : true,
                 readOnly: true
-            },              
+            },  
+            {
+                header: 'ShippingId',
+                dataIndex: 'shippingId',
+                type: 'text',
+                flex: 1,
+                hidden : true,
+                readOnly: true
+            },             
              {
                 header: 'ContainerId',
                 dataIndex: 'containerId',
@@ -5326,18 +5371,43 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 hidden :true,
                 readOnly: true
             },
-            { 
-                header : 'Selected Beamline',
+            {
+                header : 'Beamline',
                 dataIndex: 'beamlineName',
+                hidden : true,
                 type: 'dropdown',			        	 								
                 flex: 1,
                 source: EXI.credentialManager.getBeamlineNames()
+            },
+             {
+                header: 'Beamline',
+                dataIndex: 'beamlineCombo',
+                type: 'text',
+                flex: 1,
+                readOnly: true,
+                renderer : function(value, metaData, record, rowIndex){
+                    var beamlines = _.map(EXI.credentialManager.getBeamlinesByTechnique("MX"),"name");
+                    beamlines = _.union(beamlines,[record.data.beamlineName])
+                    var templateData = {
+                                            beamlines   : beamlines,
+                                            selected    : record.data.beamlineName,
+                                            containerId : record.data.containerId,
+                                            id          : _this.id
+                                        }
+                    var html = "";
+                    dust.render("beamlines.combobox.template", templateData, function(err, out){
+                        html = out;
+                    });
+                    return html;
+                }
+                
             },
             {
                 header: 'Sample Changer Location',
                 dataIndex: 'sampleChangerLocation',
                 flex: 1,
-                type: 'text'
+                type: 'text',
+                tdCls: 'scl-cell'
             }       
         ],
         viewConfig: {
@@ -5347,27 +5417,29 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 }
                 for (var i = 0 ; i < _this.dewars.length ; i++){
                     var dewar = _this.dewars[i];
-                    if (record.get('dewarId') != dewar.dewarId && dewar.sampleCount > 0) {
+                    if (record.get('containerId') != dewar.containerId && dewar.beamlineLocation == record.get('beamlineName')) {
                         if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
                             return "puck-error";
                         }
                     }
                 }
-                if (_this.sampleChangerWidget){
-                    if (record.get('sampleChangerLocation') > _this.sampleChangerWidget.sampleChangerCapacity) {
-                        return "warning-row";
-                    }
-                    var puckToBeFilled = _this.sampleChangerWidget.findPuckById(_this.sampleChangerWidget.convertSampleChangerLocationToId(record.get('sampleChangerLocation')));
-                    if (puckToBeFilled.capacity != record.get('capacity')){
-                        return "warning-row";
-                    }
-                }
+                // if (_this.sampleChangerWidget){
+                //     if (record.get('sampleChangerLocation') > _this.sampleChangerWidget.sampleChangerCapacity) {
+                //         return "warning-row";
+                //     }
+                //     var puckToBeFilled = _this.sampleChangerWidget.findPuckById(_this.sampleChangerWidget.convertSampleChangerLocationToId(record.get('sampleChangerLocation')));
+                //     if (puckToBeFilled.capacity != record.get('capacity')){
+                //         return "warning-row";
+                //     }
+                // }
                 return "";
             }
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                _this.onSelectRow.notify(record);             
+                if (e.target.tagName != "SELECT"){
+                    _this.onSelectRow.notify({record : record, item : item});          
+                }
             }
            
 
@@ -5382,21 +5454,6 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
             
         ]
     });
-
-    //arrowUp and arrowDown listeners. 
-    //Needs the first column of row Index
-    // this.panel.view.addElListener('keyup', function(event,row) {
-    //     if (event.keyCode == 38 || event.keyCode == 40) { 
-    //         _this.onSelectRow.notify(_this.panel.store.getAt(Number(row.cells[0].innerText)-1));
-    //     }
-    // });
-
-    // this.panel.on('boxready', function() {
-    //     for (var i = 0 ; i < _this.warningRows.length ; i++) {
-    //         var containerId = _this.warningRows[i];
-    //         _this.addClassToRow (containerId, "warning-row");
-    //     }
-    // });
 
     return this.panel;
 };
@@ -5432,51 +5489,54 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
 * @return
 */
 ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+    var _this = this;
     this.dewars = dewars;
     if (sampleChangerWidget){
         this.sampleChangerWidget = sampleChangerWidget;
     }
     var data = [];
-    var preSelectedBeamline = null;
-    if (typeof(Storage) != "undefined"){
-        var preSelectedBeamline = sessionStorage.getItem("selectedBeamline");
-    }
-    // var emptyDewars = false;
+    var error = false;
     //Parse data
-    for (dewar in dewars) {
-        // if (dewars[dewar].sampleCount > 0){
-        var beamlineName = dewars[dewar].beamlineName;
-        if (preSelectedBeamline) {
-            beamlineName = preSelectedBeamline;
-        }
-        var containerType = "Unipuck";
-        if (dewars[dewar].capacity){
-            if (dewars[dewar].capacity == 10) {
-                containerType = "Spinepuck";
+    for (var i = 0 ; i < dewars.length ; i++) {
+        var dewar = dewars[i];
+        if (dewar.containerId){
+            var containerType = "Unipuck";
+            if (dewar.capacity){
+                if (dewar.capacity == 10) {
+                    containerType = "Spinepuck";
+                }
             }
+            data.push({
+                shippingName : dewar.shippingName,
+                shippingId : dewar.shippingId,
+                barCode : dewar.barCode,
+                containerCode : dewar.containerCode,
+                containerType : containerType,
+                sampleCount : dewar.sampleCount,
+                beamlineName : dewar.beamlineLocation,
+                sampleChangerLocation : dewar.sampleChangerLocation,
+                dewarId : dewar.dewarId,
+                containerId : dewar.containerId,
+                capacity : dewar.capacity
+            });
+        } else {
+            debugger
+            error = true;
         }
-        data.push({
-            shippingName : dewars[dewar].shippingName,
-            barCode : dewars[dewar].barCode,
-            containerCode : dewars[dewar].containerCode,
-            containerType : containerType,
-            sampleCount : dewars[dewar].sampleCount,
-            beamlineName : beamlineName,
-            sampleChangerLocation : dewars[dewar].sampleChangerLocation,
-            dewarId : dewars[dewar].dewarId,
-            containerId : dewars[dewar].containerId,
-            capacity : dewars[dewar].capacity
-        });
-        // } else {
-        //     emptyDewars = true;
-        // }
     }
 
-    // if (emptyDewars){
-        // $.notify("Warning: Some of the dewars have no samples on them.", "warn");
-    // }
+    if (error){
+        $.notify("Error: error loading the dewars", "error");
+    }
 
     this.store.loadData(data);
+    //Define listener for beamline combobox
+    $('.beamlines-select').change(function(sender) {
+        var beamline = $("#" + _this.id + "-" + sender.target.value + " option:selected").text();
+        var containerId = sender.target.value;
+        _this.updateBeamlineName(containerId,beamline);
+        _this.onBeamlineChanged.notify(beamline);
+    });
 };
 
 /**
@@ -5489,32 +5549,48 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
 */
 ContainerPrepareSpreadSheet.prototype.updateSampleChangerLocation = function (containerId, location) {
     var _this = this;
-    var recordsByContainerId = _.filter(_this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
+    var recordsByContainerId = this.getRowsByContainerId(containerId);
 
     for (var i = 0 ; i < recordsByContainerId.length ; i++) {
         var record = recordsByContainerId[i];
         if (record.get('containerId') == containerId) {
             var beamlineName = record.get('beamlineName');
+            if (beamlineName) {
+                var onSuccess = function(sender, containers) {
+                    _this.loadProcessingDewars();
+                };
+                var onError = function(sender, error) {        
+                    EXI.setError("Ops, there was an error");
+                };
 
-            var onSuccess = function(sender, containers) {
-                _this.loadProcessingDewars();
-            };
-            var onError = function(sender, error) {        
-                EXI.setError("Ops, there was an error");
-            };
-
-            EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
+                EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamlineName], [location]);
+            } else {
+                $.notify("The beamline is not defined", "error");
+            }
             return
         }
     }
 };
 
+ContainerPrepareSpreadSheet.prototype.updateBeamlineName = function (containerId, beamline) {
+    var _this = this;
+
+    var onSuccess = function(sender, containers) {
+        _this.loadProcessingDewars();
+    };
+    var onError = function(sender, error) {        
+        EXI.setError("Ops, there was an error");
+    };
+
+    EXI.getDataAdapter({onSuccess : onSuccess, onError:onError}).proposal.dewar.updateSampleLocation([containerId], [beamline], [""]);
+};
+
 /**
 * Returns the row with the given containerId
 *
-* @method getRowByContainerId
+* @method getRowsByContainerId
 * @param {Integer} containerId The container Id of the record to be returned
-* @return The row with the given containerId
+* @return The rows with the given containerId
 */
 ContainerPrepareSpreadSheet.prototype.getRowsByContainerId = function (containerId) {
     var recordsByContainerId = _.filter(this.panel.store.data.items,function(o) {return o.data.containerId == containerId});
@@ -5622,7 +5698,22 @@ DewarListSelectorGrid.prototype.getSelectedData = function() {
 
 DewarListSelectorGrid.prototype.getStore = function(){
     this.store = Ext.create('Ext.data.Store', {
-        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type']
+        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type'],
+        sortInfo: { field: "sessionStartDate", direction: "DESC" },
+        sorters:
+                {
+                    field: 'sessionStartDate',
+                    direction: 'ASC',
+                    sorterFn: function(o1, o2) {
+                        var d1 = new Date(o1.data.sessionStartDate)
+                        var d2 = new Date(o2.data.sessionStartDate)
+                        if (d1 === d2) {
+                            return 0;
+                        } else {
+                            return (d1 < d2) ? 1 : -1;
+                        }
+                    }
+                }
     });
     return this.store;
 };
@@ -5750,6 +5841,8 @@ DewarListSelectorGrid.prototype.getPanel = function(){
 function LoadSampleChangerView (args) {
     var _this = this;
 
+    this.id = BUI.id();
+    this.showTip = true;
     this.height = 600;
     this.width = 600;
     this.widgetRadius = 185;
@@ -5762,19 +5855,22 @@ function LoadSampleChangerView (args) {
         }
     };
 
-    this.sampleChangerWidget = new FlexHCDWidget({});
-    
-    this.warningRows = [];
+    var data = {
+        radius : this.widgetRadius,
+        isLoading : false
+    };
+    this.sampleChangerWidget = new FlexHCDWidget(data);
+
+    this.selectedRowItem = null;
     this.selectedContainerId = null;
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
 
-    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 480,width : 600});
+    this.containerListEditor = new ContainerPrepareSpreadSheet({height : 507,width : 600});
     this.previewPanelView = new PreviewPanelView({
                                                         height : 100
                                                     });
-    this.sampleChangerName = "";
     
     if (typeof(Storage) != "undefined"){
         var sampleChangerName = sessionStorage.getItem("sampleChangerName");
@@ -5783,15 +5879,21 @@ function LoadSampleChangerView (args) {
         }
     }
 
-    this.containerListEditor.onSelectRow.attach(function(sender, row){
+    this.containerListEditor.onSelectRow.attach(function(sender, data){
+        var row = data.record;
         if (row) {
+            if (_this.showTip){
+                $.notify("Click on a sample changer location to place the dewar","info");
+                _this.sampleChangerWidget.blink();
+                _this.showTip = false;
+            }
+            // Check if the sampleChanger needs to be changed
+            if (row.data.beamlineName != _this.sampleChangerWidget.beamlineName) {
+                _this.changeSampleChangerWidgetByBeamline(row.data.beamlineName);
+            }
+            // Manage the selection/deselection of rows and cells
             if (_this.selectedPuck){
                 _this.deselectPuck();
-            }
-            else{
-                $.notify("Click on a sample changer location to place the dewar", "info");
-                _this.sampleChangerWidget.blink();
-                
             }
             if (_this.selectedContainerId) {
                 if (_this.selectedContainerId == row.get('containerId')){
@@ -5807,12 +5909,20 @@ function LoadSampleChangerView (args) {
         }
 	});
 
+    this.containerListEditor.onBeamlineChanged.attach(function(sender,beamline) {
+        _this.changeSampleChangerWidgetByBeamline(beamline);
+    });
+
     this.containerListEditor.onLoaded.attach(function(sender, containers){
         // $('.notifyjs-corner').empty();  
         _this.load(containers);
     });
 
-    this.previewPanelView.onEmptyButtonClicked.attach(function(sender){
+    this.containerListEditor.onUnloadAllButtonClicked.attach(function(sender){
+        _this.returnToSelectionStatus();
+    });
+
+    this.previewPanelView.onUnloadButtonClicked.attach(function(sender){
         if (_this.selectedPuck){
             _this.selectedPuck.emptyAll();
             _this.previewPuck(_this.selectedPuck.containerId, _this.selectedPuck.capacity, {
@@ -5829,7 +5939,11 @@ function LoadSampleChangerView (args) {
 
 LoadSampleChangerView.prototype.setSelectedRow = function (row) {
     this.containerListEditor.panel.getSelectionModel().select(row);
-    this.selectedContainerId = row.get('containerId');
+    this.selectedRowItem = $('.x-grid-item-selected')[0];
+    this.selectedContainerId = -1;
+    if (row.get('containerId')){
+        this.selectedContainerId = row.get('containerId');
+    }
     this.selectedContainerCapacity = row.get('capacity');
     this.sampleChangerWidget.disablePucksOfDifferentCapacity(this.selectedContainerCapacity);
 
@@ -5840,7 +5954,10 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
             this.setSelectedPuck(puck);
         }
     }
-
+    var text = "<span style='font-size:12px;'>Click on a sample changer </br>location to place the dewar</span>";
+    if (row.get('sampleChangerLocation') != null && row.get('sampleChangerLocation') !="") {
+        text = "Unload #" + row.get('sampleChangerLocation');
+    }
     this.previewPuck(row.get('containerId'), 
                         row.get('capacity'), {
                                 info : [{
@@ -5850,11 +5967,16 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
                                     text : 'SC Location',
                                     value : row.get('sampleChangerLocation')
                                 }]
-        }, "EMPTY");
+        }, text);
     
     if (this.selectedPuck) {
         this.sampleChangerWidget.enablePuck(this.selectedPuck);
     }
+
+    $("#" + this.selectedRowItem.id).addClass("selected-row");
+
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).prop('disabled', false);
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).css('pointer-events','auto');
 };
 
 /**
@@ -5889,10 +6011,18 @@ LoadSampleChangerView.prototype.setSelectedPuck = function (puck) {
 * @return 
 */
 LoadSampleChangerView.prototype.deselectRow = function () {
+    //disable beamline combobox
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).prop('disabled', 'disabled');
+    $("#" + this.containerListEditor.id + "-" + this.selectedContainerId).css('pointer-events','none');
+    //deselect row and reinitialize values
     this.containerListEditor.panel.getSelectionModel().deselectAll();
     this.selectedContainerId = null;
     this.selectedSampleCount = null;
     this.sampleChangerWidget.enableAllPucks();
+    if(this.selectedRowItem){
+        $("#" + this.selectedRowItem.id).removeClass("selected-row");
+    }
+    this.selectedRowItem = null;
 }
 
 /**
@@ -5917,7 +6047,9 @@ LoadSampleChangerView.prototype.returnToSelectionStatus = function () {
     if (this.selectedPuck) {
         this.deselectPuck();        
     }
-    this.cleanPreviewPanel();
+    if (this.previewPanelView){
+        this.cleanPreviewPanel();
+    }
 };
 
 /**
@@ -5941,15 +6073,17 @@ LoadSampleChangerView.prototype.loadSampleChangerPuck = function (puck, containe
 /**
 * Generates a sampleChangerWidget given its name. It also checks for puck data on the sessionStorage
 *
-* @method getSampleChangerWidget
+* @method createSampleChangerWidget
 * @param {String} sampleChangerName The name of the sampleChangerWidget to be generated
+* @param {String} beamlineName The name of the beamline
 * @return A sampleChangerWidget
 */
-LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChangerName) {
+LoadSampleChangerView.prototype.createSampleChangerWidget = function (sampleChangerName, beamlineName) {
     var _this = this;
     var data = {
         radius : this.widgetRadius,
-        isLoading : false
+        isLoading : false,
+        beamlineName : beamlineName
     };
     this.sampleChangerWidget = new FlexHCDWidget(data);
     if (sampleChangerName == "SC3") {
@@ -5961,6 +6095,22 @@ LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChanger
     return this.sampleChangerWidget;
 };
 
+LoadSampleChangerView.prototype.changeSampleChangerWidgetByBeamline = function (beamlineName) {
+    var newBeamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlineName});
+    if (newBeamline.length > 0) {
+        this.createSampleChangerWidget(newBeamline[0].sampleChangerType,newBeamline[0].name);
+    } else {
+        this.createSampleChangerWidget("FlexHCD",beamlineName);
+    }
+    this.widgetContainer.removeAll();
+    this.load(this.containers);
+    this.widgetContainer.insert(this.sampleChangerWidget.getPanel());
+    this.reloadSampleChangerWidget();
+    this.sampleChangerWidget.blink();
+    this.returnToSelectionStatus();
+}
+
+
 /**
 * Loads the sampleChangerWidget
 *
@@ -5969,40 +6119,32 @@ LoadSampleChangerView.prototype.getSampleChangerWidget = function (sampleChanger
 */
 LoadSampleChangerView.prototype.load = function (containers) {
     var _this = this;
-
+    
     this.sampleChangerWidget.emptyAllPucks();
-    this.warningRows = [];
     var filledContainers = {};
 
     if (containers) {
+        this.containers = containers;
         for (var i = 0 ; i < containers.length ; i++){
             var container = containers[i];
-
-            var sampleChangerLocation = container.sampleChangerLocation;
-            if (sampleChangerLocation != "" && sampleChangerLocation != null){
-                var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
-                if (puckId) {
-                    var puck = this.sampleChangerWidget.findPuckById(puckId);
-                    if (puck.capacity != container.capacity){
-                        this.warningRows.push(container.containerId);
+            if (container.beamlineLocation == this.sampleChangerWidget.beamlineName){
+                var sampleChangerLocation = container.sampleChangerLocation;
+                if (sampleChangerLocation != "" && sampleChangerLocation != null){
+                    var puckId = this.sampleChangerWidget.convertSampleChangerLocationToId(Number(sampleChangerLocation));
+                    if (puckId) {
+                        var puck = this.sampleChangerWidget.findPuckById(puckId);
+                        if (puck.capacity != container.capacity){
+                        }
+                        if (container.sampleCount == 0) {
+                            puck.containerId = container.containerId;
+                            puck.isEmpty = false;
+                        } else {
+                            filledContainers[container.containerId] = puckId;
+                        }
                     }
-                    if (container.sampleCount == 0) {
-                        puck.containerId = container.containerId;
-                        puck.isEmpty = false;
-                    } else {
-                        filledContainers[container.containerId] = puckId;
-                    }
-                } else {
-                    this.warningRows.push(container.containerId);
                 }
-
-            } else {
-                this.warningRows.push(container.containerId);
             }
-
         }
-        
-        
         if (!_.isEmpty(filledContainers)){
             var onSuccess = function (sender, samples) {
                 var errorPucks = _this.sampleChangerWidget.loadSamples(samples,filledContainers);
@@ -6027,8 +6169,6 @@ LoadSampleChangerView.prototype.load = function (containers) {
 LoadSampleChangerView.prototype.getPanel = function () {
     var _this = this;
 
-    this.sampleChangerWidget = this.getSampleChangerWidget(this.sampleChangerName);
-
     this.widgetContainer = Ext.create('Ext.panel.Panel', {
         width : 400,
         height : 2*this.widgetRadius,
@@ -6042,13 +6182,19 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.verticalPanel = Ext.create('Ext.panel.Panel', {
         // layout : 'hbox',
-            items : [
+            layout: {
+                type: 'vbox',
+                align: 'center',
+                pack: 'center'
+            },
+            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid ' align='center' ><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:300px;font-size:20px;font-weight:100;'></span></div>"},
                         this.widgetContainer    
             ]
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
         // title : 'Load the sample changer',
+        autoScroll : true,
         layout : 'hbox',
         height : this.height,
         width : this.width,
@@ -6060,37 +6206,44 @@ LoadSampleChangerView.prototype.getPanel = function () {
     });
 
     this.panel.on('boxready', function() {
-        _this.sampleChangerWidget.setClickListeners();
-        _this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
-            if (_this.selectedContainerId) {
-                if (_this.selectedPuck) {
-                    if (_this.selectedPuck == puck) {
-                        _this.returnToSelectionStatus();
-                    } else {
-                        _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
-                    }
-                } else {
-                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
-                }
-            } else {
-                if (_this.selectedPuck) {
-                    if (_this.selectedPuck == puck) {
-                        _this.returnToSelectionStatus();
-                    } else {
-                        _this.deselectRow();
-                        _this.deselectPuck();
-                        _this.setSelectedPuck(puck);
-                    }
-                } else {
-                    _this.setSelectedPuck(puck);
-                }
-            }
-        });
-        _this.sampleChangerWidget.render();
+        _this.reloadSampleChangerWidget();
     });
 
     return this.panel;
 };
+
+LoadSampleChangerView.prototype.reloadSampleChangerWidget = function () {
+    var _this = this;
+    this.sampleChangerWidget.setClickListeners();
+    this.sampleChangerWidget.onPuckSelected.attach(function(sender, puck){
+        if (_this.selectedContainerId) {
+            if (_this.selectedPuck) {
+                if (_this.selectedPuck == puck) {
+                    _this.returnToSelectionStatus();
+                } else {
+                    _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+                }
+            } else {
+                _this.loadSampleChangerPuck(puck, _this.selectedContainerId);
+            }
+        } else {
+            if (_this.selectedPuck) {
+                if (_this.selectedPuck == puck) {
+                    _this.returnToSelectionStatus();
+                } else {
+                    _this.deselectRow();
+                    _this.deselectPuck();
+                    _this.setSelectedPuck(puck);
+                }
+            } else {
+                _this.setSelectedPuck(puck);
+            }
+        }
+    });
+    this.sampleChangerWidget.render();
+    $("#" + this.id + "-scw-label").html(this.sampleChangerWidget.beamlineName + " (" + this.sampleChangerWidget.name + ")");
+    this.panel.doLayout();
+}
 
 /**
 * Cleans and removes the previewPanelView
@@ -6100,8 +6253,10 @@ LoadSampleChangerView.prototype.getPanel = function () {
 */
 LoadSampleChangerView.prototype.cleanPreviewPanel = function () {
     this.previewPanelView.clean();
-    if(this.previewPanelView.panel.body){
-        this.verticalPanel.remove(this.previewPanelView.panel);
+    if (this.previewPanelView.panel){
+        if(this.previewPanelView.panel.body){
+            this.verticalPanel.remove(this.previewPanelView.panel);
+        }
     }
 };
 
@@ -6140,13 +6295,12 @@ function PrepareMainView(args) {
         }
     }
 
-    this.steps = ["","/selectSampleChanger","/loadSampleChanger"];
+    this.steps = ["","/loadSampleChanger"];
 
     this.height = 550;
     this.width = 1300;
     
     this.dewarListSelector = new DewarListSelectorGrid({height : this.height - 12, width : this.width - 60});
-    this.sampleChangerSelector = new SampleChangerSelector({height : this.height - 12, width : this.width - 0});
     this.loadSampleChangerView = new LoadSampleChangerView({height : this.height - 12, width : this.width - 0});
     this.confirmShipmentView = new ConfirmShipmentView();
 
@@ -6169,25 +6323,6 @@ function PrepareMainView(args) {
     this.selectedContainerCapacity = null;
     this.selectedPuck = null;
     this.sampleChangerName = null;
-
-    this.sampleChangerSelector.onRowSelected.attach(function(sender,beamline){
-        if (beamline) {
-            _this.save("selectedBeamline", beamline);
-        } else {
-            _this.removeFromStorage("selectedBeamline");
-        }
-    });
-
-    this.sampleChangerSelector.onSampleChangerSelected.attach(function(sender,changerName){
-        Ext.getCmp("next-button").enable();
-        $('#step-3').attr("disabled", false);
-        _this.sampleChangerName = changerName;
-        _this.save('sampleChangerName', changerName);
-        if (typeof(Storage) != "undefined") {
-            sessionStorage.removeItem('puckData');
-        }
-        _this.loadSampleChangerView.sampleChangerName = changerName;
-    });
 
 };
 
@@ -6226,18 +6361,9 @@ PrepareMainView.prototype.manageButtons = function () {
         Ext.getCmp("next-button").enable(); 
     } else {
         Ext.getCmp("previous-button").show();
-    }
-    if (this.currentStep == 2) {
-        Ext.getCmp("next-button").disable();
-    }
-    if (this.currentStep < 3) {
-        Ext.getCmp("next-button").show();  
-        $('#done-button').hide();
-    }
-    if (this.currentStep == 3) {
         Ext.getCmp("next-button").hide();
     }
-    for (var i = 1 ; i <= 3 ; i++){
+    for (var i = 1 ; i <= 2 ; i++){
         if (i == this.currentStep) {
             $('#step-' + i).addClass('active-step');
         } else {
@@ -6257,25 +6383,6 @@ PrepareMainView.prototype.changeStep = function (direction) {
     this.currentStep += direction;
     location.href = "#/mx/prepare/main" + this.steps[this.currentStep-1];
 };
-
-/**
-* Manages the disable state of the step buttons
-*
-* @method manageStepButtons
-* @return 
-*/
-// PrepareMainView.prototype.manageStepButtons = function () {
-//     if (this.loadSampleChangerView.sampleChangerName == "") {
-//         $('#step-3').attr("disabled", true);
-//     } else {
-//         $('#step-3').attr("disabled", false);
-//     }
-//     for (var i = 1 ; i <= 4 ; i++){
-//         if (i == this.currentStep){
-//             $('#step-' + i).addClass('active-step');
-//         }
-//     }
-// };
 
 /**
 * Loads a Ext.panel.panel constaining a Ext.panel.Panel that will render the steps inside and sets the click events for the buttons
@@ -6299,6 +6406,7 @@ PrepareMainView.prototype.getPanel = function() {
     );
 
 	this.panel = Ext.create('Ext.panel.Panel', {
+        autoScroll : true,
         buttons : this.getButtons(),
         layout: {
             type: 'vbox',
@@ -6308,22 +6416,11 @@ PrepareMainView.prototype.getPanel = function() {
         height : this.height + 200,
         // cls : 'border-grid',
         items : [
-                    this.getToolBar(), this.container,
-                    //   this.getButtons()
+                    this.getToolBar(), this.container
         ]
 	});
 
     this.panel.on('boxready', function() {
-        // $('#next-button').unbind('click').click(function (sender){
-        //     if (_this.currentStep < 4) {
-        //         _this.changeStep(1);
-        //     }
-        // });
-        // $('#previous-button').unbind('click').click(function (sender){
-        //     if (_this.currentStep > 0) {
-        //         _this.changeStep(-1);             
-        //     }
-        // });
         _this.manageButtons();
     });
         
@@ -6418,36 +6515,30 @@ PrepareMainView.prototype.load = function() {
         };
         
         EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    } else if (this.currentStep == 2){
-        this.container.add(this.sampleChangerSelector.getPanel());
-        this.sampleChangerSelector.panel.setLoading();
-
-        var onSuccessProposal = function(sender, containers) { 
+    } else if (this.currentStep == 2) {
+        var onSuccessProposal = function(sender, containers) {     
             _this.containers = containers;
-            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineName'));
-
-            if (beamlinesSelected.length > 1) {
-                $.notify("Warning: Multiple beamlines selected", "warn");
-            } else if (beamlinesSelected.length == 1) {
-                if (EXI.credentialManager.getBeamlineNames().indexOf(beamlinesSelected[0]) >= 0){
-                    _this.sampleChangerSelector.selectRowByBeamlineName(beamlinesSelected[0]);
+            var beamlinesSelected = _.uniq(_.map(_.filter(_this.containers, function(e){return e.shippingStatus == "processing";}),'beamlineLocation'));
+            if (beamlinesSelected.length > 0) {
+                var beamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlinesSelected[0]});
+                if (beamline.length > 0) {
+                    _this.loadSampleChangerView.createSampleChangerWidget(beamline[0].sampleChangerType,beamline[0].name);
                 } else {
-                    $.notify("Warning: Unknown beamline", "warn");
+                    $.notify("Warning: Unknown beamline " + beamlinesSelected[0], "warn");
+                    _this.loadSampleChangerView.createSampleChangerWidget("FlexHCD",beamlinesSelected[0]);
+                }
+                for (var i = 1 ; i < beamlinesSelected.length ; i++){
+                    var beamline = _.filter(EXI.credentialManager.getBeamlinesByTechnique("MX"),{"name":beamlinesSelected[i]});
+                    if (beamline.length == 0) {
+                        $.notify("Warning: Unknown beamline " + beamlinesSelected[i], "warn");
+                    }
                 }
             }
-
-            _this.sampleChangerSelector.panel.setLoading(false);
-        };
-
-        var onError = function(sender, error) {        
-            EXI.setError("Ops, there was an error");
-            _this.sampleChangerSelector.panel.setLoading(false);
+            _this.container.add(_this.loadSampleChangerView.getPanel());
+            _this.loadSampleChangerView.load();
         };
         
-        EXI.getDataAdapter({onSuccess : onSuccessProposal, onError:onError}).proposal.dewar.getDewarsByProposal();
-    } else if (this.currentStep == 3) {
-        this.container.add(this.loadSampleChangerView.getPanel());
-        this.loadSampleChangerView.load();
+        EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByProposal();
     }
 };
 
@@ -6516,7 +6607,7 @@ function PreviewPanelView (args) {
                 enableMouseOver : true
             };
 
-    this.onEmptyButtonClicked = new Event(this);
+    this.onUnloadButtonClicked = new Event(this);
 };
 
 /**
@@ -6546,14 +6637,16 @@ PreviewPanelView.prototype.getPanel = function () {
         },
         listeners: {
             click: function(button) {
-                if (button.text == "EMPTY") {
-                    _this.onEmptyButtonClicked.notify();
+                if (button.text != null){
+                    if (button.text.split(" ")[0] == "Unload") {
+                        _this.onUnloadButtonClicked.notify();
+                    }
                 }
             }
         }
     });
 
-    var infoContainer = Ext.create('Ext.panel.Panel', {
+    this.infoContainer = Ext.create('Ext.panel.Panel', {
         layout : 'vbox',
         width : this.width/2,
         height : this.height,
@@ -6572,7 +6665,7 @@ PreviewPanelView.prototype.getPanel = function () {
         layout : 'hbox',
         width : this.width,
         height : this.height,
-        items : [infoContainer, this.previewPanel ]
+        items : [this.infoContainer, this.previewPanel ]
     });
 
     return this.panel;
@@ -6599,7 +6692,6 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
                             html    : html,
                             margin  : 6
                     });
-
     this.instructionsButton.setText(instructionsButtonText);
     this.puckData.containerId = containerId;
     if (capacity == 10){
@@ -6630,9 +6722,11 @@ PreviewPanelView.prototype.load = function (containerId, capacity, data, instruc
 * @return
 */
 PreviewPanelView.prototype.clean = function () {
-    this.previewPanel.removeAll();
-    this.infoPanel.removeAll();
-    this.instructionsButton.setText("");
+    if (this.previewPanel){
+        this.previewPanel.removeAll();
+        this.infoPanel.removeAll();
+        this.instructionsButton.setText("");
+    }
 };
 function WorkflowStepMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -7913,6 +8007,7 @@ function SampleChangerWidget (args) {
 	this.name = '';
 	this.onPuckSelected = new Event(this);
 	this.sampleChangerCapacity = 0; //This is set in each sample changer type
+	this.beamlineName = "";
 
     this.data = {};
 	if (args) {
@@ -7922,16 +8017,23 @@ function SampleChangerWidget (args) {
 		if (args.isLoading != null){
 			this.isLoading = args.isLoading;
 		}
+		if (args.beamlineName){
+			this.beamlineName = args.beamlineName;
+		}
 	}
 };
 
 /**
 * It blinks the sample changer by fading IN and OUT
 *
-* @method blink` 
+* @method blink
 */
 SampleChangerWidget.prototype.blink = function () {
-    $('#' + this.id).fadeIn().fadeOut().fadeIn().fadeOut().fadeIn();
+    $('#' + this.id).fadeIn().fadeOut().fadeIn();
+	var allPucks = this.getAllPucks();
+	for (var i = 0 ; i < allPucks.length ; i++) {
+		allPucks[i].blink();
+	}
 }
 
 /**
@@ -8291,8 +8393,8 @@ function FlexHCDWidget (args) {
 	};
 	
 	this.createStructure();
-	this.createPucks("Unipuck", this.data.cells/2, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
-	this.createPucks("Spinepuck", this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Spinepuck", this.data.cells/2, -7*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
+	this.createPucks("Unipuck", this.data.cells/2, -5*Math.PI/8, this.data.radius/2, 0.5, {dAlpha : Math.PI/16, dist : 3*this.data.radius/4});
 };
 
 
@@ -8396,6 +8498,55 @@ FlexHCDWidget.prototype.convertSampleChangerLocationToId = function (sampleChang
 		return null;
 	}
 };
+function PuckLegend(args){
+    this.id = BUI.id();
+    this.width = 200;
+    this.height = 10;
+    var cy = "30.5%";
+    var tOffset = 8;
+
+    if (args) {
+        if (args.width) {
+            this.width = args.width;
+        }
+        if (args.height) {
+            this.height = args.height;
+        }
+        if (args.cy) {
+            cy = args.cy;
+        }
+        if (args.tOffset) {
+            tOffset = args.tOffset;
+        }
+    }
+    
+    var rad = "7%";
+    var circles = [];
+    circles.push({cx : "7%", cy : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
+    circles.push({cx : "27%", cy : cy, r : rad, cls : "cell_collected", text : "COLLECTED"});
+    circles.push({cx : "47%", cy : cy, r : rad, cls : "cell_filled", text : "FILLED"});
+    circles.push({cx : "67%", cy : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
+
+    this.data = {
+                    id      : this.id,
+                    circles : circles,
+                    tOffset : tOffset
+                };
+}
+
+PuckLegend.prototype.getPanel = function () {
+	var html = "";
+	dust.render("puck.legend.template", this.data, function(err, out){
+		html = out;
+	});
+	
+	return {
+				html : html,
+                width : this.width,
+                height : this.height
+			};
+};
+
 /**
 * Abstract class for creating a puck widget
 *
@@ -8410,11 +8561,12 @@ function PuckWidget(args){
 	this.containerId = 0;
 	this.containerCode = "";
 	this.enableMouseOver = false;
-	this.enableClick = false;
+	this.enableClick = false; //click on cells
+	this.enableMainClick = false; //click on the puck
+	this.enableMainMouseOver = false; //mouse over on the puck
 	this.initSelected = {};
 	this.isLoading = true;
 	this.capacity = 10;
-	
 	this.isUnipuck = false;
 	this.isEmpty = true;
 	
@@ -8440,6 +8592,12 @@ function PuckWidget(args){
 		if (args.enableClick != null){
 			this.enableClick = args.enableClick;
 		}
+		if (args.enableMainClick != null){
+			this.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableMainMouseOver != null){
+			this.enableMainMouseOver = args.enableMainMouseOver;
+		}
 		if (args.initSelected){
 			this.initSelected = args.initSelected;
 		}
@@ -8461,6 +8619,7 @@ function PuckWidget(args){
 				containerId : this.containerId,
 				containerCode : this.containerCode,
 				enableClick : this.enableClick,
+				enableMainClick : this.enableMainClick,
 				enableMouseOver : this.enableMouseOver,
 				dataCollectionIds : this.dataCollectionIds,
 				isLoading : this.isLoading
@@ -8508,7 +8667,11 @@ PuckWidget.prototype.getPanel = function () {
 		html = out;
 	});
 	
-	return html;
+	return {
+				html : html,
+				width : 2*this.data.mainRadius + 1,
+				height : 2*this.data.mainRadius + 1
+			};
 };
 
 /**
@@ -8537,9 +8700,10 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
+		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
-		if (dataCollectionIds != null && dataCollectionIds.length > 0){
+		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
 			state = "COLLECTED";
 		}
 		var selected = false;
@@ -8613,13 +8777,13 @@ PuckWidget.prototype.load = function (data) {
 				var cellIndex = _this.findCellIndexById(sender.target.id);
 				
 				_this.onMouseOver.notify(sender.target.id.split("-")[1]);
-				_this.focus(sender.target.id.split("-")[1],true);
+				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
 				if (_this.data.cells[cellIndex].sample_name){
 	
 					var tooltipHtml = "";
-					dust.render("plates.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
+					dust.render("containers.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
 						tooltipHtml = out;
 					});
 					$('body').append(tooltipHtml);
@@ -8639,7 +8803,7 @@ PuckWidget.prototype.load = function (data) {
 			
 			$("#" + currentId).unbind('mouseout').mouseout(function(sender){
 				_this.onMouseOut.notify();
-				_this.focus(sender.target.id.split("-")[1],false);
+				_this.focusWell(sender.target.id.split("-")[1],false);
 
 				// TOOLTIP
 				$('#hoveringTooltipDiv').remove();
@@ -8662,13 +8826,27 @@ PuckWidget.prototype.load = function (data) {
 };
 
 /**
-* Focus or unfocus one cell according to a boolean and its location 
+* focus or unfocus the puck
 *
 * @method focus
+* @param {Boolean} bool Whether or not to focus the cell
+*/
+PuckWidget.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id).addClass("puck-selected");		
+	} else {
+		$("#" + this.id).removeClass("puck-selected");	
+	}
+};
+
+/**
+* focus or unfocus one cell according to a boolean and its location 
+*
+* @method focusWell
 * @param {Integer} location The location of the cell on the puck
 * @param {Boolean} bool Whether or not to focus the cell
 */
-PuckWidget.prototype.focus = function (location, bool) {
+PuckWidget.prototype.focusWell = function (location, bool) {
 	if (bool){
 		$("#" + this.id + "-" + location).attr("class", "cell_focus");
 		$("#" + this.id + "-" + location + "-inner").attr("class", "cell_inner_hidden");		
@@ -8758,19 +8936,31 @@ PuckWidget.prototype.allowAllCells = function () {
 		$("#" + cell.id).removeClass("cell-disabled");
 	}
 };
+
+/**
+* It blinks the sample changer by fading IN and OUT
+*
+* @method blink` 
+*/
+PuckWidget.prototype.blink = function () {
+    $('#' + this.id + "-div").fadeIn().fadeOut().fadeIn();
+}
 function PuckWidgetContainer(args) {
 	var _this = this;
 	
+	this.onClick = new Event(this);
 	this.mouseOverCell = new Event(this);
 	this.mouseOutCell = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
 	
 	this.xMargin = 0;
 	this.yMargin = 0;
+	this.containerId = 0;
+	this.enableMainClick = false;
+	this.enableMainMouseOver = false;
 	if (args){
 		if (args.puckType) {
-			if (args.puckType == "UniPuck" || args.puckType == "SpinePuck") {
-				debugger
-			}
 			switch (args.puckType) {
 				case "Unipuck":
 					this.puckWidget = new UniPuckWidget(args);
@@ -8788,8 +8978,11 @@ function PuckWidgetContainer(args) {
 		if (args.yMargin){
 			this.yMargin = args.yMargin;
 		}
-		if (args.x) {
-			debugger
+		if (args.enableMainClick != null){
+			this.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableMainMouseOver != null){
+			this.enableMainMouseOver = args.enableMainMouseOver;
 		}
 	}
 	
@@ -8797,9 +8990,8 @@ function PuckWidgetContainer(args) {
 		this.puckWidget = new SpinePuckWidget(args);
 	}
 	
-	this.puckWidget.onClick.attach(function(sender, cell){
-		
-		
+	this.puckWidget.onClick.attach(function(sender, id){
+		_this.onClick.notify(id);
 	});
 	
 	this.puckWidget.onMouseOver.attach(function(sender, location){
@@ -8827,14 +9019,27 @@ PuckWidgetContainer.prototype.getPanel = function () {
 			bodyStyle: 'background:transparent;',
 		    
             items : [
-						{
-							html : this.puckWidget.getPanel(),
-							width : 2*this.puckWidget.data.mainRadius + 1,
-							height : 2*this.puckWidget.data.mainRadius + 1
-						}
+						this.puckWidget.getPanel()
 			],
 			
 	});
+
+	this.panel.on('boxready', function() {
+        if(_this.enableMainClick) {
+			$("#" + this.id).unbind('click').click(function(sender){
+				_this.onClick.notify(sender.target.id);
+			});
+		}
+		if(_this.enableMainMouseOver) {
+			$("#" + this.id).unbind('mouseover').mouseover(function(sender){
+				_this.onMouseOver.notify(_this.puckWidget);
+			});
+			
+			$("#" + this.id).unbind('mouseout').mouseout(function(sender){
+				_this.onMouseOut.notify(_this.puckWidget);
+			});
+		}
+    });
 	
 	return this.panel;
 	
@@ -8845,15 +9050,26 @@ PuckWidgetContainer.prototype.load = function (data) {
 }
 
 PuckWidgetContainer.prototype.loadSamples = function (samples) {
-	this.puckWidget.loadSamples(samples);
+	if (samples){
+		if (samples.length > 0){
+			this.containerId = samples[0].Container_containerId; 
+			this.puckWidget.loadSamples(samples);
+		}
+	}
 }
 
 PuckWidgetContainer.prototype.focus = function (location, bool) {
 	this.puckWidget.focus(location, bool);
 }
 
-
-
+/**
+* It blinks the sample changer by fading IN and OUT
+*
+* @method blink` 
+*/
+PuckWidgetContainer.prototype.blink = function () {
+    this.puckWidget.blink();
+}
 /**
 * This class extends the SampleChangerWidget class for a RoboDiffWidget
 *
@@ -9243,12 +9459,14 @@ SpinePuckWidget.prototype.getPanel = PuckWidget.prototype.getPanel;
 SpinePuckWidget.prototype.load = PuckWidget.prototype.load;
 SpinePuckWidget.prototype.addCirclePathCells = PuckWidget.prototype.addCirclePathCells;
 SpinePuckWidget.prototype.focus = PuckWidget.prototype.focus;
+SpinePuckWidget.prototype.focusWell = PuckWidget.prototype.focusWell;
 SpinePuckWidget.prototype.render = PuckWidget.prototype.render;
 SpinePuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 SpinePuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
 SpinePuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
 SpinePuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
 SpinePuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
+SpinePuckWidget.prototype.blink = PuckWidget.prototype.blink;
 
 /**
 * Parses the data
@@ -9286,12 +9504,14 @@ UniPuckWidget.prototype.getPanel = PuckWidget.prototype.getPanel;
 UniPuckWidget.prototype.load = PuckWidget.prototype.load;
 UniPuckWidget.prototype.addCirclePathCells = PuckWidget.prototype.addCirclePathCells;
 UniPuckWidget.prototype.focus = PuckWidget.prototype.focus;
+UniPuckWidget.prototype.focusWell = PuckWidget.prototype.focusWell;
 UniPuckWidget.prototype.render = PuckWidget.prototype.render;
 UniPuckWidget.prototype.findCellIndexById = PuckWidget.prototype.findCellIndexById;
 UniPuckWidget.prototype.loadSamples = PuckWidget.prototype.loadSamples;
 UniPuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
 UniPuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
 UniPuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
+UniPuckWidget.prototype.blink = PuckWidget.prototype.blink;
 
 /**
 * Parses the data

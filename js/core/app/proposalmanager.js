@@ -22,7 +22,7 @@ ProposalManager.prototype.get = function(forceUpdate) {
 			localStorage.setItem("proposals", JSON.stringify(proposals));
             _this.onActiveProposalChanged.notify();
 		};
-		EXI.getDataAdapter({async : true, onSuccess : onSuccess}).proposal.proposal.getProposalsInfo();
+		EXI.getDataAdapter({async : false, onSuccess : onSuccess}).proposal.proposal.getProposalsInfo();
 	}	
   
 	return JSON.parse(localStorage.getItem("proposals"));
