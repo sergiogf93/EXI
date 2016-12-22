@@ -42,7 +42,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		margin : 5,
 		border : 0,
 		defaults : {
-			height : 600 
+			height : 400 
 		},
 		items : [
 		         {
@@ -53,7 +53,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
-		        	    flex : 0.1,
+		        	    flex : 0.2,
 		        		border : 1,
 		        		style : {
 		        			borderColor : '#000000',
@@ -205,20 +205,5 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 
 	}
 	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
-    
-    
-	//  var onSuccess = function(sender, data) { 	
-	//  	// _this.frameSelectorGrid.load(data);	
-	// 	// _this.framesGrid.load(data);		 	
-	//  	if (data[0].substraction3VOs[0].subtractionId){             
-	//  		var onSuccessSubtraction = function(sender, subtractions) {                 
-	//  			_this.abinitioForm.load(subtractions);
-	//  		};			
-	//  		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
-	// 	}
-	//  };	    
-	
-	
-	
 };
 
