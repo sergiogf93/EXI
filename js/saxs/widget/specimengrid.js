@@ -299,6 +299,7 @@ SpecimenGrid.prototype.refresh = function(dataCollections) {
 		o.groupIndex = o.Buffer_bufferId + o.Macromolecule_macromoleculeId;
 	});
 	// var data = this._prepareData(dataCollections);
+
 	this.store.loadData(dataCollections);
 };
 
@@ -367,7 +368,8 @@ SpecimenGrid.prototype.getPanel = function() {
 								renderer : function(val, y, sample) {
 									var macromoleculeId = sample.data.Macromolecule_macromoleculeId;
 									if (macromoleculeId == null) return; 
-									return BUI.getRectangleColorDIV(_this.experiment.macromoleculeColors[macromoleculeId], 10, 10);
+									// return BUI.getRectangleColorDIV(_this.experiment.macromoleculeColors[macromoleculeId], 10, 10);
+									return BUI.getRectangleColorDIV("red", 10, 10);
 								}
 							},
 							{
@@ -382,9 +384,9 @@ SpecimenGrid.prototype.getPanel = function() {
 								renderer : function(val, y, sample) {
 									var color = "black";
 									if (sample.data.Buffer_bufferId != null) {
-										if (_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0] != null){
-											color = _this.experiment.getSpecimenColorByBufferId(_this.experiment.getMeasurementById(_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0].measurementtodatacollection3VOs[0].measurementId).specimenId);
-										}
+										// if (_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0] != null){
+										// 	color = _this.experiment.getSpecimenColorByBufferId(_this.experiment.getMeasurementById(_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0].measurementtodatacollection3VOs[0].measurementId).specimenId);
+										// }
 										return BUI.getRectangleColorDIV(color, 10, 10);
 									}
 								}
@@ -442,14 +444,15 @@ SpecimenGrid.prototype.getPanel = function() {
 									});
 								}
 							}, 
+							// {
+							// 	text : 'Position',
+							// 	hidden : true,
+							// 	flex : 1,
+							// 	renderer : function(val, y, sample) {
+							// 		return BUI.getSamplePositionHTML(sample.data, _this.experiment);
+							// 	}
+							// }, 
 							{
-								text : 'Position',
-								hidden : true,
-								flex : 1,
-								renderer : function(val, y, sample) {
-									return BUI.getSamplePositionHTML(sample.data, _this.experiment);
-								}
-							}, {
 								text : 'samplePlateId',
 								dataIndex : 'SamplePlatePosition_samplePlateId',
 								hidden : true
@@ -522,8 +525,9 @@ SpecimenGrid.prototype.getPanel = function() {
 							preserveScrollOnRefresh : true,
 							stripeRows : true,
 							getRowClass : function(record) {
-								var specimens = _this.experiment.getSampleByPosition(record.data.SamplePlatePosition_samplePlateId, record.data.SamplePlatePosition_rowNumber,
-										record.data.SamplePlatePosition_columnNumber);
+								var specimens = _.filter(_this.dataCollections,{"SamplePlatePosition_rowNumber":record.data.SamplePlatePosition_rowNumber,
+																				"SamplePlatePosition_columnNumber":record.data.SamplePlatePosition_columnNumber,
+																				"SamplePlatePosition_samplePlateId":record.data.SamplePlatePosition_samplePlateId});
 								if (specimens.length > 1) {
 									return 'red-row';
 

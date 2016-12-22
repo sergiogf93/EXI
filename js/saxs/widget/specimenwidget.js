@@ -34,11 +34,13 @@ function SpecimenWidget(args){
 
 	
 	this.specimenGrid.onSpecimenChanged.attach(function(sender, specimen) {
+		debugger
 		_this.experiment.setSpecimenById(specimen);
 		_this.load(_this.experiment);
 	});
 
 	this.specimenGrid.onSelected.attach(function(sender, specimens) {
+		debugger
 		if (specimens.length > 0) {
 			_this.specimenSelected = specimens[0];
 		} else {

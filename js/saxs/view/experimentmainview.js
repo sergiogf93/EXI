@@ -44,7 +44,7 @@ function ExperimentMainView() {
 
 	this.queueGridVersion2 = new QueueGridTest();
 
-	this.activePanel = this.specimenWidget;
+	this.activePanel = this.queueGrid;
 	
 }
 
