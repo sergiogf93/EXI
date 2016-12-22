@@ -250,7 +250,7 @@ SamplePlateWidget.prototype.clearSelection = function() {
 };
 
 SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var squareId = this.id + "-square-"+ specimen.rowNumber + "-" +specimen.columnNumber;
+	var squareId = this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
 	$("#" + squareId).addClass("plate-square-selected");
 };
 

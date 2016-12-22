@@ -326,12 +326,10 @@ SpecimenGrid.prototype.getPanel = function() {
 //		mode : this.selectionMode,
 		listeners : {
 			select : function(sm, record, index, eOpts ) {
-//				debugger
-//				var selected = [];
-//				for ( var i = 0; i < selections.length; i++) {
-//					selected.push(selections[i].data);
-//				}
 				_this.onSelected.notify([record.data]);
+			},
+			deselect : function(sm, record, index, eOpts ) {
+				_this.onSelected.notify([]);
 			}
 		}
 	});

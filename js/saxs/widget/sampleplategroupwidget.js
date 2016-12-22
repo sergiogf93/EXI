@@ -224,11 +224,9 @@ SamplePlateGroupWidget.prototype.selectSpecimens = function(specimens){
 };
 
 SamplePlateGroupWidget.prototype.selectSpecimen = function(specimen){
-	if (specimen.sampleplateposition3VO != null){
-//		var samplePlateId = specimen.sampleplateposition3VO.samplePlateId;
+	if (specimen.SamplePlatePosition_samplePlateId != null){
 		for ( var i = 0; i < this.samplePlateWidgets.length; i++) {
-//			var samplePlateId = this.samplePlateWidgets[i].samplePlate.samplePlateId;
-			if ( this.samplePlateWidgets[i].samplePlate.samplePlateId == specimen.sampleplateposition3VO.samplePlateId){
+			if ( this.samplePlateWidgets[i].samplePlate.type == specimen.SamplePlate_name){
 				this.samplePlateWidgets[i].selectSpecimen(specimen);
 				return;
 			}

@@ -64,6 +64,11 @@
 	stroke-width : 1
 }
 
+.plate-square-selected {
+	stroke : #23eeff;
+	stroke-width : 2
+}
+
 .blue-bottom-border-row {
 	border-bottom: 2px solid #3892d3 !important;
 }
