@@ -19,6 +19,8 @@ function ContainerSpreadSheet(args){
 		}
 	}
 
+	this.crystalInfoToIdMap = {};
+
 	this.crystalFormIndex = -1;
 	this.unitCellIndex = -1;
 	this.spaceGroupIndex = -1;
@@ -77,7 +79,7 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 					diffraction = {};
 				}
 				data.push(
-					[(i+1), protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+					[crystal.crystalId,(i+1), protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
 					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
 					 ]
 				);
@@ -123,7 +125,9 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 	}
 	  
 	if (this.containerType != "OTHER"){
-		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
+		header = [
+				{ text :'', id :'crystalId', column : {width : 100}}, 
+				{ text : '#', 	id: 'position', column : {width : 20}}, 
 				{ text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
 																							width : 60,
 																							type: 'dropdown',
@@ -135,18 +139,10 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 																			width : 300,
 																			type: 'dropdown',
 																			source: function(query, process) {
-																				var src = [];
 																				var colIndex = _this.getColumnIndex("Protein Acronym");
 																				var protein = EXI.proposalManager.getProteinByAcronym(this.instance.getDataAtCell(this.row,colIndex));
 																				if (protein.length > 0){
-																					var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == protein[0].proteinId;});
-																					if (crystalsByProteinId) {
-																						for (var i = 0 ; i < crystalsByProteinId.length ; i++){
-																							var crystal = crystalsByProteinId[i];
-																							src.push(_this.getCrystalInfo(crystal));
-																						}
-																					}
-																					process(_.union(src,["NEW"]));
+																					process(_this.getCrystalInfoByProtein(protein[0]));
 																				} else {
 																					process([]);
 																				}
@@ -274,7 +270,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 				sample["crystalVO"]["proteinVO"] = proteins[0];
 			}
         }
-		var crystal = this.parseCrystalSpaceGroup(rows[i]["Crystal Form"]);
+		var crystal = this.parseCrystalFormColumn(rows[i]["Crystal Form"],i);
 		sample["crystalVO"]["spaceGroup"] = crystal.spaceGroup;
 		sample["crystalVO"]["cellA"] = crystal.cellA;
 		sample["crystalVO"]["cellB"] = crystal.cellB;
@@ -374,7 +370,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 				afterChange: function (changes, source) {
 					$(".edit-crystal-button").click(function(sender){
 								var row = sender.target.id.split("-")[2];
-								var crystal = _this.parseCrystalSpaceGroup(_this.getData()[row][_this.crystalFormIndex]);
+								var crystal = _this.parseCrystalFormColumn(_this.getData()[row][_this.crystalFormIndex],row);
 								_this.showEditForm(crystal,row);
 							});
 					if (source == "edit") {
@@ -428,7 +424,14 @@ ContainerSpreadSheet.prototype.getColumnIndex = function (colId) {
 	return _.findIndex(this.getHeader(),{id :colId});
 }
 
-ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (data) {
+/**
+* Returns an object containing the crystal information given the value at the crystal form column
+*
+* @method parseCrystalFormColumn
+* @param {String} dataAtCrystalFormColumn The string containing the information with the space group and the cell values
+* @param {Integer} row The corresponding row
+*/
+ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalFormColumn,row) {
 	var parsed = {
 					spaceGroup 	: null,
 					cellA		: null,
@@ -438,11 +441,22 @@ ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (data) {
 					cellBeta	: null,
 					cellGamma	: null
 				};
-	if (data != ""){
-		if (data == "NEW") {
+	if (dataAtCrystalFormColumn != ""){
+		var proteins = EXI.proposalManager.getProteinByAcronym(this.spreadSheet.getDataAtCell(row,this.getColumnIndex("Protein Acronym")));
+		if (proteins && proteins.length > 0) {
+			parsed.proteinVO = proteins[0];
+		}
+		if (dataAtCrystalFormColumn == "NEW") {
 			parsed.spaceGroup = "NEW";
+			parsed.crystalId = "";
 		} else {
-			var splitted = data.split("-")
+			if (this.crystalInfoToIdMap[dataAtCrystalFormColumn]){
+				parsed.crystalId = this.crystalInfoToIdMap[dataAtCrystalFormColumn];
+			} else {
+				this.getCrystalInfoByProtein(proteins[0]);
+				parsed.crystalId = this.crystalInfoToIdMap[dataAtCrystalFormColumn];
+			}
+			var splitted = dataAtCrystalFormColumn.split("-");
 			parsed.spaceGroup = splitted[0].trim();
 			if (splitted.length > 1){
 				if(splitted[1].indexOf("|") >= 0){
@@ -467,6 +481,12 @@ ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (data) {
 	return parsed;
 }
 
+/**
+* Returns an string of the form [spaceGroup - (cellA : cellB : cellC | cellAlpha : cellBeta : cellGamma)]
+*
+* @method getCrystalInfo
+* @param {Object} crystal The crystal used to extract the values
+*/
 ContainerSpreadSheet.prototype.getCrystalInfo = function (crystal) {
 	if (crystal.cellA == null) {
 		return crystal.spaceGroup + " - undefined";
@@ -489,15 +509,13 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	var editCrystalForm = new EditCrystalFormView();
 
 	editCrystalForm.onSaved.attach(function (sender, crystal) {
-		_this.setDataAtCell(row,_this.crystalFormIndex,_this.getCrystalInfo(crystal));
-		_this.setDataAtCell(row,_this.unitCellIndex,_this.getUnitCellInfo(crystal));
-		_this.setDataAtCell(row,_this.spaceGroupIndex,crystal.spaceGroup);
+		_this.updateCrystalGroup(row,crystal);
 		window.close();
 	});
 
 	var window = Ext.create('Ext.window.Window', {
-		title : 'New Crystal Form',
-		height : 325,
+		title : 'Crystal Form',
+		height : 460,
 		width : 600,
 		modal : true,
 		closable : false,
@@ -512,9 +530,7 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 				text : 'Cancel',
 				handler : function() {
 					if (crystal.spaceGroup == "NEW"){
-						_this.setDataAtCell(row,_this.crystalFormIndex,"");
-						_this.setDataAtCell(row,_this.unitCellIndex,"");
-						_this.setDataAtCell(row,_this.spaceGroupIndex,"");
+						_this.resetCrystalGroup(row);
 					}
 					window.close();
 				}
@@ -532,10 +548,19 @@ ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column)
 	this.setDataAtCell(row,column,button);
 }
 
+ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
+	this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
+	this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
+	this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
+	this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
+	this.addEditCrystalFormButton(row);
+}
+
 ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
 	this.setDataAtCell(row,this.unitCellIndex,"");
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
+	this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
 }
 
@@ -545,20 +570,24 @@ ContainerSpreadSheet.prototype.disableAll = function () {
 				});
 }
 
+/**
+* Method executed when a change is made on the spreadSheet. It manages the process when the crystal form or the protein acronym are changed
+*
+* @method manageChange
+* @param {Object} change The change made to the spreadSheet
+*/
 ContainerSpreadSheet.prototype.manageChange = function (change){
 	var _this = this;
 	switch (change[1]) {
 		case this.crystalFormIndex : {
-			var parsed = this.parseCrystalSpaceGroup(change[3]);
+			var parsed = this.parseCrystalFormColumn(change[3],change[0]);
 			if (parsed.spaceGroup != undefined){
 				if (parsed.spaceGroup == "NEW"){
 					this.showEditForm(parsed, change[0]);
 				} else {
-					var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsed.spaceGroup}),function(o){return o.proteinVO.acronym == _this.getData()[change[0]][1]})
+					var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsed.spaceGroup}),function(o){return o.proteinVO.acronym == _this.getData()[change[0]][_this.getColumnIndex("Protein Acronym")]})
 					if (crystalsBySpaceGroupAndAcronym.length > 0){
-						this.setDataAtCell(change[0],this.unitCellIndex,this.getUnitCellInfo(parsed));
-						this.setDataAtCell(change[0],this.spaceGroupIndex,parsed.spaceGroup);
-						this.addEditCrystalFormButton(change[0]);
+						this.updateCrystalGroup(change[0],parsed);
 					} else {
 						this.resetCrystalGroup(change[0]);
 					}
@@ -573,4 +602,24 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 			break;
 		}
 	}
+}
+
+/**
+* Loads the crystal info to ud map and returns an array of cystal info given a protein
+*
+* @method getCrystalInfoByProtein
+* @param {Object} protein The protein the crystals must be linked to
+* @return {Array} Returns an array of strings with the crystal info to be loaded on the Crystal Form column
+*/
+ContainerSpreadSheet.prototype.getCrystalInfoByProtein = function (protein) {
+	var src = [];
+	var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == protein.proteinId;});
+	if (crystalsByProteinId) {
+		for (var i = 0 ; i < crystalsByProteinId.length ; i++){
+			var crystalInfo = this.getCrystalInfo(crystalsByProteinId[i]);
+			this.crystalInfoToIdMap[crystalInfo] = crystalsByProteinId[i].crystalId;
+			src.push(crystalInfo);
+		}
+	}
+	return _.union(src,["NEW"]);
 }

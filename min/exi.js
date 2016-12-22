@@ -4077,7 +4077,7 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 					diffraction = {};
 				}
 				data.push(
-					[(i+1), protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+					[(i+1), protein.acronym, sample.name,crystal.crystalId, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
 					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
 					 ]
 				);
@@ -4131,6 +4131,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 																						}
 				}, 
 				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
+				{ text :'crystal Id', id :'cristalId', column : {}}, 
 				{ text :'Crystal<br /> Form', id : 'Crystal Form',column : {
 																			width : 300,
 																			type: 'dropdown',
@@ -4274,7 +4275,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 				sample["crystalVO"]["proteinVO"] = proteins[0];
 			}
         }
-		var crystal = this.parseCrystalSpaceGroup(rows[i]["Crystal Form"]);
+		var crystal = this.parseCrystalSpaceGroup(rows[i]["Crystal Form"],i);
 		sample["crystalVO"]["spaceGroup"] = crystal.spaceGroup;
 		sample["crystalVO"]["cellA"] = crystal.cellA;
 		sample["crystalVO"]["cellB"] = crystal.cellB;
@@ -4374,7 +4375,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 				afterChange: function (changes, source) {
 					$(".edit-crystal-button").click(function(sender){
 								var row = sender.target.id.split("-")[2];
-								var crystal = _this.parseCrystalSpaceGroup(_this.getData()[row][_this.crystalFormIndex]);
+								var crystal = _this.parseCrystalSpaceGroup(_this.getData()[row][_this.crystalFormIndex],row);
 								_this.showEditForm(crystal,row);
 							});
 					if (source == "edit") {
@@ -4428,7 +4429,7 @@ ContainerSpreadSheet.prototype.getColumnIndex = function (colId) {
 	return _.findIndex(this.getHeader(),{id :colId});
 }
 
-ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (data) {
+ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (dataFromSpreadSheet,row) {
 	var parsed = {
 					spaceGroup 	: null,
 					cellA		: null,
@@ -4438,11 +4439,13 @@ ContainerSpreadSheet.prototype.parseCrystalSpaceGroup = function (data) {
 					cellBeta	: null,
 					cellGamma	: null
 				};
-	if (data != ""){
-		if (data == "NEW") {
+	if (dataFromSpreadSheet != ""){
+		parsed.proteinAcronym = this.spreadSheet.getDataAtCell(row,this.getColumnIndex("Protein Acronym"));
+		debugger
+		if (dataFromSpreadSheet == "NEW") {
 			parsed.spaceGroup = "NEW";
 		} else {
-			var splitted = data.split("-")
+			var splitted = dataFromSpreadSheet.split("-")
 			parsed.spaceGroup = splitted[0].trim();
 			if (splitted.length > 1){
 				if(splitted[1].indexOf("|") >= 0){
@@ -4500,6 +4503,7 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 		height : 325,
 		width : 600,
 		modal : true,
+		closable : false,
 		layout : 'fit',
 		items : [ editCrystalForm.getPanel() ],
 		buttons : [ {
@@ -4548,7 +4552,7 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 	var _this = this;
 	switch (change[1]) {
 		case this.crystalFormIndex : {
-			var parsed = this.parseCrystalSpaceGroup(change[3]);
+			var parsed = this.parseCrystalSpaceGroup(change[3],change[0]);
 			if (parsed.spaceGroup != undefined){
 				if (parsed.spaceGroup == "NEW"){
 					this.showEditForm(parsed, change[0]);
@@ -4703,11 +4707,11 @@ EditCrystalFormView.prototype.getPanel = function() {
 };
 
 EditCrystalFormView.prototype.load = function(crystal) {
-
+	var _this = this;
 	this.crystal = crystal;
     this.crystal.id = this.id;
     this.crystal.spaceGroups = ExtISPyB.spaceGroups;
-
+	debugger
     var html = "";
 	
     dust.render("crystal.edit.form.template", this.crystal, function(err, out){
@@ -4716,6 +4720,13 @@ EditCrystalFormView.prototype.load = function(crystal) {
 	
 	$('#' + this.id).hide().html(html).fadeIn('fast');
 	this.panel.doLayout();
+
+	$('#' + this.id + "-space-group").on('change', function() {
+		_this.setCellValuesBySpaceGroup(this.value);	
+	});
+
+	this.setCellValuesBySpaceGroup($('#' + this.id + "-space-group").val());
+
 };
 
 EditCrystalFormView.prototype.save = function () {
@@ -4730,6 +4741,100 @@ EditCrystalFormView.prototype.save = function () {
                 };
     this.onSaved.notify(crystal);
 };
+
+EditCrystalFormView.prototype.setCellValuesBySpaceGroup = function (spaceGroup) {
+	var _this = this;
+	var onSuccess = function (sender, geometryClass) {
+		var alpha = "";
+		var beta = "";
+		var gamma = "";
+		switch (geometryClass.geometryClassname){
+			case "Primitive triclinic":
+										break;
+			case "Primitive monoclinic":
+										alpha = 90;    
+										gamma = 90;
+										break;
+			case "Centred monoclinic":
+										alpha = 90;
+										gamma = 90;
+										break;
+			case "Primitive orthohombic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "C-centred orthohombic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "I-centred orthohombic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "F-centred orthohombic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;    
+			case "Primitive tetragonal":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "I-centred tetragonal":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "Primitive trigonal":
+										alpha = 90;
+										beta    = 90;
+										gamma    = 120;
+										break;
+			case "Primitive hexagonal":
+										alpha = 90;
+										beta    = 90;
+										gamma    = 120;
+										break;
+			case "Rhombohedral":
+										alpha = 90;
+										beta    = 90;
+										gamma    = 120;
+										break;
+			case "Primitive cubic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "I-centred cubic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;
+			case "F-centred cubic":
+										alpha = 90;
+										beta    = 90;
+										gamma = 90;
+										break;                                                                
+		}
+		_this.manageCellValueUpdate("#" + _this.id + "-cellAlpha", alpha);
+		_this.manageCellValueUpdate("#" + _this.id + "-cellBeta", beta);
+		_this.manageCellValueUpdate("#" + _this.id + "-cellGamma", gamma);
+	}
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.crystal.getGeometryclassBySpacegroup(spaceGroup);
+}
+
+EditCrystalFormView.prototype.manageCellValueUpdate = function (id, value) {
+	if (value != "") {
+		$(id).prop('disabled', true);
+		$(id).val(value);
+	} else {
+		$(id).prop('disabled', false);
+	}
+}
 
 /**
 * This is a grid for parcels
@@ -5154,7 +5259,7 @@ function PuckFormView(args) {
 	var _this = this;
 	
 	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
-	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 450});
+	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
 	
 	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
 		
@@ -5242,7 +5347,7 @@ PuckFormView.prototype.getPanel = function() {
 								         {
 								        	 xtype : 'container',
 											margin : '12 0 2 0',
-											layout : 'vbox',
+											layout : 'hbox',
 											items : [ 
 							         				   {
 																xtype: 'requiredtextfield',
@@ -5250,7 +5355,7 @@ PuckFormView.prototype.getPanel = function() {
 																fieldLabel : 'Name',
 																name : 'name',
 																width : 250,
-																margin : '0 0 0 5',
+																margin : '5 5 5 5',
 																labelWidth : 100
 														},
 														this.capacityCombo.getPanel(),
@@ -5260,17 +5365,17 @@ PuckFormView.prototype.getPanel = function() {
 																fieldLabel : 'Beamline',
 																width : 250,
                                                                 disabled : true,
-																margin : '0 0 0 5',
+																margin : '5 5 5 10',
 																labelWidth : 100
 														},
                                                         {
 																xtype: 'textfield',
 																id : this.id + 'puck_sampleChangerLocation',
 																fieldLabel : '#Sample Changer',
-																width : 250,
+																width : 300,
                                                                 disabled : true,
-																margin : '0 0 0 5',
-																labelWidth : 100
+																margin : '5 5 5 5',
+																labelWidth : 150
 														},                                                       
                                                         {
 																xtype: 'textfield',
@@ -5278,7 +5383,7 @@ PuckFormView.prototype.getPanel = function() {
 																fieldLabel : 'Status',
 																width : 250,
                                                                 disabled : true,
-																margin : '0 0 0 5',
+																margin : '5 5 5 5',
 																labelWidth : 100
 														}
 													]
@@ -5413,7 +5518,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	// this.panel.remove(this.containerSpreadSheet.panel);
 	// this.panel.insert(this.containerSpreadSheet.getPanel());
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	this.save();
+	// this.save();
 	// this.load(this.containerId,this.shippingId);
 };
 

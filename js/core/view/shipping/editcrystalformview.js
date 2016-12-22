@@ -2,7 +2,7 @@ function EditCrystalFormView (args) {
     this.id = BUI.id();
 
     this.width = 600;
-    this.height = 200;
+    this.height = 500;
 	this.showTitle = true;
 	if (args != null) {
 		if (args.showTitle != null) {
@@ -26,7 +26,7 @@ EditCrystalFormView.prototype.getPanel = function() {
 					html : '<div id="' + this.id + '"></div>',
 					autoScroll : false,
 					padding : this.padding,
-					width : this.width
+					width : this.width,
 				}]
 	});
 
@@ -35,10 +35,22 @@ EditCrystalFormView.prototype.getPanel = function() {
 
 EditCrystalFormView.prototype.load = function(crystal) {
 	var _this = this;
-	this.crystal = crystal;
-    this.crystal.id = this.id;
-    this.crystal.spaceGroups = ExtISPyB.spaceGroups;
+	if (crystal.crystalId != "") {
+		var onSuccess = function (sender, crystalById) {
+			_this.crystal = crystalById;
+			_this.render();
+		}
+		EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
+	} else {
+		this.crystal = crystal;
+		this.render();
+	}
+}
 
+EditCrystalFormView.prototype.render = function () {
+	var _this = this;
+    this.crystal.spaceGroups = ExtISPyB.spaceGroups;
+	this.crystal.id = this.id;
     var html = "";
 	
     dust.render("crystal.edit.form.template", this.crystal, function(err, out){
@@ -57,6 +69,7 @@ EditCrystalFormView.prototype.load = function(crystal) {
 };
 
 EditCrystalFormView.prototype.save = function () {
+	var _this = this;
     var crystal = {
                     spaceGroup  :   $("#" + this.id + "-space-group").val(),
                     cellA       :   $("#" + this.id + "-cellA").val(),
@@ -64,9 +77,18 @@ EditCrystalFormView.prototype.save = function () {
                     cellC       :   $("#" + this.id + "-cellC").val(),
                     cellAlpha   :   $("#" + this.id + "-cellAlpha").val(),
                     cellBeta    :   $("#" + this.id + "-cellBeta").val(),
-                    cellGamma   :   $("#" + this.id + "-cellGamma").val()
+                    cellGamma   :   $("#" + this.id + "-cellGamma").val(),
+					name		: 	$("#" + this.id + "-name").val(),
+					comments	:	$("#" + this.id + "-comments").val()
                 };
-    this.onSaved.notify(crystal);
+	var onSaved = function (sender, newCrystal) {
+		EXI.proposalManager.get(true);
+		_this.onSaved.notify(newCrystal);
+	}
+	
+	EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
+																crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
+																crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
 };
 
 EditCrystalFormView.prototype.setCellValuesBySpaceGroup = function (spaceGroup) {
@@ -75,81 +97,83 @@ EditCrystalFormView.prototype.setCellValuesBySpaceGroup = function (spaceGroup) 
 		var alpha = "";
 		var beta = "";
 		var gamma = "";
-		switch (geometryClass.geometryClassname){
-			case "Primitive triclinic":
-										break;
-			case "Primitive monoclinic":
-										alpha = 90;    
-										gamma = 90;
-										break;
-			case "Centred monoclinic":
-										alpha = 90;
-										gamma = 90;
-										break;
-			case "Primitive orthohombic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "C-centred orthohombic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "I-centred orthohombic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "F-centred orthohombic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;    
-			case "Primitive tetragonal":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "I-centred tetragonal":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "Primitive trigonal":
-										alpha = 90;
-										beta    = 90;
-										gamma    = 120;
-										break;
-			case "Primitive hexagonal":
-										alpha = 90;
-										beta    = 90;
-										gamma    = 120;
-										break;
-			case "Rhombohedral":
-										alpha = 90;
-										beta    = 90;
-										gamma    = 120;
-										break;
-			case "Primitive cubic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "I-centred cubic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;
-			case "F-centred cubic":
-										alpha = 90;
-										beta    = 90;
-										gamma = 90;
-										break;                                                                
+		if (geometryClass && geometryClass.length > 0 && geometryClass[0].geometryClassnameVO){
+			switch (geometryClass[0].geometryClassnameVO.geometryClassname){
+				case "Primitive triclinic":
+											break;
+				case "Primitive monoclinic":
+											alpha = 90;    
+											gamma = 90;
+											break;
+				case "Centred monoclinic":
+											alpha = 90;
+											gamma = 90;
+											break;
+				case "Primitive orthohombic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "C-centred orthohombic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "I-centred orthohombic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "F-centred orthohombic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;    
+				case "Primitive tetragonal":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "I-centred tetragonal":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "Primitive trigonal":
+											alpha = 90;
+											beta    = 90;
+											gamma    = 120;
+											break;
+				case "Primitive hexagonal":
+											alpha = 90;
+											beta    = 90;
+											gamma    = 120;
+											break;
+				case "Rhombohedral":
+											alpha = 90;
+											beta    = 90;
+											gamma    = 120;
+											break;
+				case "Primitive cubic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "I-centred cubic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;
+				case "F-centred cubic":
+											alpha = 90;
+											beta    = 90;
+											gamma = 90;
+											break;                                                                
+			}
+			_this.manageCellValueUpdate("#" + _this.id + "-cellAlpha", alpha);
+			_this.manageCellValueUpdate("#" + _this.id + "-cellBeta", beta);
+			_this.manageCellValueUpdate("#" + _this.id + "-cellGamma", gamma);
 		}
-		_this.manageCellValueUpdate("#" + _this.id + "-cellAlpha", alpha);
-		_this.manageCellValueUpdate("#" + _this.id + "-cellBeta", beta);
-		_this.manageCellValueUpdate("#" + _this.id + "-cellGamma", gamma);
 	}
 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.crystal.getGeometryclassBySpacegroup(spaceGroup);
 }

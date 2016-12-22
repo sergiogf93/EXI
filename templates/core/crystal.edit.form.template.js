@@ -1,5 +1,11 @@
 <div style="padding:20px;">
     <div class="form-group row">
+        <label class="col-md-2 col-form-label">Name:</label>
+        <div class="col-md-10">
+            <input id="{id}-name" class="form-control" type="text" value="{name}">
+        </div>
+    </div>
+    <div class="form-group row">
         <label class="col-md-2 col-form-label">Space Group:</label>
         <div class="col-md-10">
             <select id="{id}-space-group" class="form-control">
@@ -49,6 +55,12 @@
                     <input id="{id}-cellGamma" class="form-control" type="text" value="{cellGamma}">
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <label class="col-md-2 col-form-label "><b>Comments:</b></label>
+        <div class="col-md-10">
+            <textarea id="{id}-comments" class="form-control" rows="3">{comments}</textarea>
         </div>
     </div>
 </div>

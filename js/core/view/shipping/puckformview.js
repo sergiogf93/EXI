@@ -22,7 +22,7 @@ function PuckFormView(args) {
 	var _this = this;
 	
 	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
-	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 450});
+	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
 	
 	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
 		
@@ -110,7 +110,7 @@ PuckFormView.prototype.getPanel = function() {
 								         {
 								        	 xtype : 'container',
 											margin : '12 0 2 0',
-											layout : 'vbox',
+											layout : 'hbox',
 											items : [ 
 							         				   {
 																xtype: 'requiredtextfield',
@@ -118,7 +118,7 @@ PuckFormView.prototype.getPanel = function() {
 																fieldLabel : 'Name',
 																name : 'name',
 																width : 250,
-																margin : '0 0 0 5',
+																margin : '5 5 5 5',
 																labelWidth : 100
 														},
 														this.capacityCombo.getPanel(),
@@ -128,17 +128,17 @@ PuckFormView.prototype.getPanel = function() {
 																fieldLabel : 'Beamline',
 																width : 250,
                                                                 disabled : true,
-																margin : '0 0 0 5',
+																margin : '5 5 5 10',
 																labelWidth : 100
 														},
                                                         {
 																xtype: 'textfield',
 																id : this.id + 'puck_sampleChangerLocation',
 																fieldLabel : '#Sample Changer',
-																width : 250,
+																width : 300,
                                                                 disabled : true,
-																margin : '0 0 0 5',
-																labelWidth : 100
+																margin : '5 5 5 5',
+																labelWidth : 150
 														},                                                       
                                                         {
 																xtype: 'textfield',
@@ -146,7 +146,7 @@ PuckFormView.prototype.getPanel = function() {
 																fieldLabel : 'Status',
 																width : 250,
                                                                 disabled : true,
-																margin : '0 0 0 5',
+																margin : '5 5 5 5',
 																labelWidth : 100
 														}
 													]
@@ -281,7 +281,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	// this.panel.remove(this.containerSpreadSheet.panel);
 	// this.panel.insert(this.containerSpreadSheet.getPanel());
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	this.save();
+	// this.save();
 	// this.load(this.containerId,this.shippingId);
 };
 
