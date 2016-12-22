@@ -300,7 +300,6 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
                 capacity : dewar.capacity
             });
         } else {
-            debugger
             error = true;
         }
     }

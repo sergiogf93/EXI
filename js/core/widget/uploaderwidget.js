@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-function UploaderWidget(url){
-	this.id = BUI.id();
 
-	this.url = url;
-	if (url == null){
-=======
 function UploaderWidget(args){
 	this.id = BUI.id();
 
@@ -15,7 +9,6 @@ function UploaderWidget(args){
 		}
 	}
 	if (this.url == null){
->>>>>>> mx_121216
 		 Ext.Msg.alert('Error', 'Please, set an url');
 	}
 	
@@ -31,31 +24,6 @@ UploaderWidget.prototype.getFileName = function(){
 UploaderWidget.prototype.getForm = function(){
 	var _this = this;
 	return Ext.create('Ext.form.Panel', {
-<<<<<<< HEAD
-	    width: 400,
-	    bodyPadding: 20,
-	    border : 0,
-	    frame: true,
-	    items: [{
-	        xtype: 'filefield',
-	        name: 'file',
-	        id : this.id,
-	        fieldLabel: 'File',
-	        labelWidth: 50,
-	        msgTarget: 'side',
-	        allowBlank: false,
-	        anchor: '100%',
-	        buttonText: 'Browse...'
-	    },
-	    {
-			xtype : 'hiddenfield',
-			id : _this.id + 'fileName',
-			name : 'fileName',
-			value : '' }
-	    ],
-
-	    buttons: [{
-=======
 		layout: {
 			type: 'hbox',
 			align: 'stretch'
@@ -84,26 +52,16 @@ UploaderWidget.prototype.getForm = function(){
 			{
 			xtype : 'button',
 			margin: '0 0 0 2',
->>>>>>> mx_121216
 	        text: 'Upload',
 	        handler: function() {
 	            var form = this.up('form').getForm();
 	            if(form.isValid()){
-<<<<<<< HEAD
-	            	Ext.getCmp(_this.id + "fileName").setValue(_this.getFileName());
-=======
 	            	// Ext.getCmp(_this.id + "fileName").setValue(_this.getFileName());
->>>>>>> mx_121216
 	                form.submit({
 	                    url: _this.url,
 	                    waitMsg: 'Uploading your file...',
 	                    success: function(fp, o) {
 //	                        Ext.Msg.alert('Success', 'Your file has been uploaded.');
-<<<<<<< HEAD
-	                    	
-=======
-	                    	debugger
->>>>>>> mx_121216
 	                    	_this.window.close();
 	                    	_this.onUploaded.notify();
 	                    },
@@ -114,12 +72,8 @@ UploaderWidget.prototype.getForm = function(){
 	                    } });
 	            }
 	        }
-<<<<<<< HEAD
-	    }]
-=======
 	    }
 	    ],
->>>>>>> mx_121216
 	});
 	
 	
@@ -138,9 +92,4 @@ UploaderWidget.prototype.show = function(){
 	    items: this.getForm()
 	});
 	this.window.show();
-<<<<<<< HEAD
-	
-	
-=======
->>>>>>> mx_121216
 };
