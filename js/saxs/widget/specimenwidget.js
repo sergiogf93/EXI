@@ -65,78 +65,69 @@ function SpecimenWidget(args){
 		/** Clicking on a plate * */
 		var row = args.row;
 		var column = args.column;
-		var samplePlateId = args.samplePlate.samplePlateId;
+		var samplePlate = args.samplePlate;
+		var specimenId = args.specimenId;
 
-		/** is specimen selected on the grid? * */
-		if (_this.specimenSelected != null) {
-			/** Is position target empty * */
-			if (_this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column).length == 0) {
-				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-				if (specimen.sampleplateposition3VO == null) {
-					specimen.sampleplateposition3VO = {};
-				}
+		_this.specimenGrid.selectById(specimenId);
 
-				specimen.sampleplateposition3VO = {
-					columnNumber : column,
-					rowNumber : row,
-					samplePlateId : samplePlateId
-				};
+// 		/** is specimen selected on the grid? * */
+// 		if (_this.specimenSelected != null) {
+// 			/** Is position target empty * */
+// 			if (specimenId) {
+// 				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
+// 				/** If success * */
+// 				var onSuccess = (function(sender, experiment) {
+// 					_this.samplePlateGroupWidget.panel.setLoading(false);
+// 					_this.samplePlateGroupWidget.refresh(_this.experiment);
+// 					_this.specimenGrid.refresh(_this.experiment);
+// 					//_this.refresh(_this.experiment);
+// 					_this.specimenSelected = null;
+// 					_this.specimenGrid.deselectAll();
+// 				});
 
-				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
-				/** If success * */
-				var onSuccess = (function(sender, experiment) {
-					_this.samplePlateGroupWidget.panel.setLoading(false);
-					_this.samplePlateGroupWidget.refresh(_this.experiment);
-					_this.specimenGrid.refresh(_this.experiment);
-					//_this.refresh(_this.experiment);
-					_this.specimenSelected = null;
-					_this.specimenGrid.deselectAll();
-				});
+// //				adapter.onError.attach(function(sender, error) {
+// //					_this.samplePlateGroupWidget.panel.setLoading(false);
+// //					showError(error);
+// //				});
 
-//				adapter.onError.attach(function(sender, error) {
-//					_this.samplePlateGroupWidget.panel.setLoading(false);
-//					showError(error);
-//				});
-
-				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
+// 				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
 				
-			} else {
-				/**
-				 * Can we merge? We can merge when specimen are the
-				 * same. So, same buffer, macromolecule, concentration *
-				 */
-				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
-				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-				if (target == specimen) {
-					_this.samplePlateGroupWidget.refresh(_this.experiment);
-					_this.specimenSelected = null;
-					_this.specimenGrid.deselectAll();
-				} else {
-					if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
-						if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
-								((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
-							var onSuccess = (function(sender, data) {
-								_this.load(new Experiment(data));
-								_this.samplePlateGroupWidget.panel.setLoading(false);
+// 			} else {
+// 				/**
+// 				 * Can we merge? We can merge when specimen are the
+// 				 * same. So, same buffer, macromolecule, concentration *
+// 				 */
+// 				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
+// 				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
+// 				if (target == specimen) {
+// 					_this.samplePlateGroupWidget.refresh(_this.experiment);
+// 					_this.specimenSelected = null;
+// 					_this.specimenGrid.deselectAll();
+// 				} else {
+// 					if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
+// 						if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
+// 								((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
+// 							var onSuccess = (function(sender, data) {
+// 								_this.load(new Experiment(data));
+// 								_this.samplePlateGroupWidget.panel.setLoading(false);
 								
-								_this.onExperimentChanged.notify(experiment);
-							});
-							_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
-							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
-							_this.specimenSelected = null;
-							_this.specimenGrid.deselectAll();
-						}
-					} else {
-						$.notify("Well is not empty. Select another well!", "error");
-					}
-				}
-			}
-		} else {
-			var specimen = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
-			if (specimen != null) {
-				_this.specimenGrid.selectById(specimen.specimenId);
-			}
-		}
+// 								_this.onExperimentChanged.notify(experiment);
+// 							});
+// 							_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
+// 							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
+// 							_this.specimenSelected = null;
+// 							_this.specimenGrid.deselectAll();
+// 						}
+// 					} else {
+// 						$.notify("Well is not empty. Select another well!", "error");
+// 					}
+// 				}
+// 			}
+// 		} else {
+// 			if (specimenId != null) {
+// 				_this.specimenGrid.selectById(specimenId);
+// 			}
+// 		}
 	});
 	/** Events **/
 	this.onExperimentChanged = new Event(this);
