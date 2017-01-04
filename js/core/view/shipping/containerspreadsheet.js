@@ -79,7 +79,10 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 					diffraction = {};
 				}
 				data.push(
-					[crystal.crystalId,(i+1), protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+					[
+						// crystal.crystalId,
+						(i+1), 
+						protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
 					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
 					 ]
 				);
@@ -126,7 +129,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 	  
 	if (this.containerType != "OTHER"){
 		header = [
-				{ text :'', id :'crystalId', column : {width : 100}}, 
+				// { text :'', id :'crystalId', column : {width : 100}}, 
 				{ text : '#', 	id: 'position', column : {width : 20}}, 
 				{ text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
 																							width : 60,
@@ -552,7 +555,7 @@ ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
 	this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
 	this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
 	this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
-	this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
+	// this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
 	this.addEditCrystalFormButton(row);
 }
 
@@ -560,7 +563,7 @@ ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
 	this.setDataAtCell(row,this.unitCellIndex,"");
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
-	this.setDataAtCell(row,0,"");
+	// this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
 }
 
