@@ -81,14 +81,19 @@ EditCrystalFormView.prototype.save = function () {
 					name		: 	$("#" + this.id + "-name").val(),
 					comments	:	$("#" + this.id + "-comments").val()
                 };
-	var onSaved = function (sender, newCrystal) {
-		EXI.proposalManager.get(true);
-		_this.onSaved.notify(newCrystal);
+
+	if (crystal.cellA != "" && crystal.cellB != "" && crystal.cellC != "") {
+		var onSaved = function (sender, newCrystal) {
+			EXI.proposalManager.get(true);
+			_this.onSaved.notify(newCrystal);
+		}
+		
+		EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
+																	crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
+																	crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
+	} else {
+		$.notify("The values A, B and C must be filled");
 	}
-	
-	EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
-																crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
-																crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
 };
 
 EditCrystalFormView.prototype.setCellValuesBySpaceGroup = function (spaceGroup) {
