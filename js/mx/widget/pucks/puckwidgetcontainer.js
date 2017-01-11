@@ -25,6 +25,9 @@ function PuckWidgetContainer(args) {
 					break;
 			}
 		}
+		if (args.containerId){
+			this.containerId = args.containerId;
+		}
 		if (args.xMargin){
 			this.xMargin = args.xMargin;
 		}

@@ -151,7 +151,6 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
-		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
 		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
@@ -231,6 +230,9 @@ PuckWidget.prototype.load = function (data) {
 				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
+				// var tooltipData = {
+					
+				// }
 				if (_this.data.cells[cellIndex].sample_name){
 	
 					var tooltipHtml = "";

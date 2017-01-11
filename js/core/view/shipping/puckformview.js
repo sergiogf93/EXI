@@ -61,14 +61,33 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
             Ext.getCmp(_this.id + "puck_status").setValue(_this.puck.containerStatus);                
         }
 
-        var onSuccess = function (sender, samples) {
-            if (samples.length > 0) {
-                _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
-            } else {
-                _this.containerSpreadSheet.setRenderCrystalFormColumn(false);
+		_this.fillSamplesGrid(puck);
+
+        // var onSuccess = function (sender, samples) {
+		// 	debugger
+		// 	_this.fillSamplesGrid(samples,puck);
+        // }
+
+        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
+
+    };
+
+    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
+
+};
+
+PuckFormView.prototype.fillSamplesGrid = function (puck) {
+	var _this = this;
+	this.containerSpreadSheet.setLoading(true);
+	var onSuccess = function (sender, samples) {
+		if (samples) {
+			if (samples.length > 0) {
+				_this.containerSpreadSheet.setRenderCrystalFormColumn(true);
+			} else {
+				_this.containerSpreadSheet.setRenderCrystalFormColumn(false);
 			}
 			_this.containerSpreadSheet.setContainerType(puck.containerType);
-            _this.containerSpreadSheet.load(puck);
+			_this.containerSpreadSheet.load(puck);
 			if (_this.shippingStatus != "processing"){
 				var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
 				if (withoutCollection.length == samples.length) {
@@ -79,19 +98,15 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
 			} else {
 				_this.containerSpreadSheet.disableAll();
 			}
-            _this.containerSpreadSheet.setLoading(false);
+			_this.containerSpreadSheet.setLoading(false);
 			if (_this.containerSpreadSheet.renderCrystalFormColumn) {
 				_this.setValuesForEditCrystalColumn();
 			}
-        }
+		}
+	}
 
-        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
-
-    };
-
-    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
-
-};
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(puck.containerId);
+}
 
 PuckFormView.prototype.getPanel = function() {
 	var _this =this;
@@ -245,18 +260,9 @@ PuckFormView.prototype.save = function() {
 	var onSuccess = function(sender, puck){
 		_this.panel.setLoading(false);
 		_this.load(_this.containerId, _this.shippingId);
-		// _this.onSaved.notify(puck);
-        // _this.returnToShipment();
 	};
-	
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
-
-// PuckFormView.prototype.getEditCrystalFormLink = function (row) {
-// 	// var crystalId = this.puck.sampleVOs[row].crystalVO.crystalId;
-// 	return "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
-// 	// return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
-// }
 
 /**
  * When container type has changed from SPINE|| UNIPUCK || PLATE
@@ -264,25 +270,35 @@ PuckFormView.prototype.save = function() {
  * We make the spreadsheet longer and the platelayout is rendered again
  */
 PuckFormView.prototype.containerTypeChanged = function(capacity) {
+	var currentType = this.capacityCombo.getTypeByCapacity(this.puck.capacity);
+	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
-	this.containerSpreadSheet.setContainerType(this.capacityCombo.getTypeByCapacity(capacity));
+	this.containerSpreadSheet.setContainerType(newType);
 	var data = this.containerSpreadSheet.spreadSheet.getData();
+	//Sets the appropiate number of rows according to the capacity
 	if (data.length < capacity){
-		var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
 		for (var i = data.length + 1; i<= capacity; i++){
 			data.push([i]);
-			this.containerSpreadSheet.setDataAtCell(i-1,columnIndex,"");
 		}
 	}
 	else{
 		data = data.slice(0, capacity);
 	}
-	// debugger
-	// this.panel.remove(this.containerSpreadSheet.panel);
-	// this.panel.insert(this.containerSpreadSheet.getPanel());
+	//Resets editCrystalForm column if exists
+	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+	// if (columnIndex >= 0){
+	// 	var tableData = this.containerSpreadSheet.parseTableData();
+	// 	for (var i = 0 ; i < tableData.length ; i++) {
+	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
+	// 	}
+	// }
+	
+	//Changes the grid when changed from or to the type OTHER
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	// this.save();
-	// this.load(this.containerId,this.shippingId);
+	if (currentType == "OTHER" || newType == "OTHER"){
+		this.puck.containerType = newType;
+		this.fillSamplesGrid(this.puck);
+	}
 };
 
 /**

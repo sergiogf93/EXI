@@ -35,15 +35,20 @@ EditCrystalFormView.prototype.getPanel = function() {
 
 EditCrystalFormView.prototype.load = function(crystal) {
 	var _this = this;
-	if (crystal.crystalId != "") {
-		var onSuccess = function (sender, crystalById) {
-			_this.crystal = crystalById;
-			_this.render();
+	this.crystal = crystal;
+	if (crystal.crystalId != null){
+		if (crystal.crystalId != "") {
+			var onSuccess = function (sender, crystalById) {
+				_this.crystal = crystalById;
+				_this.render();
+			}
+			EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
+		} else {
+			this.render();
 		}
-		EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
 	} else {
-		this.crystal = crystal;
-		this.render();
+		$('#' + this.id).hide().html("<div id='" + this.id + "-error' style='margin:30px;'><h4>There was an error loading the crystal</h4></div>").fadeIn('fast');
+		this.panel.doLayout();
 	}
 }
 
@@ -83,16 +88,18 @@ EditCrystalFormView.prototype.save = function () {
                 };
 
 	if (crystal.cellA != "" && crystal.cellB != "" && crystal.cellC != "") {
+		this.panel.setLoading();
 		var onSaved = function (sender, newCrystal) {
 			EXI.proposalManager.get(true);
 			_this.onSaved.notify(newCrystal);
+			_this.panel.setLoading(false);
 		}
 		
 		EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
 																	crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
 																	crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
 	} else {
-		$.notify("The values A, B and C must be filled");
+		$("#" + this.id + "-cellsABC").notify("The values A, B and C must be filled",{className:"error"});
 	}
 };
 
