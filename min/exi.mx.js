@@ -4260,7 +4260,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var _this = this;
     
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
-    debugger
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/
@@ -8525,7 +8524,7 @@ function PuckLegend(args){
             tOffset = args.tOffset;
         }
     }
-    
+    var fontSize = "0.55vw";
     var rad = "7%";
     var circles = [];
     circles.push({cx : "7%", cy : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
@@ -8534,9 +8533,10 @@ function PuckLegend(args){
     circles.push({cx : "67%", cy : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
 
     this.data = {
-                    id      : this.id,
-                    circles : circles,
-                    tOffset : tOffset
+                    id          : this.id,
+                    circles     : circles,
+                    tOffset     : tOffset,
+                    fontSize    : fontSize
                 };
 }
 
@@ -8785,13 +8785,13 @@ PuckWidget.prototype.load = function (data) {
 				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
-				// var tooltipData = {
-					
-				// }
-				if (_this.data.cells[cellIndex].sample_name){
-	
+				if (_this.data.cells[cellIndex].protein_acronym){
+					var tooltipData = [{key : "Protein acronym", value : _this.data.cells[cellIndex].protein_acronym}];
+					if (_this.data.cells[cellIndex].sample_name) {
+						tooltipData.push({key : "Sample", value : _this.data.cells[cellIndex].sample_name});
+					}
 					var tooltipHtml = "";
-					dust.render("containers.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
+					dust.render("tooltip.template", tooltipData, function(err, out) {
 						tooltipHtml = out;
 					});
 					$('body').append(tooltipHtml);
@@ -8967,6 +8967,7 @@ function PuckWidgetContainer(args) {
 	this.containerId = 0;
 	this.enableMainClick = false;
 	this.enableMainMouseOver = false;
+	this.code = "";
 	if (args){
 		if (args.puckType) {
 			switch (args.puckType) {
@@ -8979,6 +8980,9 @@ function PuckWidgetContainer(args) {
 					this.capacity = 10;
 					break;
 			}
+		}
+		if (args.code){
+			this.code = args.code;
 		}
 		if (args.containerId){
 			this.containerId = args.containerId;

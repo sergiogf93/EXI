@@ -21,14 +21,9 @@ function PuckFormView(args) {
 	
 	var _this = this;
 	
-	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
-	
-	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
-		
-	});*/
 
-	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false, initDisabled : true});
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
 		_this.containerTypeChanged(capacity);
@@ -44,7 +39,7 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
     this.shippingId = shippingId;
     this.shippingStatus = shippingStatus;
     this.containerId = containerId;
-    this.containerSpreadSheet.setLoading(true);
+    // this.containerSpreadSheet.setLoading(true);
 	this.panel.setTitle("Shipment");
 
     var onSuccess = function(sender, puck){
@@ -62,13 +57,6 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
         }
 
 		_this.fillSamplesGrid(puck);
-
-        // var onSuccess = function (sender, samples) {
-		// 	debugger
-		// 	_this.fillSamplesGrid(samples,puck);
-        // }
-
-        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
 
     };
 
@@ -261,6 +249,7 @@ PuckFormView.prototype.save = function() {
 		_this.panel.setLoading(false);
 		_this.load(_this.containerId, _this.shippingId);
 	};
+	
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 

@@ -14,8 +14,12 @@ function ContainerWidget(args) {
                         };
 	this.containerId = 0;
     this.samples = null;
+	this.code = "";
 
 	if (args){
+		if (args.code){
+			this.code = args.code;
+		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
 		}

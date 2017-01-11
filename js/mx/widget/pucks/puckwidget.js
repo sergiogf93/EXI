@@ -230,13 +230,13 @@ PuckWidget.prototype.load = function (data) {
 				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
-				// var tooltipData = {
-					
-				// }
-				if (_this.data.cells[cellIndex].sample_name){
-	
+				if (_this.data.cells[cellIndex].protein_acronym){
+					var tooltipData = [{key : "Protein acronym", value : _this.data.cells[cellIndex].protein_acronym}];
+					if (_this.data.cells[cellIndex].sample_name) {
+						tooltipData.push({key : "Sample", value : _this.data.cells[cellIndex].sample_name});
+					}
 					var tooltipHtml = "";
-					dust.render("containers.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
+					dust.render("tooltip.template", tooltipData, function(err, out) {
 						tooltipHtml = out;
 					});
 					$('body').append(tooltipHtml);

@@ -2883,7 +2883,7 @@ CredentialManager.prototype.getBeamlines = function(){
 * @param technique [MX, SAXS]
 * @return 
 */
-CredentialManager.prototype.getBeamlinesByTechnique = function(technique){   
+CredentialManager.prototype.getBeamlinesByTechnique = function(technique){
 	var connections = this.getConnections();
     var beamlines = [];
 	for (var i = 0; i < connections.length; i++) {        
@@ -3880,6 +3880,173 @@ SessionMainView.prototype.loadByDate = function(start) {
 
 
 
+function SpreadSheet(args){
+	this.id = BUI.id();
+	this.height = 380;
+	this.width = 500;
+	this.containerType = "OTHER";
+	
+	if (args != null) {
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+		if (args.containerType != null) {
+			this.containerType = args.containerType;
+		}
+	}
+}
+
+SpreadSheet.prototype.getPanel = function(){
+	var _this = this;
+	this.panel = Ext.create('Ext.panel.Panel', {
+		layout : 'vbox',
+		height 		: this.height+ 50,
+		items : [ 
+				  {
+						html 		: '<div  style="overflow: auto;overflow-y: hidden; border:1px solid gray;background-color:white;height:500px;width:' + (_this.width - 20) +'px"; id="' + this.id + '_samples"; ></div>',
+						margin 		: '20 0 20 10',
+						height 		: this.height,
+						width 		: this.width,
+						autoScroll 	: true,
+						resizable 	: true
+					}]
+	});
+    return this.panel;
+};
+
+SpreadSheet.prototype.setLoading = function (bool) {
+	this.panel.setLoading(bool);
+}
+
+SpreadSheet.prototype.getAcronyms = function() {
+	var proteins = EXI.proposalManager.getProteins();
+	var acronyms = [];
+	for (var i = 0; i < proteins.length; i++) {
+		acronyms.push(proteins[i].acronym);
+	}
+	return acronyms;
+};
+
+SpreadSheet.prototype.setContainerType = function(containerType) {
+	this.containerType = containerType;
+};
+
+SpreadSheet.prototype.getHeaderWidth = function() {
+	var header = this.getHeader();
+	var text = [];
+	for (var i =0; i < header.length; i++){
+		text.push(header[i].column.with);
+	}
+	return text;
+};
+
+SpreadSheet.prototype.getHeaderId = function(containerType) {
+	var header = this.getHeader(containerType);
+	var text = [];
+	for (var i =0; i < header.length; i++){
+		text.push(header[i].id);
+	}
+	return text;
+};
+
+SpreadSheet.prototype.getHeaderText = function() {
+	var header = this.getHeader();
+	var text = [];
+	for (var i =0; i < header.length; i++){
+		text.push(header[i].text);
+	}
+	return text;
+};
+
+
+SpreadSheet.prototype.getColumns = function() {
+	var columns = [];
+	for (var i = 0; i < this.getHeader().length; i++) {
+		columns.push(this.getHeader()[i].column);
+	}
+	return columns;
+};
+
+/**
+* Returns an array of objects for each row in the grid where at least the protein acronym column is filled
+*
+* @method parseTableData
+*/
+SpreadSheet.prototype.parseTableData = function() {
+	var parsed = [];
+	var data = this.spreadSheet.getData();
+	// var columnIds = this.getHeaderId();
+	if (data != null && data.length > 0){
+		var columnIds = this.getHeaderId();
+		for (var j = 0; j < data.length; j++) {
+			if (data[j].length > 1){
+				var row = {};
+				row["location"] = j + 1;
+				for (var k = 0 ; k < columnIds.length ; k++) {
+					var key = columnIds[k];
+					var value = data[j][this.getColumnIndex(key)];
+					row[key] = value;
+				}
+				if (row["Protein Acronym"]){
+					if (row["Protein Acronym"].length > 0){
+						parsed.push(row);
+					}
+				}
+			}
+		}
+	}
+	/** Curated contains the whole-data rows * */
+	var curated = [];
+	for (var i = 0; i < parsed.length; i++) {
+		if (parsed[i]["Protein Acronym"] != null){
+			curated.push(parsed[i]);
+		}
+	}
+	return curated;
+};
+
+SpreadSheet.prototype.load = function(data){
+	var _this = this;
+	this.data = data;
+	var container = document.getElementById(this.id + '_samples');
+
+	this.spreadSheet = new Handsontable(container, {
+			data: data,
+			height : this.height,
+			width : this.width,
+			manualColumnResize: true,
+			colWidths: this.getHeaderWidth(),
+			colHeaders: this.getHeaderText(),
+			stretchH: 'last',
+			columns: this.getColumns(),
+	});
+};
+
+SpreadSheet.prototype.getData = function () {
+	return this.spreadSheet.getData();
+}
+
+SpreadSheet.prototype.loadData = function (data) {
+	return this.spreadSheet.loadData(data);
+}
+
+SpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
+	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
+}
+
+/**
+* Returns the columnIndex given the columnId
+*
+* @method getColumnIndex
+* @param {Integer} colId The column Id of the column it's column index we want to know 
+* @param {String} containerType Optional value to use if we want the header for an specific containerType
+*/
+SpreadSheet.prototype.getColumnIndex = function (colId) {
+	return _.findIndex(this.getHeader(),{id :colId});
+}
 function AddContainerForm(args) {
     this.id = BUI.id();
     var _this = this;
@@ -4127,372 +4294,38 @@ CaseForm.prototype.getPanel = function(dewar) {
 
 function ContainerSpreadSheet(args){
 	this.id = BUI.id();
-	this.height = 380;
-	this.width = 500;
-	this.containerType = "OTHER";
-	this.renderCrystalFormColumn = false;
-	if (args != null) {
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.containerType != null) {
-			this.containerType = args.containerType;
-		}
+	SpreadSheet.call(this, args);
+
+    this.renderCrystalFormColumn = false;
+
+    if (args != null) {
 		if (args.renderCrystalFormColumn != null) {
 			this.renderCrystalFormColumn = args.renderCrystalFormColumn;
 		}
 	}
 
-	this.crystalInfoToIdMap = {};
+    this.crystalInfoToIdMap = {};
 
 	this.crystalFormIndex = -1;
 	this.unitCellIndex = -1;
 	this.spaceGroupIndex = -1;
 	
 	this.onModified = new Event(this);
+
 }
 
-ContainerSpreadSheet.prototype.getPanel = function(){
-	var _this = this;
-	this.panel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		height 		: this.height+ 50,
-		items : [ 
-				  {
-						html 		: '<div  style="overflow: auto;overflow-y: hidden; border:1px solid gray;background-color:white;height:500px;width:' + (_this.width - 20) +'px"; id="' + this.id + '_samples"; ></div>',
-						margin 		: '20 0 20 10',
-						height 		: this.height,
-						width 		: this.width,
-						autoScroll 	: true,
-						resizable 	: true
-					}]
-	});
-    return this.panel;
-};
-
-ContainerSpreadSheet.prototype.setLoading = function (bool) {
-	this.panel.setLoading(bool);
-}
-
-/**
-* Returns an array of arrays for each sample in the given puck up to the puck's capacity ordered according to the grid
-*
-* @method getSamplesData
-* @param {Object} puck The puck which's samples are parsed
-*/
-ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
-	var samples = puck.sampleVOs;
-	var data = [];
-	/** Sorting samples by location * */
-	samples.sort(function(a,b){return Number(a.location) - Number(b.location);});
-	function getSampleByLocation(samples, location){
-		for (var i = 0; i < samples.length; i++) {
-			if (samples[i].location == Number(location)){
-				return samples[i];
-			}
-		}
-	}
-
-	function getValue(value){
-		if (!value){return "";}
-        return value;
-	}
-	
-	for (var i = 0; i < puck.capacity; i++) {
-		var sample = getSampleByLocation(samples, i + 1);
-		if (sample!= null){
-				var crystal = sample.crystalVO;
-				var protein = crystal.proteinVO;
-				var diffraction = sample.diffractionPlanVO;
-				if (diffraction == null){
-					diffraction = {};
-				}
-				if (this.containerType != "OTHER"){
-					data.push(
-						[
-							// crystal.crystalId,
-							(i+1), 
-							protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-						diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
-						]
-					);
-				} else {
-					data.push(
-						[(i+1),protein.acronym, sample.name, sample.comments]
-					);
-				}
-		}
-		else{
-			data.push([(i+1)]);
-		}
-	}
-	return data;
-};
-
-
-// ContainerSpreadSheet.prototype.getSpaceGroups = function() {
-// 	return ["P1","P2","P21","C2","P222","P2221","P21212","P212121","C222","C2221","F222","I222","I212121","P4","P41","P42","P43","P422","P4212","P4122","P41212","P4222","P42212","P4322","P43212",
-//                 	"I4","I41","I422","I4122","P3","P31","P32","P31","P321","P3112","P3121","P3212","P3221","P6","P61","P65","P62","P64","P63","P622","P6122","P6522","P6222","P6422","P6322","R3","R32","P23","P213",
-//                 	"P432",	"P4232","P4332","P4132","F23","F432","F4132","I23",	"I213","I432","I4132", "UNKNOWN"];
-// };
-
-ContainerSpreadSheet.prototype.getAcronyms = function() {
-	var proteins = EXI.proposalManager.getProteins();
-	var acronyms = [];
-	for (var i = 0; i < proteins.length; i++) {
-		acronyms.push(proteins[i].acronym);
-	}
-	return acronyms;
-};
-
-/**
-* Returns the header of the grid according to the containerType
-*
-* @method getHeader
-* @param {String} containerType Optional value. If it's null it uses the current containerType of the class
-*/
-ContainerSpreadSheet.prototype.getHeader = function(containerType) {
-	if (containerType == null) {
-		containerType = this.containerType;
-	}
-	var _this = this;
-	var header = [];
-	var disabledRenderer = function(instance, td, row, col, prop, value, cellProperties){
-		if (value != undefined){
-			td.innerHTML = value;
-		}
-		td.style.background = '#DDD';
-	}
-	var editCrystalFormRenderer = function(instance, td, row, col, prop, value, cellProperties){
-		if (value != undefined){
-			td.innerHTML = value;
-		}
-	}
-	  
-	if (containerType != "OTHER"){
-		header = [
-				// { text :'', id :'crystalId', column : {width : 100}}, 
-				{ text : '#', 	id: 'position', column : {width : 20}}, 
-				{ text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-																							width : 60,
-																							type: 'dropdown',
-																							source: this.getAcronyms()
-																						}
-				}, 
-				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
-				{ text :'Crystal<br /> Form', id : 'Crystal Form',column : {
-																			width : 300,
-																			type: 'dropdown',
-																			source: function(query, process) {
-																				var colIndex = _this.getColumnIndex("Protein Acronym");
-																				var protein = EXI.proposalManager.getProteinByAcronym(this.instance.getDataAtCell(this.row,colIndex));
-																				if (protein.length > 0){
-																					process(_this.getCrystalInfoByProtein(protein[0]));
-																				} else {
-																					process([]);
-																				}
-																			}
-																		}
-																	}, 
-				{ text :'Exp.<br /> Type', id : 'Experiment Type', column : {
-																			width : 80,  
-																			type: 'dropdown',
-																			source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
-																		}
-				}, 
-				{ text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 60}},  
-				{ text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
-				{ text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
-				{ text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
-				{ text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
-				{ text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
-				{ text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
-				{ text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
-				{ text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
-				{ text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
-				{ text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
-				{ text :'Comments', id :'Comments', column : {width : 200}}
-				];
-
-		if (this.renderCrystalFormColumn) {
-			header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: editCrystalFormRenderer, editor : false, readOnly: true}});
-		}
-	} else {
-		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
-				{ text :'Samplesheet <br />Acronym', id :'Protein Acronym', 	column :  {
-																							width : 100,
-																							type: 'dropdown',
-																							source: this.getAcronyms()
-																						}
-				}, 
-				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}},
-				{ text :'Comments', id :'Comments', column : {width : 200}}
-				];
-	}
-	
-	return header;
-};
-
-ContainerSpreadSheet.prototype.setRenderCrystalFormColumn = function(bool) {
-	this.renderCrystalFormColumn = bool;
-};
-
-ContainerSpreadSheet.prototype.setContainerType = function(containerType) {
-	this.containerType = containerType;
-};
-
-ContainerSpreadSheet.prototype.getHeaderWidth = function() {
-	var header = this.getHeader();
-	var text = [];
-	for (var i =0; i < header.length; i++){
-		text.push(header[i].column.with);
-	}
-	return text;
-};
-
-ContainerSpreadSheet.prototype.getHeaderId = function(containerType) {
-	var header = this.getHeader(containerType);
-	var text = [];
-	for (var i =0; i < header.length; i++){
-		text.push(header[i].id);
-	}
-	return text;
-};
-
-ContainerSpreadSheet.prototype.getHeaderText = function() {
-	var header = this.getHeader();
-	var text = [];
-	for (var i =0; i < header.length; i++){
-		text.push(header[i].text);
-	}
-	return text;
-};
-
-
-ContainerSpreadSheet.prototype.getColumns = function() {
-	var columns = [];
-	for (var i = 0; i < this.getHeader().length; i++) {
-		columns.push(this.getHeader()[i].column);
-	}
-	return columns;
-};
-
-/**
-* Returns a puck object with the corresponding samples from the grid
-*
-* @method getPuck
-*/
-ContainerSpreadSheet.prototype.getPuck = function() {
-	var myPuck = JSON.parse(JSON.stringify(this.puck));
-	var rows = this.parseTableData();
-    
-	//myPuck.sampleVOs = [];
-    var aux = [];
-    
-    function filterByLocation(samples){
-        return _.filter(samples, function(b){return b.location == rows[i].location;} );
-    }
-	for (var i = 0; i < rows.length; i++) {
-        var sample = {};
-        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
-        if (sampleByLocation.length > 0){
-            /** new sample */
-		    sample = sampleByLocation[0];
-        } 
-        
-		sample["name"] = rows[i]["Sample Name"];
-		sample["smiles"] = rows[i]["Smiles"];
-		sample["location"]= rows[i]["location"];
-		sample["comments"] = rows[i]["Comments"];
-        var proteins = [];
-		if (sample["crystalVO"] == null){
-			sample["crystalVO"] = {};
-			proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
-			if (proteins != null){
-				sample["crystalVO"]["proteinVO"] = proteins[0];
-			}
-		}
-        else{
-            proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
-			if (proteins != null){
-				sample["crystalVO"]["proteinVO"] = proteins[0];
-			}
-        }
-		var crystal = this.parseCrystalFormColumn(rows[i]["Crystal Form"],i);
-		sample["crystalVO"]["spaceGroup"] = (crystal.spaceGroup) ? crystal.spaceGroup : "";
-		sample["crystalVO"]["cellA"] = crystal.cellA;
-		sample["crystalVO"]["cellB"] = crystal.cellB;
-		sample["crystalVO"]["cellC"] = crystal.cellC;
-		sample["crystalVO"]["cellAlpha"] = crystal.cellAlpha;
-		sample["crystalVO"]["cellBeta"] = crystal.cellBeta;
-		sample["crystalVO"]["cellGamma"] = crystal.cellGamma;
-		
-		sample["diffractionPlanVO"] = {};
-		sample["diffractionPlanVO"]["radiationSensitivity"]= Number(rows[i]["Radiation Sensitivity"]);
-		sample["diffractionPlanVO"]["requiredCompleteness"]= Number(rows[i]["Required Completeness"]);
-		sample["diffractionPlanVO"]["requiredMultiplicity"]= Number(rows[i]["Required multiplicity"]);
-		sample["diffractionPlanVO"]["requiredResolution"]= Number(rows[i]["Needed resolution"]);
-		sample["diffractionPlanVO"]["observedResolution"]= Number(rows[i]["Pre-observed resolution"]);
-		sample["diffractionPlanVO"]["preferredBeamDiameter"]= Number(rows[i]["Pref. Diameter"]);
-		sample["diffractionPlanVO"]["numberOfPositions"]= Number(rows[i]["Number Of positions"]);
-		sample["diffractionPlanVO"]["experimentKind"]= rows[i]["Experiment Type"];
-		aux.push(sample);
-		
-	}
-    myPuck.sampleVOs = aux;
-    
-	return myPuck;
-};
-
-/**
-* Returns an array of objects for each row in the grid where at least the protein acronym column is filled
-*
-* @method parseTableData
-*/
-ContainerSpreadSheet.prototype.parseTableData = function() {
-	var parsed = [];
-	var data = this.spreadSheet.getData();
-	// var columnIds = this.getHeaderId();
-	var type = this.containerType;
-	if (data != null && data.length > 0){
-		var columnIds = this.getHeaderId(type);
-		if (Math.abs(data[0].length - columnIds.length) > 1) {
-			if (type == "OTHER"){
-				type = "NOT_OTHER";
-			} else {
-				type = "OTHER";
-			}
-			columnIds = this.getHeaderId(type);
-		}
-		for (var j = 0; j < data.length; j++) {
-			if (data[j].length > 1){
-				var row = {};
-				row["location"] = j + 1;
-				for (var k = 0 ; k < columnIds.length ; k++) {
-					var key = columnIds[k];
-					var value = data[j][this.getColumnIndex(key,type)];
-					row[key] = value;
-				}
-				if (row["Protein Acronym"]){
-					if (row["Protein Acronym"].length > 0){
-						parsed.push(row);
-					}
-				}
-			}
-		}
-	}
-	/** Curated contains the whole-data rows * */
-	var curated = [];
-	for (var i = 0; i < parsed.length; i++) {
-		if (parsed[i]["Protein Acronym"] != null){
-			curated.push(parsed[i]);
-		}
-	}
-	return curated;
-};
+ContainerSpreadSheet.prototype.getPanel = SpreadSheet.prototype.getPanel;
+ContainerSpreadSheet.prototype.setLoading = SpreadSheet.prototype.setLoading;
+ContainerSpreadSheet.prototype.getAcronyms = SpreadSheet.prototype.getAcronyms;
+ContainerSpreadSheet.prototype.getHeaderWidth = SpreadSheet.prototype.getHeaderWidth;
+ContainerSpreadSheet.prototype.getHeaderId = SpreadSheet.prototype.getHeaderId;
+ContainerSpreadSheet.prototype.getHeaderText = SpreadSheet.prototype.getHeaderText;
+ContainerSpreadSheet.prototype.getColumns = SpreadSheet.prototype.getColumns;
+ContainerSpreadSheet.prototype.parseTableData = SpreadSheet.prototype.parseTableData;
+ContainerSpreadSheet.prototype.getData = SpreadSheet.prototype.getData;
+ContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
+ContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
+ContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
 
 ContainerSpreadSheet.prototype.load = function(puck){
 	var _this = this;
@@ -4571,33 +4404,193 @@ ContainerSpreadSheet.prototype.load = function(puck){
 				stretchH: 'last',
 				columns: this.getColumns(),
 		});
-
-	
-	
 };
 
-ContainerSpreadSheet.prototype.getData = function () {
-	return this.spreadSheet.getData();
-}
+/**
+* Returns an array of arrays for each sample in the given container up to the container's capacity ordered according to the grid
+*
+* @method getSamplesData
+* @param {Object} puck The container which's samples are parsed
+*/
+ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
+    var data = [];
+    var samples = puck.sampleVOs;
+    /** Sorting samples by location * */
+    samples.sort(function(a,b){return Number(a.location) - Number(b.location);});
+    function getSampleByLocation(samples, location){
+        for (var i = 0; i < samples.length; i++) {
+            if (samples[i].location == Number(location)){
+                return samples[i];
+            }
+        }
+    }
 
-ContainerSpreadSheet.prototype.loadData = function (data) {
-	return this.spreadSheet.loadData(data);
-}
+    function getValue(value){
+        if (!value){return "";}
+        return value;
+    }
+		
+    for (var i = 0; i < puck.capacity; i++) {
+        var sample = getSampleByLocation(samples, i + 1);
+        if (sample!= null){
+                var crystal = sample.crystalVO;
+                var protein = crystal.proteinVO;
+                var diffraction = sample.diffractionPlanVO;
+                if (diffraction == null){
+                    diffraction = {};
+                }
+                data.push(
+                    [
+                        // crystal.crystalId,
+                        (i+1), 
+                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
+                    ]
+                );
+        }
+        else{
+            data.push([(i+1)]);
+        }
+    }
+	return data;
+};
 
-ContainerSpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
-	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
-}
+ContainerSpreadSheet.prototype.getHeader = function() {
+    var _this = this;
+	var header = [];
+	var disabledRenderer = function(instance, td, row, col, prop, value, cellProperties){
+		if (value != undefined){
+			td.innerHTML = value;
+		}
+		td.style.background = '#DDD';
+	}
+	var editCrystalFormRenderer = function(instance, td, row, col, prop, value, cellProperties){
+		if (value != undefined){
+			td.innerHTML = value;
+		}
+	}
+    header = [
+            // { text :'', id :'crystalId', column : {width : 100}}, 
+            { text : '#', 	id: 'position', column : {width : 20}}, 
+            { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
+                                                                                        width : 60,
+                                                                                        type: 'dropdown',
+                                                                                        source: this.getAcronyms()
+                                                                                    }
+            }, 
+            { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
+            { text :'Crystal<br /> Form', id : 'Crystal Form',column : {
+                                                                        width : 300,
+                                                                        type: 'dropdown',
+                                                                        source: function(query, process) {
+                                                                            var colIndex = _this.getColumnIndex("Protein Acronym");
+                                                                            var protein = EXI.proposalManager.getProteinByAcronym(this.instance.getDataAtCell(this.row,colIndex));
+                                                                            if (protein.length > 0){
+                                                                                process(_this.getCrystalInfoByProtein(protein[0]));
+                                                                            } else {
+                                                                                process([]);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }, 
+            { text :'Exp.<br /> Type', id : 'Experiment Type', column : {
+                                                                        width : 80,  
+                                                                        type: 'dropdown',
+                                                                        source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
+                                                                    }
+            }, 
+            { text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 60}},  
+            { text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
+            { text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
+            { text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
+            { text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
+            { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
+            { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
+            { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
+            { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            { text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
+            { text :'Comments', id :'Comments', column : {width : 200}}
+            ];
+
+    if (this.renderCrystalFormColumn) {
+        header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: editCrystalFormRenderer, editor : false, readOnly: true}});
+    }
+
+    return header;
+};
+
 
 /**
-* Returns the columnIndex given the columnId
+* Returns a puck object with the corresponding samples from the grid
 *
-* @method getColumnIndex
-* @param {Integer} colId The column Id of the column it's column index we want to know 
-* @param {String} containerType Optional value to use if we want the header for an specific containerType
+* @method getPuck
 */
-ContainerSpreadSheet.prototype.getColumnIndex = function (colId, containerType) {
-	return _.findIndex(this.getHeader(containerType),{id :colId});
-}
+ContainerSpreadSheet.prototype.getPuck = function() {
+	var myPuck = JSON.parse(JSON.stringify(this.puck));
+	var rows = this.parseTableData();
+    
+	//myPuck.sampleVOs = [];
+    var aux = [];
+    
+    function filterByLocation(samples){
+        return _.filter(samples, function(b){return b.location == rows[i].location;} );
+    }
+	for (var i = 0; i < rows.length; i++) {
+        var sample = {};
+        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        if (sampleByLocation.length > 0){
+            /** new sample */
+		    sample = sampleByLocation[0];
+        } 
+        
+		sample["name"] = rows[i]["Sample Name"];
+		sample["smiles"] = rows[i]["Smiles"];
+		sample["location"]= rows[i]["location"];
+		sample["comments"] = rows[i]["Comments"];
+        var proteins = [];
+		if (sample["crystalVO"] == null){
+			sample["crystalVO"] = {};
+			proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			if (proteins != null){
+				sample["crystalVO"]["proteinVO"] = proteins[0];
+			}
+		}
+        else{
+            proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			if (proteins != null){
+				sample["crystalVO"]["proteinVO"] = proteins[0];
+			}
+        }
+		var crystal = this.parseCrystalFormColumn(rows[i]["Crystal Form"],i);
+		sample["crystalVO"]["spaceGroup"] = (crystal.spaceGroup) ? crystal.spaceGroup : "";
+		sample["crystalVO"]["cellA"] = crystal.cellA;
+		sample["crystalVO"]["cellB"] = crystal.cellB;
+		sample["crystalVO"]["cellC"] = crystal.cellC;
+		sample["crystalVO"]["cellAlpha"] = crystal.cellAlpha;
+		sample["crystalVO"]["cellBeta"] = crystal.cellBeta;
+		sample["crystalVO"]["cellGamma"] = crystal.cellGamma;
+		
+		sample["diffractionPlanVO"] = {};
+		sample["diffractionPlanVO"]["radiationSensitivity"]= Number(rows[i]["Radiation Sensitivity"]);
+		sample["diffractionPlanVO"]["requiredCompleteness"]= Number(rows[i]["Required Completeness"]);
+		sample["diffractionPlanVO"]["requiredMultiplicity"]= Number(rows[i]["Required multiplicity"]);
+		sample["diffractionPlanVO"]["requiredResolution"]= Number(rows[i]["Needed resolution"]);
+		sample["diffractionPlanVO"]["observedResolution"]= Number(rows[i]["Pre-observed resolution"]);
+		sample["diffractionPlanVO"]["preferredBeamDiameter"]= Number(rows[i]["Pref. Diameter"]);
+		sample["diffractionPlanVO"]["numberOfPositions"]= Number(rows[i]["Number Of positions"]);
+		sample["diffractionPlanVO"]["experimentKind"]= rows[i]["Experiment Type"];
+		aux.push(sample);
+		
+	}
+    myPuck.sampleVOs = aux;
+    
+	return myPuck;
+};
+
+ContainerSpreadSheet.prototype.setRenderCrystalFormColumn = function(bool) {
+	this.renderCrystalFormColumn = bool;
+};
 
 /**
 * Returns an object containing the crystal information given the value at the crystal form column
@@ -4654,7 +4647,7 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 		}
 	}
 	return parsed;
-}
+};
 
 /**
 * Returns an string of the form [spaceGroup - (cellA : cellB : cellC | cellAlpha : cellBeta : cellGamma)]
@@ -4669,7 +4662,7 @@ ContainerSpreadSheet.prototype.getCrystalInfo = function (crystal) {
 		return crystal.spaceGroup
 	}
 	return crystal.spaceGroup + " - (" + crystal.cellA + " : " + crystal.cellB + " : " + crystal.cellC + " | " + crystal.cellAlpha + " : " + crystal.cellBeta + " : " + crystal.cellGamma + ")";
-}
+};
 
 ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
 	var html = "";
@@ -4677,7 +4670,7 @@ ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
 		html = out;
 	});
 	return html;
-}
+};
 
 ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	var _this = this;
@@ -4721,7 +4714,7 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	}).show();
 
 	editCrystalForm.load(crystal);
-}
+};
 
 ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column) {
 	if (!column) {
@@ -4729,7 +4722,7 @@ ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column)
 	}
 	var button = "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
 	this.setDataAtCell(row,column,button);
-}
+};
 
 ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
 	this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
@@ -4737,7 +4730,7 @@ ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
 	this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
 	// this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
 	this.addEditCrystalFormButton(row);
-}
+};
 
 ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
@@ -4745,13 +4738,13 @@ ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
 	// this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
-}
+};
 
 ContainerSpreadSheet.prototype.disableAll = function () {
 	this.spreadSheet.updateSettings({
 					readOnly: true
 				});
-}
+};
 
 /**
 * Method executed when a change is made on the spreadSheet. It manages the process when the crystal form or the protein acronym are changed
@@ -4787,7 +4780,7 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 			break;
 		}
 	}
-}
+};
 
 /**
 * Returns true if the parseCrystalForm is available for the given proteinAcronym
@@ -4799,7 +4792,7 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 ContainerSpreadSheet.prototype.isCrystalFormAvailable = function (parsedCrystalForm, proteinAcronym) {
 	var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsedCrystalForm.spaceGroup}),function(o){return o.proteinVO.acronym == proteinAcronym})
 	return crystalsBySpaceGroupAndAcronym.length > 0;
-}
+};
 
 /**
 * Loads the crystal info to ud map and returns an array of cystal info given a protein
@@ -4819,7 +4812,7 @@ ContainerSpreadSheet.prototype.getCrystalInfoByProtein = function (protein) {
 		}
 	}
 	return _.union(src,["NEW"]);
-}
+};
 function CrystalFormView (args) {
     this.id = BUI.id();
     this.padding = 20;
@@ -5114,6 +5107,262 @@ EditCrystalFormView.prototype.manageCellValueUpdate = function (id, value) {
 		$(id).prop('disabled', false);
 	}
 }
+function GenericContainerSpreadSheet(args){
+	this.id = BUI.id();
+	SpreadSheet.call(this, args);
+}
+
+GenericContainerSpreadSheet.prototype.getPanel = SpreadSheet.prototype.getPanel;
+GenericContainerSpreadSheet.prototype.setLoading = SpreadSheet.prototype.setLoading;
+GenericContainerSpreadSheet.prototype.getAcronyms = SpreadSheet.prototype.getAcronyms;
+GenericContainerSpreadSheet.prototype.getHeaderWidth = SpreadSheet.prototype.getHeaderWidth;
+GenericContainerSpreadSheet.prototype.getHeaderId = SpreadSheet.prototype.getHeaderId;
+GenericContainerSpreadSheet.prototype.getHeaderText = SpreadSheet.prototype.getHeaderText;
+GenericContainerSpreadSheet.prototype.getColumns = SpreadSheet.prototype.getColumns;
+GenericContainerSpreadSheet.prototype.parseTableData = SpreadSheet.prototype.parseTableData;
+GenericContainerSpreadSheet.prototype.getData = SpreadSheet.prototype.getData;
+GenericContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
+GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
+GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
+
+GenericContainerSpreadSheet.prototype.load = function(container){
+	var _this = this;
+	this.container = container;
+	var domElement = document.getElementById(this.id + '_samples');
+    
+	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    Handsontable.renderers.TextRenderer.apply(this, arguments);
+	    td.style.fontWeight = 'bold';
+	    td.style.color = 'green';
+	    td.style.fontSize = '9px';
+	    td.style.background = '#CEC';
+	  }
+	  
+	  function ValueRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    Handsontable.renderers.TextRenderer.apply(this, arguments);
+	    if (!instance.getDataAtRow(row)[1]){
+	    	td.style.background = '#EEE';
+	    	return;
+	    }
+	    
+	    if ((col == 2)){
+		    	if (!value || value == '') {
+		    		td.className = 'custom-row-text-required';
+		  	    }
+	    }
+		if ((col == _this.unitCellIndex) || col == _this.spaceGroupIndex) {
+			td.style.background = '#EEE';
+		}
+	  }
+
+	  
+	  // maps function to lookup string
+	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
+	  this.spreadSheet = new Handsontable(domElement, {
+				beforeChange: function (changes, source) {
+					lastChange = changes;
+				},
+				data: this.getSamplesData(container),
+			
+				height : this.height,
+				width : this.width,
+				manualColumnResize: true,
+				colWidths: this.getHeaderWidth(),
+				colHeaders: this.getHeaderText(),
+				stretchH: 'last',
+				columns: this.getColumns(),
+		});
+};
+
+/**
+* Returns an array of arrays for each sample in the given container up to the container's capacity ordered according to the grid
+*
+* @method getSamplesData
+* @param {Object} container The container which's samples are parsed
+*/
+GenericContainerSpreadSheet.prototype.getSamplesData = function(container) {
+    var data = [];
+    for (var i = 0; i < container.capacity; i++) {
+        if (i < container.samples.length){
+            var sample = container.samples[i];
+            data.push(
+                [(i+1),sample.Protein_acronym, sample.Protein_name, sample.BLSample_comments]
+            );
+        } else {
+            data.push([(i+1)]);
+        }
+    }
+
+    return data;
+}
+
+GenericContainerSpreadSheet.prototype.getHeader = function() {
+    var header = [];
+    header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
+				{ text :'Samplesheet <br />Acronym', id :'Protein Acronym', 	column :  {
+																							width : 100,
+																							type: 'dropdown',
+																							source: this.getAcronyms()
+																						}
+				}, 
+				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}},
+				{ text :'Comments', id :'Comments', column : {width : 200}}
+				];
+
+    return header;
+}
+
+/**
+* Returns a puck object with the corresponding samples from the grid
+*
+* @method getPuck
+*/
+GenericContainerSpreadSheet.prototype.getPuck = function() {
+    var rows = this.parseTableData();
+    var myPuck = {};
+    myPuck.sampleVOs = this.container.samples;
+
+    function filterByLocation(samples){
+        return _.filter(samples, function(b){return b.BLSample_location == rows[i].location;} );
+    }
+    
+    for (var i = 0; i < rows.length; i++) {
+        var sample = {};
+        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        if (sampleByLocation.length > 0){
+            /** new sample */
+		    sample = sampleByLocation[0];
+        }
+
+        sample["name"] = rows[i]["Sample Name"];
+        sample["location"]= rows[i]["location"];
+		sample["comments"] = rows[i]["Comments"];
+        sample["crystalVO"] = {};
+        sample["diffractionPlanVO"] = {};
+
+        myPuck.sampleVOs.push(sample);
+    }
+
+    return myPuck;
+}
+function OtherContainerForm(args) {
+    this.id = BUI.id();
+    var _this = this;
+
+    this.width = 1500;
+    this.height = 600;
+    this.container = {};
+	if (args != null) {
+        if (args.width != null) {
+			this.width = args.width;
+		}
+        if (args.height != null) {
+			this.height = args.height;
+		}
+	}
+
+    this.containerSpreadSheet = new GenericContainerSpreadSheet({width : this.width - 50, height : this.height - 300});
+
+    this.onSave = new Event(this);
+    this.onCancel = new Event(this);
+}
+
+OtherContainerForm.prototype.load = function (container) {
+    if (container) {
+        this.container = container;
+        Ext.getCmp(this.id + "container_name").setValue(container.code);
+        this.container.capacity = container.samples.length;
+        this.containerSpreadSheet.load(this.container);
+	    this.panel.doLayout();
+    }
+}
+
+OtherContainerForm.prototype.getPanel = function() {
+    this.panel = Ext.create('Ext.form.Panel', {
+        // width : this.width - 10,
+        // height : this.height,
+//			cls : 'border-grid',
+//			margin : 10,
+        autoScroll 	: true,
+        buttons : this.getButtons(),
+        items : [
+                {
+							xtype : 'container',
+							margin : '5 0 2 5',
+							layout : 'hbox',
+							items : [
+										
+										
+								         {
+								        	 xtype : 'container',
+											margin : '12 0 2 0',
+											layout : 'hbox',
+											items : [ 
+							         				   {
+																xtype: 'requiredtextfield',
+																id : this.id + 'container_name',
+																fieldLabel : 'Name',
+																name : 'name',
+																width : 250,
+																margin : '5 5 5 5',
+																labelWidth : 100
+														},
+                                            ]
+                                        }
+                                        ]
+                },
+                    this.containerSpreadSheet.getPanel()
+                ]
+    });
+	return this.panel;
+};
+
+OtherContainerForm.prototype.getButtons = function () {
+    var _this = this;
+    return [ {
+                text : 'Save',
+                id : this.id + "-save-button",
+                handler : function() {
+                    _this.save();
+                }
+            }, {
+                text : 'Cancel',
+                handler : function() {
+                    _this.onCancel.notify();
+                }
+            } ]
+}
+
+OtherContainerForm.prototype.getContainer = function () {
+    this.container.code = Ext.getCmp(this.id + "container_code").getValue();
+    this.container.containerType = "OTHER";
+    this.container.capacity = this.container.samples.length;    
+    return this.container;
+}
+
+OtherContainerForm.prototype.save = function() {
+	var _this = this;
+	this.panel.setLoading("Saving Puck");
+
+	var puck = this.containerSpreadSheet.getPuck();
+
+	/** Updating general parameters **/
+	puck.code = Ext.getCmp(_this.id + 'container_name').getValue();
+	puck.capacity = this.container.samples.length;
+	puck.containerType = "OTHER";
+	
+    var onError = function(sender, error){
+		_this.panel.setLoading(false);
+		EXI.setError(error.responseText);
+	};
+    
+	var onSuccess = function(sender, puck){
+		_this.panel.setLoading(false);
+        _this.onSave.notify();
+	};
+    
+	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.container.containerId, this.container.containerId, this.container.containerId, puck);
+};
 
 /**
 * This is a grid for parcels
@@ -5537,12 +5786,7 @@ function PuckFormView(args) {
 	
 	var _this = this;
 	
-	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
-	
-	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
-		
-	});*/
 
 	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
@@ -5560,7 +5804,7 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
     this.shippingId = shippingId;
     this.shippingStatus = shippingStatus;
     this.containerId = containerId;
-    this.containerSpreadSheet.setLoading(true);
+    // this.containerSpreadSheet.setLoading(true);
 	this.panel.setTitle("Shipment");
 
     var onSuccess = function(sender, puck){
@@ -5578,13 +5822,6 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
         }
 
 		_this.fillSamplesGrid(puck);
-
-        // var onSuccess = function (sender, samples) {
-		// 	debugger
-		// 	_this.fillSamplesGrid(samples,puck);
-        // }
-
-        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
 
     };
 
@@ -5777,6 +6014,7 @@ PuckFormView.prototype.save = function() {
 		_this.panel.setLoading(false);
 		_this.load(_this.containerId, _this.shippingId);
 	};
+	
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
@@ -6486,6 +6724,8 @@ ContainerParcelPanel.prototype.getPanel = function () {
                             handler : function() {
                                 if (_this.type == "StockSolution") {
                                     location.href = "#/stocksolution/" + _this.containerId + "/main";                            
+                                } else if (_this.type == "OTHER") {
+                                    _this.openEditOtherContainerForm();
                                 } else {
                                     location.href = "#/shipping/" + _this.shippingId + "/" + _this.shippingStatus + "/containerId/" + _this.containerId + "/edit";                            
                                 }
@@ -6607,6 +6847,36 @@ ContainerParcelPanel.prototype.removeButtonClicked = function () {
         icon: Ext.MessageBox.QUESTION
     });
 };
+
+ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
+    var _this = this;
+	/** Opens a window with the cas form **/
+	var otherContainerForm = new OtherContainerForm();
+	otherContainerForm.onSave.attach(function(sender,container){
+		window.close();
+	})
+
+	otherContainerForm.onCancel.attach(function(sender){
+		window.close();
+	})
+
+	var window = Ext.create('Ext.window.Window', {
+	    title: 'Container',
+	    height: 600,
+	    width: 1500,
+	    modal : true,
+	    layout: 'fit',
+	    items: [
+	            	otherContainerForm.getPanel()
+	    ],
+        listeners : {
+			afterrender : function(component, eOpts) {
+				otherContainerForm.load(_this.container);
+			}
+	    },
+	});
+	window.show();
+}
 function ContainerTypeComboBox(args) {
     this.id = BUI.id();
 
@@ -6721,8 +6991,12 @@ function ContainerWidget(args) {
                         };
 	this.containerId = 0;
     this.samples = null;
+	this.code = "";
 
 	if (args){
+		if (args.code){
+			this.code = args.code;
+		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
 		}
@@ -7429,13 +7703,13 @@ ParcelPanel.prototype.showCaseForm = function() {
 	    items: [
 	            	caseForm.getPanel(_this.dewar)
 	    ],
-	    listeners : {
-			afterrender : function(component, eOpts) {
-				if (_this.puck != null){
-						_this.load(_this.puck);
-				}
-			}
-	    },
+	    // listeners : {
+		// 	afterrender : function(component, eOpts) {
+		// 		if (_this.puck != null){
+		// 			_this.load(_this.puck);
+		// 		}
+		// 	}
+	    // },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {
@@ -7997,8 +8271,12 @@ function StockSolutionContainer(args) {
 
 	this.stockSolutionId = 0;
     this.samples = null;
+	this.code = "";
 
 	if (args){
+		if (args.code){
+			this.code = args.code;
+		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
 		}
