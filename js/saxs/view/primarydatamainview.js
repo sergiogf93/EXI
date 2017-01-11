@@ -64,8 +64,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	         this.framesGrid.getPanel()
 		        	          ]
 		         },
-		         this.plotter.getPanel()
-		        
+		         this.plotter.getPanel()		        
 		    ]
 	};
 };
