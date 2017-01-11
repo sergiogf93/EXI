@@ -4177,7 +4177,12 @@ ContainerSpreadSheet.prototype.setLoading = function (bool) {
 	this.panel.setLoading(bool);
 }
 
-
+/**
+* Returns an array of arrays for each sample in the given puck up to the puck's capacity ordered according to the grid
+*
+* @method getSamplesData
+* @param {Object} puck The puck which's samples are parsed
+*/
 ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 	var samples = puck.sampleVOs;
 	var data = [];
@@ -4205,14 +4210,20 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 				if (diffraction == null){
 					diffraction = {};
 				}
-				data.push(
-					[
-						// crystal.crystalId,
-						(i+1), 
-						protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
-					 ]
-				);
+				if (this.containerType != "OTHER"){
+					data.push(
+						[
+							// crystal.crystalId,
+							(i+1), 
+							protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+						diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
+						]
+					);
+				} else {
+					data.push(
+						[(i+1),protein.acronym, sample.name, sample.comments]
+					);
+				}
 		}
 		else{
 			data.push([(i+1)]);
@@ -4228,7 +4239,6 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
 //                 	"P432",	"P4232","P4332","P4132","F23","F432","F4132","I23",	"I213","I432","I4132", "UNKNOWN"];
 // };
 
-
 ContainerSpreadSheet.prototype.getAcronyms = function() {
 	var proteins = EXI.proposalManager.getProteins();
 	var acronyms = [];
@@ -4238,8 +4248,16 @@ ContainerSpreadSheet.prototype.getAcronyms = function() {
 	return acronyms;
 };
 
-
-ContainerSpreadSheet.prototype.getHeader = function() {
+/**
+* Returns the header of the grid according to the containerType
+*
+* @method getHeader
+* @param {String} containerType Optional value. If it's null it uses the current containerType of the class
+*/
+ContainerSpreadSheet.prototype.getHeader = function(containerType) {
+	if (containerType == null) {
+		containerType = this.containerType;
+	}
 	var _this = this;
 	var header = [];
 	var disabledRenderer = function(instance, td, row, col, prop, value, cellProperties){
@@ -4254,7 +4272,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 		}
 	}
 	  
-	if (this.containerType != "OTHER"){
+	if (containerType != "OTHER"){
 		header = [
 				// { text :'', id :'crystalId', column : {width : 100}}, 
 				{ text : '#', 	id: 'position', column : {width : 20}}, 
@@ -4310,7 +4328,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 																							source: this.getAcronyms()
 																						}
 				}, 
-				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
+				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}},
 				{ text :'Comments', id :'Comments', column : {width : 200}}
 				];
 	}
@@ -4335,8 +4353,8 @@ ContainerSpreadSheet.prototype.getHeaderWidth = function() {
 	return text;
 };
 
-ContainerSpreadSheet.prototype.getHeaderId = function() {
-	var header = this.getHeader();
+ContainerSpreadSheet.prototype.getHeaderId = function(containerType) {
+	var header = this.getHeader(containerType);
 	var text = [];
 	for (var i =0; i < header.length; i++){
 		text.push(header[i].id);
@@ -4362,7 +4380,11 @@ ContainerSpreadSheet.prototype.getColumns = function() {
 	return columns;
 };
 
-
+/**
+* Returns a puck object with the corresponding samples from the grid
+*
+* @method getPuck
+*/
 ContainerSpreadSheet.prototype.getPuck = function() {
 	var myPuck = JSON.parse(JSON.stringify(this.puck));
 	var rows = this.parseTableData();
@@ -4374,7 +4396,6 @@ ContainerSpreadSheet.prototype.getPuck = function() {
         return _.filter(samples, function(b){return b.location == rows[i].location;} );
     }
 	for (var i = 0; i < rows.length; i++) {
-        
         var sample = {};
         var sampleByLocation = filterByLocation(myPuck.sampleVOs);
         if (sampleByLocation.length > 0){
@@ -4401,7 +4422,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 			}
         }
 		var crystal = this.parseCrystalFormColumn(rows[i]["Crystal Form"],i);
-		sample["crystalVO"]["spaceGroup"] = crystal.spaceGroup;
+		sample["crystalVO"]["spaceGroup"] = (crystal.spaceGroup) ? crystal.spaceGroup : "";
 		sample["crystalVO"]["cellA"] = crystal.cellA;
 		sample["crystalVO"]["cellB"] = crystal.cellB;
 		sample["crystalVO"]["cellC"] = crystal.cellC;
@@ -4426,25 +4447,43 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 	return myPuck;
 };
 
-
+/**
+* Returns an array of objects for each row in the grid where at least the protein acronym column is filled
+*
+* @method parseTableData
+*/
 ContainerSpreadSheet.prototype.parseTableData = function() {
 	var parsed = [];
 	var data = this.spreadSheet.getData();
-	for (var j = 0; j < data.length; j++) {
-		var row = {};
-		row["location"] = j + 1;
-			for (var k = 0; k < data[j].length; k++) {
-				var key = this.getHeaderId()[k];
-				var value = data[j][k];
-				row[key] = value;
+	// var columnIds = this.getHeaderId();
+	var type = this.containerType;
+	if (data != null && data.length > 0){
+		var columnIds = this.getHeaderId(type);
+		if (Math.abs(data[0].length - columnIds.length) > 1) {
+			if (type == "OTHER"){
+				type = "NOT_OTHER";
+			} else {
+				type = "OTHER";
 			}
-			if (row["Protein Acronym"]){
-				if (row["Protein Acronym"].length > 0){
-					parsed.push(row);
+			columnIds = this.getHeaderId(type);
+		}
+		for (var j = 0; j < data.length; j++) {
+			if (data[j].length > 1){
+				var row = {};
+				row["location"] = j + 1;
+				for (var k = 0 ; k < columnIds.length ; k++) {
+					var key = columnIds[k];
+					var value = data[j][this.getColumnIndex(key,type)];
+					row[key] = value;
+				}
+				if (row["Protein Acronym"]){
+					if (row["Protein Acronym"].length > 0){
+						parsed.push(row);
+					}
 				}
 			}
+		}
 	}
-	
 	/** Curated contains the whole-data rows * */
 	var curated = [];
 	for (var i = 0; i < parsed.length; i++) {
@@ -4452,7 +4491,6 @@ ContainerSpreadSheet.prototype.parseTableData = function() {
 			curated.push(parsed[i]);
 		}
 	}
-	
 	return curated;
 };
 
@@ -4550,8 +4588,15 @@ ContainerSpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, 
 	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
 }
 
-ContainerSpreadSheet.prototype.getColumnIndex = function (colId) {
-	return _.findIndex(this.getHeader(),{id :colId});
+/**
+* Returns the columnIndex given the columnId
+*
+* @method getColumnIndex
+* @param {Integer} colId The column Id of the column it's column index we want to know 
+* @param {String} containerType Optional value to use if we want the header for an specific containerType
+*/
+ContainerSpreadSheet.prototype.getColumnIndex = function (colId, containerType) {
+	return _.findIndex(this.getHeader(containerType),{id :colId});
 }
 
 /**
@@ -4571,7 +4616,7 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 					cellBeta	: null,
 					cellGamma	: null
 				};
-	if (dataAtCrystalFormColumn != ""){
+	if (dataAtCrystalFormColumn != "" && dataAtCrystalFormColumn != null){
 		var proteins = EXI.proposalManager.getProteinByAcronym(this.spreadSheet.getDataAtCell(row,this.getColumnIndex("Protein Acronym")));
 		if (proteins && proteins.length > 0) {
 			parsed.proteinVO = proteins[0];
@@ -4639,7 +4684,15 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	var editCrystalForm = new EditCrystalFormView();
 
 	editCrystalForm.onSaved.attach(function (sender, crystal) {
+		var rows = _this.parseTableData();
 		_this.updateCrystalGroup(row,crystal);
+		for (var i = 0; i < rows.length; i++) {
+			if (rows[i].location-1 != row){
+				if (_this.crystalInfoToIdMap[rows[i]["Crystal Form"]] == crystal.crystalId){
+					_this.updateCrystalGroup(rows[i].location-1,crystal);
+				}
+			}
+		}
 		window.close();
 	});
 
@@ -4708,15 +4761,14 @@ ContainerSpreadSheet.prototype.disableAll = function () {
 */
 ContainerSpreadSheet.prototype.manageChange = function (change){
 	var _this = this;
-	switch (change[1]) {
+	switch (change[1]) { //Column Index
 		case this.crystalFormIndex : {
-			var parsed = this.parseCrystalFormColumn(change[3],change[0]);
+			var parsed = this.parseCrystalFormColumn(change[3],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
 			if (parsed.spaceGroup != undefined){
 				if (parsed.spaceGroup == "NEW"){
 					this.showEditForm(parsed, change[0]);
 				} else {
-					var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsed.spaceGroup}),function(o){return o.proteinVO.acronym == _this.getData()[change[0]][_this.getColumnIndex("Protein Acronym")]})
-					if (crystalsBySpaceGroupAndAcronym.length > 0){
+					if (this.isCrystalFormAvailable(parsed,this.getData()[change[0]][this.getColumnIndex("Protein Acronym")])){
 						this.updateCrystalGroup(change[0],parsed);
 					} else {
 						this.resetCrystalGroup(change[0]);
@@ -4728,10 +4780,25 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 			break;
 		}
 		case this.getColumnIndex("Protein Acronym") : {
-			this.resetCrystalGroup(change[0]);
+			var parsedCrystalForm = this.parseCrystalFormColumn(this.getData()[change[0]][this.crystalFormIndex],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
+			if (!this.isCrystalFormAvailable(parsedCrystalForm,change[3])){
+				this.resetCrystalGroup(change[0]);
+			}
 			break;
 		}
 	}
+}
+
+/**
+* Returns true if the parseCrystalForm is available for the given proteinAcronym
+*
+* @method isCrystalFormAvailable
+* @param {Object} parsedCrystalForm A parsed crystal form object
+* @param {String} proteinAcronym The proteinAcronym
+*/
+ContainerSpreadSheet.prototype.isCrystalFormAvailable = function (parsedCrystalForm, proteinAcronym) {
+	var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsedCrystalForm.spaceGroup}),function(o){return o.proteinVO.acronym == proteinAcronym})
+	return crystalsBySpaceGroupAndAcronym.length > 0;
 }
 
 /**
@@ -4884,15 +4951,20 @@ EditCrystalFormView.prototype.getPanel = function() {
 
 EditCrystalFormView.prototype.load = function(crystal) {
 	var _this = this;
-	if (crystal.crystalId != "") {
-		var onSuccess = function (sender, crystalById) {
-			_this.crystal = crystalById;
-			_this.render();
+	this.crystal = crystal;
+	if (crystal.crystalId != null){
+		if (crystal.crystalId != "") {
+			var onSuccess = function (sender, crystalById) {
+				_this.crystal = crystalById;
+				_this.render();
+			}
+			EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
+		} else {
+			this.render();
 		}
-		EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
 	} else {
-		this.crystal = crystal;
-		this.render();
+		$('#' + this.id).hide().html("<div id='" + this.id + "-error' style='margin:30px;'><h4>There was an error loading the crystal</h4></div>").fadeIn('fast');
+		this.panel.doLayout();
 	}
 }
 
@@ -4932,16 +5004,18 @@ EditCrystalFormView.prototype.save = function () {
                 };
 
 	if (crystal.cellA != "" && crystal.cellB != "" && crystal.cellC != "") {
+		this.panel.setLoading();
 		var onSaved = function (sender, newCrystal) {
 			EXI.proposalManager.get(true);
 			_this.onSaved.notify(newCrystal);
+			_this.panel.setLoading(false);
 		}
 		
 		EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
 																	crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
 																	crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
 	} else {
-		$.notify("The values A, B and C must be filled");
+		$("#" + this.id + "-cellsABC").notify("The values A, B and C must be filled",{className:"error"});
 	}
 };
 
@@ -5503,14 +5577,33 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
             Ext.getCmp(_this.id + "puck_status").setValue(_this.puck.containerStatus);                
         }
 
-        var onSuccess = function (sender, samples) {
-            if (samples.length > 0) {
-                _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
-            } else {
-                _this.containerSpreadSheet.setRenderCrystalFormColumn(false);
+		_this.fillSamplesGrid(puck);
+
+        // var onSuccess = function (sender, samples) {
+		// 	debugger
+		// 	_this.fillSamplesGrid(samples,puck);
+        // }
+
+        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
+
+    };
+
+    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
+
+};
+
+PuckFormView.prototype.fillSamplesGrid = function (puck) {
+	var _this = this;
+	this.containerSpreadSheet.setLoading(true);
+	var onSuccess = function (sender, samples) {
+		if (samples) {
+			if (samples.length > 0) {
+				_this.containerSpreadSheet.setRenderCrystalFormColumn(true);
+			} else {
+				_this.containerSpreadSheet.setRenderCrystalFormColumn(false);
 			}
 			_this.containerSpreadSheet.setContainerType(puck.containerType);
-            _this.containerSpreadSheet.load(puck);
+			_this.containerSpreadSheet.load(puck);
 			if (_this.shippingStatus != "processing"){
 				var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
 				if (withoutCollection.length == samples.length) {
@@ -5521,19 +5614,15 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
 			} else {
 				_this.containerSpreadSheet.disableAll();
 			}
-            _this.containerSpreadSheet.setLoading(false);
+			_this.containerSpreadSheet.setLoading(false);
 			if (_this.containerSpreadSheet.renderCrystalFormColumn) {
 				_this.setValuesForEditCrystalColumn();
 			}
-        }
+		}
+	}
 
-        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
-
-    };
-
-    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
-
-};
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(puck.containerId);
+}
 
 PuckFormView.prototype.getPanel = function() {
 	var _this =this;
@@ -5687,18 +5776,9 @@ PuckFormView.prototype.save = function() {
 	var onSuccess = function(sender, puck){
 		_this.panel.setLoading(false);
 		_this.load(_this.containerId, _this.shippingId);
-		// _this.onSaved.notify(puck);
-        // _this.returnToShipment();
 	};
-	
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
-
-// PuckFormView.prototype.getEditCrystalFormLink = function (row) {
-// 	// var crystalId = this.puck.sampleVOs[row].crystalVO.crystalId;
-// 	return "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
-// 	// return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
-// }
 
 /**
  * When container type has changed from SPINE|| UNIPUCK || PLATE
@@ -5706,25 +5786,35 @@ PuckFormView.prototype.save = function() {
  * We make the spreadsheet longer and the platelayout is rendered again
  */
 PuckFormView.prototype.containerTypeChanged = function(capacity) {
+	var currentType = this.capacityCombo.getTypeByCapacity(this.puck.capacity);
+	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
-	this.containerSpreadSheet.setContainerType(this.capacityCombo.getTypeByCapacity(capacity));
+	this.containerSpreadSheet.setContainerType(newType);
 	var data = this.containerSpreadSheet.spreadSheet.getData();
+	//Sets the appropiate number of rows according to the capacity
 	if (data.length < capacity){
-		var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
 		for (var i = data.length + 1; i<= capacity; i++){
 			data.push([i]);
-			this.containerSpreadSheet.setDataAtCell(i-1,columnIndex,"");
 		}
 	}
 	else{
 		data = data.slice(0, capacity);
 	}
-	// debugger
-	// this.panel.remove(this.containerSpreadSheet.panel);
-	// this.panel.insert(this.containerSpreadSheet.getPanel());
+	//Resets editCrystalForm column if exists
+	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+	// if (columnIndex >= 0){
+	// 	var tableData = this.containerSpreadSheet.parseTableData();
+	// 	for (var i = 0 ; i < tableData.length ; i++) {
+	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
+	// 	}
+	// }
+	
+	//Changes the grid when changed from or to the type OTHER
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	// this.save();
-	// this.load(this.containerId,this.shippingId);
+	if (currentType == "OTHER" || newType == "OTHER"){
+		this.puck.containerType = newType;
+		this.fillSamplesGrid(this.puck);
+	}
 };
 
 /**

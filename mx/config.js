@@ -80,19 +80,19 @@ var ExtISPyB ={
                },
                { 
                    name : "ID29",
-                   sampleChangerType : 'SC3'
+                   sampleChangerType : 'FlexHCD'
                },
                { 
                    name : "ID30A-1",
                    sampleChangerType : 'RoboDiff'
                },
-               { 
-                   name : "ID30A-2",
-                   sampleChangerType : 'SC3'
-               },
+            //    { 
+            //        name : "ID30A-2",
+            //        sampleChangerType : 'SC3'
+            //    },
                { 
                    name : "ID30A-3",
-                   sampleChangerType : 'FlexHCD'
+                   sampleChangerType : 'SC3'
                },
                { 
                    name : "ID30B",
@@ -133,19 +133,19 @@ var ExtISPyB ={
                },
                { 
                    name : "ID29",
-                   sampleChangerType : 'SC3'
+                   sampleChangerType : 'FlexHCD'
                },
                { 
                    name : "ID30A-1",
                    sampleChangerType : 'RoboDiff'
                },
-               { 
-                   name : "ID30A-2",
-                   sampleChangerType : 'SC3'
-               },
+            //    { 
+            //        name : "ID30A-2",
+            //        sampleChangerType : 'SC3'
+            //    },
                { 
                    name : "ID30A-3",
-                   sampleChangerType : 'FlexHCD'
+                   sampleChangerType : 'SC3'
                },
                { 
                    name : "ID30B",

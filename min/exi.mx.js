@@ -6186,7 +6186,7 @@ LoadSampleChangerView.prototype.getPanel = function () {
                 align: 'center',
                 pack: 'center'
             },
-            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid ' align='center' ><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:300px;font-size:20px;font-weight:100;'></span></div>"},
+            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid' align='center' ><div class='row' style='width:370px;'><div class='col-md-9'><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:500px;font-size:20px;font-weight:100;'></span></div><div class='col-md-2'><button id='" + this.id + "-unloadSC-button' type='button' class='btn btn-default btn-xs' style='background:rgb(68, 68, 68);color: #ffffff;'><b>Unload SC</b></button></div></div></div>"},
                         this.widgetContainer    
             ]
     });
@@ -6206,6 +6206,13 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.panel.on('boxready', function() {
         _this.reloadSampleChangerWidget();
+        $("#" + _this.id + "-unloadSC-button").unbind('click').click(function(sender){
+                var containerIds = _.map(_.map(_this.sampleChangerWidget.getAllFilledPucks(),"puckWidget"),"containerId");
+                var onSuccess = function (sender,c) {
+                    _this.load();
+                }
+                EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(containerIds);
+			});
     });
 
     return this.panel;
@@ -8699,7 +8706,6 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
-		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
 		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
@@ -8779,6 +8785,9 @@ PuckWidget.prototype.load = function (data) {
 				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
+				// var tooltipData = {
+					
+				// }
 				if (_this.data.cells[cellIndex].sample_name){
 	
 					var tooltipHtml = "";
@@ -8970,6 +8979,9 @@ function PuckWidgetContainer(args) {
 					this.capacity = 10;
 					break;
 			}
+		}
+		if (args.containerId){
+			this.containerId = args.containerId;
 		}
 		if (args.xMargin){
 			this.xMargin = args.xMargin;

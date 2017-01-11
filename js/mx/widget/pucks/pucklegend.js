@@ -19,7 +19,7 @@ function PuckLegend(args){
             tOffset = args.tOffset;
         }
     }
-    
+    var fontSize = "0.55vw";
     var rad = "7%";
     var circles = [];
     circles.push({cx : "7%", cy : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
@@ -28,9 +28,10 @@ function PuckLegend(args){
     circles.push({cx : "67%", cy : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
 
     this.data = {
-                    id      : this.id,
-                    circles : circles,
-                    tOffset : tOffset
+                    id          : this.id,
+                    circles     : circles,
+                    tOffset     : tOffset,
+                    fontSize    : fontSize
                 };
 }
 
