@@ -68,8 +68,9 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
-    this.sessions = sessions;
-	this.store.loadData(sessions, false);
+    /** Filtering session by the beamlines of the configuration file */    
+    this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
+	this.store.loadData(this.sessions, false);
 };
 
 SessionGrid.prototype.filterByBeamline = function(beamlines) {

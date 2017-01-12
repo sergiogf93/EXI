@@ -1442,13 +1442,8 @@ function HPLCMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGrid({
-		collapsed : true,
-		positionColumnsHidden : true,
-		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
-		sorters : [ {
-			property : 'macromoleculeAcronym',
-			direction : 'ASC' } ] });
+	this.grid = new OverviewQueueGrid({
+		height : 220 });
 
 	this.grid.onSelectionChange.attach(function(sender, elements) {
 		_this.onSelectionChange.notify(elements);
@@ -1467,20 +1462,20 @@ function HPLCMainView() {
 	_this.selectedFrameNumber = [];
 	this.hplcGraph = new HPLCGraph({
 		title : 'I0',
-		width : 800,
-		height : 350,
+		width : 300,
+		height : 300,
 		bbar : true,
 		plots : {
 			"I0" : true,
 			"Rg" : true },
-		xlabel : "HPLC Frames",
+		xlabel : "Frames",
 		scaled : true,
 		interactionModel : {
 			'dblclick' : function(event, g, context) {
-				_this.selectedFrameNumber.push(g.lastx_);
+				//_this.selectedFrameNumber.push(g.lastx_);
+                _this.selectedFrameNumber = [g.lastx_];
 				_this.plotter.loadHPLCFrame(_this.experimentId, _this.selectedFrameNumber);
-
-				_this.annotations.push({
+				/*_this.annotations.push({
 					series : g.selPoints_[0].name,
 					x : g.lastx_,
 					width : 30,
@@ -1488,10 +1483,43 @@ function HPLCMainView() {
 					tickHeight : 2,
 					shortText : g.lastx_,
 					text : g.lastx_,
-					attachAtBottom : true });
+					attachAtBottom : true });*/
+                    _this.annotations= [({
+					series : g.selPoints_[0].name,
+					x : g.lastx_,
+					width : 30,
+					height : 23,
+					tickHeight : 2,
+					shortText : g.lastx_,
+					text : g.lastx_,
+					attachAtBottom : true })];
 				g.setAnnotations(_this.annotations);
-
-			} } });
+                
+                /** Summary Panel */
+                var summary = {
+                        frame :  _this.selectedFrameNumber,
+                        quality : _.find(_this.hplcGraph.hplcData, {param : 'quality'}).data[_this.selectedFrameNumber],
+                        Qr : _.find(_this.hplcGraph.hplcData, {param : 'Qr'}).data[_this.selectedFrameNumber],
+                        Vc : _.find(_this.hplcGraph.hplcData, {param : 'Vc'}).data[_this.selectedFrameNumber],
+                        Mass : _.find(_this.hplcGraph.hplcData, {param : 'Mass'}).data[_this.selectedFrameNumber],
+                        Rg : _.find(_this.hplcGraph.hplcData, {param : 'Rg'}).data[_this.selectedFrameNumber],
+                        I0 : _.find(_this.hplcGraph.hplcData, {param : 'I0'}).data[_this.selectedFrameNumber],
+                        downloadURL : EXI.getDataAdapter().saxs.hplc.getDownloadHDF5FramesURL(_this.experimentId, _this.selectedFrameNumber, _this.selectedFrameNumber)
+                }
+                
+                
+                
+               
+                var html = "";
+                dust.render("summary.hplcmainview.template", [summary], function(err, out) {
+                                                                                                                                       
+                    html = html + out;
+                });
+                $('#' + _this.id + "summary").html(html);
+                
+			} 
+        } 
+    });
 
 	this.hplcGraph.onClearSelection.attach(function(sender) {
 		_this.annotations = [];
@@ -1500,7 +1528,9 @@ function HPLCMainView() {
 	});
 
 	this.plotter = new CurvePlotter({
-		margin : '10 0 0 0' });
+		margin : 10,
+        width : 300
+     });
 
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
@@ -1514,21 +1544,66 @@ HPLCMainView.prototype.getHeader = function(beamlineName, startDate) {
 };
 
 HPLCMainView.prototype.getPlotContainer = function() {
-	return {
-		xtype : 'container',
-		cls : 'defaultGridPanel',
-		border : 0,
-		defaults : {
-			height : 450 },
-		items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
+	return  {
+                xtype : 'container',
+                cls : 'defaultGridPanel',
+                layout : 'hbox',
+                border : 1,
+                defaults : {height : 400 },
+		        items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
 		] };
 };
 
-HPLCMainView.prototype.getContainer = function() {
 
+HPLCMainView.prototype.getSecondaryContainer = function() {
+	return  {
+                xtype : 'container',
+                cls : 'defaultGridPanel',
+                layout : 'hbox',
+                border : 0,
+                defaults : {height : 400 },
+		        items : [
+                    {
+                        html : '<div style="text-align:center;" class="alert alert-info" role="alert">Select a frame by double-clicking on the HPLC Frames plot</div>',
+                        margin : 10,
+                        flex : 1
+                    },
+                    {
+                        html : '<div id="' + this.id + 'summary"></div>',
+                        margin : 10,
+                        flex : 1
+                    }
+                    
+                ] };
+};
+
+HPLCMainView.prototype.getContainer = function() {
+    
 	return {
 		xtype : 'container',
-		items : [ this.grid.getPanel(), this.getPlotContainer() ] };
+        margin : 10,
+		items : [ 
+            
+            {
+              html : '<div id="' + this.id +'header"></div>',
+              margin : 10 ,
+              height : 160 
+            },
+            {
+              html : ' <div class="panel panel-primary"><div class="panel-heading">Data Collection</div></div>',
+              margin : 10 ,
+              height : 40 
+            },
+           
+            this.grid.getPanel(), 
+              {
+              html : '<div class="panel panel-primary"><div class="panel-heading">Size-exclusion chromatography</div></div>',
+              margin : 10 ,
+              height : 40 
+            },
+            this.getPlotContainer(), 
+            this.getSecondaryContainer()
+             ] };
 };
 
 HPLCMainView.prototype.getSelected = function() {
@@ -1583,8 +1658,8 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 			color : "#FF00FF",
 			data : data.quality,
 			std : zeroArray } ];
-		_this.hplcGraph.loadData(data);
-
+		_this.hplcGraph.loadData(data, experimentId);
+        
 	};
 
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.hplc.getHPLCOverviewByExperimentId(experimentId);
@@ -1593,15 +1668,32 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 HPLCMainView.prototype.load = function(experimentId) {
 		var _this = this;
 		this.experimentId = experimentId;
-
-		this.grid.panel.setLoading();
-
-		var onSuccess = function(sender, data) {
-			_this.grid.load(data);
-			_this.grid.panel.setLoading(false);
+	
+		var onSuccess = function(sender, data) {  
+            if (data){          
+			    _this.grid.load(data);
+                if (data[0]){
+                    var header = {
+                        creationDate : data[0].Experiment_creationDate,
+                        name : data[0].Experiment_name,
+                        type : data[0].Experiment_experimentType,
+                        hdf5 : data[0].Experiment_dataAcquisitionFilePath,
+                        url : EXI.getDataAdapter().saxs.hplc.getDownloadHDF5URL(data[0].Experiment_experimentId)
+                    }
+                    
+                    /** Renedering header */
+                     var html = "";
+                     
+                    dust.render("header.hplcmainview.template", header, function(err, out) {
+                                                                                                                                        
+                        html = html + out;
+                    });
+                    $('#' + _this.id + "header").html(html);
+                }
+            }			
 		};
 
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(experimentId);
 		this.loadHPLCGraph(experimentId);
 };
 
@@ -2128,8 +2220,7 @@ function PrimaryDataMainView() {
 	var _this = this;
 	
 	this.frameSelectorGrid = new FrameSelectorGrid();
-	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
-        debugger
+	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){        
 		_this.plotter.load(selections);
 	});
 
@@ -2162,7 +2253,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		margin : 5,
 		border : 0,
 		defaults : {
-			height : 600 
+			height : 400 
 		},
 		items : [
 		         {
@@ -2173,7 +2264,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
-		        	    flex : 0.1,
+		        	    flex : 0.2,
 		        		border : 1,
 		        		style : {
 		        			borderColor : '#000000',
@@ -2184,8 +2275,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	         this.framesGrid.getPanel()
 		        	          ]
 		         },
-		         this.plotter.getPanel()
-		        
+		         this.plotter.getPanel()		        
 		    ]
 	};
 };
@@ -2325,21 +2415,6 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 
 	}
 	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
-    
-    
-	//  var onSuccess = function(sender, data) { 	
-	//  	// _this.frameSelectorGrid.load(data);	
-	// 	// _this.framesGrid.load(data);		 	
-	//  	if (data[0].substraction3VOs[0].subtractionId){             
-	//  		var onSuccessSubtraction = function(sender, subtractions) {                 
-	//  			_this.abinitioForm.load(subtractions);
-	//  		};			
-	//  		EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].substraction3VOs[0].subtractionId]);			
-	// 	}
-	//  };	    
-	
-	
-	
 };
 
 
@@ -2425,107 +2500,6 @@ ShipmentPreparationMainView.prototype.load = function(shippingId) {
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
 };
-function ShippingWelcomeMainView() {
-	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
-
-	MainView.call(this);
-	this.title = "Welcome";
-	this.closable = false;
-}
-
-ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
-ShippingWelcomeMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('panel',
-			{
-				plain : true,
-				margin : '10',
-				layout : 'fit',
-				items : [
-					{
-						tabConfig : {
-							title : 'Welcome'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							padding : 20,
-							margin : 0,
-							cls : 'border-grid',
-							items : [ 
-							        
-							         {
-							        	 html : '<div class="landing-title" ><h2>Shipments</h2></div>'
-							         },
-							         {
-							        	 html : '<div class="landing-text"> A Shipment consists of a set of Dewars which is sent from your home lab to the synchrotron via a courier company. Each dry shipping Dewar within the shipment is identified by a label (barcode or sticker). The dewars(s) contains a set of Containers (Pucks or canes). Containers (typically Pucks), contain Samples. A Sample (Sample Holder) contains the Crystal</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : this.getOptions(),
-//							        	 margin : '0 0 0 40'
-//							         },
-							         
-							         {
-							        	 html : '<br/><div class="landing-text">Do you want to ship your samples to the beamline?</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-							         {
-							        	xtype : 'container',
-							        	layout : 'hbox',
-							        	cls : 'option-bar-menu',
-							        	items :[
-							        	    
-										         {
-										        	 xtype : 'button',
-										        	 cls : 'square-option',
-										        	 maxWidth : 200,
-										        	 minWidth : 200,
-										        	 margin : '0 0 0 150',
-										        	 height : 100,
-										        	 text : '<div class="square-option-text"; >Create a new Shipment</div>',
-										        	 icon : '../images/icon/add.png',
-										        	 iconAlign : 'top',
-										        	 handler : function(){
-
-										        		 //if (EXI.proposalManager.getFutureSessions().length > 0){
-										     				location.hash = '/shipping/main';
-										     			 //}
-										        		 //else{
-											        	//	 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
-										        		 //}
-										        	 }
-										         }]
-							         }
-							       
-							        
-							]
-						}
-					
-						]
-					}
-			]});
-	};
-
-
-ShippingWelcomeMainView.prototype.load = function() {
-	
-};
-
 function StockSolutionMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -3378,269 +3352,6 @@ AbinitioGrid.prototype.getPanel = function(){
 	});
 	return this.grid;
 	
-};
-
-/**
- * Edit the information of a buffer
- * 
- * #onRemoveAdditive
- */
-function AddressForm(args) {
-	this.id = BUI.id();
-	this.height = 500;
-	this.width = 500;
-
-	this.isSaveButtonHidden = false;
-	this.isHidden = false;
-
-	if (args != null) {
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.isSaveButtonHidden != null) {
-			this.isSaveButtonHidden = args.isSaveButtonHidden;
-		}
-		if (args.isHidden != null) {
-			this.isHidden = args.isHidden;
-		}
-		
-	}
-}
-
-AddressForm.prototype.getAddress = function() {
-	if (this.address == null) {
-		this.address = {};
-	}
-	this.address["billingReference"] = Ext.getCmp(this.id + "billingReference").getValue();
-	this.address["cardName"] = Ext.getCmp(this.id + "cardName").getValue();
-	this.address["courierAccount"] = Ext.getCmp(this.id + "courierAccount").getValue();
-	this.address["defaultCourrierCompany"] = Ext.getCmp(this.id + "courrierCompany").getValue();
-	this.address["dewarAvgCustomsValue"] = Ext.getCmp(this.id + "dewarAvgCustomsValue").getValue();
-	this.address["dewarAvgTransportValue"] = Ext.getCmp(this.id + "dewarAvgTransportValue").getValue();
-
-	if (this.address.personVO == null) {
-		this.address.personVO = {};
-	}
-	else{
-		
-	}
-
-	this.address.personVO["emailAddress"] = Ext.getCmp(this.id + "emailAddress").getValue();
-	this.address.personVO["familyName"] = Ext.getCmp(this.id + "familyName").getValue();
-	this.address.personVO["givenName"] = Ext.getCmp(this.id + "name").getValue();
-	this.address.personVO["faxNumber"] = Ext.getCmp(this.id + "faxNumber").getValue();
-	this.address.personVO["phoneNumber"] = Ext.getCmp(this.id + "phoneNumber").getValue();
-	return this.address;
-};
-
-AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
-	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
-	Ext.getCmp(this.id + "familyName").setValue(familyName);
-	Ext.getCmp(this.id + "name").setValue(givenName);
-	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
-	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
-};
-
-AddressForm.prototype.load = function(address) {
-	this.address = address;
-
-	if (address != null) {
-		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
-		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
-		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
-		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
-		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
-		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
-
-		if (address.personVO != null) {
-			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
-					address.personVO.faxNumber, address.personVO.phoneNumber);
-		}
-	}
-};
-
-AddressForm.prototype.getPersonPanel = function() {
-	this.personPanel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		margin : '10',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'hbox',
-			border : false,
-			items : [ {
-					xtype : 'requiredtextfield',
-					id : this.id + 'name',
-					fieldLabel : 'Name',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					disabled : true,
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'familyName',
-					fieldLabel : 'Surname',
-					labelWidth : 75,
-					disabled : true,
-					margin : "0 0 0 10",
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'emailAddress',
-					fieldLabel : 'Email',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 300 
-				}, 
-				{
-					id : this.id + 'phoneNumber',
-					fieldLabel : 'Phone',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				}, 
-				{
-					id : this.id + 'faxNumber',
-					fieldLabel : 'Fax',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				} ] },
-				
-				 {
-					padding : 10,
-					xtype : 'container',
-					layout : 'hbox',
-					border : false,
-					items : [ {
-						xtype : 'requiredtextfield',
-						id : this.id + 'cardName',
-						fieldLabel : 'Card Name',
-						name : 'CardName',
-						labelWidth : 150,
-						margin : "0 0 0 10",
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courierAccount',
-						fieldLabel : 'Courier Account',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courrierCompany',
-						fieldLabel : 'Courier Company',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}  ] },
-					
-					 {
-						padding : 10,
-						xtype : 'container',
-						layout : 'hbox',
-						border : false,
-						items : [ {
-							id : this.id + 'dewarAvgCustomsValue',
-							fieldLabel : 'Average Custom Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 10",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-							id : this.id + 'dewarAvgTransportValue',
-							fieldLabel : 'Average Transport Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 30",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-						id : this.id + 'billingReference',
-						xtype : 'textfield',
-						fieldLabel : 'Billing Reference',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					} ] }
-
-		] });
-	return this.personPanel;
-};
-
-AddressForm.prototype.getPackagePanel = function() {
-	this.packagePanel = Ext.create('Ext.panel.Panel', {
-		layout : 'hbox',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'vbox',
-			border : false,
-			items : [ {
-				xtype : 'container',
-				layout : 'hbox',
-				items : [ 
-					] 
-			}, {
-				xtype : 'container',
-				layout : 'hbox',
-				margin : "10 0 0 0",
-				items : [ 
-
-				] } ] } ] });
-	return this.packagePanel;
-};
-
-AddressForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-		hidden : this.isHidden,
-		layout : 'vbox',
-		title : 'Shipping Address Card',
-		cls : "border-grid",
-		buttons : this.getToolBar(),
-		icon : '../images/icon/ic_email_black_24dp.png',
-		items : [  
-		           this.getPersonPanel() 
-		           ] });
-	return this.panel;
-};
-
-AddressForm.prototype.save = function() {
-	var _this = this;
-
-	_this.panel.setLoading();
-	var onSuccess = function(sender) {
-		_this.panel.setLoading(false);
-		EXI.getDataAdapter().proposal.proposal.update();
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-};
-
-AddressForm.prototype.getToolBar = function() {
-	var _this = this;
-	return [ {
-		text : 'Save',
-		hidden : _this.isSaveButtonHidden,
-		width : 100,
-		handler : function() {
-			_this.save();
-
-		} } ];
 };
 
 
@@ -6640,10 +6351,7 @@ function HPLCGraph(args) {
 	if (args != null) {
 		if (args.interactionModel != null) {
 			this.interactionModel = args.interactionModel;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
+		}		
 		if (args.height != null) {
 			this.height = args.height;
 		}
@@ -6788,8 +6496,7 @@ HPLCGraph.prototype.getPoint = function(data, i) {
 			return [ data.fstd(y - error), data.fdata(y), data.fstd(y + error) ];
 		}
 		return [ data.fdata(y) - error, data.fdata(y), data.fdata(y) + error ];
-	}
-	return point;
+	}	
 };
 
 HPLCGraph.prototype.reloadData = function(hplcData) {
@@ -6888,8 +6595,9 @@ HPLCGraph.prototype._renderDygraph = function(parsed, colors, labels) {
 
 };
 
-HPLCGraph.prototype.loadData = function(data) {
+HPLCGraph.prototype.loadData = function(data,experimentId) {
 	var _this = this;
+    this.experimentId = experimentId;
 	this.reloadData(data);
 	this.panel.addDocked({
 		cls : 'hplcMenu',
@@ -6939,6 +6647,28 @@ HPLCGraph.prototype.loadData = function(data) {
 						isZoomedIgnoreProgrammaticZoom : true,
 						dateWindow : [ start, end ] });
 				} },
+                {
+				xtype : 'button',
+				text : 'Download Range',
+                icon : '../images/icon/ic_get_app_black_24dp.png',
+				handler : function() {
+					var start = parseFloat(Ext.getCmp("main_field_start").getValue());
+					var end = parseFloat(Ext.getCmp("main_field_end").getValue());
+
+					if (start < 0) {
+						start = 0;
+					}
+					if (end < 0) {
+						end = 0;
+					}
+					if (start > end) {
+						var aux = end;
+						end = start;
+						start = aux;
+					}
+
+					location.href = EXI.getDataAdapter().saxs.hplc.getDownloadHDF5FramesURL(_this.experimentId,start, end)
+				} },
 				"->",
 				 {
 					xtype : 'button',
@@ -6953,13 +6683,11 @@ HPLCGraph.prototype.loadData = function(data) {
 HPLCGraph.prototype.getPanel = function() {
 	var _this = this;
 	this.panel = Ext.create('Ext.panel.Panel', {
-		padding : this.plotPanelPadding,
-		//		width : this.width + 4 * this.plotInnerPanelPadding,
-		//		height : this.height + 4 * this.plotInnerPanelPadding - 100,
+		margin : this.plotPanelPadding, 
+        flex : 1,       		
 		items : [ {
 			html : "",
-			id : this.id,
-			flex : 1,
+			id : this.id,			
 			height : this.height } ] });
 
 	this.panel.on("afterrender", function(panel) {
@@ -6971,9 +6699,7 @@ HPLCGraph.prototype.getPanel = function() {
 	return this.panel;
 };
 
-HPLCGraph.prototype.input = function() {
-	return DATADOC.getHPLCData();
-};
+
 
 HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	var data = {};
@@ -6984,23 +6710,6 @@ HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	return data;
 };
 
-HPLCGraph.prototype.test = function(targetId) {
-	var mainPlotPanel = new HPLCGraph({
-		title : 'I0',
-		width : 800,
-		height : 400,
-		plots : {
-			"I0" : true,
-			"Rg" : true,
-			"Mass" : true },
-		xlabel : "HPLC Frames",
-		scaled : this.scaled,
-		interactionModel : {
-			'dblclick' : function(event, g, context) {} } });
-	mainPlotPanel.getPanel().render(targetId);
-	mainPlotPanel.loadData(mainPlotPanel.input());
-
-};
 
 function MergesHPLCGraph(args) {
 	HPLCGraph.prototype.constructor.call(this, args);
@@ -7101,7 +6810,7 @@ MergesHPLCGraph.prototype.getMenu = function() {
 	actions.push({
 		text : "Save",
 		scope : this,
-		icon : 'images/icon/ic_get_app_black_24dp.png',
+		icon : '../images/icon/ic_get_app_black_24dp.png',
 		handler : function(item, pressed) {
 			var largeImage = document.createElement("img");
 			largeImage.style.display = 'block';
@@ -7112,26 +6821,6 @@ MergesHPLCGraph.prototype.getMenu = function() {
 		} });
 
 	return actions;
-};
-
-MergesHPLCGraph.prototype.input = function() {
-	return DATADOC.getScatteringHPLCFrameData();
-};
-
-MergesHPLCGraph.prototype.test = function(targetId) {
-	var mainPlotPanel = new MergesHPLCGraph({
-		title : 'Scattering',
-		width : this.plotWidth,
-		height : 500,
-		showRangeSelector : false,
-		xParam : 0,
-		xlabel : "scattering_I",
-		plots : {
-			"scattering_I" : true,
-			"subtracted_I" : true,
-			"buffer_I" : true } });
-	mainPlotPanel.getPanel().render(targetId);
-	mainPlotPanel.loadData(mainPlotPanel.input());
 };
 
 /**

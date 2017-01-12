@@ -144,6 +144,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                }
            
                var node = {};
+               
                node = ({
                    spaceGroup       : spaceGroup,
                    prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
@@ -199,7 +200,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
                                     toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
                                 }
-                            }                                                                            
+                            }  
+                            toBePushed["downloadFilesUrl"] = node.downloadFilesUrl;                                                                            
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
@@ -263,7 +265,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
             }
         }
         
-        var html = "";     
+        var html = "";    
+         
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
         });

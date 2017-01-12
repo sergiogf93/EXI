@@ -82,7 +82,8 @@ ShippingExiController.prototype.init = function() {
 			mainView.load(this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
-		Path.map("#/shipping/main").to(function() {
+		Path.map("#/shipping/main").to(function() { 
+                       
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();

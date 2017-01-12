@@ -1607,7 +1607,8 @@ AutoProcIntegrationGrid.prototype.getPhasing = function(data) {
     return phasing;
 };                 
 
-AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	                    
+AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	  
+                      
     var type = data.scalingStatisticsType.split(",");
     function getValue(attribute, i, decimals){
         
@@ -1640,7 +1641,9 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
                                             rMerge 			        : getValue(data.rMerge, i, 1),
                                             ccHalf 			        : getValue(data.ccHalf, i,1),
                                             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i,1),
-                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1)
+                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1),
+                                            ccAno                	: getValue(data.ccAno, i),
+                                            sigAno                	: getValue(data.sigAno, i)
                                            
                                             
                };            
@@ -1682,7 +1685,9 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
             rMerge 			        : getValue(data.rMerge, i),
             ccHalf 			        : getValue(data.ccHalf, i),
             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i),
-            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i)
+            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i),
+            ccAno                	: getValue(data.ccAno, i),
+            sigAno                	: getValue(data.sigAno, i)
             
         });
         
@@ -4059,6 +4064,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                }
            
                var node = {};
+               
                node = ({
                    spaceGroup       : spaceGroup,
                    prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
@@ -4114,7 +4120,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
                                     toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
                                 }
-                            }                                                                            
+                            }  
+                            toBePushed["downloadFilesUrl"] = node.downloadFilesUrl;                                                                            
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
@@ -4178,7 +4185,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
             }
         }
         
-        var html = "";     
+        var html = "";    
+         
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
         });
@@ -7554,7 +7562,7 @@ function CurvePlotter(args) {
 
     this.backgroundColor = "#FFFFFF";
 
-    this.margin = '0 0 0 5';
+    this.margin = 10;
     this.ruleColor = "black";
     this.targetId = "plotCanvas" + BUI.id();
     this.legend = 'onmouseover';
@@ -7569,6 +7577,7 @@ function CurvePlotter(args) {
         if (args.targetId != null) {
             this.targetId = args.targetId;
         }
+        
     }
 
     this.onRendered = new Event(this);
@@ -7577,11 +7586,8 @@ function CurvePlotter(args) {
 }
 
 CurvePlotter.prototype.getPanel = function() {
-    this.plotPanel = Ext.create('Ext.container.Container', {
-        layout: {
-            type: 'hbox'
-        },
-        flex: 0.7,
+    this.plotPanel = Ext.create('Ext.container.Container', {       
+        flex: 1,
         margin: this.margin,
         items: [{
             html: '<div id="' + this.targetId + '"></div>',
