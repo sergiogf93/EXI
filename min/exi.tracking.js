@@ -56,7 +56,8 @@ ExiTracking.prototype.getHeader = function(){
        
         
     };
-    dust.render("trackingheader", data, function(err, out){
+    
+    dust.render("trackingheader.template", data, function(err, out){        
 		html = out;
      });
     return html;	

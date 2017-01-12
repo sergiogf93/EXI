@@ -4369,9 +4369,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  this.spreadSheet = new Handsontable(container, {
 				beforeChange: function (changes, source) {
 					lastChange = changes;
-					
 				},
 				afterChange: function (changes, source) {
+                    $(".htInvalid").removeClass("htInvalid");
 					$(".edit-crystal-button").click(function(sender){
 								var row = sender.target.id.split("-")[2];
 								var crystal = _this.parseCrystalFormColumn(_this.getData()[row][_this.crystalFormIndex],row);
@@ -4784,13 +4784,20 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 			break;
 		}
 		case this.getColumnIndex("Protein Acronym") : {
-            this.resetCrystalGroup(change[0]);
-            var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
-            if (proteins) {
-                var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
-                if (crystalsByProteinId && crystalsByProteinId.length > 0){
-                    var crystal = _.maxBy(crystalsByProteinId,"crystalId");
-                    _this.updateCrystalGroup(change[0],crystal);
+            if (change[3] == ""){
+                this.resetCrystalGroup(change[0]);
+            } else {
+                var parsed = this.parseCrystalFormColumn(this.getData()[change[0]][this.crystalFormIndex],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
+                if (!this.isCrystalFormAvailable(parsed,change[3])){
+                    this.resetCrystalGroup(change[0]);
+                    var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
+                    if (proteins) {
+                        var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
+                        if (crystalsByProteinId && crystalsByProteinId.length > 0){
+                            var crystal = _.maxBy(crystalsByProteinId,"crystalId");
+                            _this.updateCrystalGroup(change[0],crystal);
+                        }
+                    }
                 }
             }
 			break;
@@ -4807,7 +4814,15 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 */
 ContainerSpreadSheet.prototype.isCrystalFormAvailable = function (parsedCrystalForm, proteinAcronym) {
 	var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsedCrystalForm.spaceGroup}),function(o){return o.proteinVO.acronym == proteinAcronym})
-	return crystalsBySpaceGroupAndAcronym.length > 0;
+	if (crystalsBySpaceGroupAndAcronym.length > 0) {
+        for (var i = 0 ; i < crystalsBySpaceGroupAndAcronym.length ; i++) {
+            var crystal = crystalsBySpaceGroupAndAcronym[i];
+            if (crystal.cellA == parsedCrystalForm.cellA && crystal.cellB == parsedCrystalForm.cellB && crystal.cellC == parsedCrystalForm.cellC && crystal.cellAlpha == parsedCrystalForm.cellAlpha && crystal.cellBeta == parsedCrystalForm.cellBeta && crystal.cellGamma == parsedCrystalForm.cellGamma) {
+                return true;
+            }
+        }
+    }
+    return false;
 };
 
 /**
@@ -6125,9 +6140,11 @@ ShipmentEditForm.prototype.load = function(shipment) {
     var html = "";
 	var beamlineName = "";
 	var startDate = "";
-	if (shipment.sessions.length > 0){
-		beamlineName = shipment.sessions[0].beamlineName;
-		startDate = (new Date(shipment.sessions[0].startDate)).toLocaleDateString();
+	if (shipment){
+		if (shipment.sessions.length > 0){
+			beamlineName = shipment.sessions[0].beamlineName;
+			startDate = (new Date(shipment.sessions[0].startDate)).toLocaleDateString();
+		}
 	}
 
 	var sessionSort = function(o1,o2) {
@@ -6156,7 +6173,7 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	this.panel.doLayout();
 };
 
-ShipmentEditForm.prototype.getPanel = function(dewar) {
+ShipmentEditForm.prototype.getPanel = function() {
 
 	this.panel = Ext.create("Ext.panel.Panel",{
 		items :	[{
@@ -6175,6 +6192,11 @@ ShipmentEditForm.prototype.saveShipment = function() {
 
 	var sendingAddressId = $("#" + this.id + "-to").val();
 	var returnAddressId = $("#" + this.id + "-from").val();
+
+	var shippingId = null;
+	if (this.shipment) {
+		shippingId = this.shipment.shippingId;
+	}
 	
 	if (sendingAddressId == null) {
 		BUI.showError("User contact information for shipping to beamline is mandatory");
@@ -6193,7 +6215,7 @@ ShipmentEditForm.prototype.saveShipment = function() {
 	
 	var sendingAddress = (EXI.proposalManager.getLabcontactById(sendingAddressId));
 	var json = {
-		shippingId : this.shipment.shippingId,
+		shippingId : shippingId,
 		name : $("#" + this.id + "-name").val(),
 		status : "Not set",
 		sendingLabContactId : sendingAddressId,
@@ -6259,9 +6281,11 @@ ShipmentForm.prototype.load = function(shipment) {
     var html = "";
 	var beamlineName = "";
 	var startDate = "";
-	if (shipment.sessions.length > 0){
-		beamlineName = shipment.sessions[0].beamlineName;
-		startDate = moment(shipment.sessions[0].startDate).format("DD/MM/YYYY");
+	if (shipment){
+		if (shipment.sessions.length > 0){
+			beamlineName = shipment.sessions[0].beamlineName;
+			startDate = moment(shipment.sessions[0].startDate).format("DD/MM/YYYY");
+		}
 	}
 	
     dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
@@ -6269,24 +6293,29 @@ ShipmentForm.prototype.load = function(shipment) {
 	});
 	
     $('#' + _this.id).hide().html(html).fadeIn('fast');
-	if (shipment.shippingStatus != "processing"){
+	if (shipment == null || shipment.shippingStatus != "processing"){
 		$("#" + _this.id + "-edit-button").prop('disabled',false);
 		$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
 			_this.edit();
 		});
 	}
 
+	this.panel.doLayout();
+
 };
 
 ShipmentForm.prototype.getPanel = function() {
-    this.panel =  {
+
+	this.panel = Ext.create("Ext.panel.Panel",{
+		items :	[{
 					cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					margin : 10,
 					padding : this.padding,
 					width : this.width
-                };
+                }]
+	});
 
 	return this.panel;
 };
@@ -6306,7 +6335,7 @@ ShipmentForm.prototype.edit = function(dewar) {
 		width : 600,
 		modal : true,
 		layout : 'fit',
-		items : [ shippingEditForm.getPanel({shippingId : this.shipment.shippingId}) ],
+		items : [ shippingEditForm.getPanel() ],
 		buttons : [ {
 				text : 'Save',
 				handler : function() {
@@ -6337,77 +6366,6 @@ function ShippingMainView() {
 	* 
 	* @property shipmentForm
 	*/
-    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 100});
-	this.shipmentForm.onSaved.attach(function(sender, shipment){
-		location.hash = "#/proposal/shipping/nav?nomain";
-	});
-
-    /**
-	* 
-	* @property parcelGrid
-	*/
-	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 100});
-	
-}
-
-ShippingMainView.prototype.getPanel = function() {
-	
-    this.panel =  Ext.create('Ext.panel.Panel', {
-        layout: {
-            type: 'vbox',
-            align: 'center'
-        },
-		padding : 10,
-        cls : 'border-grid',
-        items : [
-                    this.shipmentForm.getPanel(),
-                    this.parcelGrid.getPanel()
-        ]
-	});
-
-    return this.panel;
-};
-
-
-ShippingMainView.prototype.load = function(shippingId) {
-	var _this = this;
-	this.shippingId = shippingId;
-	
-	if (shippingId == null){
-		Ext.getCmp(this.id + "grid").disable(true);
-	}
-	this.panel.setTitle("Shipment");
-	if (shippingId != null){
-		this.panel.setLoading();
-		var onSuccess = function(sender, shipment){
-			_this.shipmentForm.load(shipment);
-			_this.parcelGrid.load(shipment);
-			_this.panel.setLoading(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
-	}
-    else{
-        
-        _this.shipmentForm.load();
-		_this.parcelGrid.load();
-		_this.panel.setLoading(false);
-    }
-};
-
-/**
-* This main class deals with the creation and edition of shipments
-*
-* @class ShippingMainView
-* @constructor
-*/
-function ShippingMainView_A() {
-	MainView.call(this);
-	var _this = this;
-
-    /**
-	* 
-	* @property shipmentForm
-	*/
     this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = "#/proposal/shipping/nav?nomain";
@@ -6428,6 +6386,7 @@ ShippingMainView.prototype.getPanel = function() {
             type: 'vbox',
             align: 'center'
         },
+		autoScroll : true,
         cls : 'border-grid',
         items : [
                     this.shipmentForm.getPanel(),
@@ -6452,11 +6411,12 @@ ShippingMainView.prototype.load = function(shippingId) {
 			_this.panel.setLoading(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
-	}
+    }	
     else{
-        	
-			
-			_this.panel.setLoading(false);
+        
+        _this.shipmentForm.load();
+		_this.parcelGrid.load();
+		_this.panel.setLoading(false);
     }
 };
 function ShippingWelcomeMainView() {
@@ -7075,7 +7035,11 @@ function ContainerParcelPanel(args) {
             this.data.code = args.code;
 		}
         if (args.type != null) {
-			this.type = args.type;
+            if ((["Puck","StockSolution","OTHER","PLATE"]).indexOf(args.type) >= 0){
+			    this.type = args.type;
+            } else {
+                this.type = "Puck";
+            }
 		}
         if (args.capacity != null) {
 			if (args.capacity != 16) {
@@ -7981,6 +7945,7 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
+				debugger
 				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
