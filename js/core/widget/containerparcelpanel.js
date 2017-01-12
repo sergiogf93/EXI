@@ -49,7 +49,11 @@ function ContainerParcelPanel(args) {
             this.data.code = args.code;
 		}
         if (args.type != null) {
-			this.type = args.type;
+            if ((["Puck","StockSolution","OTHER","PLATE"]).indexOf(args.type) >= 0){
+			    this.type = args.type;
+            } else {
+                this.type = "Puck";
+            }
 		}
         if (args.capacity != null) {
 			if (args.capacity != 16) {

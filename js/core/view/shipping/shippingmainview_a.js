@@ -26,13 +26,14 @@ function ShippingMainView_A() {
 	
 }
 
-ShippingMainView.prototype.getPanel = function() {
+ShippingMainView_A.prototype.getPanel = function() {
 	
     this.panel =  Ext.create('Ext.panel.Panel', {
         layout: {
             type: 'vbox',
             align: 'center'
         },
+		autoScroll : true,
         cls : 'border-grid',
         items : [
                     this.shipmentForm.getPanel(),
@@ -44,7 +45,7 @@ ShippingMainView.prototype.getPanel = function() {
 };
 
 
-ShippingMainView.prototype.load = function(shippingId) {
+ShippingMainView_A.prototype.load = function(shippingId) {
 	var _this = this;
 	this.shippingId = shippingId;
 	
@@ -57,5 +58,7 @@ ShippingMainView.prototype.load = function(shippingId) {
 			_this.panel.setLoading(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	} else {
+		this.shipmentForm.load();
 	}
 };

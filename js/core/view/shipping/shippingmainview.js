@@ -13,7 +13,7 @@ function ShippingMainView() {
 	* 
 	* @property shipmentForm
 	*/
-    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 100});
+    this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
 		location.hash = "#/proposal/shipping/nav?nomain";
 	});
@@ -22,7 +22,7 @@ function ShippingMainView() {
 	* 
 	* @property parcelGrid
 	*/
-	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 100});
+	this.parcelGrid = new ParcelGrid({height : 580, width : Ext.getBody().getWidth() - 200});
 	
 }
 
@@ -33,7 +33,7 @@ ShippingMainView.prototype.getPanel = function() {
             type: 'vbox',
             align: 'center'
         },
-		padding : 10,
+		autoScroll : true,
         cls : 'border-grid',
         items : [
                     this.shipmentForm.getPanel(),
@@ -49,9 +49,6 @@ ShippingMainView.prototype.load = function(shippingId) {
 	var _this = this;
 	this.shippingId = shippingId;
 	
-	if (shippingId == null){
-		Ext.getCmp(this.id + "grid").disable(true);
-	}
 	this.panel.setTitle("Shipment");
 	if (shippingId != null){
 		this.panel.setLoading();
@@ -61,5 +58,7 @@ ShippingMainView.prototype.load = function(shippingId) {
 			_this.panel.setLoading(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
+	} else {
+		this.shipmentForm.load();
 	}
 };
