@@ -58,4 +58,9 @@ ShippingMainView.prototype.load = function(shippingId) {
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
+    else{
+        	
+			
+			_this.panel.setLoading(false);
+    }
 };

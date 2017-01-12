@@ -109,7 +109,7 @@ SpecimenGrid.prototype.selectById = function(specimenId) {
 	this.grid.getSelectionModel().deselectAll();
 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
 		var item = this.grid.getStore().data.items[i].data;
-		if (item.specimenId == specimenId) {
+		if (item.Specimen_specimenId == specimenId) {
 			this.grid.getSelectionModel().select(i);
 		}
 	}

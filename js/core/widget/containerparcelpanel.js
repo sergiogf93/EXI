@@ -99,6 +99,8 @@ ContainerParcelPanel.prototype.getPanel = function () {
                             handler : function() {
                                 if (_this.type == "StockSolution") {
                                     location.href = "#/stocksolution/" + _this.containerId + "/main";                            
+                                } else if (_this.type == "OTHER") {
+                                    _this.openEditOtherContainerForm();
                                 } else {
                                     location.href = "#/shipping/" + _this.shippingId + "/" + _this.shippingStatus + "/containerId/" + _this.containerId + "/edit";                            
                                 }
@@ -220,3 +222,33 @@ ContainerParcelPanel.prototype.removeButtonClicked = function () {
         icon: Ext.MessageBox.QUESTION
     });
 };
+
+ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
+    var _this = this;
+	/** Opens a window with the cas form **/
+	var otherContainerForm = new OtherContainerForm();
+	otherContainerForm.onSave.attach(function(sender,container){
+		window.close();
+	})
+
+	otherContainerForm.onCancel.attach(function(sender){
+		window.close();
+	})
+
+	var window = Ext.create('Ext.window.Window', {
+	    title: 'Container',
+	    height: 600,
+	    width: 1500,
+	    modal : true,
+	    layout: 'fit',
+	    items: [
+	            	otherContainerForm.getPanel()
+	    ],
+        listeners : {
+			afterrender : function(component, eOpts) {
+				otherContainerForm.load(_this.container);
+			}
+	    },
+	});
+	window.show();
+}

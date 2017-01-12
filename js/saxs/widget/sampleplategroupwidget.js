@@ -74,7 +74,7 @@ SamplePlateGroupWidget.prototype.drawPlate = function(dataCollections, plate, ta
 				nodeSize	: this.nodeSize, 
 				fontSize	: 8, 
 				strokeWidth	: 1.5,
-				enableClick : false
+				enableClick : true
 			});
 
 	if (this.isVerticalLayout()){
@@ -89,8 +89,8 @@ SamplePlateGroupWidget.prototype.drawPlate = function(dataCollections, plate, ta
 				{
 					samplePlate	: args.samplePlate, 
 					row			: args.node.row, 
-					column		: args.node.column
-
+					column		: args.node.column,
+					specimenId 	: args.node.specimenId
 				}
 		);
 	});

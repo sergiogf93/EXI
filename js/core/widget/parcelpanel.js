@@ -277,13 +277,13 @@ ParcelPanel.prototype.showCaseForm = function() {
 	    items: [
 	            	caseForm.getPanel(_this.dewar)
 	    ],
-	    listeners : {
-			afterrender : function(component, eOpts) {
-				if (_this.puck != null){
-						_this.load(_this.puck);
-				}
-			}
-	    },
+	    // listeners : {
+		// 	afterrender : function(component, eOpts) {
+		// 		if (_this.puck != null){
+		// 			_this.load(_this.puck);
+		// 		}
+		// 	}
+	    // },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {

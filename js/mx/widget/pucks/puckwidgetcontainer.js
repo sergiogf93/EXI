@@ -12,6 +12,7 @@ function PuckWidgetContainer(args) {
 	this.containerId = 0;
 	this.enableMainClick = false;
 	this.enableMainMouseOver = false;
+	this.code = "";
 	if (args){
 		if (args.puckType) {
 			switch (args.puckType) {
@@ -24,6 +25,12 @@ function PuckWidgetContainer(args) {
 					this.capacity = 10;
 					break;
 			}
+		}
+		if (args.code){
+			this.code = args.code;
+		}
+		if (args.containerId){
+			this.containerId = args.containerId;
 		}
 		if (args.xMargin){
 			this.xMargin = args.xMargin;

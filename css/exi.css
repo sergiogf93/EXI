@@ -9,6 +9,10 @@
 
 /** Shipment **/
 
+.htInvalid {
+     background-color: #ffffff!important; 
+}
+
 .container-widget {
 	fill:#CCCCCC;
 	stroke:black;

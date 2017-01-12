@@ -1772,7 +1772,8 @@ ShippingExiController.prototype.init = function() {
 			mainView.load(this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
-		Path.map("#/shipping/main").to(function() {
+		Path.map("#/shipping/main").to(function() { 
+                       
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();
@@ -2009,7 +2010,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
 		cls : 'ExiSAXSMenuToolBar',
 //		hidden : this.isHidden,
-        disabled : true,
+        disabled : false,
 		menu : Ext.create('Ext.menu.Menu', {
 			items : [ 
 						{
@@ -2883,7 +2884,7 @@ CredentialManager.prototype.getBeamlines = function(){
 * @param technique [MX, SAXS]
 * @return 
 */
-CredentialManager.prototype.getBeamlinesByTechnique = function(technique){   
+CredentialManager.prototype.getBeamlinesByTechnique = function(technique){
 	var connections = this.getConnections();
     var beamlines = [];
 	for (var i = 0; i < connections.length; i++) {        
@@ -3880,6 +3881,173 @@ SessionMainView.prototype.loadByDate = function(start) {
 
 
 
+function SpreadSheet(args){
+	this.id = BUI.id();
+	this.height = 380;
+	this.width = 500;
+	this.containerType = "OTHER";
+	
+	if (args != null) {
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+		if (args.containerType != null) {
+			this.containerType = args.containerType;
+		}
+	}
+}
+
+SpreadSheet.prototype.getPanel = function(){
+	var _this = this;
+	this.panel = Ext.create('Ext.panel.Panel', {
+		layout : 'vbox',
+		height 		: this.height+ 50,
+		items : [ 
+				  {
+						html 		: '<div  style="overflow: auto;overflow-y: hidden; border:1px solid gray;background-color:white;height:500px;width:' + (_this.width - 20) +'px"; id="' + this.id + '_samples"; ></div>',
+						margin 		: '20 0 20 10',
+						height 		: this.height,
+						width 		: this.width,
+						autoScroll 	: true,
+						resizable 	: true
+					}]
+	});
+    return this.panel;
+};
+
+SpreadSheet.prototype.setLoading = function (bool) {
+	this.panel.setLoading(bool);
+}
+
+SpreadSheet.prototype.getAcronyms = function() {
+	var proteins = EXI.proposalManager.getProteins();
+	var acronyms = [];
+	for (var i = 0; i < proteins.length; i++) {
+		acronyms.push(proteins[i].acronym);
+	}
+	return acronyms;
+};
+
+SpreadSheet.prototype.setContainerType = function(containerType) {
+	this.containerType = containerType;
+};
+
+SpreadSheet.prototype.getHeaderWidth = function() {
+	var header = this.getHeader();
+	var text = [];
+	for (var i =0; i < header.length; i++){
+		text.push(header[i].column.with);
+	}
+	return text;
+};
+
+SpreadSheet.prototype.getHeaderId = function(containerType) {
+	var header = this.getHeader(containerType);
+	var text = [];
+	for (var i =0; i < header.length; i++){
+		text.push(header[i].id);
+	}
+	return text;
+};
+
+SpreadSheet.prototype.getHeaderText = function() {
+	var header = this.getHeader();
+	var text = [];
+	for (var i =0; i < header.length; i++){
+		text.push(header[i].text);
+	}
+	return text;
+};
+
+
+SpreadSheet.prototype.getColumns = function() {
+	var columns = [];
+	for (var i = 0; i < this.getHeader().length; i++) {
+		columns.push(this.getHeader()[i].column);
+	}
+	return columns;
+};
+
+/**
+* Returns an array of objects for each row in the grid where at least the protein acronym column is filled
+*
+* @method parseTableData
+*/
+SpreadSheet.prototype.parseTableData = function() {
+	var parsed = [];
+	var data = this.spreadSheet.getData();
+	// var columnIds = this.getHeaderId();
+	if (data != null && data.length > 0){
+		var columnIds = this.getHeaderId();
+		for (var j = 0; j < data.length; j++) {
+			if (data[j].length > 1){
+				var row = {};
+				row["location"] = j + 1;
+				for (var k = 0 ; k < columnIds.length ; k++) {
+					var key = columnIds[k];
+					var value = data[j][this.getColumnIndex(key)];
+					row[key] = value;
+				}
+				if (row["Protein Acronym"]){
+					if (row["Protein Acronym"].length > 0){
+						parsed.push(row);
+					}
+				}
+			}
+		}
+	}
+	/** Curated contains the whole-data rows * */
+	var curated = [];
+	for (var i = 0; i < parsed.length; i++) {
+		if (parsed[i]["Protein Acronym"] != null){
+			curated.push(parsed[i]);
+		}
+	}
+	return curated;
+};
+
+SpreadSheet.prototype.load = function(data){
+	var _this = this;
+	this.data = data;
+	var container = document.getElementById(this.id + '_samples');
+
+	this.spreadSheet = new Handsontable(container, {
+			data: data,
+			height : this.height,
+			width : this.width,
+			manualColumnResize: true,
+			colWidths: this.getHeaderWidth(),
+			colHeaders: this.getHeaderText(),
+			stretchH: 'last',
+			columns: this.getColumns(),
+	});
+};
+
+SpreadSheet.prototype.getData = function () {
+	return this.spreadSheet.getData();
+}
+
+SpreadSheet.prototype.loadData = function (data) {
+	return this.spreadSheet.loadData(data);
+}
+
+SpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
+	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
+}
+
+/**
+* Returns the columnIndex given the columnId
+*
+* @method getColumnIndex
+* @param {Integer} colId The column Id of the column it's column index we want to know 
+* @param {String} containerType Optional value to use if we want the header for an specific containerType
+*/
+SpreadSheet.prototype.getColumnIndex = function (colId) {
+	return _.findIndex(this.getHeader(),{id :colId});
+}
 function AddContainerForm(args) {
     this.id = BUI.id();
     var _this = this;
@@ -3900,7 +4068,7 @@ function AddContainerForm(args) {
 		}
 	}
 
-    this.containerTypeComboBox = new ContainerTypeComboBox();
+    this.containerTypeComboBox = new ContainerTypeComboBox({extraOptions : [{"type":"STOCK SOLUTION"},{"type":"OTHER", "capacity":1}]});
     this.stockSolutionsGrid = new StockSolutionsGrid({width : this.width*0.95});
 
     this.containerTypeComboBox.onSelected.attach(function (sender,selection){
@@ -4127,331 +4295,40 @@ CaseForm.prototype.getPanel = function(dewar) {
 
 function ContainerSpreadSheet(args){
 	this.id = BUI.id();
-	this.height = 380;
-	this.width = 500;
-	this.containerType = "OTHER";
-	this.renderCrystalFormColumn = false;
-	if (args != null) {
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.containerType != null) {
-			this.containerType = args.containerType;
-		}
+	SpreadSheet.call(this, args);
+
+    this.renderCrystalFormColumn = false;
+
+    if (args != null) {
 		if (args.renderCrystalFormColumn != null) {
 			this.renderCrystalFormColumn = args.renderCrystalFormColumn;
 		}
 	}
 
-	this.crystalInfoToIdMap = {};
+    this.crystalInfoToIdMap = {};
 
 	this.crystalFormIndex = -1;
 	this.unitCellIndex = -1;
 	this.spaceGroupIndex = -1;
 	
 	this.onModified = new Event(this);
+
 }
 
-ContainerSpreadSheet.prototype.getPanel = function(){
-	var _this = this;
-	this.panel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		height 		: this.height+ 50,
-		items : [ 
-				  {
-						html 		: '<div  style="overflow: auto;overflow-y: hidden; border:1px solid gray;background-color:white;height:500px;width:' + (_this.width - 20) +'px"; id="' + this.id + '_samples"; ></div>',
-						margin 		: '20 0 20 10',
-						height 		: this.height,
-						width 		: this.width,
-						autoScroll 	: true,
-						resizable 	: true
-					}]
-	});
-    return this.panel;
-};
-
-ContainerSpreadSheet.prototype.setLoading = function (bool) {
-	this.panel.setLoading(bool);
-}
-
-
-ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
-	var samples = puck.sampleVOs;
-	var data = [];
-	/** Sorting samples by location * */
-	samples.sort(function(a,b){return Number(a.location) - Number(b.location);});
-	function getSampleByLocation(samples, location){
-		for (var i = 0; i < samples.length; i++) {
-			if (samples[i].location == Number(location)){
-				return samples[i];
-			}
-		}
-	}
-
-	function getValue(value){
-		if (!value){return "";}
-        return value;
-	}
-	
-	for (var i = 0; i < puck.capacity; i++) {
-		var sample = getSampleByLocation(samples, i + 1);
-		if (sample!= null){
-				var crystal = sample.crystalVO;
-				var protein = crystal.proteinVO;
-				var diffraction = sample.diffractionPlanVO;
-				if (diffraction == null){
-					diffraction = {};
-				}
-				data.push(
-					[crystal.crystalId,(i+1), protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-					 diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
-					 ]
-				);
-		}
-		else{
-			data.push([(i+1)]);
-		}
-	}
-	return data;
-};
-
-
-// ContainerSpreadSheet.prototype.getSpaceGroups = function() {
-// 	return ["P1","P2","P21","C2","P222","P2221","P21212","P212121","C222","C2221","F222","I222","I212121","P4","P41","P42","P43","P422","P4212","P4122","P41212","P4222","P42212","P4322","P43212",
-//                 	"I4","I41","I422","I4122","P3","P31","P32","P31","P321","P3112","P3121","P3212","P3221","P6","P61","P65","P62","P64","P63","P622","P6122","P6522","P6222","P6422","P6322","R3","R32","P23","P213",
-//                 	"P432",	"P4232","P4332","P4132","F23","F432","F4132","I23",	"I213","I432","I4132", "UNKNOWN"];
-// };
-
-
-ContainerSpreadSheet.prototype.getAcronyms = function() {
-	var proteins = EXI.proposalManager.getProteins();
-	var acronyms = [];
-	for (var i = 0; i < proteins.length; i++) {
-		acronyms.push(proteins[i].acronym);
-	}
-	return acronyms;
-};
-
-
-ContainerSpreadSheet.prototype.getHeader = function() {
-	var _this = this;
-	var header = [];
-	var disabledRenderer = function(instance, td, row, col, prop, value, cellProperties){
-		if (value != undefined){
-			td.innerHTML = value;
-		}
-		td.style.background = '#DDD';
-	}
-	var editCrystalFormRenderer = function(instance, td, row, col, prop, value, cellProperties){
-		if (value != undefined){
-			td.innerHTML = value;
-		}
-	}
-	  
-	if (this.containerType != "OTHER"){
-		header = [
-				{ text :'', id :'crystalId', column : {width : 100}}, 
-				{ text : '#', 	id: 'position', column : {width : 20}}, 
-				{ text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-																							width : 60,
-																							type: 'dropdown',
-																							source: this.getAcronyms()
-																						}
-				}, 
-				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
-				{ text :'Crystal<br /> Form', id : 'Crystal Form',column : {
-																			width : 300,
-																			type: 'dropdown',
-																			source: function(query, process) {
-																				var colIndex = _this.getColumnIndex("Protein Acronym");
-																				var protein = EXI.proposalManager.getProteinByAcronym(this.instance.getDataAtCell(this.row,colIndex));
-																				if (protein.length > 0){
-																					process(_this.getCrystalInfoByProtein(protein[0]));
-																				} else {
-																					process([]);
-																				}
-																			}
-																		}
-																	}, 
-				{ text :'Exp.<br /> Type', id : 'Experiment Type', column : {
-																			width : 80,  
-																			type: 'dropdown',
-																			source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
-																		}
-				}, 
-				{ text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 60}},  
-				{ text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
-				{ text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
-				{ text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
-				{ text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
-				{ text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
-				{ text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
-				{ text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
-				{ text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
-				{ text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
-				{ text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
-				{ text :'Comments', id :'Comments', column : {width : 200}}
-				];
-
-		if (this.renderCrystalFormColumn) {
-			header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: editCrystalFormRenderer, editor : false, readOnly: true}});
-		}
-	} else {
-		header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
-				{ text :'Samplesheet <br />Acronym', id :'Protein Acronym', 	column :  {
-																							width : 100,
-																							type: 'dropdown',
-																							source: this.getAcronyms()
-																						}
-				}, 
-				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
-				{ text :'Comments', id :'Comments', column : {width : 200}}
-				];
-	}
-	
-	return header;
-};
-
-ContainerSpreadSheet.prototype.setRenderCrystalFormColumn = function(bool) {
-	this.renderCrystalFormColumn = bool;
-};
-
-ContainerSpreadSheet.prototype.setContainerType = function(containerType) {
-	this.containerType = containerType;
-};
-
-ContainerSpreadSheet.prototype.getHeaderWidth = function() {
-	var header = this.getHeader();
-	var text = [];
-	for (var i =0; i < header.length; i++){
-		text.push(header[i].column.with);
-	}
-	return text;
-};
-
-ContainerSpreadSheet.prototype.getHeaderId = function() {
-	var header = this.getHeader();
-	var text = [];
-	for (var i =0; i < header.length; i++){
-		text.push(header[i].id);
-	}
-	return text;
-};
-
-ContainerSpreadSheet.prototype.getHeaderText = function() {
-	var header = this.getHeader();
-	var text = [];
-	for (var i =0; i < header.length; i++){
-		text.push(header[i].text);
-	}
-	return text;
-};
-
-
-ContainerSpreadSheet.prototype.getColumns = function() {
-	var columns = [];
-	for (var i = 0; i < this.getHeader().length; i++) {
-		columns.push(this.getHeader()[i].column);
-	}
-	return columns;
-};
-
-
-ContainerSpreadSheet.prototype.getPuck = function() {
-	var myPuck = JSON.parse(JSON.stringify(this.puck));
-	var rows = this.parseTableData();
-    
-	//myPuck.sampleVOs = [];
-    var aux = [];
-    
-    function filterByLocation(samples){
-        return _.filter(samples, function(b){return b.location == rows[i].location;} );
-    }
-	for (var i = 0; i < rows.length; i++) {
-        
-        var sample = {};
-        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
-        if (sampleByLocation.length > 0){
-            /** new sample */
-		    sample = sampleByLocation[0];
-        } 
-        
-		sample["name"] = rows[i]["Sample Name"];
-		sample["smiles"] = rows[i]["Smiles"];
-		sample["location"]= rows[i]["location"];
-		sample["comments"] = rows[i]["Comments"];
-        var proteins = [];
-		if (sample["crystalVO"] == null){
-			sample["crystalVO"] = {};
-			proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
-			if (proteins != null){
-				sample["crystalVO"]["proteinVO"] = proteins[0];
-			}
-		}
-        else{
-            proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
-			if (proteins != null){
-				sample["crystalVO"]["proteinVO"] = proteins[0];
-			}
-        }
-		var crystal = this.parseCrystalFormColumn(rows[i]["Crystal Form"],i);
-		sample["crystalVO"]["spaceGroup"] = crystal.spaceGroup;
-		sample["crystalVO"]["cellA"] = crystal.cellA;
-		sample["crystalVO"]["cellB"] = crystal.cellB;
-		sample["crystalVO"]["cellC"] = crystal.cellC;
-		sample["crystalVO"]["cellAlpha"] = crystal.cellAlpha;
-		sample["crystalVO"]["cellBeta"] = crystal.cellBeta;
-		sample["crystalVO"]["cellGamma"] = crystal.cellGamma;
-		
-		sample["diffractionPlanVO"] = {};
-		sample["diffractionPlanVO"]["radiationSensitivity"]= Number(rows[i]["Radiation Sensitivity"]);
-		sample["diffractionPlanVO"]["requiredCompleteness"]= Number(rows[i]["Required Completeness"]);
-		sample["diffractionPlanVO"]["requiredMultiplicity"]= Number(rows[i]["Required multiplicity"]);
-		sample["diffractionPlanVO"]["requiredResolution"]= Number(rows[i]["Needed resolution"]);
-		sample["diffractionPlanVO"]["observedResolution"]= Number(rows[i]["Pre-observed resolution"]);
-		sample["diffractionPlanVO"]["preferredBeamDiameter"]= Number(rows[i]["Pref. Diameter"]);
-		sample["diffractionPlanVO"]["numberOfPositions"]= Number(rows[i]["Number Of positions"]);
-		sample["diffractionPlanVO"]["experimentKind"]= rows[i]["Experiment Type"];
-		aux.push(sample);
-		
-	}
-    myPuck.sampleVOs = aux;
-    
-	return myPuck;
-};
-
-
-ContainerSpreadSheet.prototype.parseTableData = function() {
-	var parsed = [];
-	var data = this.spreadSheet.getData();
-	for (var j = 0; j < data.length; j++) {
-		var row = {};
-		row["location"] = j + 1;
-			for (var k = 0; k < data[j].length; k++) {
-				var key = this.getHeaderId()[k];
-				var value = data[j][k];
-				row[key] = value;
-			}
-			if (row["Protein Acronym"]){
-				if (row["Protein Acronym"].length > 0){
-					parsed.push(row);
-				}
-			}
-	}
-	
-	/** Curated contains the whole-data rows * */
-	var curated = [];
-	for (var i = 0; i < parsed.length; i++) {
-		if (parsed[i]["Protein Acronym"] != null){
-			curated.push(parsed[i]);
-		}
-	}
-	
-	return curated;
-};
+ContainerSpreadSheet.prototype.getPanel = SpreadSheet.prototype.getPanel;
+ContainerSpreadSheet.prototype.setLoading = SpreadSheet.prototype.setLoading;
+ContainerSpreadSheet.prototype.getAcronyms = SpreadSheet.prototype.getAcronyms;
+ContainerSpreadSheet.prototype.getHeaderWidth = SpreadSheet.prototype.getHeaderWidth;
+ContainerSpreadSheet.prototype.getHeaderId = SpreadSheet.prototype.getHeaderId;
+ContainerSpreadSheet.prototype.getHeaderText = SpreadSheet.prototype.getHeaderText;
+ContainerSpreadSheet.prototype.getColumns = SpreadSheet.prototype.getColumns;
+ContainerSpreadSheet.prototype.parseTableData = SpreadSheet.prototype.parseTableData;
+ContainerSpreadSheet.prototype.getData = SpreadSheet.prototype.getData;
+ContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
+ContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
+ContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
+ContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
+ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
 
 ContainerSpreadSheet.prototype.load = function(puck){
 	var _this = this;
@@ -4530,26 +4407,193 @@ ContainerSpreadSheet.prototype.load = function(puck){
 				stretchH: 'last',
 				columns: this.getColumns(),
 		});
-
-	
-	
 };
 
-ContainerSpreadSheet.prototype.getData = function () {
-	return this.spreadSheet.getData();
-}
+/**
+* Returns an array of arrays for each sample in the given container up to the container's capacity ordered according to the grid
+*
+* @method getSamplesData
+* @param {Object} puck The container which's samples are parsed
+*/
+ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
+    var data = [];
+    var samples = puck.sampleVOs;
+    /** Sorting samples by location * */
+    samples.sort(function(a,b){return Number(a.location) - Number(b.location);});
+    function getSampleByLocation(samples, location){
+        for (var i = 0; i < samples.length; i++) {
+            if (samples[i].location == Number(location)){
+                return samples[i];
+            }
+        }
+    }
 
-ContainerSpreadSheet.prototype.loadData = function (data) {
-	return this.spreadSheet.loadData(data);
-}
+    function getValue(value){
+        if (!value){return "";}
+        return value;
+    }
+		
+    for (var i = 0; i < puck.capacity; i++) {
+        var sample = getSampleByLocation(samples, i + 1);
+        if (sample!= null){
+                var crystal = sample.crystalVO;
+                var protein = crystal.proteinVO;
+                var diffraction = sample.diffractionPlanVO;
+                if (diffraction == null){
+                    diffraction = {};
+                }
+                data.push(
+                    [
+                        // crystal.crystalId,
+                        (i+1), 
+                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
+                    ]
+                );
+        }
+        else{
+            data.push([(i+1)]);
+        }
+    }
+	return data;
+};
 
-ContainerSpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
-	this.spreadSheet.setDataAtCell(rowIndex, columnIndex, value);
-}
+ContainerSpreadSheet.prototype.getHeader = function() {
+    var _this = this;
+	var header = [];
+	var disabledRenderer = function(instance, td, row, col, prop, value, cellProperties){
+		if (value != undefined){
+			td.innerHTML = value;
+		}
+		td.style.background = '#DDD';
+	}
+	var editCrystalFormRenderer = function(instance, td, row, col, prop, value, cellProperties){
+		if (value != undefined){
+			td.innerHTML = value;
+		}
+	}
+    header = [
+            // { text :'', id :'crystalId', column : {width : 100}}, 
+            { text : '#', 	id: 'position', column : {width : 20}}, 
+            { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
+                                                                                        width : 60,
+                                                                                        type: 'dropdown',
+                                                                                        source: this.getAcronyms()
+                                                                                    }
+            }, 
+            { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
+            { text :'Crystal<br /> Form', id : 'Crystal Form',column : {
+                                                                        width : 300,
+                                                                        type: 'dropdown',
+                                                                        source: function(query, process) {
+                                                                            var colIndex = _this.getColumnIndex("Protein Acronym");
+                                                                            var protein = EXI.proposalManager.getProteinByAcronym(this.instance.getDataAtCell(this.row,colIndex));
+                                                                            if (protein.length > 0){
+                                                                                process(_this.getCrystalInfoByProtein(protein[0]));
+                                                                            } else {
+                                                                                process([]);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }, 
+            { text :'Exp.<br /> Type', id : 'Experiment Type', column : {
+                                                                        width : 80,  
+                                                                        type: 'dropdown',
+                                                                        source: [ "Default", "MXPressE", "MXPressO", "MXPressI", "MXPressE_SAD", "MXScore", "MXPressM" ]
+                                                                    }
+            }, 
+            { text :'Pin <br />BarCode', id : 'Pin BarCode', column : {width : 60}},  
+            { text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
+            { text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
+            { text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
+            { text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
+            { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
+            { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
+            { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
+            { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            { text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
+            { text :'Comments', id :'Comments', column : {width : 200}}
+            ];
 
-ContainerSpreadSheet.prototype.getColumnIndex = function (colId) {
-	return _.findIndex(this.getHeader(),{id :colId});
-}
+    if (this.renderCrystalFormColumn) {
+        header.push({ text :'Edit Crystal Form', id :'editCrystalForm', column : {width : 200, renderer: editCrystalFormRenderer, editor : false, readOnly: true}});
+    }
+
+    return header;
+};
+
+
+/**
+* Returns a puck object with the corresponding samples from the grid
+*
+* @method getPuck
+*/
+ContainerSpreadSheet.prototype.getPuck = function() {
+	var myPuck = JSON.parse(JSON.stringify(this.puck));
+	var rows = this.parseTableData();
+    
+	//myPuck.sampleVOs = [];
+    var aux = [];
+    
+    function filterByLocation(samples){
+        return _.filter(samples, function(b){return b.location == rows[i].location;} );
+    }
+	for (var i = 0; i < rows.length; i++) {
+        var sample = {};
+        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        if (sampleByLocation.length > 0){
+            /** new sample */
+		    sample = sampleByLocation[0];
+        } 
+        
+		sample["name"] = rows[i]["Sample Name"];
+		sample["smiles"] = rows[i]["Smiles"];
+		sample["location"]= rows[i]["location"];
+		sample["comments"] = rows[i]["Comments"];
+        var proteins = [];
+		if (sample["crystalVO"] == null){
+			sample["crystalVO"] = {};
+			proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			if (proteins != null){
+				sample["crystalVO"]["proteinVO"] = proteins[0];
+			}
+		}
+        else{
+            proteins = EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"]);
+			if (proteins != null){
+				sample["crystalVO"]["proteinVO"] = proteins[0];
+			}
+        }
+		var crystal = this.parseCrystalFormColumn(rows[i]["Crystal Form"],i);
+		sample["crystalVO"]["spaceGroup"] = (crystal.spaceGroup) ? crystal.spaceGroup : "";
+		sample["crystalVO"]["cellA"] = crystal.cellA;
+		sample["crystalVO"]["cellB"] = crystal.cellB;
+		sample["crystalVO"]["cellC"] = crystal.cellC;
+		sample["crystalVO"]["cellAlpha"] = crystal.cellAlpha;
+		sample["crystalVO"]["cellBeta"] = crystal.cellBeta;
+		sample["crystalVO"]["cellGamma"] = crystal.cellGamma;
+		
+		sample["diffractionPlanVO"] = {};
+		sample["diffractionPlanVO"]["radiationSensitivity"]= Number(rows[i]["Radiation Sensitivity"]);
+		sample["diffractionPlanVO"]["requiredCompleteness"]= Number(rows[i]["Required Completeness"]);
+		sample["diffractionPlanVO"]["requiredMultiplicity"]= Number(rows[i]["Required multiplicity"]);
+		sample["diffractionPlanVO"]["requiredResolution"]= Number(rows[i]["Needed resolution"]);
+		sample["diffractionPlanVO"]["observedResolution"]= Number(rows[i]["Pre-observed resolution"]);
+		sample["diffractionPlanVO"]["preferredBeamDiameter"]= Number(rows[i]["Pref. Diameter"]);
+		sample["diffractionPlanVO"]["numberOfPositions"]= Number(rows[i]["Number Of positions"]);
+		sample["diffractionPlanVO"]["experimentKind"]= rows[i]["Experiment Type"];
+		aux.push(sample);
+		
+	}
+    myPuck.sampleVOs = aux;
+    
+	return myPuck;
+};
+
+ContainerSpreadSheet.prototype.setRenderCrystalFormColumn = function(bool) {
+	this.renderCrystalFormColumn = bool;
+};
 
 /**
 * Returns an object containing the crystal information given the value at the crystal form column
@@ -4568,7 +4612,7 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 					cellBeta	: null,
 					cellGamma	: null
 				};
-	if (dataAtCrystalFormColumn != ""){
+	if (dataAtCrystalFormColumn != "" && dataAtCrystalFormColumn != null){
 		var proteins = EXI.proposalManager.getProteinByAcronym(this.spreadSheet.getDataAtCell(row,this.getColumnIndex("Protein Acronym")));
 		if (proteins && proteins.length > 0) {
 			parsed.proteinVO = proteins[0];
@@ -4606,7 +4650,7 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 		}
 	}
 	return parsed;
-}
+};
 
 /**
 * Returns an string of the form [spaceGroup - (cellA : cellB : cellC | cellAlpha : cellBeta : cellGamma)]
@@ -4615,13 +4659,17 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 * @param {Object} crystal The crystal used to extract the values
 */
 ContainerSpreadSheet.prototype.getCrystalInfo = function (crystal) {
-	if (crystal.cellA == null) {
-		return crystal.spaceGroup + " - undefined";
-	} else if (crystal.cellA == 0 && crystal.cellB == 0 && crystal.cellC == 0 && crystal.cellAlpha == 0 && crystal.cellBeta == 0 && crystal.cellGamma == 0 ){
-		return crystal.spaceGroup
-	}
-	return crystal.spaceGroup + " - (" + crystal.cellA + " : " + crystal.cellB + " : " + crystal.cellC + " | " + crystal.cellAlpha + " : " + crystal.cellBeta + " : " + crystal.cellGamma + ")";
-}
+    try {
+        if (crystal.cellA == null) {
+            return crystal.spaceGroup + " - undefined";
+        } else if (crystal.cellA == 0 && crystal.cellB == 0 && crystal.cellC == 0 && crystal.cellAlpha == 0 && crystal.cellBeta == 0 && crystal.cellGamma == 0 ){
+            return crystal.spaceGroup
+        }
+        return crystal.spaceGroup + " - (" + crystal.cellA + " : " + crystal.cellB + " : " + crystal.cellC + " | " + crystal.cellAlpha + " : " + crystal.cellBeta + " : " + crystal.cellGamma + ")";
+    } catch (e) {
+        return "";
+    }
+};
 
 ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
 	var html = "";
@@ -4629,14 +4677,22 @@ ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
 		html = out;
 	});
 	return html;
-}
+};
 
 ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	var _this = this;
 	var editCrystalForm = new EditCrystalFormView();
 
 	editCrystalForm.onSaved.attach(function (sender, crystal) {
+		var rows = _this.parseTableData();
 		_this.updateCrystalGroup(row,crystal);
+		for (var i = 0; i < rows.length; i++) {
+			if (rows[i].location-1 != row){
+				if (_this.crystalInfoToIdMap[rows[i]["Crystal Form"]] == crystal.crystalId){
+					_this.updateCrystalGroup(rows[i].location-1,crystal);
+				}
+			}
+		}
 		window.close();
 	});
 
@@ -4665,7 +4721,7 @@ ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	}).show();
 
 	editCrystalForm.load(crystal);
-}
+};
 
 ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column) {
 	if (!column) {
@@ -4673,29 +4729,33 @@ ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column)
 	}
 	var button = "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
 	this.setDataAtCell(row,column,button);
-}
+};
 
 ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
-	this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
-	this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
-	this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
-	this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
-	this.addEditCrystalFormButton(row);
-}
+    if (crystal) {
+        this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
+        this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
+        this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
+        // this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
+        this.addEditCrystalFormButton(row);
+    } else {
+        this.resetCrystalGroup(row);
+    }
+};
 
 ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
 	this.setDataAtCell(row,this.unitCellIndex,"");
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
-	this.setDataAtCell(row,0,"");
+	// this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
-}
+};
 
 ContainerSpreadSheet.prototype.disableAll = function () {
 	this.spreadSheet.updateSettings({
 					readOnly: true
 				});
-}
+};
 
 /**
 * Method executed when a change is made on the spreadSheet. It manages the process when the crystal form or the protein acronym are changed
@@ -4705,15 +4765,14 @@ ContainerSpreadSheet.prototype.disableAll = function () {
 */
 ContainerSpreadSheet.prototype.manageChange = function (change){
 	var _this = this;
-	switch (change[1]) {
+	switch (change[1]) { //Column Index
 		case this.crystalFormIndex : {
-			var parsed = this.parseCrystalFormColumn(change[3],change[0]);
+			var parsed = this.parseCrystalFormColumn(change[3],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
 			if (parsed.spaceGroup != undefined){
 				if (parsed.spaceGroup == "NEW"){
 					this.showEditForm(parsed, change[0]);
 				} else {
-					var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsed.spaceGroup}),function(o){return o.proteinVO.acronym == _this.getData()[change[0]][_this.getColumnIndex("Protein Acronym")]})
-					if (crystalsBySpaceGroupAndAcronym.length > 0){
+					if (this.isCrystalFormAvailable(parsed,this.getData()[change[0]][this.getColumnIndex("Protein Acronym")])){
 						this.updateCrystalGroup(change[0],parsed);
 					} else {
 						this.resetCrystalGroup(change[0]);
@@ -4725,11 +4784,31 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 			break;
 		}
 		case this.getColumnIndex("Protein Acronym") : {
-			this.resetCrystalGroup(change[0]);
+            this.resetCrystalGroup(change[0]);
+            var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
+            if (proteins) {
+                var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
+                if (crystalsByProteinId && crystalsByProteinId.length > 0){
+                    var crystal = _.maxBy(crystalsByProteinId,"crystalId");
+                    _this.updateCrystalGroup(change[0],crystal);
+                }
+            }
 			break;
 		}
 	}
-}
+};
+
+/**
+* Returns true if the parseCrystalForm is available for the given proteinAcronym
+*
+* @method isCrystalFormAvailable
+* @param {Object} parsedCrystalForm A parsed crystal form object
+* @param {String} proteinAcronym The proteinAcronym
+*/
+ContainerSpreadSheet.prototype.isCrystalFormAvailable = function (parsedCrystalForm, proteinAcronym) {
+	var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsedCrystalForm.spaceGroup}),function(o){return o.proteinVO.acronym == proteinAcronym})
+	return crystalsBySpaceGroupAndAcronym.length > 0;
+};
 
 /**
 * Loads the crystal info to ud map and returns an array of cystal info given a protein
@@ -4749,7 +4828,7 @@ ContainerSpreadSheet.prototype.getCrystalInfoByProtein = function (protein) {
 		}
 	}
 	return _.union(src,["NEW"]);
-}
+};
 function CrystalFormView (args) {
     this.id = BUI.id();
     this.padding = 20;
@@ -4881,15 +4960,20 @@ EditCrystalFormView.prototype.getPanel = function() {
 
 EditCrystalFormView.prototype.load = function(crystal) {
 	var _this = this;
-	if (crystal.crystalId != "") {
-		var onSuccess = function (sender, crystalById) {
-			_this.crystal = crystalById;
-			_this.render();
+	this.crystal = crystal;
+	if (crystal.crystalId != null){
+		if (crystal.crystalId != "") {
+			var onSuccess = function (sender, crystalById) {
+				_this.crystal = crystalById;
+				_this.render();
+			}
+			EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
+		} else {
+			this.render();
 		}
-		EXI.getDataAdapter({onSuccess:onSuccess}).mx.crystal.getCrystalById(crystal.crystalId);
 	} else {
-		this.crystal = crystal;
-		this.render();
+		$('#' + this.id).hide().html("<div id='" + this.id + "-error' style='margin:30px;'><h4>There was an error loading the crystal</h4></div>").fadeIn('fast');
+		this.panel.doLayout();
 	}
 }
 
@@ -4927,14 +5011,21 @@ EditCrystalFormView.prototype.save = function () {
 					name		: 	$("#" + this.id + "-name").val(),
 					comments	:	$("#" + this.id + "-comments").val()
                 };
-	var onSaved = function (sender, newCrystal) {
-		EXI.proposalManager.get(true);
-		_this.onSaved.notify(newCrystal);
+
+	if (crystal.cellA != "" && crystal.cellB != "" && crystal.cellC != "") {
+		this.panel.setLoading();
+		var onSaved = function (sender, newCrystal) {
+			EXI.proposalManager.get(true);
+			_this.onSaved.notify(newCrystal);
+			_this.panel.setLoading(false);
+		}
+		
+		EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
+																	crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
+																	crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
+	} else {
+		$("#" + this.id + "-cellsABC").notify("The values A, B and C must be filled",{className:"error"});
 	}
-	
-	EXI.getDataAdapter({onSuccess : onSaved}).mx.crystal.save(this.crystal.proteinVO.proteinId, this.crystal.crystalId, 
-																crystal.name, crystal.spaceGroup, crystal.cellA, crystal.cellB, crystal.cellC, 
-																crystal.cellAlpha, crystal.cellBeta, crystal.cellGamma, crystal.comments);
 };
 
 EditCrystalFormView.prototype.setCellValuesBySpaceGroup = function (spaceGroup) {
@@ -5032,6 +5123,272 @@ EditCrystalFormView.prototype.manageCellValueUpdate = function (id, value) {
 		$(id).prop('disabled', false);
 	}
 }
+function GenericContainerSpreadSheet(args){
+	this.id = BUI.id();
+	SpreadSheet.call(this, args);
+}
+
+GenericContainerSpreadSheet.prototype.getPanel = SpreadSheet.prototype.getPanel;
+GenericContainerSpreadSheet.prototype.setLoading = SpreadSheet.prototype.setLoading;
+GenericContainerSpreadSheet.prototype.getAcronyms = SpreadSheet.prototype.getAcronyms;
+GenericContainerSpreadSheet.prototype.getHeaderWidth = SpreadSheet.prototype.getHeaderWidth;
+GenericContainerSpreadSheet.prototype.getHeaderId = SpreadSheet.prototype.getHeaderId;
+GenericContainerSpreadSheet.prototype.getHeaderText = SpreadSheet.prototype.getHeaderText;
+GenericContainerSpreadSheet.prototype.getColumns = SpreadSheet.prototype.getColumns;
+GenericContainerSpreadSheet.prototype.parseTableData = SpreadSheet.prototype.parseTableData;
+GenericContainerSpreadSheet.prototype.getData = SpreadSheet.prototype.getData;
+GenericContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
+GenericContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
+GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
+GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
+GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+
+GenericContainerSpreadSheet.prototype.load = function(container){
+	var _this = this;
+	this.container = container;
+	var domElement = document.getElementById(this.id + '_samples');
+    
+	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    Handsontable.renderers.TextRenderer.apply(this, arguments);
+	    td.style.fontWeight = 'bold';
+	    td.style.color = 'green';
+	    td.style.fontSize = '9px';
+	    td.style.background = '#CEC';
+	  }
+	  
+	  function ValueRenderer(instance, td, row, col, prop, value, cellProperties) {
+	    Handsontable.renderers.TextRenderer.apply(this, arguments);
+	    if (!instance.getDataAtRow(row)[1]){
+	    	td.style.background = '#EEE';
+	    	return;
+	    }
+	    
+	    if ((col == 2)){
+		    	if (!value || value == '') {
+		    		td.className = 'custom-row-text-required';
+		  	    }
+	    }
+		if ((col == _this.unitCellIndex) || col == _this.spaceGroupIndex) {
+			td.style.background = '#EEE';
+		}
+	  }
+
+	  
+	  // maps function to lookup string
+	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
+	  this.spreadSheet = new Handsontable(domElement, {
+				beforeChange: function (changes, source) {
+					lastChange = changes;
+				},
+				data: this.getSamplesData(container),
+			
+				height : this.height,
+				width : this.width,
+				manualColumnResize: true,
+				colWidths: this.getHeaderWidth(),
+				colHeaders: this.getHeaderText(),
+				stretchH: 'last',
+				columns: this.getColumns(),
+		});
+};
+
+/**
+* Returns an array of arrays for each sample in the given container up to the container's capacity ordered according to the grid
+*
+* @method getSamplesData
+* @param {Object} container The container which's samples are parsed
+*/
+GenericContainerSpreadSheet.prototype.getSamplesData = function(container) {
+    var data = [];
+    for (var i = 0; i < container.capacity; i++) {
+        if (container.samples){
+            if (i < container.samples.length){
+                var sample = container.samples[i];
+                data.push(
+                    [(i+1),sample.Protein_acronym, sample.Protein_name, sample.BLSample_comments]
+                );
+            } else {
+                data.push([(i+1)]);
+            }
+        } else {
+            data.push([(i+1)]);
+        }
+    }
+
+    return data;
+}
+
+GenericContainerSpreadSheet.prototype.getHeader = function() {
+    var header = [];
+    header = [{ text : '#', 	id: 'position', column : {width : 20}}, 
+				{ text :'Samplesheet <br />Acronym', id :'Protein Acronym', 	column :  {
+																							width : 100,
+																							type: 'dropdown',
+																							source: this.getAcronyms()
+																						}
+				}, 
+				{ text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}},
+				{ text :'Comments', id :'Comments', column : {width : 200}}
+				];
+
+    return header;
+}
+
+/**
+* Returns a puck object with the corresponding samples from the grid
+*
+* @method getPuck
+*/
+GenericContainerSpreadSheet.prototype.getPuck = function() {
+    var rows = this.parseTableData();
+    var myPuck = {};
+    myPuck.sampleVOs = this.container.samples;
+
+    function filterByLocation(samples){
+        return _.filter(samples, function(b){return b.BLSample_location == rows[i].location;} );
+    }
+    
+    for (var i = 0; i < rows.length; i++) {
+        var sample = {};
+        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        if (sampleByLocation.length > 0){
+            /** new sample */
+		    sample = sampleByLocation[0];
+        }
+
+        sample["name"] = rows[i]["Sample Name"];
+        sample["location"]= rows[i]["location"];
+		sample["comments"] = rows[i]["Comments"];
+        sample["crystalVO"] = {};
+        sample["diffractionPlanVO"] = {};
+
+        myPuck.sampleVOs.push(sample);
+    }
+
+    return myPuck;
+}
+function OtherContainerForm(args) {
+    this.id = BUI.id();
+    var _this = this;
+
+    this.width = 1500;
+    this.height = 600;
+    this.container = {};
+	if (args != null) {
+        if (args.width != null) {
+			this.width = args.width;
+		}
+        if (args.height != null) {
+			this.height = args.height;
+		}
+	}
+
+    this.containerSpreadSheet = new GenericContainerSpreadSheet({width : this.width - 50, height : this.height - 300});
+
+    this.onSave = new Event(this);
+    this.onCancel = new Event(this);
+}
+
+OtherContainerForm.prototype.load = function (container) {
+    if (container) {
+        this.container = container;
+        Ext.getCmp(this.id + "container_name").setValue(container.code);
+        if (container.samples) {
+            this.container.capacity = container.samples.length;
+        } else {
+            this.container.capacity = 1;
+        }
+        this.containerSpreadSheet.load(this.container);
+	    this.panel.doLayout();
+    }
+}
+
+OtherContainerForm.prototype.getPanel = function() {
+    this.panel = Ext.create('Ext.form.Panel', {
+        // width : this.width - 10,
+        // height : this.height,
+//			cls : 'border-grid',
+//			margin : 10,
+        autoScroll 	: true,
+        buttons : this.getButtons(),
+        items : [
+                {
+							xtype : 'container',
+							margin : '5 0 2 5',
+							layout : 'hbox',
+							items : [
+										
+										
+								         {
+								        	 xtype : 'container',
+											margin : '12 0 2 0',
+											layout : 'hbox',
+											items : [ 
+							         				   {
+																xtype: 'requiredtextfield',
+																id : this.id + 'container_name',
+																fieldLabel : 'Name',
+																name : 'name',
+																width : 250,
+																margin : '5 5 5 5',
+																labelWidth : 100
+														},
+                                            ]
+                                        }
+                                        ]
+                },
+                    this.containerSpreadSheet.getPanel()
+                ]
+    });
+	return this.panel;
+};
+
+OtherContainerForm.prototype.getButtons = function () {
+    var _this = this;
+    return [ {
+                text : 'Save',
+                id : this.id + "-save-button",
+                handler : function() {
+                    _this.save();
+                }
+            }, {
+                text : 'Cancel',
+                handler : function() {
+                    _this.onCancel.notify();
+                }
+            } ]
+}
+
+OtherContainerForm.prototype.getContainer = function () {
+    this.container.code = Ext.getCmp(this.id + "container_code").getValue();
+    this.container.containerType = "OTHER";
+    this.container.capacity = this.container.samples.length;    
+    return this.container;
+}
+
+OtherContainerForm.prototype.save = function() {
+	var _this = this;
+	this.panel.setLoading("Saving Puck");
+
+	var puck = this.containerSpreadSheet.getPuck();
+
+	/** Updating general parameters **/
+	puck.code = Ext.getCmp(_this.id + 'container_name').getValue();
+	puck.capacity = this.container.samples.length;
+	puck.containerType = "OTHER";
+	
+    var onError = function(sender, error){
+		_this.panel.setLoading(false);
+		EXI.setError(error.responseText);
+	};
+    
+	var onSuccess = function(sender, puck){
+		_this.panel.setLoading(false);
+        _this.onSave.notify();
+	};
+    debugger
+	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.container.containerId, this.container.containerId, this.container.containerId, puck);
+};
 
 /**
 * This is a grid for parcels
@@ -5455,14 +5812,9 @@ function PuckFormView(args) {
 	
 	var _this = this;
 	
-	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
-	
-	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
-		
-	});*/
 
-	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, showStockSolution : false, initDisabled : true});
+	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
 		_this.containerTypeChanged(capacity);
@@ -5478,7 +5830,7 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
     this.shippingId = shippingId;
     this.shippingStatus = shippingStatus;
     this.containerId = containerId;
-    this.containerSpreadSheet.setLoading(true);
+    // this.containerSpreadSheet.setLoading(true);
 	this.panel.setTitle("Shipment");
 
     var onSuccess = function(sender, puck){
@@ -5495,14 +5847,26 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
             Ext.getCmp(_this.id + "puck_status").setValue(_this.puck.containerStatus);                
         }
 
-        var onSuccess = function (sender, samples) {
-            if (samples.length > 0) {
-                _this.containerSpreadSheet.setRenderCrystalFormColumn(true);
-            } else {
-                _this.containerSpreadSheet.setRenderCrystalFormColumn(false);
+		_this.fillSamplesGrid(puck);
+
+    };
+
+    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
+
+};
+
+PuckFormView.prototype.fillSamplesGrid = function (puck) {
+	var _this = this;
+	this.containerSpreadSheet.setLoading(true);
+	var onSuccess = function (sender, samples) {
+		if (samples) {
+			if (samples.length > 0) {
+				_this.containerSpreadSheet.setRenderCrystalFormColumn(true);
+			} else {
+				_this.containerSpreadSheet.setRenderCrystalFormColumn(false);
 			}
 			_this.containerSpreadSheet.setContainerType(puck.containerType);
-            _this.containerSpreadSheet.load(puck);
+			_this.containerSpreadSheet.load(puck);
 			if (_this.shippingStatus != "processing"){
 				var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
 				if (withoutCollection.length == samples.length) {
@@ -5513,19 +5877,15 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
 			} else {
 				_this.containerSpreadSheet.disableAll();
 			}
-            _this.containerSpreadSheet.setLoading(false);
+			_this.containerSpreadSheet.setLoading(false);
 			if (_this.containerSpreadSheet.renderCrystalFormColumn) {
 				_this.setValuesForEditCrystalColumn();
 			}
-        }
+		}
+	}
 
-        EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(_this.containerId);
-
-    };
-
-    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
-
-};
+	EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(puck.containerId);
+}
 
 PuckFormView.prototype.getPanel = function() {
 	var _this =this;
@@ -5679,18 +6039,10 @@ PuckFormView.prototype.save = function() {
 	var onSuccess = function(sender, puck){
 		_this.panel.setLoading(false);
 		_this.load(_this.containerId, _this.shippingId);
-		// _this.onSaved.notify(puck);
-        // _this.returnToShipment();
 	};
 	
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
-
-// PuckFormView.prototype.getEditCrystalFormLink = function (row) {
-// 	// var crystalId = this.puck.sampleVOs[row].crystalVO.crystalId;
-// 	return "<a id='edit-button-" + row + "' class='btn btn-xs edit-crystal-button'><span class='glyphicon glyphicon-edit'></span> Edit Crystal Form</a>";
-// 	// return "<a href='#/shipping/" + this.shippingId + "/containerId/" + this.containerId + "/sampleId/" + sampleId + "/editCrystalForm'>Edit Crystal Form</a>";
-// }
 
 /**
  * When container type has changed from SPINE|| UNIPUCK || PLATE
@@ -5698,25 +6050,35 @@ PuckFormView.prototype.save = function() {
  * We make the spreadsheet longer and the platelayout is rendered again
  */
 PuckFormView.prototype.containerTypeChanged = function(capacity) {
+	var currentType = this.capacityCombo.getTypeByCapacity(this.puck.capacity);
+	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
-	this.containerSpreadSheet.setContainerType(this.capacityCombo.getTypeByCapacity(capacity));
+	this.containerSpreadSheet.setContainerType(newType);
 	var data = this.containerSpreadSheet.spreadSheet.getData();
+	//Sets the appropiate number of rows according to the capacity
 	if (data.length < capacity){
-		var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
 		for (var i = data.length + 1; i<= capacity; i++){
 			data.push([i]);
-			this.containerSpreadSheet.setDataAtCell(i-1,columnIndex,"");
 		}
 	}
 	else{
 		data = data.slice(0, capacity);
 	}
-	// debugger
-	// this.panel.remove(this.containerSpreadSheet.panel);
-	// this.panel.insert(this.containerSpreadSheet.getPanel());
+	//Resets editCrystalForm column if exists
+	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
+	// if (columnIndex >= 0){
+	// 	var tableData = this.containerSpreadSheet.parseTableData();
+	// 	for (var i = 0 ; i < tableData.length ; i++) {
+	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
+	// 	}
+	// }
+	
+	//Changes the grid when changed from or to the type OTHER
 	this.containerSpreadSheet.spreadSheet.loadData(data);
-	// this.save();
-	// this.load(this.containerId,this.shippingId);
+	if (currentType == "OTHER" || newType == "OTHER"){
+		this.puck.containerType = newType;
+		this.fillSamplesGrid(this.puck);
+	}
 };
 
 /**
@@ -6024,6 +6386,12 @@ ShippingMainView.prototype.load = function(shippingId) {
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
+    else{
+        
+        _this.shipmentForm.load();
+		_this.parcelGrid.load();
+		_this.panel.setLoading(false);
+    }
 };
 
 /**
@@ -6085,7 +6453,113 @@ ShippingMainView.prototype.load = function(shippingId) {
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
+    else{
+        	
+			
+			_this.panel.setLoading(false);
+    }
 };
+function ShippingWelcomeMainView() {
+	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
+
+	MainView.call(this);
+	this.title = "Welcome";
+	this.closable = false;
+}
+
+ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+
+ShippingWelcomeMainView.prototype.getContainer = function() {
+	return  Ext.createWidget('panel',
+			{
+				plain : true,
+				margin : '10',
+				layout : 'fit',
+				items : [
+					{
+						tabConfig : {
+							title : 'Welcome'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							padding : 20,
+							margin : 0,
+							cls : 'border-grid',
+							items : [ 
+							        
+							         {
+							        	 html : '<div class="landing-title" ><h2>Shipments</h2></div>'
+							         },
+							         {
+							        	 html : '<div class="landing-text"> A Shipment consists of a set of Dewars which is sent from your home lab to the synchrotron via a courier company. Each dry shipping Dewar within the shipment is identified by a label (barcode or sticker). The dewars(s) contains a set of Containers (Pucks or canes). Containers (typically Pucks), contain Samples. A Sample (Sample Holder) contains the Crystal</div><br/>',
+							        	 margin : '0 0 0 20'
+							         },
+//							         {
+//							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
+//							        	 margin : '0 0 0 20'
+//							         },
+//							         {
+//							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
+//							        	 margin : '0 0 0 20'
+//							         },
+//							         
+//							         {
+//							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
+//							        	 margin : '0 0 0 20'
+//							         },
+//							         {
+//							        	 html : this.getOptions(),
+//							        	 margin : '0 0 0 40'
+//							         },
+							         
+							         {
+							        	 html : '<br/><div class="landing-text">Do you want to ship your samples to the beamline?</div><br/>',
+							        	 margin : '0 0 0 20'
+							         },
+							         {
+							        	xtype : 'container',
+							        	layout : 'hbox',
+							        	cls : 'option-bar-menu',
+							        	items :[
+							        	    
+										         {
+										        	 xtype : 'button',
+										        	 cls : 'square-option',
+										        	 maxWidth : 200,
+										        	 minWidth : 200,
+										        	 margin : '0 0 0 150',
+										        	 height : 100,
+										        	 text : '<div class="square-option-text"; >Create a new Shipment</div>',
+										        	 icon : '../images/icon/add.png',
+										        	 iconAlign : 'top',
+										        	 handler : function(){
+
+										        		 //if (EXI.proposalManager.getFutureSessions().length > 0){
+										     				location.hash = '/shipping/main';
+										     			 //}
+										        		 //else{
+											        	//	 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
+										        		 //}
+										        	 }
+										         }]
+							         }
+							       
+							        
+							]
+						}
+					
+						]
+					}
+			]});
+	};
+
+
+ShippingWelcomeMainView.prototype.load = function() {
+	
+};
+
 function WelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 	MainView.call(this);
@@ -6113,6 +6587,269 @@ WelcomeMainView.prototype.getContainer = function() {
 
 WelcomeMainView.prototype.load = function() {
 	
+};
+
+/**
+ * Edit the information of a buffer
+ * 
+ * #onRemoveAdditive
+ */
+function AddressForm(args) {
+	this.id = BUI.id();
+	this.height = 500;
+	this.width = 500;
+
+	this.isSaveButtonHidden = false;
+	this.isHidden = false;
+
+	if (args != null) {
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+		if (args.isSaveButtonHidden != null) {
+			this.isSaveButtonHidden = args.isSaveButtonHidden;
+		}
+		if (args.isHidden != null) {
+			this.isHidden = args.isHidden;
+		}
+		
+	}
+}
+
+AddressForm.prototype.getAddress = function() {
+	if (this.address == null) {
+		this.address = {};
+	}
+	this.address["billingReference"] = Ext.getCmp(this.id + "billingReference").getValue();
+	this.address["cardName"] = Ext.getCmp(this.id + "cardName").getValue();
+	this.address["courierAccount"] = Ext.getCmp(this.id + "courierAccount").getValue();
+	this.address["defaultCourrierCompany"] = Ext.getCmp(this.id + "courrierCompany").getValue();
+	this.address["dewarAvgCustomsValue"] = Ext.getCmp(this.id + "dewarAvgCustomsValue").getValue();
+	this.address["dewarAvgTransportValue"] = Ext.getCmp(this.id + "dewarAvgTransportValue").getValue();
+
+	if (this.address.personVO == null) {
+		this.address.personVO = {};
+	}
+	else{
+		
+	}
+
+	this.address.personVO["emailAddress"] = Ext.getCmp(this.id + "emailAddress").getValue();
+	this.address.personVO["familyName"] = Ext.getCmp(this.id + "familyName").getValue();
+	this.address.personVO["givenName"] = Ext.getCmp(this.id + "name").getValue();
+	this.address.personVO["faxNumber"] = Ext.getCmp(this.id + "faxNumber").getValue();
+	this.address.personVO["phoneNumber"] = Ext.getCmp(this.id + "phoneNumber").getValue();
+	return this.address;
+};
+
+AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
+	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
+	Ext.getCmp(this.id + "familyName").setValue(familyName);
+	Ext.getCmp(this.id + "name").setValue(givenName);
+	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
+	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
+};
+
+AddressForm.prototype.load = function(address) {
+	this.address = address;
+
+	if (address != null) {
+		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
+		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
+		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
+		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
+		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
+		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
+
+		if (address.personVO != null) {
+			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
+					address.personVO.faxNumber, address.personVO.phoneNumber);
+		}
+	}
+};
+
+AddressForm.prototype.getPersonPanel = function() {
+	this.personPanel = Ext.create('Ext.panel.Panel', {
+		layout : 'vbox',
+		margin : '10',
+		items : [ {
+			padding : 10,
+			xtype : 'container',
+			layout : 'hbox',
+			border : false,
+			items : [ {
+					xtype : 'requiredtextfield',
+					id : this.id + 'name',
+					fieldLabel : 'Name',
+					labelWidth : 75,
+					margin : "0 0 0 10",
+					disabled : true,
+					width : 200 
+				}, 
+				{
+					xtype : 'requiredtextfield',
+					id : this.id + 'familyName',
+					fieldLabel : 'Surname',
+					labelWidth : 75,
+					disabled : true,
+					margin : "0 0 0 10",
+					width : 200 
+				}, 
+				{
+					xtype : 'requiredtextfield',
+					id : this.id + 'emailAddress',
+					fieldLabel : 'Email',
+					labelWidth : 75,
+					margin : "0 0 0 10",
+					width : 300 
+				}, 
+				{
+					id : this.id + 'phoneNumber',
+					fieldLabel : 'Phone',
+					xtype : 'textfield',
+					labelWidth : 75,
+					margin : "0 0 0 10",
+					width : 220 
+				}, 
+				{
+					id : this.id + 'faxNumber',
+					fieldLabel : 'Fax',
+					xtype : 'textfield',
+					labelWidth : 75,
+					margin : "0 0 0 10",
+					width : 220 
+				} ] },
+				
+				 {
+					padding : 10,
+					xtype : 'container',
+					layout : 'hbox',
+					border : false,
+					items : [ {
+						xtype : 'requiredtextfield',
+						id : this.id + 'cardName',
+						fieldLabel : 'Card Name',
+						name : 'CardName',
+						labelWidth : 150,
+						margin : "0 0 0 10",
+						width : 300 
+					}, 
+					{
+						xtype : 'requiredtextfield',
+						id : this.id + 'courierAccount',
+						fieldLabel : 'Courier Account',
+						margin : "0 0 0 30",
+						labelWidth : 150,
+						width : 300 
+					}, 
+					{
+						xtype : 'requiredtextfield',
+						id : this.id + 'courrierCompany',
+						fieldLabel : 'Courier Company',
+						margin : "0 0 0 30",
+						labelWidth : 150,
+						width : 300 
+					}  ] },
+					
+					 {
+						padding : 10,
+						xtype : 'container',
+						layout : 'hbox',
+						border : false,
+						items : [ {
+							id : this.id + 'dewarAvgCustomsValue',
+							fieldLabel : 'Average Custom Value',
+							xtype : 'numberfield',
+							margin : "0 0 0 10",
+							minValue : 0,
+							maxValue : 15,
+							labelWidth : 150,
+							width : 300 
+					}, 
+					{
+							id : this.id + 'dewarAvgTransportValue',
+							fieldLabel : 'Average Transport Value',
+							xtype : 'numberfield',
+							margin : "0 0 0 30",
+							minValue : 0,
+							maxValue : 15,
+							labelWidth : 150,
+							width : 300 
+					}, 
+					{
+						id : this.id + 'billingReference',
+						xtype : 'textfield',
+						fieldLabel : 'Billing Reference',
+						margin : "0 0 0 30",
+						labelWidth : 150,
+						width : 300 
+					} ] }
+
+		] });
+	return this.personPanel;
+};
+
+AddressForm.prototype.getPackagePanel = function() {
+	this.packagePanel = Ext.create('Ext.panel.Panel', {
+		layout : 'hbox',
+		items : [ {
+			padding : 10,
+			xtype : 'container',
+			layout : 'vbox',
+			border : false,
+			items : [ {
+				xtype : 'container',
+				layout : 'hbox',
+				items : [ 
+					] 
+			}, {
+				xtype : 'container',
+				layout : 'hbox',
+				margin : "10 0 0 0",
+				items : [ 
+
+				] } ] } ] });
+	return this.packagePanel;
+};
+
+AddressForm.prototype.getPanel = function() {
+	this.panel = Ext.create('Ext.panel.Panel', {
+		hidden : this.isHidden,
+		layout : 'vbox',
+		title : 'Shipping Address Card',
+		cls : "border-grid",
+		buttons : this.getToolBar(),
+		icon : '../images/icon/ic_email_black_24dp.png',
+		items : [  
+		           this.getPersonPanel() 
+		           ] });
+	return this.panel;
+};
+
+AddressForm.prototype.save = function() {
+	var _this = this;
+
+	_this.panel.setLoading();
+	var onSuccess = function(sender) {
+		_this.panel.setLoading(false);
+		EXI.getDataAdapter().proposal.proposal.update();
+	};
+	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
+};
+
+AddressForm.prototype.getToolBar = function() {
+	var _this = this;
+	return [ {
+		text : 'Save',
+		hidden : _this.isSaveButtonHidden,
+		width : 100,
+		handler : function() {
+			_this.save();
+
+		} } ];
 };
 
 function AuthenticationForm(){
@@ -6388,6 +7125,8 @@ ContainerParcelPanel.prototype.getPanel = function () {
                             handler : function() {
                                 if (_this.type == "StockSolution") {
                                     location.href = "#/stocksolution/" + _this.containerId + "/main";                            
+                                } else if (_this.type == "OTHER") {
+                                    _this.openEditOtherContainerForm();
                                 } else {
                                     location.href = "#/shipping/" + _this.shippingId + "/" + _this.shippingStatus + "/containerId/" + _this.containerId + "/edit";                            
                                 }
@@ -6509,20 +7248,48 @@ ContainerParcelPanel.prototype.removeButtonClicked = function () {
         icon: Ext.MessageBox.QUESTION
     });
 };
+
+ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
+    var _this = this;
+	/** Opens a window with the cas form **/
+	var otherContainerForm = new OtherContainerForm();
+	otherContainerForm.onSave.attach(function(sender,container){
+		window.close();
+	})
+
+	otherContainerForm.onCancel.attach(function(sender){
+		window.close();
+	})
+
+	var window = Ext.create('Ext.window.Window', {
+	    title: 'Container',
+	    height: 600,
+	    width: 1500,
+	    modal : true,
+	    layout: 'fit',
+	    items: [
+	            	otherContainerForm.getPanel()
+	    ],
+        listeners : {
+			afterrender : function(component, eOpts) {
+				otherContainerForm.load(_this.container);
+			}
+	    },
+	});
+	window.show();
+}
 function ContainerTypeComboBox(args) {
     this.id = BUI.id();
 
     this.label = "Choose Container Type:";
     this.labelWidth = 200;
     this.width = 500;
-    this.showStockSolution = true;
     this.initDisabled = false;
 
     this.data = [
                     {"type":"UNIPUCK", "capacity":16},
                     {"type":"SPINE", "capacity":10},
-                    {"type":"PLATE", "capacity":96},
-                    {"type":"OTHER", "capacity":1}
+                    {"type":"PLATE", "capacity":96}
                 ]
 
     if (args) {
@@ -6535,18 +7302,13 @@ function ContainerTypeComboBox(args) {
         if (args.width) {
             this.width = args.width;
         }
-        if (args.showStockSolution != null) {
-            this.showStockSolution = args.showStockSolution;
+        if (args.extraOptions != null) {
+            this.data = _.union(this.data, args.extraOptions);
         }
         if (args.initDisabled != null){
             this.initDisabled = args.initDisabled;
         }
     }
-
-    if (this.showStockSolution) {
-        this.data.push({"type":"STOCK SOLUTION"});
-    }
-
     this.onSelected = new Event(this);
 }
 
@@ -6623,8 +7385,12 @@ function ContainerWidget(args) {
                         };
 	this.containerId = 0;
     this.samples = null;
+	this.code = "";
 
 	if (args){
+		if (args.code){
+			this.code = args.code;
+		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
 		}
@@ -7331,13 +8097,13 @@ ParcelPanel.prototype.showCaseForm = function() {
 	    items: [
 	            	caseForm.getPanel(_this.dewar)
 	    ],
-	    listeners : {
-			afterrender : function(component, eOpts) {
-				if (_this.puck != null){
-						_this.load(_this.puck);
-				}
-			}
-	    },
+	    // listeners : {
+		// 	afterrender : function(component, eOpts) {
+		// 		if (_this.puck != null){
+		// 			_this.load(_this.puck);
+		// 		}
+		// 	}
+	    // },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {
@@ -7900,8 +8666,12 @@ function StockSolutionContainer(args) {
 
 	this.stockSolutionId = 0;
     this.samples = null;
+	this.code = "";
 
 	if (args){
+		if (args.code){
+			this.code = args.code;
+		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
 		}

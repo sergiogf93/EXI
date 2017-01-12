@@ -99,6 +99,7 @@ SamplePlateWidget.prototype.load = function (dataCollections) {
 			// 	color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
 			// }
 			var color = "blue";
+			this.getNodeById(nodeId).specimenId = specimen.Specimen_specimenId;
 			$("#" + nodeId).attr("fill",color);
 			if (specimen.Measurement_measurementId) {
 				if (specimen.Run_runId != null) {
@@ -219,7 +220,7 @@ SamplePlateWidget.prototype.draw = function(dataCollections, samplePlate, target
 
 };
 
-SamplePlateWidget.prototype.attachClickListeners = function (row, column) {
+SamplePlateWidget.prototype.attachClickListeners = function () {
 	var _this = this;
 	for (var i = 0 ; i < this.nodes.length ; i++) {
 		var node = this.nodes[i];
@@ -245,13 +246,13 @@ SamplePlateWidget.prototype.getNodeById = function (id) {
 SamplePlateWidget.prototype.clearSelection = function() {
 	for (var i = 0 ; i < this.nodes.length ; i++) {
 		var node = this.nodes[i];
-		$("#" + node.squareId).removeClass("plate-square-selected");
+		$("#" + node.nodeId).removeClass("plate-square-selected");
 	}
 };
 
 SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var squareId = this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
-	$("#" + squareId).addClass("plate-square-selected");
+	var nodeId = this.id + "-node-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
+	$("#" + nodeId).addClass("plate-square-selected");
 };
 
 SamplePlateWidget.prototype.drawBorders = function() {

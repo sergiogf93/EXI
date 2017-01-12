@@ -2275,8 +2275,7 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	         this.framesGrid.getPanel()
 		        	          ]
 		         },
-		         this.plotter.getPanel()
-		        
+		         this.plotter.getPanel()		        
 		    ]
 	};
 };
@@ -2501,107 +2500,6 @@ ShipmentPreparationMainView.prototype.load = function(shippingId) {
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
 };
-function ShippingWelcomeMainView() {
-	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
-
-	MainView.call(this);
-	this.title = "Welcome";
-	this.closable = false;
-}
-
-ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
-ShippingWelcomeMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('panel',
-			{
-				plain : true,
-				margin : '10',
-				layout : 'fit',
-				items : [
-					{
-						tabConfig : {
-							title : 'Welcome'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							padding : 20,
-							margin : 0,
-							cls : 'border-grid',
-							items : [ 
-							        
-							         {
-							        	 html : '<div class="landing-title" ><h2>Shipments</h2></div>'
-							         },
-							         {
-							        	 html : '<div class="landing-text"> A Shipment consists of a set of Dewars which is sent from your home lab to the synchrotron via a courier company. Each dry shipping Dewar within the shipment is identified by a label (barcode or sticker). The dewars(s) contains a set of Containers (Pucks or canes). Containers (typically Pucks), contain Samples. A Sample (Sample Holder) contains the Crystal</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : this.getOptions(),
-//							        	 margin : '0 0 0 40'
-//							         },
-							         
-							         {
-							        	 html : '<br/><div class="landing-text">Do you want to ship your samples to the beamline?</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-							         {
-							        	xtype : 'container',
-							        	layout : 'hbox',
-							        	cls : 'option-bar-menu',
-							        	items :[
-							        	    
-										         {
-										        	 xtype : 'button',
-										        	 cls : 'square-option',
-										        	 maxWidth : 200,
-										        	 minWidth : 200,
-										        	 margin : '0 0 0 150',
-										        	 height : 100,
-										        	 text : '<div class="square-option-text"; >Create a new Shipment</div>',
-										        	 icon : '../images/icon/add.png',
-										        	 iconAlign : 'top',
-										        	 handler : function(){
-
-										        		 //if (EXI.proposalManager.getFutureSessions().length > 0){
-										     				location.hash = '/shipping/main';
-										     			 //}
-										        		 //else{
-											        	//	 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
-										        		 //}
-										        	 }
-										         }]
-							         }
-							       
-							        
-							]
-						}
-					
-						]
-					}
-			]});
-	};
-
-
-ShippingWelcomeMainView.prototype.load = function() {
-	
-};
-
 function StockSolutionMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -3454,269 +3352,6 @@ AbinitioGrid.prototype.getPanel = function(){
 	});
 	return this.grid;
 	
-};
-
-/**
- * Edit the information of a buffer
- * 
- * #onRemoveAdditive
- */
-function AddressForm(args) {
-	this.id = BUI.id();
-	this.height = 500;
-	this.width = 500;
-
-	this.isSaveButtonHidden = false;
-	this.isHidden = false;
-
-	if (args != null) {
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.isSaveButtonHidden != null) {
-			this.isSaveButtonHidden = args.isSaveButtonHidden;
-		}
-		if (args.isHidden != null) {
-			this.isHidden = args.isHidden;
-		}
-		
-	}
-}
-
-AddressForm.prototype.getAddress = function() {
-	if (this.address == null) {
-		this.address = {};
-	}
-	this.address["billingReference"] = Ext.getCmp(this.id + "billingReference").getValue();
-	this.address["cardName"] = Ext.getCmp(this.id + "cardName").getValue();
-	this.address["courierAccount"] = Ext.getCmp(this.id + "courierAccount").getValue();
-	this.address["defaultCourrierCompany"] = Ext.getCmp(this.id + "courrierCompany").getValue();
-	this.address["dewarAvgCustomsValue"] = Ext.getCmp(this.id + "dewarAvgCustomsValue").getValue();
-	this.address["dewarAvgTransportValue"] = Ext.getCmp(this.id + "dewarAvgTransportValue").getValue();
-
-	if (this.address.personVO == null) {
-		this.address.personVO = {};
-	}
-	else{
-		
-	}
-
-	this.address.personVO["emailAddress"] = Ext.getCmp(this.id + "emailAddress").getValue();
-	this.address.personVO["familyName"] = Ext.getCmp(this.id + "familyName").getValue();
-	this.address.personVO["givenName"] = Ext.getCmp(this.id + "name").getValue();
-	this.address.personVO["faxNumber"] = Ext.getCmp(this.id + "faxNumber").getValue();
-	this.address.personVO["phoneNumber"] = Ext.getCmp(this.id + "phoneNumber").getValue();
-	return this.address;
-};
-
-AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
-	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
-	Ext.getCmp(this.id + "familyName").setValue(familyName);
-	Ext.getCmp(this.id + "name").setValue(givenName);
-	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
-	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
-};
-
-AddressForm.prototype.load = function(address) {
-	this.address = address;
-
-	if (address != null) {
-		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
-		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
-		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
-		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
-		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
-		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
-
-		if (address.personVO != null) {
-			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
-					address.personVO.faxNumber, address.personVO.phoneNumber);
-		}
-	}
-};
-
-AddressForm.prototype.getPersonPanel = function() {
-	this.personPanel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		margin : '10',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'hbox',
-			border : false,
-			items : [ {
-					xtype : 'requiredtextfield',
-					id : this.id + 'name',
-					fieldLabel : 'Name',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					disabled : true,
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'familyName',
-					fieldLabel : 'Surname',
-					labelWidth : 75,
-					disabled : true,
-					margin : "0 0 0 10",
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'emailAddress',
-					fieldLabel : 'Email',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 300 
-				}, 
-				{
-					id : this.id + 'phoneNumber',
-					fieldLabel : 'Phone',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				}, 
-				{
-					id : this.id + 'faxNumber',
-					fieldLabel : 'Fax',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				} ] },
-				
-				 {
-					padding : 10,
-					xtype : 'container',
-					layout : 'hbox',
-					border : false,
-					items : [ {
-						xtype : 'requiredtextfield',
-						id : this.id + 'cardName',
-						fieldLabel : 'Card Name',
-						name : 'CardName',
-						labelWidth : 150,
-						margin : "0 0 0 10",
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courierAccount',
-						fieldLabel : 'Courier Account',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courrierCompany',
-						fieldLabel : 'Courier Company',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}  ] },
-					
-					 {
-						padding : 10,
-						xtype : 'container',
-						layout : 'hbox',
-						border : false,
-						items : [ {
-							id : this.id + 'dewarAvgCustomsValue',
-							fieldLabel : 'Average Custom Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 10",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-							id : this.id + 'dewarAvgTransportValue',
-							fieldLabel : 'Average Transport Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 30",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-						id : this.id + 'billingReference',
-						xtype : 'textfield',
-						fieldLabel : 'Billing Reference',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					} ] }
-
-		] });
-	return this.personPanel;
-};
-
-AddressForm.prototype.getPackagePanel = function() {
-	this.packagePanel = Ext.create('Ext.panel.Panel', {
-		layout : 'hbox',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'vbox',
-			border : false,
-			items : [ {
-				xtype : 'container',
-				layout : 'hbox',
-				items : [ 
-					] 
-			}, {
-				xtype : 'container',
-				layout : 'hbox',
-				margin : "10 0 0 0",
-				items : [ 
-
-				] } ] } ] });
-	return this.packagePanel;
-};
-
-AddressForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-		hidden : this.isHidden,
-		layout : 'vbox',
-		title : 'Shipping Address Card',
-		cls : "border-grid",
-		buttons : this.getToolBar(),
-		icon : '../images/icon/ic_email_black_24dp.png',
-		items : [  
-		           this.getPersonPanel() 
-		           ] });
-	return this.panel;
-};
-
-AddressForm.prototype.save = function() {
-	var _this = this;
-
-	_this.panel.setLoading();
-	var onSuccess = function(sender) {
-		_this.panel.setLoading(false);
-		EXI.getDataAdapter().proposal.proposal.update();
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-};
-
-AddressForm.prototype.getToolBar = function() {
-	var _this = this;
-	return [ {
-		text : 'Save',
-		hidden : _this.isSaveButtonHidden,
-		width : 100,
-		handler : function() {
-			_this.save();
-
-		} } ];
 };
 
 
@@ -15074,7 +14709,7 @@ SamplePlateGroupWidget.prototype.drawPlate = function(dataCollections, plate, ta
 				nodeSize	: this.nodeSize, 
 				fontSize	: 8, 
 				strokeWidth	: 1.5,
-				enableClick : false
+				enableClick : true
 			});
 
 	if (this.isVerticalLayout()){
@@ -15089,8 +14724,8 @@ SamplePlateGroupWidget.prototype.drawPlate = function(dataCollections, plate, ta
 				{
 					samplePlate	: args.samplePlate, 
 					row			: args.node.row, 
-					column		: args.node.column
-
+					column		: args.node.column,
+					specimenId 	: args.node.specimenId
 				}
 		);
 	});
@@ -15665,6 +15300,7 @@ SamplePlateWidget.prototype.load = function (dataCollections) {
 			// 	color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
 			// }
 			var color = "blue";
+			this.getNodeById(nodeId).specimenId = specimen.Specimen_specimenId;
 			$("#" + nodeId).attr("fill",color);
 			if (specimen.Measurement_measurementId) {
 				if (specimen.Run_runId != null) {
@@ -15785,7 +15421,7 @@ SamplePlateWidget.prototype.draw = function(dataCollections, samplePlate, target
 
 };
 
-SamplePlateWidget.prototype.attachClickListeners = function (row, column) {
+SamplePlateWidget.prototype.attachClickListeners = function () {
 	var _this = this;
 	for (var i = 0 ; i < this.nodes.length ; i++) {
 		var node = this.nodes[i];
@@ -15811,13 +15447,13 @@ SamplePlateWidget.prototype.getNodeById = function (id) {
 SamplePlateWidget.prototype.clearSelection = function() {
 	for (var i = 0 ; i < this.nodes.length ; i++) {
 		var node = this.nodes[i];
-		$("#" + node.squareId).removeClass("plate-square-selected");
+		$("#" + node.nodeId).removeClass("plate-square-selected");
 	}
 };
 
 SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var squareId = this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
-	$("#" + squareId).addClass("plate-square-selected");
+	var nodeId = this.id + "-node-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
+	$("#" + nodeId).addClass("plate-square-selected");
 };
 
 SamplePlateWidget.prototype.drawBorders = function() {
@@ -16405,7 +16041,7 @@ SpecimenGrid.prototype.selectById = function(specimenId) {
 	this.grid.getSelectionModel().deselectAll();
 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
 		var item = this.grid.getStore().data.items[i].data;
-		if (item.specimenId == specimenId) {
+		if (item.Specimen_specimenId == specimenId) {
 			this.grid.getSelectionModel().select(i);
 		}
 	}
@@ -16935,78 +16571,69 @@ function SpecimenWidget(args){
 		/** Clicking on a plate * */
 		var row = args.row;
 		var column = args.column;
-		var samplePlateId = args.samplePlate.samplePlateId;
+		var samplePlate = args.samplePlate;
+		var specimenId = args.specimenId;
 
-		/** is specimen selected on the grid? * */
-		if (_this.specimenSelected != null) {
-			/** Is position target empty * */
-			if (_this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column).length == 0) {
-				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-				if (specimen.sampleplateposition3VO == null) {
-					specimen.sampleplateposition3VO = {};
-				}
+		_this.specimenGrid.selectById(specimenId);
 
-				specimen.sampleplateposition3VO = {
-					columnNumber : column,
-					rowNumber : row,
-					samplePlateId : samplePlateId
-				};
+// 		/** is specimen selected on the grid? * */
+// 		if (_this.specimenSelected != null) {
+// 			/** Is position target empty * */
+// 			if (specimenId) {
+// 				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
+// 				/** If success * */
+// 				var onSuccess = (function(sender, experiment) {
+// 					_this.samplePlateGroupWidget.panel.setLoading(false);
+// 					_this.samplePlateGroupWidget.refresh(_this.experiment);
+// 					_this.specimenGrid.refresh(_this.experiment);
+// 					//_this.refresh(_this.experiment);
+// 					_this.specimenSelected = null;
+// 					_this.specimenGrid.deselectAll();
+// 				});
 
-				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
-				/** If success * */
-				var onSuccess = (function(sender, experiment) {
-					_this.samplePlateGroupWidget.panel.setLoading(false);
-					_this.samplePlateGroupWidget.refresh(_this.experiment);
-					_this.specimenGrid.refresh(_this.experiment);
-					//_this.refresh(_this.experiment);
-					_this.specimenSelected = null;
-					_this.specimenGrid.deselectAll();
-				});
+// //				adapter.onError.attach(function(sender, error) {
+// //					_this.samplePlateGroupWidget.panel.setLoading(false);
+// //					showError(error);
+// //				});
 
-//				adapter.onError.attach(function(sender, error) {
-//					_this.samplePlateGroupWidget.panel.setLoading(false);
-//					showError(error);
-//				});
-
-				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
+// 				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
 				
-			} else {
-				/**
-				 * Can we merge? We can merge when specimen are the
-				 * same. So, same buffer, macromolecule, concentration *
-				 */
-				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
-				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-				if (target == specimen) {
-					_this.samplePlateGroupWidget.refresh(_this.experiment);
-					_this.specimenSelected = null;
-					_this.specimenGrid.deselectAll();
-				} else {
-					if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
-						if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
-								((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
-							var onSuccess = (function(sender, data) {
-								_this.load(new Experiment(data));
-								_this.samplePlateGroupWidget.panel.setLoading(false);
+// 			} else {
+// 				/**
+// 				 * Can we merge? We can merge when specimen are the
+// 				 * same. So, same buffer, macromolecule, concentration *
+// 				 */
+// 				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
+// 				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
+// 				if (target == specimen) {
+// 					_this.samplePlateGroupWidget.refresh(_this.experiment);
+// 					_this.specimenSelected = null;
+// 					_this.specimenGrid.deselectAll();
+// 				} else {
+// 					if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
+// 						if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
+// 								((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
+// 							var onSuccess = (function(sender, data) {
+// 								_this.load(new Experiment(data));
+// 								_this.samplePlateGroupWidget.panel.setLoading(false);
 								
-								_this.onExperimentChanged.notify(experiment);
-							});
-							_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
-							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
-							_this.specimenSelected = null;
-							_this.specimenGrid.deselectAll();
-						}
-					} else {
-						$.notify("Well is not empty. Select another well!", "error");
-					}
-				}
-			}
-		} else {
-			var specimen = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
-			if (specimen != null) {
-				_this.specimenGrid.selectById(specimen.specimenId);
-			}
-		}
+// 								_this.onExperimentChanged.notify(experiment);
+// 							});
+// 							_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
+// 							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
+// 							_this.specimenSelected = null;
+// 							_this.specimenGrid.deselectAll();
+// 						}
+// 					} else {
+// 						$.notify("Well is not empty. Select another well!", "error");
+// 					}
+// 				}
+// 			}
+// 		} else {
+// 			if (specimenId != null) {
+// 				_this.specimenGrid.selectById(specimenId);
+// 			}
+// 		}
 	});
 	/** Events **/
 	this.onExperimentChanged = new Event(this);
