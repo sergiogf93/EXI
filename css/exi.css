@@ -9,7 +9,7 @@
 
 /** Shipment **/
 
-.htInvalid {
+.handsontable td.htInvalid {
      background-color: #ffffff!important; 
 }
 

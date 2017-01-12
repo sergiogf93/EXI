@@ -74,9 +74,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  this.spreadSheet = new Handsontable(container, {
 				beforeChange: function (changes, source) {
 					lastChange = changes;
-					
 				},
 				afterChange: function (changes, source) {
+                    $(".htInvalid").removeClass("htInvalid");
 					$(".edit-crystal-button").click(function(sender){
 								var row = sender.target.id.split("-")[2];
 								var crystal = _this.parseCrystalFormColumn(_this.getData()[row][_this.crystalFormIndex],row);
@@ -489,13 +489,20 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 			break;
 		}
 		case this.getColumnIndex("Protein Acronym") : {
-            this.resetCrystalGroup(change[0]);
-            var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
-            if (proteins) {
-                var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
-                if (crystalsByProteinId && crystalsByProteinId.length > 0){
-                    var crystal = _.maxBy(crystalsByProteinId,"crystalId");
-                    _this.updateCrystalGroup(change[0],crystal);
+            if (change[3] == ""){
+                this.resetCrystalGroup(change[0]);
+            } else {
+                var parsed = this.parseCrystalFormColumn(this.getData()[change[0]][this.crystalFormIndex],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
+                if (!this.isCrystalFormAvailable(parsed,change[3])){
+                    this.resetCrystalGroup(change[0]);
+                    var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
+                    if (proteins) {
+                        var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
+                        if (crystalsByProteinId && crystalsByProteinId.length > 0){
+                            var crystal = _.maxBy(crystalsByProteinId,"crystalId");
+                            _this.updateCrystalGroup(change[0],crystal);
+                        }
+                    }
                 }
             }
 			break;
@@ -512,7 +519,15 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 */
 ContainerSpreadSheet.prototype.isCrystalFormAvailable = function (parsedCrystalForm, proteinAcronym) {
 	var crystalsBySpaceGroupAndAcronym = _.filter(_.filter(EXI.proposalManager.getCrystals(),{"spaceGroup":parsedCrystalForm.spaceGroup}),function(o){return o.proteinVO.acronym == proteinAcronym})
-	return crystalsBySpaceGroupAndAcronym.length > 0;
+	if (crystalsBySpaceGroupAndAcronym.length > 0) {
+        for (var i = 0 ; i < crystalsBySpaceGroupAndAcronym.length ; i++) {
+            var crystal = crystalsBySpaceGroupAndAcronym[i];
+            if (crystal.cellA == parsedCrystalForm.cellA && crystal.cellB == parsedCrystalForm.cellB && crystal.cellC == parsedCrystalForm.cellC && crystal.cellAlpha == parsedCrystalForm.cellAlpha && crystal.cellBeta == parsedCrystalForm.cellBeta && crystal.cellGamma == parsedCrystalForm.cellGamma) {
+                return true;
+            }
+        }
+    }
+    return false;
 };
 
 /**
