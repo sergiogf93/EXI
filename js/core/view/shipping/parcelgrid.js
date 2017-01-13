@@ -44,9 +44,10 @@ ParcelGrid.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
 	return (Ext.create('Ext.Action', {
+		id : this.id + "-add-button",
 		icon : '../images/icon/add.png',
 		text : 'Add',
-		disabled : false,
+		disabled : true,
 		handler : function(widget, event) {
 			_this.edit();
 		}
@@ -77,6 +78,7 @@ ParcelGrid.prototype.load = function(shipment) {
     }
 
 	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
+	Ext.getCmp(this.id + "-add-button").enable();
 	for ( var i in this.dewars) {
 		var parcelPanel = new ParcelPanel({
 			height : 90,

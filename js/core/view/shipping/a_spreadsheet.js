@@ -15,6 +15,7 @@ function SpreadSheet(args){
 			this.containerType = args.containerType;
 		}
 	}
+
 }
 
 SpreadSheet.prototype.getPanel = function(){
@@ -164,4 +165,26 @@ SpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
 */
 SpreadSheet.prototype.getColumnIndex = function (colId) {
 	return _.findIndex(this.getHeader(),{id :colId});
+}
+
+/**
+* Changes the number of rows in the grid
+*
+* @method updateNumberOfRows
+* @param {Integer} n The new number of rows
+*/
+SpreadSheet.prototype.updateNumberOfRows = function (n) {
+	if (this.spreadSheet) {
+		var data = this.spreadSheet.getData();
+		//Sets the appropiate number of rows according to the capacity
+		if (data.length < n){
+			for (var i = data.length + 1; i<= n; i++){
+				data.push([i]);
+			}
+		}
+		else{
+			data = data.slice(0, n);
+		}
+		this.spreadSheet.loadData(data);
+	}
 }

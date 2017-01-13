@@ -63,6 +63,7 @@ AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress
 };
 
 AddressForm.prototype.load = function(address) {
+	debugger
 	this.address = address;
 
 	if (address != null) {

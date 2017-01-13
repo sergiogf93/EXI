@@ -33,7 +33,8 @@ ContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
 ContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
 ContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
 ContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
-ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
+ContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
 
 ContainerSpreadSheet.prototype.load = function(puck){
 	var _this = this;

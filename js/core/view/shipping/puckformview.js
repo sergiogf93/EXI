@@ -263,31 +263,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
 	this.containerSpreadSheet.setContainerType(newType);
-	var data = this.containerSpreadSheet.spreadSheet.getData();
-	//Sets the appropiate number of rows according to the capacity
-	if (data.length < capacity){
-		for (var i = data.length + 1; i<= capacity; i++){
-			data.push([i]);
-		}
-	}
-	else{
-		data = data.slice(0, capacity);
-	}
-	//Resets editCrystalForm column if exists
-	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
-	// if (columnIndex >= 0){
-	// 	var tableData = this.containerSpreadSheet.parseTableData();
-	// 	for (var i = 0 ; i < tableData.length ; i++) {
-	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
-	// 	}
-	// }
-	
-	//Changes the grid when changed from or to the type OTHER
-	this.containerSpreadSheet.spreadSheet.loadData(data);
-	if (currentType == "OTHER" || newType == "OTHER"){
-		this.puck.containerType = newType;
-		this.fillSamplesGrid(this.puck);
-	}
+	this.containerSpreadSheet.updateNumberOfRows(capacity);
 };
 
 /**
