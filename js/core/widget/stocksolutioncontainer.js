@@ -77,7 +77,7 @@ StockSolutionContainer.prototype.getPanel = function () {
 		    y: this.templateData.yMargin,
 		    width : this.templateData.width + 1,
 		    height : this.templateData.height + 1,
-		//    cls:'border-grid',
+		   cls:'border-grid',
 		    frame: false,
 			border: false,
 			bodyStyle: 'background:transparent;',
@@ -165,8 +165,8 @@ StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
 
 StockSolutionContainer.prototype.focus = function (bool) {
 	if (bool){
-		$("#" + this.id + "-img").addClass("stock-solution-selected");		
+		$("#" + this.id + "-container").addClass("stock-solution-selected");		
 	} else {
-		$("#" + this.id + "-img").removeClass("stock-solution-selected");	
+		$("#" + this.id + "-container").removeClass("stock-solution-selected");	
 	}
 };

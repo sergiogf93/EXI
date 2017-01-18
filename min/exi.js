@@ -59,8 +59,8 @@ dust.helpers.exponential = function(chunk, context, bodies, params) {
     
 };
 
-dust.helpers.mmVolTest = function(chunk, context, bodies, params) {         
-    var value = context.current()["Subtraction_volumePorod"];
+dust.helpers.mmVolTest = function(chunk, context, bodies, params) {      
+    var value = context.current()["Subtraction_volume"];
     if (value){
         try{
                 chunk.write(Number(value / 2).toFixed(1) + " - " + Number(value / 1.5).toFixed(1));
@@ -1410,7 +1410,7 @@ LabContactExiController.prototype.init = function() {
 			adapter.proposal.labcontacts.getLabContacts();
 			
 			/** Loading welcome page **/
-			EXI.addMainPanel(new AddressWelcomeMainView());
+			// EXI.addMainPanel(new AddressWelcomeMainView());
 			
 		}).enter(this.setPageBackground);
 		
@@ -3003,7 +3003,7 @@ function AddressMainView() {
 
 	MainView.call(this);
 
-	this.addressForm = new AddressForm();
+	this.addressForm = new AddressForm({width : Ext.getBody().getWidth()*0.9});
 	
 	
 	this.onSelect = new Event(this);
@@ -3015,7 +3015,7 @@ AddressMainView.prototype.getPanel = MainView.prototype.getPanel;
 AddressMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
 	    layout: {
-	        type: 'hbox'
+	        type: 'fit'
 	    },
 	    margin : 15,
 	    border: 1,
@@ -3038,6 +3038,75 @@ AddressMainView.prototype.load = function(labContactId) {
 	
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.labcontacts.getLabContactById(labContactId);
 	
+	
+};
+
+function AddressWelcomeMainView() {
+	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
+
+	MainView.call(this);
+	this.title = "Welcome";
+	this.closable = false;
+}
+
+AddressWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+
+AddressWelcomeMainView.prototype.getContainer = function() {
+	return  Ext.createWidget('panel',
+			{
+				plain : true,
+				margin : '10',
+				layout : 'fit',
+				items : [
+					{
+						tabConfig : {
+							title : 'Welcome'
+						},
+						items : [ {
+							xtype : 'container',
+							layout : 'fit',
+							padding : 20,
+							margin : 0,
+							cls : 'border-grid',
+							items : [ 
+							        
+							         {
+							        	 html : '<div class="landing-title" ><h2>Address</h2></div>'
+							         },
+							         {
+							        	xtype : 'container',
+							        	layout : 'hbox',
+							        	cls : 'option-bar-menu',
+							        	items :[
+							        	    
+										         {
+										        	 xtype : 'button',
+										        	 cls : 'square-option',
+										        	 maxWidth : 200,
+										        	 minWidth : 200,
+										        	 margin : '0 0 0 150',
+										        	 height : 100,
+										        	 text : '<div class="square-option-text"; >Create a new Address</div>',
+										        	 icon : '../images/icon/add.png',
+										        	 iconAlign : 'top',
+										        	 handler : function(){
+										     				// location.hash = '/shipping/main';
+										        	 }
+										         }]
+							         }
+							       
+							        
+							]
+						}
+					
+						]
+					}
+			]});
+	};
+
+
+AddressWelcomeMainView.prototype.load = function() {
 	
 };
 
@@ -3898,6 +3967,7 @@ function SpreadSheet(args){
 			this.containerType = args.containerType;
 		}
 	}
+
 }
 
 SpreadSheet.prototype.getPanel = function(){
@@ -4047,6 +4117,28 @@ SpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
 */
 SpreadSheet.prototype.getColumnIndex = function (colId) {
 	return _.findIndex(this.getHeader(),{id :colId});
+}
+
+/**
+* Changes the number of rows in the grid
+*
+* @method updateNumberOfRows
+* @param {Integer} n The new number of rows
+*/
+SpreadSheet.prototype.updateNumberOfRows = function (n) {
+	if (this.spreadSheet) {
+		var data = this.spreadSheet.getData();
+		//Sets the appropiate number of rows according to the capacity
+		if (data.length < n){
+			for (var i = data.length + 1; i<= n; i++){
+				data.push([i]);
+			}
+		}
+		else{
+			data = data.slice(0, n);
+		}
+		this.spreadSheet.loadData(data);
+	}
 }
 function AddContainerForm(args) {
     this.id = BUI.id();
@@ -4308,7 +4400,7 @@ function ContainerSpreadSheet(args){
     this.crystalInfoToIdMap = {};
 
 	this.crystalFormIndex = -1;
-	this.unitCellIndex = -1;
+	// this.unitCellIndex = -1;
 	this.spaceGroupIndex = -1;
 	
 	this.onModified = new Event(this);
@@ -4328,15 +4420,17 @@ ContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
 ContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
 ContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
 ContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
-ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
+ContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
 
 ContainerSpreadSheet.prototype.load = function(puck){
 	var _this = this;
 	this.puck = puck;
 	var container = document.getElementById(this.id + '_samples');
 	this.crystalFormIndex = this.getColumnIndex('Crystal Form');
-	this.unitCellIndex = this.getColumnIndex('Unit cell');
+	// this.unitCellIndex = this.getColumnIndex('Unit cell');
 	this.spaceGroupIndex = this.getColumnIndex("Space Group");
+	var data = this.getSamplesData(puck);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -4358,7 +4452,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 		    		td.className = 'custom-row-text-required';
 		  	    }
 	    }
-		if ((col == _this.unitCellIndex) || col == _this.spaceGroupIndex) {
+		if (/*(col == _this.unitCellIndex) || */col == _this.spaceGroupIndex) {
 			td.style.background = '#EEE';
 		}
 	  }
@@ -4367,6 +4461,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(container, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
@@ -4397,8 +4494,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 						}
 					}
 				},
-				data: this.getSamplesData(puck),
-			
+				data: data,
 				height : this.height,
 				width : this.width,
 				manualColumnResize: true,
@@ -4447,7 +4543,9 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
                         // crystal.crystalId,
                         (i+1), 
                         protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
+                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
+						// this.getUnitCellInfo(crystal),
+						crystal.spaceGroup, sample.smiles, sample.comments
                     ]
                 );
         }
@@ -4476,7 +4574,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             // { text :'', id :'crystalId', column : {width : 100}}, 
             { text : '#', 	id: 'position', column : {width : 20}}, 
             { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-                                                                                        width : 60,
+                                                                                        width : 80,
                                                                                         type: 'dropdown',
                                                                                         source: this.getAcronyms()
                                                                                     }
@@ -4510,7 +4608,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
             { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
             { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
-            { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            // { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
             { text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
             { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
             { text :'Comments', id :'Comments', column : {width : 200}}
@@ -4734,7 +4832,7 @@ ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column)
 ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
     if (crystal) {
         this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
-        this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
+        // this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
         this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
         // this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
         this.addEditCrystalFormButton(row);
@@ -4745,7 +4843,7 @@ ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
 
 ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
-	this.setDataAtCell(row,this.unitCellIndex,"");
+	// this.setDataAtCell(row,this.unitCellIndex,"");
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
 	// this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
@@ -5156,12 +5254,15 @@ GenericContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
 GenericContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
 GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
 GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
-GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
+GenericContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+
 
 GenericContainerSpreadSheet.prototype.load = function(container){
 	var _this = this;
 	this.container = container;
 	var domElement = document.getElementById(this.id + '_samples');
+	var data = this.getSamplesData(container);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -5192,10 +5293,13 @@ GenericContainerSpreadSheet.prototype.load = function(container){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(domElement, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
-				data: this.getSamplesData(container),
+				data: data,
 			
 				height : this.height,
 				width : this.width,
@@ -5220,7 +5324,7 @@ GenericContainerSpreadSheet.prototype.getSamplesData = function(container) {
             if (i < container.samples.length){
                 var sample = container.samples[i];
                 data.push(
-                    [(i+1),sample.Protein_acronym, sample.Protein_name, sample.BLSample_comments]
+                    [(i+1),sample.Protein_acronym, sample.BLSample_name, sample.BLSample_comments]
                 );
             } else {
                 data.push([(i+1)]);
@@ -5257,29 +5361,32 @@ GenericContainerSpreadSheet.prototype.getHeader = function() {
 GenericContainerSpreadSheet.prototype.getPuck = function() {
     var rows = this.parseTableData();
     var myPuck = {};
-    myPuck.sampleVOs = this.container.samples;
-
+    myPuck.sampleVOs = [];
+	
     function filterByLocation(samples){
         return _.filter(samples, function(b){return b.BLSample_location == rows[i].location;} );
     }
     
     for (var i = 0; i < rows.length; i++) {
         var sample = {};
-        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        var sampleByLocation = filterByLocation(this.container.samples);
         if (sampleByLocation.length > 0){
             /** new sample */
 		    sample = sampleByLocation[0];
         }
-
-        sample["name"] = rows[i]["Sample Name"];
+		
+		sample["Protein_acronym"] = rows[i]["Protein Acronym"];
+        sample["BLSample_name"] = rows[i]["Sample Name"];
         sample["location"]= rows[i]["location"];
-		sample["comments"] = rows[i]["Comments"];
-        sample["crystalVO"] = {};
+		sample["BLSample_comments"] = rows[i]["Comments"];
+        sample["crystalVO"] = {
+									proteinVO : EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"])[0]
+								};
         sample["diffractionPlanVO"] = {};
 
         myPuck.sampleVOs.push(sample);
     }
-
+	
     return myPuck;
 }
 function OtherContainerForm(args) {
@@ -5306,19 +5413,36 @@ function OtherContainerForm(args) {
 
 OtherContainerForm.prototype.load = function (container) {
     if (container) {
+        // var _this = this;
         this.container = container;
-        Ext.getCmp(this.id + "container_name").setValue(container.code);
-        if (container.samples) {
-            this.container.capacity = container.samples.length;
-        } else {
-            this.container.capacity = 1;
+        if (!this.container.samples) {
+            this.container.samples = [];
         }
+        if (!this.container.capacity) {
+            this.container.capacity = container.samples.length;
+        }
+        
+        Ext.getCmp(this.id + "container_name").setValue(container.code);
+        Ext.getCmp(this.id + "capacity").setValue(this.container.capacity);
         this.containerSpreadSheet.load(this.container);
-	    this.panel.doLayout();
+        this.panel.doLayout();
+        // this.panel.setLoading(true);
+        // var onSuccess = function (sender, samples) {
+        //     if (samples) {
+        //         _this.container.capacity = samples.length;
+        //         _this.container.samples = samples;
+        //         _this.containerSpreadSheet.load(_this.container);
+        //         _this.panel.doLayout();
+        //         _this.panel.setLoading(false);
+        //     }
+        // }
+        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(container.containerId);
     }
 }
 
 OtherContainerForm.prototype.getPanel = function() {
+    var _this = this;
+
     this.panel = Ext.create('Ext.form.Panel', {
         // width : this.width - 10,
         // height : this.height,
@@ -5348,9 +5472,26 @@ OtherContainerForm.prototype.getPanel = function() {
 																margin : '5 5 5 5',
 																labelWidth : 100
 														},
-                                            ]
-                                        }
-                                        ]
+                                                        {
+																xtype: 'numberfield',
+																id : this.id + 'capacity',
+																fieldLabel : 'Capacity',
+																width : 250,
+                                                                disabled : false,
+																margin : '5 5 5 10',
+																labelWidth : 100,
+                                                                minValue: 0,
+                                                                listeners: {
+                                                                    'change': function(el, newValue, oldValue){
+                                                                                    _this.panel.setLoading(true);
+                                                                                    _this.containerSpreadSheet.updateNumberOfRows(newValue);
+                                                                                    _this.panel.setLoading(false);
+                                                                                }
+														        }
+                                                        }
+                                            ]   
+                                         }
+                            ]
                 },
                     this.containerSpreadSheet.getPanel()
                 ]
@@ -5384,24 +5525,25 @@ OtherContainerForm.prototype.getContainer = function () {
 OtherContainerForm.prototype.save = function() {
 	var _this = this;
 	this.panel.setLoading("Saving Puck");
-
+    
 	var puck = this.containerSpreadSheet.getPuck();
 
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'container_name').getValue();
-	puck.capacity = this.container.samples.length;
+	puck.capacity = Ext.getCmp(_this.id + 'capacity').getValue();
 	puck.containerType = "OTHER";
+    puck.containerId = this.container.containerId;
 	
     var onError = function(sender, error){
 		_this.panel.setLoading(false);
 		EXI.setError(error.responseText);
 	};
     
-	var onSuccess = function(sender, puck){
+	var onSuccess = function(sender){
 		_this.panel.setLoading(false);
-        _this.onSave.notify();
+        _this.onSave.notify(puck);
 	};
-    debugger
+    
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.container.containerId, this.container.containerId, this.container.containerId, puck);
 };
 
@@ -5450,9 +5592,10 @@ ParcelGrid.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
 	return (Ext.create('Ext.Action', {
+		id : this.id + "-add-button",
 		icon : '../images/icon/add.png',
 		text : 'Add',
-		disabled : false,
+		disabled : true,
 		handler : function(widget, event) {
 			_this.edit();
 		}
@@ -5483,6 +5626,7 @@ ParcelGrid.prototype.load = function(shipment) {
     }
 
 	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
+	Ext.getCmp(this.id + "-add-button").enable();
 	for ( var i in this.dewars) {
 		var parcelPanel = new ParcelPanel({
 			height : 90,
@@ -5492,7 +5636,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			index : Number(i)+1
 		});
 		this.panel.insert(parcelPanel.getPanel());
-		parcelPanel.load(this.dewars[i]);
+		parcelPanel.load(this.dewars[i],this.shipment);
 		parcelPanel.onSavedClick.attach(onSaved);
 	}
 };
@@ -6069,31 +6213,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
 	this.containerSpreadSheet.setContainerType(newType);
-	var data = this.containerSpreadSheet.spreadSheet.getData();
-	//Sets the appropiate number of rows according to the capacity
-	if (data.length < capacity){
-		for (var i = data.length + 1; i<= capacity; i++){
-			data.push([i]);
-		}
-	}
-	else{
-		data = data.slice(0, capacity);
-	}
-	//Resets editCrystalForm column if exists
-	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
-	// if (columnIndex >= 0){
-	// 	var tableData = this.containerSpreadSheet.parseTableData();
-	// 	for (var i = 0 ; i < tableData.length ; i++) {
-	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
-	// 	}
-	// }
-	
-	//Changes the grid when changed from or to the type OTHER
-	this.containerSpreadSheet.spreadSheet.loadData(data);
-	if (currentType == "OTHER" || newType == "OTHER"){
-		this.puck.containerType = newType;
-		this.fillSamplesGrid(this.puck);
-	}
+	this.containerSpreadSheet.updateNumberOfRows(capacity);
 };
 
 /**
@@ -6323,9 +6443,13 @@ ShipmentForm.prototype.getPanel = function() {
 ShipmentForm.prototype.edit = function(dewar) {
 	var _this = this;
 	var shippingEditForm = new ShipmentEditForm();
-
+	
 	shippingEditForm.onSaved.attach(function (sender, shipment) {
-		_this.load(shipment);
+		if (_this.shipment) {
+			_this.load(shipment);
+		} else {
+			_this.onSaved.notify(shipment);
+		}
 		window.close();
 	});
 
@@ -6368,7 +6492,8 @@ function ShippingMainView() {
 	*/
     this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
-		location.hash = "#/proposal/shipping/nav?nomain";
+		// location.hash = "#/proposal/shipping/nav?nomain";
+		location.hash = "#/shipping/" + shipment.shippingId + "/main";
 	});
 
     /**
@@ -6414,8 +6539,7 @@ ShippingMainView.prototype.load = function(shippingId) {
     }	
     else{
         
-        _this.shipmentForm.load();
-		_this.parcelGrid.load();
+        _this.shipmentForm.load();	
 		_this.panel.setLoading(false);
     }
 };
@@ -6549,6 +6673,85 @@ WelcomeMainView.prototype.load = function() {
 	
 };
 
+function AddressEditForm (args) {
+    this.id = BUI.id();
+    this.height = 500;
+	this.width = 500;
+
+
+	if (args != null) {
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+	}
+
+    this.onSaved = new Event(this);
+}
+
+AddressEditForm.prototype.load = function(address) {
+	this.address = address;
+    this.address.id = this.id;
+
+	var html = "";
+	dust.render("address.edit.form.template", address, function(err, out){
+		html = out;
+	});
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
+};
+
+AddressEditForm.prototype.getPanel = function() {
+
+	this.panel = Ext.create("Ext.panel.Panel",{
+		items :	[{
+					// cls	: 'border-grid',
+                    html : '<div id="' + this.id + '"></div>',
+                    autoScroll : false,
+					margin : 10,
+					padding : this.padding,
+					width : this.width
+                }]
+	});
+
+	return this.panel;
+};
+
+AddressEditForm.prototype.save = function() {
+    var _this = this;
+	var address = this.getAddress();
+    var onSuccess = function (sender,address) {
+        _this.onSaved.notify(address);
+    }
+    
+    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.labcontacts.saveLabContact(address);
+};
+
+AddressEditForm.prototype.getAddress = function () {
+    var address = {};
+    address.labContactId = null;
+    address.personVO = {};
+    if (this.address){
+        address = this.address;
+    }
+    address.personVO.emailAddress = $("#" + this.id + "-emailAddress").val();
+    address.personVO.familyName = $("#" + this.id + "-familyName").val();
+    address.personVO.givenName = $("#" + this.id + "-givenName").val();
+    address.personVO.phoneNumber = $("#" + this.id + "-phoneNumber").val();
+    address.personVO.faxNumber = $("#" + this.id + "-faxNumber").val();
+    address.cardName = $("#" + this.id + "-cardName").val();
+    address.courierAccount = $("#" + this.id + "-courierAccount").val();
+    address.defaultCourrierCompany = $("#" + this.id + "-defaultCourrierCompany").val();
+    address.dewarAvgCustomsValue = $("#" + this.id + "-dewarAvgCustomsValue").val();
+    address.dewarAvgTransportValue = $("#" + this.id + "-dewarAvgTransportValue").val();
+    address.billingReference = $("#" + this.id + "-billingReference").val();
+    address.labName = $("#" + this.id + "-labName").val();
+    address.labAddress = $("#" + this.id + "-labAddress").val();
+    
+    return address;
+}
 /**
  * Edit the information of a buffer
  * 
@@ -6559,8 +6762,6 @@ function AddressForm(args) {
 	this.height = 500;
 	this.width = 500;
 
-	this.isSaveButtonHidden = false;
-	this.isHidden = false;
 
 	if (args != null) {
 		if (args.height != null) {
@@ -6569,13 +6770,6 @@ function AddressForm(args) {
 		if (args.width != null) {
 			this.width = args.width;
 		}
-		if (args.isSaveButtonHidden != null) {
-			this.isSaveButtonHidden = args.isSaveButtonHidden;
-		}
-		if (args.isHidden != null) {
-			this.isHidden = args.isHidden;
-		}
-		
 	}
 }
 
@@ -6605,211 +6799,91 @@ AddressForm.prototype.getAddress = function() {
 	return this.address;
 };
 
-AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
-	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
-	Ext.getCmp(this.id + "familyName").setValue(familyName);
-	Ext.getCmp(this.id + "name").setValue(givenName);
-	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
-	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
-};
-
 AddressForm.prototype.load = function(address) {
 	this.address = address;
 
-	if (address != null) {
-		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
-		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
-		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
-		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
-		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
-		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
-
-		if (address.personVO != null) {
-			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
-					address.personVO.faxNumber, address.personVO.phoneNumber);
-		}
-	}
-};
-
-AddressForm.prototype.getPersonPanel = function() {
-	this.personPanel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		margin : '10',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'hbox',
-			border : false,
-			items : [ {
-					xtype : 'requiredtextfield',
-					id : this.id + 'name',
-					fieldLabel : 'Name',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					disabled : true,
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'familyName',
-					fieldLabel : 'Surname',
-					labelWidth : 75,
-					disabled : true,
-					margin : "0 0 0 10",
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'emailAddress',
-					fieldLabel : 'Email',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 300 
-				}, 
-				{
-					id : this.id + 'phoneNumber',
-					fieldLabel : 'Phone',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				}, 
-				{
-					id : this.id + 'faxNumber',
-					fieldLabel : 'Fax',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				} ] },
-				
-				 {
-					padding : 10,
-					xtype : 'container',
-					layout : 'hbox',
-					border : false,
-					items : [ {
-						xtype : 'requiredtextfield',
-						id : this.id + 'cardName',
-						fieldLabel : 'Card Name',
-						name : 'CardName',
-						labelWidth : 150,
-						margin : "0 0 0 10",
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courierAccount',
-						fieldLabel : 'Courier Account',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courrierCompany',
-						fieldLabel : 'Courier Company',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}  ] },
-					
-					 {
-						padding : 10,
-						xtype : 'container',
-						layout : 'hbox',
-						border : false,
-						items : [ {
-							id : this.id + 'dewarAvgCustomsValue',
-							fieldLabel : 'Average Custom Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 10",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-							id : this.id + 'dewarAvgTransportValue',
-							fieldLabel : 'Average Transport Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 30",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-						id : this.id + 'billingReference',
-						xtype : 'textfield',
-						fieldLabel : 'Billing Reference',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					} ] }
-
-		] });
-	return this.personPanel;
-};
-
-AddressForm.prototype.getPackagePanel = function() {
-	this.packagePanel = Ext.create('Ext.panel.Panel', {
-		layout : 'hbox',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'vbox',
-			border : false,
-			items : [ {
-				xtype : 'container',
-				layout : 'hbox',
-				items : [ 
-					] 
-			}, {
-				xtype : 'container',
-				layout : 'hbox',
-				margin : "10 0 0 0",
-				items : [ 
-
-				] } ] } ] });
-	return this.packagePanel;
+	var html = "";
+	dust.render("address.form.template", address, function(err, out){
+		html = out;
+	});
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
 };
 
 AddressForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-		hidden : this.isHidden,
-		layout : 'vbox',
-		title : 'Shipping Address Card',
+	var _this = this;
+
+	this.panel = Ext.create("Ext.panel.Panel",{
 		cls : "border-grid",
+		title : 'Shipping Address Card',
 		buttons : this.getToolBar(),
 		icon : '../images/icon/ic_email_black_24dp.png',
-		items : [  
-		           this.getPersonPanel() 
-		           ] });
+		items :	[{
+					// cls	: 'border-grid',
+                    html : '<div id="' + this.id + '"></div>',
+                    autoScroll : false,
+					margin : 10,
+					padding : this.padding,
+					width : this.width
+                }]
+	});
+
 	return this.panel;
 };
 
-AddressForm.prototype.save = function() {
-	var _this = this;
+// AddressForm.prototype.save = function() {
+// 	var _this = this;
 
-	_this.panel.setLoading();
-	var onSuccess = function(sender) {
-		_this.panel.setLoading(false);
-		EXI.getDataAdapter().proposal.proposal.update();
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-};
+// 	_this.panel.setLoading();
+// 	var onSuccess = function(sender) {
+// 		_this.panel.setLoading(false);
+// 		EXI.getDataAdapter().proposal.proposal.update();
+// 	};
+// 	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
+// };
 
 AddressForm.prototype.getToolBar = function() {
 	var _this = this;
 	return [ {
-		text : 'Save',
+		text : 'Edit',
 		hidden : _this.isSaveButtonHidden,
 		width : 100,
 		handler : function() {
-			_this.save();
+			_this.edit();
 
 		} } ];
+};
+
+AddressForm.prototype.edit = function(dewar) {
+	var _this = this;
+	var addressEditForm = new AddressEditForm({width : Ext.getBody().getWidth()*0.8});
+	
+	addressEditForm.onSaved.attach(function (sender, address) {
+		window.close();
+		_this.load(address);
+	});
+
+	var window = Ext.create('Ext.window.Window', {
+		title : 'Shipping Address Card',
+		height : 500,
+		width : Ext.getBody().getWidth()*0.81,
+		modal : true,
+		layout : 'fit',
+		items : [ addressEditForm.getPanel() ],
+		buttons : [ {
+				text : 'Save',
+				handler : function() {
+					addressEditForm.save();
+				}
+			}, {
+				text : 'Cancel',
+				handler : function() {
+					window.close();
+				}
+			} ]
+	}).show();
+
+	addressEditForm.load(this.address);
 };
 
 function AuthenticationForm(){
@@ -7006,7 +7080,8 @@ function ContainerParcelPanel(args) {
                 enableMouseOver : true,
                 enableClick : true,
                 enableMainClick : true,
-                enableMainMouseOver : true
+                enableMainMouseOver : true,
+                containerId : 0
     };
     this.width = 2*this.data.mainRadius + 20;
     this.container = new ContainerWidget(this.data);
@@ -7024,6 +7099,7 @@ function ContainerParcelPanel(args) {
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
+            this.data.containerId = this.containerId;
 		}
         if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
@@ -7146,7 +7222,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
     
     if (this.height >= 45) {
         this.panel.insert({
-                    html : "<div class='container-fluid' align='center'><span style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
+                    html : "<div class='container-fluid' align='center'><span id='" + this.id + "-name' style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
                     height : this.height*0.25,
                     width : this.width
                 });
@@ -7166,7 +7242,9 @@ ContainerParcelPanel.prototype.load = function (samples) {
     this.containerPanel.add(this.container.getPanel());
     if (samples.length > 0){
         this.container.loadSamples(samples);
-        this.containerId = this.container.containerId;
+        if (!this.container.containerId) {
+            this.container.containerId = this.containerId;
+        }
         // this.shippingId = samples[0].Shipping_shippingId;
     }
     var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
@@ -7218,13 +7296,16 @@ ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
 	/** Opens a window with the cas form **/
 	var otherContainerForm = new OtherContainerForm();
 	otherContainerForm.onSave.attach(function(sender,container){
-		window.close();
+        $("#" + _this.id + "-name").html(container.code);
+        _this.container.samples = container.sampleVOs;
+        _this.container.capacity = container.capacity;
+        window.close();
 	})
-
+    
 	otherContainerForm.onCancel.attach(function(sender){
 		window.close();
 	})
-
+    
 	var window = Ext.create('Ext.window.Window', {
 	    title: 'Container',
 	    height: 600,
@@ -7354,6 +7435,9 @@ function ContainerWidget(args) {
 	if (args){
 		if (args.code){
 			this.code = args.code;
+		}
+		if (args.containerId){
+			this.containerId = args.containerId;
 		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
@@ -7833,10 +7917,11 @@ function ParcelPanel(args) {
 
 }
 
-ParcelPanel.prototype.load = function(dewar) {
+ParcelPanel.prototype.load = function(dewar, shipment) {
 	var _this = this;
 	this.dewar = dewar;
 	this.dewar.index = this.index;
+	this.shipment = shipment;
 	
 	/** Loading the template **/
 	var html = "";
@@ -7945,7 +8030,6 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				debugger
 				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
@@ -8025,6 +8109,13 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	} else {
 		var onSuccess = function(sender, container){
 			container.code = containerVO.code;
+			container.containerStatus = _this.dewar.dewarStatus;
+			container.sampleChangerLocation = _this.dewar.storageLocation;
+			if (_this.shipment) {
+				if (_this.shipment.sessions && _this.shipment.sessions.length > 0) {
+					container.beamlineLocation = _this.shipment.sessions[0].beamlineName;
+				}
+			}
 			container.sampleVOs = [];
 			_this.dewar.containerVOs.push(container);
 			

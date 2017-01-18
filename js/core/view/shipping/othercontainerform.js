@@ -30,7 +30,7 @@ OtherContainerForm.prototype.load = function (container) {
         if (!this.container.capacity) {
             this.container.capacity = container.samples.length;
         }
-        debugger
+        
         Ext.getCmp(this.id + "container_name").setValue(container.code);
         Ext.getCmp(this.id + "capacity").setValue(this.container.capacity);
         this.containerSpreadSheet.load(this.container);

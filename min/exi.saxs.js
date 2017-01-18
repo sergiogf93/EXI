@@ -2365,44 +2365,49 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 			 var onSuccessSubtractions = function(sender, data) {				 				 
 				 if (data){
 					 if (data[0].substraction3VOs){
-						 var subtraction = data[0].substraction3VOs[0];						 
-						 var frameFromSampleAveraged = _.map(subtraction.sampleOneDimensionalFiles.frametolist3VOs, 'frame3VO');
-						 var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						 var subtraction = data[0].substraction3VOs[0];
+						 if (subtraction.sampleOneDimensionalFiles){			 
+							var frameFromSampleAveraged = _.map(subtraction.sampleOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+							var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						 
+							/** Identify discarded frames */
+							for (var frameId in allFrames){
+								var frame = allFrames[frameId];
+								if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
+									frame.discarded = false;
+								}
+								else{
+									frame.discarded = true;								
+								}
+								frame.type = 'Frame';
+							}
 						
-						/** Identify discarded frames */
-						for (var frameId in allFrames){
-							var frame = allFrames[frameId];
-							if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
-								frame.discarded = false;
+							allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
+							allFrames.unshift({
+								filePath : subtraction.substractedFilePath,
+								frameId : subtraction.subtractionId,
+								type : 'Subtraction'
+							});
+							allFrames.unshift({
+								filePath : subtraction.bufferAverageFilePath,
+								frameId : subtraction.subtractionId,
+								type : 'BufferAverage'
+							});
+							allFrames.unshift({
+								filePath : subtraction.sampleAverageFilePath,
+								frameId : subtraction.subtractionId,
+								type : 'SampleAverage'
+							});
+							_this.framesGrid.load(allFrames);
+							// _this.frameSelectorGrid.load(data);	
+							if (subtraction.subtractionId){
+								var onSuccessSubtraction = function(sender, subtractions) {                 
+									_this.abinitioForm.load(subtractions);
+								};			
+								EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
 							}
-							else{
-								frame.discarded = true;								
-							}
-							frame.type = 'Frame';
-						}
-						allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
-						allFrames.unshift({
-							filePath : subtraction.substractedFilePath,
-							frameId : subtraction.subtractionId,
-							type : 'Subtraction'
-						});
-						allFrames.unshift({
-							filePath : subtraction.bufferAverageFilePath,
-							frameId : subtraction.subtractionId,
-							type : 'BufferAverage'
-						});
-						allFrames.unshift({
-							filePath : subtraction.sampleAverageFilePath,
-							frameId : subtraction.subtractionId,
-							type : 'SampleAverage'
-						});
-						_this.framesGrid.load(allFrames);
-						// _this.frameSelectorGrid.load(data);	
-						if (subtraction.subtractionId){
-							var onSuccessSubtraction = function(sender, subtractions) {                 
-								_this.abinitioForm.load(subtractions);
-							};			
-							EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
+						} else {
+							_this.framesGrid.load(null);
 						}
 					 }
 				 }
@@ -6203,6 +6208,8 @@ FramesGrid.prototype.load = function (frames) {
         $("#" + this.id).html(html);
 
         this.setClickListeners();
+    } else {
+        $("#" + this.id).html("<h4>No frames found</h4>");
     }
 };
 
@@ -12834,7 +12841,6 @@ OverviewQueueGrid.prototype.render = function(data) {
         }
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
 	}
-
 
 	dust.render("overview.queue.grid.test.template", data, function(err, out) {                                                                                               
 		html = html + out;

@@ -6215,10 +6215,13 @@ LoadSampleChangerView.prototype.getPanel = function () {
         _this.reloadSampleChangerWidget();
         $("#" + _this.id + "-unloadSC-button").unbind('click').click(function(sender){
                 var containerIds = _.map(_.map(_this.sampleChangerWidget.getAllFilledPucks(),"puckWidget"),"containerId");
-                var onSuccess = function (sender,c) {
-                    _this.load();
+                if (containerIds.length > 0){
+                    var onSuccess = function (sender,c) {
+                        _this.returnToSelectionStatus();
+                        _this.load();
+                    }
+                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(containerIds);
                 }
-                EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(containerIds);
 			});
     });
 
@@ -8802,13 +8805,13 @@ PuckWidget.prototype.load = function (data) {
 					});
 					$('body').append(tooltipHtml);
 					$('#hoveringTooltipDiv').css({
-						"top" : $(this).offset().top - 3*_this.data.cells[i].radius,
-						"left" : $(this).offset().left + 1.5*_this.data.cells[i].radius
+						"top" : $(this).offset().top - 3*_this.data.cells[cellIndex].radius,
+						"left" : $(this).offset().left + 1.5*_this.data.cells[cellIndex].radius
 					});
 					if (_this.data.cells[cellIndex].y - _this.data.mainRadius < 0) {
 						$('#hoveringTooltipDiv').css({
-							"top" : $(this).offset().top + 2*_this.data.cells[i].radius,
-							"left" : $(this).offset().left + _this.data.cells[i].radius
+							"top" : $(this).offset().top + 2*_this.data.cells[cellIndex].radius,
+							"left" : $(this).offset().left + _this.data.cells[cellIndex].radius
 						});
 					}
 				}

@@ -24,6 +24,7 @@ GenericContainerSpreadSheet.prototype.load = function(container){
 	var _this = this;
 	this.container = container;
 	var domElement = document.getElementById(this.id + '_samples');
+	var data = this.getSamplesData(container);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -54,10 +55,13 @@ GenericContainerSpreadSheet.prototype.load = function(container){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(domElement, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
-				data: this.getSamplesData(container),
+				data: data,
 			
 				height : this.height,
 				width : this.width,

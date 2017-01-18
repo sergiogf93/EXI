@@ -13,7 +13,7 @@ function ContainerSpreadSheet(args){
     this.crystalInfoToIdMap = {};
 
 	this.crystalFormIndex = -1;
-	this.unitCellIndex = -1;
+	// this.unitCellIndex = -1;
 	this.spaceGroupIndex = -1;
 	
 	this.onModified = new Event(this);
@@ -41,8 +41,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	this.puck = puck;
 	var container = document.getElementById(this.id + '_samples');
 	this.crystalFormIndex = this.getColumnIndex('Crystal Form');
-	this.unitCellIndex = this.getColumnIndex('Unit cell');
+	// this.unitCellIndex = this.getColumnIndex('Unit cell');
 	this.spaceGroupIndex = this.getColumnIndex("Space Group");
+	var data = this.getSamplesData(puck);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -64,7 +65,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 		    		td.className = 'custom-row-text-required';
 		  	    }
 	    }
-		if ((col == _this.unitCellIndex) || col == _this.spaceGroupIndex) {
+		if (/*(col == _this.unitCellIndex) || */col == _this.spaceGroupIndex) {
 			td.style.background = '#EEE';
 		}
 	  }
@@ -73,6 +74,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(container, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
@@ -103,8 +107,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 						}
 					}
 				},
-				data: this.getSamplesData(puck),
-			
+				data: data,
 				height : this.height,
 				width : this.width,
 				manualColumnResize: true,
@@ -153,7 +156,9 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
                         // crystal.crystalId,
                         (i+1), 
                         protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
+                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
+						// this.getUnitCellInfo(crystal),
+						crystal.spaceGroup, sample.smiles, sample.comments
                     ]
                 );
         }
@@ -182,7 +187,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             // { text :'', id :'crystalId', column : {width : 100}}, 
             { text : '#', 	id: 'position', column : {width : 20}}, 
             { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-                                                                                        width : 60,
+                                                                                        width : 80,
                                                                                         type: 'dropdown',
                                                                                         source: this.getAcronyms()
                                                                                     }
@@ -216,7 +221,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
             { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
             { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
-            { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            // { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
             { text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
             { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
             { text :'Comments', id :'Comments', column : {width : 200}}
@@ -440,7 +445,7 @@ ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column)
 ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
     if (crystal) {
         this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
-        this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
+        // this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
         this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
         // this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
         this.addEditCrystalFormButton(row);
@@ -451,7 +456,7 @@ ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
 
 ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
-	this.setDataAtCell(row,this.unitCellIndex,"");
+	// this.setDataAtCell(row,this.unitCellIndex,"");
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
 	// this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");

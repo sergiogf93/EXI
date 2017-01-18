@@ -8,8 +8,6 @@ function AddressForm(args) {
 	this.height = 500;
 	this.width = 500;
 
-	this.isSaveButtonHidden = false;
-	this.isHidden = false;
 
 	if (args != null) {
 		if (args.height != null) {
@@ -18,13 +16,6 @@ function AddressForm(args) {
 		if (args.width != null) {
 			this.width = args.width;
 		}
-		if (args.isSaveButtonHidden != null) {
-			this.isSaveButtonHidden = args.isSaveButtonHidden;
-		}
-		if (args.isHidden != null) {
-			this.isHidden = args.isHidden;
-		}
-		
 	}
 }
 
@@ -54,210 +45,89 @@ AddressForm.prototype.getAddress = function() {
 	return this.address;
 };
 
-AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
-	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
-	Ext.getCmp(this.id + "familyName").setValue(familyName);
-	Ext.getCmp(this.id + "name").setValue(givenName);
-	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
-	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
-};
-
 AddressForm.prototype.load = function(address) {
-	debugger
 	this.address = address;
 
-	if (address != null) {
-		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
-		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
-		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
-		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
-		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
-		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
-
-		if (address.personVO != null) {
-			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
-					address.personVO.faxNumber, address.personVO.phoneNumber);
-		}
-	}
-};
-
-AddressForm.prototype.getPersonPanel = function() {
-	this.personPanel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		margin : '10',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'hbox',
-			border : false,
-			items : [ {
-					xtype : 'requiredtextfield',
-					id : this.id + 'name',
-					fieldLabel : 'Name',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					disabled : true,
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'familyName',
-					fieldLabel : 'Surname',
-					labelWidth : 75,
-					disabled : true,
-					margin : "0 0 0 10",
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'emailAddress',
-					fieldLabel : 'Email',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 300 
-				}, 
-				{
-					id : this.id + 'phoneNumber',
-					fieldLabel : 'Phone',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				}, 
-				{
-					id : this.id + 'faxNumber',
-					fieldLabel : 'Fax',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				} ] },
-				
-				 {
-					padding : 10,
-					xtype : 'container',
-					layout : 'hbox',
-					border : false,
-					items : [ {
-						xtype : 'requiredtextfield',
-						id : this.id + 'cardName',
-						fieldLabel : 'Card Name',
-						name : 'CardName',
-						labelWidth : 150,
-						margin : "0 0 0 10",
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courierAccount',
-						fieldLabel : 'Courier Account',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courrierCompany',
-						fieldLabel : 'Courier Company',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}  ] },
-					
-					 {
-						padding : 10,
-						xtype : 'container',
-						layout : 'hbox',
-						border : false,
-						items : [ {
-							id : this.id + 'dewarAvgCustomsValue',
-							fieldLabel : 'Average Custom Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 10",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-							id : this.id + 'dewarAvgTransportValue',
-							fieldLabel : 'Average Transport Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 30",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-						id : this.id + 'billingReference',
-						xtype : 'textfield',
-						fieldLabel : 'Billing Reference',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					} ] }
-
-		] });
-	return this.personPanel;
-};
-
-AddressForm.prototype.getPackagePanel = function() {
-	this.packagePanel = Ext.create('Ext.panel.Panel', {
-		layout : 'hbox',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'vbox',
-			border : false,
-			items : [ {
-				xtype : 'container',
-				layout : 'hbox',
-				items : [ 
-					] 
-			}, {
-				xtype : 'container',
-				layout : 'hbox',
-				margin : "10 0 0 0",
-				items : [ 
-
-				] } ] } ] });
-	return this.packagePanel;
+	var html = "";
+	dust.render("address.form.template", address, function(err, out){
+		html = out;
+	});
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
 };
 
 AddressForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-		hidden : this.isHidden,
-		layout : 'vbox',
-		title : 'Shipping Address Card',
+	var _this = this;
+
+	this.panel = Ext.create("Ext.panel.Panel",{
 		cls : "border-grid",
+		title : 'Shipping Address Card',
 		buttons : this.getToolBar(),
 		icon : '../images/icon/ic_email_black_24dp.png',
-		items : [  
-		           this.getPersonPanel() 
-		           ] });
+		items :	[{
+					// cls	: 'border-grid',
+                    html : '<div id="' + this.id + '"></div>',
+                    autoScroll : false,
+					margin : 10,
+					padding : this.padding,
+					width : this.width
+                }]
+	});
+
 	return this.panel;
 };
 
-AddressForm.prototype.save = function() {
-	var _this = this;
+// AddressForm.prototype.save = function() {
+// 	var _this = this;
 
-	_this.panel.setLoading();
-	var onSuccess = function(sender) {
-		_this.panel.setLoading(false);
-		EXI.getDataAdapter().proposal.proposal.update();
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-};
+// 	_this.panel.setLoading();
+// 	var onSuccess = function(sender) {
+// 		_this.panel.setLoading(false);
+// 		EXI.getDataAdapter().proposal.proposal.update();
+// 	};
+// 	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
+// };
 
 AddressForm.prototype.getToolBar = function() {
 	var _this = this;
 	return [ {
-		text : 'Save',
+		text : 'Edit',
 		hidden : _this.isSaveButtonHidden,
 		width : 100,
 		handler : function() {
-			_this.save();
+			_this.edit();
 
 		} } ];
+};
+
+AddressForm.prototype.edit = function(dewar) {
+	var _this = this;
+	var addressEditForm = new AddressEditForm();
+	
+	addressEditForm.onSaved.attach(function (sender, address) {
+		window.close();
+		_this.load(address);
+	});
+
+	var window = Ext.create('Ext.window.Window', {
+		title : 'Shipping Address Card',
+		height: 550,
+		width: 750,
+		modal : true,
+		layout : 'fit',
+		items : [ addressEditForm.getPanel() ],
+		buttons : [ {
+				text : 'Save',
+				handler : function() {
+					addressEditForm.save();
+				}
+			}, {
+				text : 'Cancel',
+				handler : function() {
+					window.close();
+				}
+			} ]
+	}).show();
+
+	addressEditForm.load(this.address);
 };

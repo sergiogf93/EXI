@@ -25,6 +25,8 @@ FramesGrid.prototype.load = function (frames) {
         $("#" + this.id).html(html);
 
         this.setClickListeners();
+    } else {
+        $("#" + this.id).html("<h4>No frames found</h4>");
     }
 };
 

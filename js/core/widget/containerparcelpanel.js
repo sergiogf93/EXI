@@ -178,7 +178,6 @@ ContainerParcelPanel.prototype.getPanel = function () {
 * @return
 */
 ContainerParcelPanel.prototype.load = function (samples) {
-    debugger
     this.containerPanel.removeAll();
     this.containerPanel.add(this.container.getPanel());
     if (samples.length > 0){

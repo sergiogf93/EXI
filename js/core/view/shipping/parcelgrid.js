@@ -88,7 +88,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			index : Number(i)+1
 		});
 		this.panel.insert(parcelPanel.getPanel());
-		parcelPanel.load(this.dewars[i]);
+		parcelPanel.load(this.dewars[i],this.shipment);
 		parcelPanel.onSavedClick.attach(onSaved);
 	}
 };

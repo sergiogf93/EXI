@@ -65,7 +65,6 @@ OverviewQueueGrid.prototype.render = function(data) {
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
 	}
 
-
 	dust.render("overview.queue.grid.test.template", data, function(err, out) {                                                                                               
 		html = html + out;
 	});

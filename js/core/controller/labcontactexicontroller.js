@@ -43,14 +43,14 @@ LabContactExiController.prototype.init = function() {
 			adapter.proposal.labcontacts.getLabContacts();
 			
 			/** Loading welcome page **/
-			EXI.addMainPanel(new AddressWelcomeMainView());
+			// EXI.addMainPanel(new AddressWelcomeMainView());
 			
 		}).enter(this.setPageBackground);
 		
-		Path.map("#/proposal/address/:lacontactId/main").to(function() {
+		Path.map("#/proposal/address/:labcontactId/main").to(function() {
 			var mainView = new AddressMainView();
 			EXI.addMainPanel(mainView);
-			mainView.load(this.params['lacontactId']);
+			mainView.load(this.params['labcontactId']);
 		}).enter(this.setPageBackground);
 		
 };
