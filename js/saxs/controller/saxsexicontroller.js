@@ -236,6 +236,13 @@ SAXSExiController.prototype.routeDataCollection = function() {
 			primaryMainView.load(this.params['dataCollectionId']);		
 		
 	}).enter(this.setPageBackground);
+    
+    Path.map("#/saxs/datacollection/dataCollectionId/:dataCollectionId/abinitio").to(function() {		
+			var primaryMainView = new AbinitioMainView();    
+            EXI.addMainPanel(primaryMainView);        		            
+			primaryMainView.load(this.params['dataCollectionId']);		
+		
+	}).enter(this.setPageBackground);
 	
 	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
 		var onSuccess = function(sender, data) {
@@ -339,9 +346,9 @@ SAXSExiController.prototype.init = function() {
 	
 
     /** Loading a single session on the navigation panel * */
-	Path.map("#/session/nav/:sessionId/session").to(function() {
-       
+	Path.map("#/session/nav/:sessionId/session").to(function() {           
         EXI.clearNavigationPanel();
+        EXI.setLoadingMainPanel(true);    
 		var listView = new SessionSaxsListView();		
 		/** When selected move to hash * */
 		listView.onSelect.attach(function(sender, selected) {

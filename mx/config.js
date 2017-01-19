@@ -1,6 +1,6 @@
 var ExtISPyB ={
    version : '0.9.8',
-   release_date : '2016/12/08',
+   release_date : '2016/12/22',
    
    /**
     *   P1211 is a synonym for P21
@@ -63,10 +63,7 @@ var ExtISPyB ={
          exiUrl:'https://wwws.esrf.fr/ispyb/ispyb-ws/rest',
          beamlines:{
             SAXS:[
-               {
-                name : 'BM29',
-                sampleChangerType : ''
-   	       }
+              
 
             ],
             MX:[
@@ -80,7 +77,7 @@ var ExtISPyB ={
                },
                { 
                    name : "ID29",
-                   sampleChangerType : 'SC3'
+                   sampleChangerType : 'FlexHCD'
                },
                { 
                    name : "ID30A-1",
@@ -92,7 +89,7 @@ var ExtISPyB ={
                },
                { 
                    name : "ID30A-3",
-                   sampleChangerType : 'FlexHCD'
+                   sampleChangerType : 'SC3'
                },
                { 
                    name : "ID30B",
@@ -108,7 +105,10 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      },
+
+      }
+	,    
+
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
@@ -117,10 +117,7 @@ var ExtISPyB ={
          beamlines:{
             SAXS:[
 
-               {
-		   name : 'BM29',
-		   sampleChangerType : ''
-   	       }
+             
             ],
             MX:[
                { 
@@ -133,7 +130,7 @@ var ExtISPyB ={
                },
                { 
                    name : "ID29",
-                   sampleChangerType : 'SC3'
+                   sampleChangerType : 'FlexHCD'
                },
                { 
                    name : "ID30A-1",
@@ -145,7 +142,7 @@ var ExtISPyB ={
                },
                { 
                    name : "ID30A-3",
-                   sampleChangerType : 'FlexHCD'
+                   sampleChangerType : 'SC3'
                },
                { 
                    name : "ID30B",

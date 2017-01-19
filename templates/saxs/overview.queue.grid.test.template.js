@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-12 col-md-12">
@@ -83,10 +84,10 @@
                             <span {^Subtraction_dmax}class='notavailablefield'>NA</span>{:else}>{@decimal key="Subtraction_dmax" decimals=3 /}</span><span style='font-size:10px;color:gray'>  nm</span>{/Subtraction_dmax}
                         </td>
                         <td>
-                            <span {^Subtraction_volumePorod}class='notavailablefield'>NA</span>{:else}>{@decimal key="Subtraction_volumePorod" decimals=3 /}</span><span style='font-size:8px;color:gray;'> nm<sub>3</sub></span>{/Subtraction_volumePorod}
+                            <span {^Subtraction_volume}class='notavailablefield'>NA</span>{:else}>{@decimal key="Subtraction_volume" decimals=3 /}</span><span style='font-size:8px;color:gray;'> nm<sub>3</sub></span>{/Subtraction_volume}
                         </td>
                         <td>
-                            <span {^Subtraction_volumePorod}class='notavailablefield'>NA</span>{:else}>{@mmVolTest /}</span><span style='font-size:8px;color:gray;'> kD</span>{/Subtraction_volumePorod}
+                            <span {^Subtraction_volume}class='notavailablefield'>NA</span>{:else}>{@mmVolTest /}</span><span style='font-size:8px;color:gray;'> kD</span>{/Subtraction_volume}
                         </td>
                     {:else}
                         <td>
@@ -215,3 +216,5 @@
         </div>
     </div>
 </div>
+=======
+>>>>>>> 1f41ef7641a408ddf8dd83f1f4fd3b4dcd62a905

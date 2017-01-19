@@ -73,7 +73,7 @@ ShippingExiController.prototype.init = function() {
 
 		Path.map("#/proposal/shipping/nav").to(function() {
 			loadShipmentNavigationList();
-			EXI.addMainPanel(new ShippingWelcomeMainView());
+			// EXI.addMainPanel(new ShippingWelcomeMainView());
 		});
 		
 		Path.map("#/shipping/:shippingId/main").to(function() {
@@ -82,7 +82,8 @@ ShippingExiController.prototype.init = function() {
 			mainView.load(this.params['shippingId']);
 		}).enter(this.setPageBackground);
 
-		Path.map("#/shipping/main").to(function() {
+		Path.map("#/shipping/main").to(function() { 
+                       
 			var mainView = new ShippingMainView();
 			EXI.addMainPanel(mainView);
 			mainView.load();

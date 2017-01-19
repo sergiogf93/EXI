@@ -59,8 +59,8 @@ dust.helpers.exponential = function(chunk, context, bodies, params) {
     
 };
 
-dust.helpers.mmVolTest = function(chunk, context, bodies, params) {         
-    var value = context.current()["Subtraction_volumePorod"];
+dust.helpers.mmVolTest = function(chunk, context, bodies, params) {      
+    var value = context.current()["Subtraction_volume"];
     if (value){
         try{
                 chunk.write(Number(value / 2).toFixed(1) + " - " + Number(value / 1.5).toFixed(1));

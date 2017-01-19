@@ -70,11 +70,16 @@
                                                          <td>Space Group</td> <td class='column_parameter_value'>{.ScreeningOutputLattice_spaceGroup}</td>                                                        
                                                         <tr>
                                                             <td>Rank. Res.</td> <td class='column_parameter_value'>{.ScreeningOutput_rankingResolution} &#8491;</td>
-                                                            <td>Total Exp. Time</td> <td class='column_parameter_value'>{.ScreeningOutput_totalExposureTime} s</td>
+                                                            <td>Exp. Time</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_exposureTime} s</td>
                                                         </tr>                                                               
                                                         <tr>
-                                                             <td>Images</td> <td class='column_parameter_value'>{.ScreeningOutput_totalNumberOfImages}</td>
-                                                            <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningOutput_totalRotationRange} &deg;</td>
+                                                             <td>Images</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_numberOfImages}</td>
+                                                            <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
+                                                        </tr>  
+                                                        <tr>
+                                                             <td>Transmission</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_transmission}</td>
+                                                             <td></td> <td class='column_parameter_value'></td>
+                                                            
                                                         </tr>     
                                                         
                                                     {:else}

@@ -7,7 +7,7 @@ function ShippingWelcomeMainView() {
 }
 
 ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
+
 
 ShippingWelcomeMainView.prototype.getContainer = function() {
 	return  Ext.createWidget('panel',

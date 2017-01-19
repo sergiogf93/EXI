@@ -29,9 +29,11 @@ ShipmentEditForm.prototype.load = function(shipment) {
     var html = "";
 	var beamlineName = "";
 	var startDate = "";
-	if (shipment.sessions.length > 0){
-		beamlineName = shipment.sessions[0].beamlineName;
-		startDate = (new Date(shipment.sessions[0].startDate)).toLocaleDateString();
+	if (shipment){
+		if (shipment.sessions.length > 0){
+			beamlineName = shipment.sessions[0].beamlineName;
+			startDate = (new Date(shipment.sessions[0].startDate)).toLocaleDateString();
+		}
 	}
 
 	var sessionSort = function(o1,o2) {
@@ -60,7 +62,7 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	this.panel.doLayout();
 };
 
-ShipmentEditForm.prototype.getPanel = function(dewar) {
+ShipmentEditForm.prototype.getPanel = function() {
 
 	this.panel = Ext.create("Ext.panel.Panel",{
 		items :	[{
@@ -79,6 +81,11 @@ ShipmentEditForm.prototype.saveShipment = function() {
 
 	var sendingAddressId = $("#" + this.id + "-to").val();
 	var returnAddressId = $("#" + this.id + "-from").val();
+
+	var shippingId = null;
+	if (this.shipment) {
+		shippingId = this.shipment.shippingId;
+	}
 	
 	if (sendingAddressId == null) {
 		BUI.showError("User contact information for shipping to beamline is mandatory");
@@ -97,7 +104,7 @@ ShipmentEditForm.prototype.saveShipment = function() {
 	
 	var sendingAddress = (EXI.proposalManager.getLabcontactById(sendingAddressId));
 	var json = {
-		shippingId : this.shipment.shippingId,
+		shippingId : shippingId,
 		name : $("#" + this.id + "-name").val(),
 		status : "Not set",
 		sendingLabContactId : sendingAddressId,

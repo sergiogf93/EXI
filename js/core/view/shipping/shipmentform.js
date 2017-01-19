@@ -31,9 +31,11 @@ ShipmentForm.prototype.load = function(shipment) {
     var html = "";
 	var beamlineName = "";
 	var startDate = "";
-	if (shipment.sessions.length > 0){
-		beamlineName = shipment.sessions[0].beamlineName;
-		startDate = moment(shipment.sessions[0].startDate).format("DD/MM/YYYY");
+	if (shipment){
+		if (shipment.sessions.length > 0){
+			beamlineName = shipment.sessions[0].beamlineName;
+			startDate = moment(shipment.sessions[0].startDate).format("DD/MM/YYYY");
+		}
 	}
 	
     dust.render("shipping.form.template", {id : this.id, to : toData, from : fromData, beamlineName : beamlineName, startDate : startDate, shipment : shipment}, function(err, out){
@@ -41,24 +43,29 @@ ShipmentForm.prototype.load = function(shipment) {
 	});
 	
     $('#' + _this.id).hide().html(html).fadeIn('fast');
-	if (shipment.shippingStatus != "processing"){
+	if (shipment == null || shipment.shippingStatus != "processing"){
 		$("#" + _this.id + "-edit-button").prop('disabled',false);
 		$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
 			_this.edit();
 		});
 	}
 
+	this.panel.doLayout();
+
 };
 
 ShipmentForm.prototype.getPanel = function() {
-    this.panel =  {
+
+	this.panel = Ext.create("Ext.panel.Panel",{
+		items :	[{
 					cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					margin : 10,
 					padding : this.padding,
 					width : this.width
-                };
+                }]
+	});
 
 	return this.panel;
 };
@@ -66,9 +73,13 @@ ShipmentForm.prototype.getPanel = function() {
 ShipmentForm.prototype.edit = function(dewar) {
 	var _this = this;
 	var shippingEditForm = new ShipmentEditForm();
-
+	
 	shippingEditForm.onSaved.attach(function (sender, shipment) {
-		_this.load(shipment);
+		if (_this.shipment) {
+			_this.load(shipment);
+		} else {
+			_this.onSaved.notify(shipment);
+		}
 		window.close();
 	});
 
@@ -78,7 +89,7 @@ ShipmentForm.prototype.edit = function(dewar) {
 		width : 600,
 		modal : true,
 		layout : 'fit',
-		items : [ shippingEditForm.getPanel({shippingId : this.shipment.shippingId}) ],
+		items : [ shippingEditForm.getPanel() ],
 		buttons : [ {
 				text : 'Save',
 				handler : function() {

@@ -18,7 +18,7 @@ function AddContainerForm(args) {
 		}
 	}
 
-    this.containerTypeComboBox = new ContainerTypeComboBox();
+    this.containerTypeComboBox = new ContainerTypeComboBox({extraOptions : [{"type":"STOCK SOLUTION"},{"type":"OTHER", "capacity":1}]});
     this.stockSolutionsGrid = new StockSolutionsGrid({width : this.width*0.95});
 
     this.containerTypeComboBox.onSelected.attach(function (sender,selection){

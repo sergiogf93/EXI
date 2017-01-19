@@ -1607,7 +1607,8 @@ AutoProcIntegrationGrid.prototype.getPhasing = function(data) {
     return phasing;
 };                 
 
-AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	                    
+AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	  
+                      
     var type = data.scalingStatisticsType.split(",");
     function getValue(attribute, i, decimals){
         
@@ -1640,7 +1641,9 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
                                             rMerge 			        : getValue(data.rMerge, i, 1),
                                             ccHalf 			        : getValue(data.ccHalf, i,1),
                                             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i,1),
-                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1)
+                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1),
+                                            ccAno                	: getValue(data.ccAno, i),
+                                            sigAno                	: getValue(data.sigAno, i)
                                            
                                             
                };            
@@ -1682,7 +1685,9 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
             rMerge 			        : getValue(data.rMerge, i),
             ccHalf 			        : getValue(data.ccHalf, i),
             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i),
-            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i)
+            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i),
+            ccAno                	: getValue(data.ccAno, i),
+            sigAno                	: getValue(data.sigAno, i)
             
         });
         
@@ -4059,6 +4064,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                }
            
                var node = {};
+               
                node = ({
                    spaceGroup       : spaceGroup,
                    prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
@@ -4114,7 +4120,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
                                     toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
                                 }
-                            }                                                                            
+                            }  
+                            toBePushed["downloadFilesUrl"] = node.downloadFilesUrl;                                                                            
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
@@ -4178,7 +4185,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
             }
         }
         
-        var html = "";     
+        var html = "";    
+         
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
         });
@@ -4260,7 +4268,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var _this = this;
     
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
-    debugger
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/
@@ -6186,7 +6193,7 @@ LoadSampleChangerView.prototype.getPanel = function () {
                 align: 'center',
                 pack: 'center'
             },
-            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid ' align='center' ><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:300px;font-size:20px;font-weight:100;'></span></div>"},
+            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid' align='center' ><div class='row' style='width:370px;'><div class='col-md-9'><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:500px;font-size:20px;font-weight:100;'></span></div><div class='col-md-2'><button id='" + this.id + "-unloadSC-button' type='button' class='btn btn-default btn-xs' style='background:rgb(68, 68, 68);color: #ffffff;'><b>Unload SC</b></button></div></div></div>"},
                         this.widgetContainer    
             ]
     });
@@ -6206,6 +6213,16 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.panel.on('boxready', function() {
         _this.reloadSampleChangerWidget();
+        $("#" + _this.id + "-unloadSC-button").unbind('click').click(function(sender){
+                var containerIds = _.map(_.map(_this.sampleChangerWidget.getAllFilledPucks(),"puckWidget"),"containerId");
+                if (containerIds.length > 0){
+                    var onSuccess = function (sender,c) {
+                        _this.returnToSelectionStatus();
+                        _this.load();
+                    }
+                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(containerIds);
+                }
+			});
     });
 
     return this.panel;
@@ -7548,7 +7565,7 @@ function CurvePlotter(args) {
 
     this.backgroundColor = "#FFFFFF";
 
-    this.margin = '0 0 0 5';
+    this.margin = 10;
     this.ruleColor = "black";
     this.targetId = "plotCanvas" + BUI.id();
     this.legend = 'onmouseover';
@@ -7563,6 +7580,7 @@ function CurvePlotter(args) {
         if (args.targetId != null) {
             this.targetId = args.targetId;
         }
+        
     }
 
     this.onRendered = new Event(this);
@@ -7571,11 +7589,8 @@ function CurvePlotter(args) {
 }
 
 CurvePlotter.prototype.getPanel = function() {
-    this.plotPanel = Ext.create('Ext.container.Container', {
-        layout: {
-            type: 'hbox'
-        },
-        flex: 0.7,
+    this.plotPanel = Ext.create('Ext.container.Container', {       
+        flex: 1,
         margin: this.margin,
         items: [{
             html: '<div id="' + this.targetId + '"></div>',
@@ -8518,7 +8533,7 @@ function PuckLegend(args){
             tOffset = args.tOffset;
         }
     }
-    
+    var fontSize = "0.55vw";
     var rad = "7%";
     var circles = [];
     circles.push({cx : "7%", cy : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
@@ -8527,9 +8542,10 @@ function PuckLegend(args){
     circles.push({cx : "67%", cy : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
 
     this.data = {
-                    id      : this.id,
-                    circles : circles,
-                    tOffset : tOffset
+                    id          : this.id,
+                    circles     : circles,
+                    tOffset     : tOffset,
+                    fontSize    : fontSize
                 };
 }
 
@@ -8699,7 +8715,6 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
-		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
 		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
@@ -8779,21 +8794,24 @@ PuckWidget.prototype.load = function (data) {
 				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
-				if (_this.data.cells[cellIndex].sample_name){
-	
+				if (_this.data.cells[cellIndex].protein_acronym){
+					var tooltipData = [{key : "Protein acronym", value : _this.data.cells[cellIndex].protein_acronym}];
+					if (_this.data.cells[cellIndex].sample_name) {
+						tooltipData.push({key : "Sample", value : _this.data.cells[cellIndex].sample_name});
+					}
 					var tooltipHtml = "";
-					dust.render("containers.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
+					dust.render("tooltip.template", tooltipData, function(err, out) {
 						tooltipHtml = out;
 					});
 					$('body').append(tooltipHtml);
 					$('#hoveringTooltipDiv').css({
-						"top" : $(this).offset().top - 3*_this.data.cells[i].radius,
-						"left" : $(this).offset().left + 1.5*_this.data.cells[i].radius
+						"top" : $(this).offset().top - 3*_this.data.cells[cellIndex].radius,
+						"left" : $(this).offset().left + 1.5*_this.data.cells[cellIndex].radius
 					});
 					if (_this.data.cells[cellIndex].y - _this.data.mainRadius < 0) {
 						$('#hoveringTooltipDiv').css({
-							"top" : $(this).offset().top + 2*_this.data.cells[i].radius,
-							"left" : $(this).offset().left + _this.data.cells[i].radius
+							"top" : $(this).offset().top + 2*_this.data.cells[cellIndex].radius,
+							"left" : $(this).offset().left + _this.data.cells[cellIndex].radius
 						});
 					}
 				}
@@ -8958,6 +8976,7 @@ function PuckWidgetContainer(args) {
 	this.containerId = 0;
 	this.enableMainClick = false;
 	this.enableMainMouseOver = false;
+	this.code = "";
 	if (args){
 		if (args.puckType) {
 			switch (args.puckType) {
@@ -8970,6 +8989,12 @@ function PuckWidgetContainer(args) {
 					this.capacity = 10;
 					break;
 			}
+		}
+		if (args.code){
+			this.code = args.code;
+		}
+		if (args.containerId){
+			this.containerId = args.containerId;
 		}
 		if (args.xMargin){
 			this.xMargin = args.xMargin;

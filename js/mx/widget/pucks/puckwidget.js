@@ -151,7 +151,6 @@ PuckWidget.prototype.loadSamples = function (samples, selectedLocation) {
 	var cells = [];
 	for (var i = 0; i < samples.length; i++) {
 		var sample = samples[i];
-		
 		var dataCollectionIds = this.dataCollectionIds[sample.BLSample_location];
 		var state = "FILLED";
 		if ((dataCollectionIds != null && dataCollectionIds.length > 0 || sample.DataCollectionGroup_dataCollectionGroupId != null)){
@@ -231,21 +230,24 @@ PuckWidget.prototype.load = function (data) {
 				_this.focusWell(sender.target.id.split("-")[1],true);
 				
 				// TOOLTIP
-				if (_this.data.cells[cellIndex].sample_name){
-	
+				if (_this.data.cells[cellIndex].protein_acronym){
+					var tooltipData = [{key : "Protein acronym", value : _this.data.cells[cellIndex].protein_acronym}];
+					if (_this.data.cells[cellIndex].sample_name) {
+						tooltipData.push({key : "Sample", value : _this.data.cells[cellIndex].sample_name});
+					}
 					var tooltipHtml = "";
-					dust.render("containers.tooltip.mxdatacollectiongrid.template", _this.data.cells[cellIndex], function(err, out) {
+					dust.render("tooltip.template", tooltipData, function(err, out) {
 						tooltipHtml = out;
 					});
 					$('body').append(tooltipHtml);
 					$('#hoveringTooltipDiv').css({
-						"top" : $(this).offset().top - 3*_this.data.cells[i].radius,
-						"left" : $(this).offset().left + 1.5*_this.data.cells[i].radius
+						"top" : $(this).offset().top - 3*_this.data.cells[cellIndex].radius,
+						"left" : $(this).offset().left + 1.5*_this.data.cells[cellIndex].radius
 					});
 					if (_this.data.cells[cellIndex].y - _this.data.mainRadius < 0) {
 						$('#hoveringTooltipDiv').css({
-							"top" : $(this).offset().top + 2*_this.data.cells[i].radius,
-							"left" : $(this).offset().left + _this.data.cells[i].radius
+							"top" : $(this).offset().top + 2*_this.data.cells[cellIndex].radius,
+							"left" : $(this).offset().left + _this.data.cells[cellIndex].radius
 						});
 					}
 				}

@@ -1,4 +1,4 @@
-<div style="padding:20px;">
+<div style="padding:20px;" class="editCrystalFormDiv">
     <div class="form-group row">
         <label class="col-md-2 col-form-label">Name:</label>
         <div class="col-md-10">
@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="form-group row">
-        <div class="col-md-6">
+        <div id="{id}-cellsABC" class="col-md-6">
             <div class="form-group row">
                 <label class="col-md-2 col-form-label">A:</label>
                 <div class="col-md-10">

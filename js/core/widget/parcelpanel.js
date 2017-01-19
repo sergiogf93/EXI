@@ -49,10 +49,11 @@ function ParcelPanel(args) {
 
 }
 
-ParcelPanel.prototype.load = function(dewar) {
+ParcelPanel.prototype.load = function(dewar, shipment) {
 	var _this = this;
 	this.dewar = dewar;
 	this.dewar.index = this.index;
+	this.shipment = shipment;
 	
 	/** Loading the template **/
 	var html = "";
@@ -240,6 +241,13 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	} else {
 		var onSuccess = function(sender, container){
 			container.code = containerVO.code;
+			container.containerStatus = _this.dewar.dewarStatus;
+			container.sampleChangerLocation = _this.dewar.storageLocation;
+			if (_this.shipment) {
+				if (_this.shipment.sessions && _this.shipment.sessions.length > 0) {
+					container.beamlineLocation = _this.shipment.sessions[0].beamlineName;
+				}
+			}
 			container.sampleVOs = [];
 			_this.dewar.containerVOs.push(container);
 			
@@ -277,13 +285,13 @@ ParcelPanel.prototype.showCaseForm = function() {
 	    items: [
 	            	caseForm.getPanel(_this.dewar)
 	    ],
-	    listeners : {
-			afterrender : function(component, eOpts) {
-				if (_this.puck != null){
-						_this.load(_this.puck);
-				}
-			}
-	    },
+	    // listeners : {
+		// 	afterrender : function(component, eOpts) {
+		// 		if (_this.puck != null){
+		// 			_this.load(_this.puck);
+		// 		}
+		// 	}
+	    // },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {
