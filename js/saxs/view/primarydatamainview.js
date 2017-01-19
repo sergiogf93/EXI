@@ -7,11 +7,6 @@ function PrimaryDataMainView() {
 	this.onMeasurementSelectionChange = new Event(this);
 	
 	var _this = this;
-	
-	this.frameSelectorGrid = new FrameSelectorGrid();
-	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){        
-		_this.plotter.load(selections);
-	});
 
 	this.framesGrid = new FramesGrid();
 	this.framesGrid.onSelectionChange.attach(function(sender, selections){
@@ -136,8 +131,7 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 								domId : subtraction.subtractionId + 'SampleAverage',
 								type : 'SampleAverage'
 							});
-							_this.framesGrid.load(allFrames);
-							// _this.frameSelectorGrid.load(data);	
+							_this.framesGrid.load(allFrames);	
 							// if (subtraction.subtractionId){
 							// 	var onSuccessSubtraction = function(sender, subtractions) {                 
 							// 		_this.abinitioForm.load(subtractions);

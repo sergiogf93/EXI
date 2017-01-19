@@ -2,7 +2,6 @@ var ExtISPyB ={
    version : '0.9.8',
    release_date : '2016/12/22',
 
-
    detectors : {
 
 	"Pilatus3_2M" : {
@@ -49,7 +48,7 @@ var ExtISPyB ={
 
    },
    sites:[
-    /*  {
+      {
          name:'ESRF',
  	     description : 'European Synchroton Radiation Facility',
          icon : '../images/site/esrf.png',
@@ -118,22 +117,22 @@ var ExtISPyB ={
             MX:[ ]
          }
       }
-	,*/
-      {
-         name:'ESRF TEST',
-         url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
-         exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
-         beamlines:{
-            SAXS:[
-               {
-		   name : 'BM29',
-		   sampleChangerType : ''
-   	       }
-            ],
-            MX:[
+	,
+    //   {
+    //      name:'ESRF TEST',
+    //      url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
+    //      exiUrl:'http://pc593.embl.fr:8080/extispyb-ws/rest',
+    //      beamlines:{
+    //         SAXS:[
+    //            {
+	// 	   name : 'BM29',
+	// 	   sampleChangerType : ''
+   	//        }
+    //         ],
+    //         MX:[
                
-            ]
-         }
-      }
+    //         ]
+    //      }
+    //   }
    ]
 };

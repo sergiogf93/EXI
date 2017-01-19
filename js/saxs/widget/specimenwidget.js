@@ -63,12 +63,18 @@ function SpecimenWidget(args){
 
 	this.samplePlateGroupWidget.onClick.attach(function(sender, args) {
 		/** Clicking on a plate * */
-		var row = args.row;
-		var column = args.column;
-		var samplePlate = args.samplePlate;
+		// var row = args.row;
+		// var column = args.column;
+		// var samplePlate = args.samplePlate;
 		var specimenId = args.specimenId;
-
-		_this.specimenGrid.selectById(specimenId);
+		if (_this.specimenSelected && _this.specimenSelected.Specimen_specimenId == specimenId) {
+			_this.samplePlateGroupWidget.selectSpecimens([]);
+			_this.specimenGrid.deselectAll();
+			_this.specimenSelected = null;
+		} else {
+			_this.specimenSelected = {Specimen_specimenId : specimenId};
+			_this.specimenGrid.selectById(specimenId);
+		}
 
 // 		/** is specimen selected on the grid? * */
 // 		if (_this.specimenSelected != null) {
