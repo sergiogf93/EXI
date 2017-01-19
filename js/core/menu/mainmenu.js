@@ -83,7 +83,7 @@ MainMenu.prototype.getShipmentItem = function() {
 	function getLabContactsMenu() {
 		var _this = this;
 		function onItemCheck(item, checked) {
-			if (item.text == "Add new shipping address") {
+			if (item.text == "Add new") {
 				var addressEditForm = new AddressEditForm();
 	
 				addressEditForm.onSaved.attach(function (sender, address) {
@@ -120,7 +120,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		return Ext.create('Ext.menu.Menu', {
 			items : [ 
 						{
-							text : 'Add new shipping address',
+							text : 'Add new',
 							icon : '../images/icon/add.png',
 							handler : onItemCheck 
 						}, {
@@ -134,8 +134,35 @@ MainMenu.prototype.getShipmentItem = function() {
 	function getShipmentsMenu() {
 		var _this = this;
 		function onItemCheck(item, checked) {
-			if (item.text == "Create a new Shipment") {
-				location.hash = '/shipping/main';
+			if (item.text == "Add new") {
+				var shippingEditForm = new ShipmentEditForm();
+				
+				shippingEditForm.onSaved.attach(function (sender, shipment) {
+					window.close();
+					location.hash = "#/shipping/"+ shipment.shippingId +"/main"
+				});
+
+				var window = Ext.create('Ext.window.Window', {
+					title : 'Shipment',
+					height : 450,
+					width : 600,
+					modal : true,
+					layout : 'fit',
+					items : [ shippingEditForm.getPanel() ],
+					buttons : [ {
+							text : 'Save',
+							handler : function() {
+								shippingEditForm.saveShipment();
+							}
+						}, {
+							text : 'Cancel',
+							handler : function() {
+								window.close();
+							}
+						} ]
+				}).show();
+
+				shippingEditForm.load();
 			} else if (item.text == "List") {
 				location.hash = "/proposal/shipping/nav";
 			}
@@ -145,7 +172,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		return Ext.create('Ext.menu.Menu', {
 			items : [ 
 						{
-							text : 'Create a new Shipment',
+							text : 'Add new',
 							icon : '../images/icon/add.png',
 							handler : onItemCheck 
 						}, {

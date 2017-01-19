@@ -49,7 +49,7 @@ var ExtISPyB ={
 
    },
    sites:[
-      {
+    /*  {
          name:'ESRF',
  	 description : 'European Synchroton Radiation Facility',
          icon : '../images/site/esrf.png',
@@ -83,7 +83,7 @@ var ExtISPyB ={
             MX:[ ]
          }
       }
-	/*,
+	,*/
       {
          name:'ESRF TEST',
          url:'http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest',
@@ -99,6 +99,6 @@ var ExtISPyB ={
                
             ]
          }
-      }*/
+      }
    ]
 };

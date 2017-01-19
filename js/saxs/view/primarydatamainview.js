@@ -15,7 +15,6 @@ function PrimaryDataMainView() {
 
 	this.framesGrid = new FramesGrid();
 	this.framesGrid.onSelectionChange.attach(function(sender, selections){
-		debugger
 		_this.plotter.load(selections);
 	});
 	
