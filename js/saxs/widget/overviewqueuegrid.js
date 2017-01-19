@@ -49,23 +49,25 @@ OverviewQueueGrid.prototype.render = function(data) {
 		    o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
         }
 	});
-    
+     
 	for (var dataCollectionId in grouped){
 		var last = _.maxBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder');
-		if (last.Subtraction_subtractionId){
-            last.rowSpan = grouped[dataCollectionId].length;
-            last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
-            last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
-            last.density = this.getImage(last.Subtraction_subtractionId,"density");
-            last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
-            if (last.Run_runId) {
-                last.dataReduction = true;
+        if(last){
+            if (last.Subtraction_subtractionId){
+                last.rowSpan = grouped[dataCollectionId].length;
+                last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
+                last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
+                last.density = this.getImage(last.Subtraction_subtractionId,"density");
+                last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
+                if (last.Run_runId) {
+                    last.dataReduction = true;
+                }
             }
-        }
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
+        }
 	}
-
-	dust.render("overview.queue.grid.test.template", data, function(err, out) {                                                                                               
+    
+	dust.render("overview.queue.grid.template", data, function(err, out) {   
 		html = html + out;
 	});
 	

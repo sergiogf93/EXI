@@ -348,11 +348,11 @@ MainMenu.prototype.getLoginButton = function() {
 };
 
 MainMenu.prototype.getPanel = function() {
-	var _this = this;
+	
 	
 	this.credentialsMenu = new Ext.menu.Menu({
-		id : _this.id + "menu",
-		items : [_this.getAddCredentialMenu()] 
+		id : this.id + "menu",
+		items : [this.getAddCredentialMenu()] 
 	});
 	
 	var items  = this.getMenuItems();

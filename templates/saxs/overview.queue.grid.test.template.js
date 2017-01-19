@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-12 col-md-12">
@@ -215,3 +216,5 @@
         </div>
     </div>
 </div>
+=======
+>>>>>>> 1f41ef7641a408ddf8dd83f1f4fd3b4dcd62a905
