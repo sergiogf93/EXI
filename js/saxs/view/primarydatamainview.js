@@ -105,8 +105,8 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 							var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
 						 
 							/** Identify discarded frames */
-							for (var frameId in allFrames){
-								var frame = allFrames[frameId];
+							for (var i in allFrames){
+								var frame = allFrames[i];
 								if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
 									frame.discarded = false;
 								}
@@ -114,32 +114,36 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 									frame.discarded = true;								
 								}
 								frame.type = 'Frame';
+								frame.domId = frame.frameId;
 							}
 						
 							allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
 							allFrames.unshift({
 								filePath : subtraction.substractedFilePath,
 								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'Subtraction',
 								type : 'Subtraction'
 							});
 							allFrames.unshift({
 								filePath : subtraction.bufferAverageFilePath,
 								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'BufferAverage',
 								type : 'BufferAverage'
 							});
 							allFrames.unshift({
 								filePath : subtraction.sampleAverageFilePath,
 								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'SampleAverage',
 								type : 'SampleAverage'
 							});
 							_this.framesGrid.load(allFrames);
 							// _this.frameSelectorGrid.load(data);	
-							if (subtraction.subtractionId){
-								var onSuccessSubtraction = function(sender, subtractions) {                 
-									_this.abinitioForm.load(subtractions);
-								};			
-								EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
-							}
+							// if (subtraction.subtractionId){
+							// 	var onSuccessSubtraction = function(sender, subtractions) {                 
+							// 		_this.abinitioForm.load(subtractions);
+							// 	};			
+							// 	EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
+							// }
 						} else {
 							_this.framesGrid.load(null);
 						}

@@ -42,9 +42,6 @@ LabContactExiController.prototype.init = function() {
 			adapter = loadNavigationPanel(listView);
 			adapter.proposal.labcontacts.getLabContacts();
 			
-			/** Loading welcome page **/
-			EXI.addMainPanel(new AddressWelcomeMainView());
-			
 		}).enter(this.setPageBackground);
 		
 		Path.map("#/proposal/address/:lacontactId/main").to(function() {
