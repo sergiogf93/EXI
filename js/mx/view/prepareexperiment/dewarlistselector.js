@@ -38,7 +38,8 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
-        if (value.sessionId){
+        
+        if ((value.sessionId) ||(value.shippingStatus.toUpperCase() == "PROCESSING")){
             if (_this.filterByDate){
                 if (value.shippingStatus){
                     if (value.shippingStatus.toUpperCase() == "PROCESSING"){
@@ -97,8 +98,8 @@ DewarListSelectorGrid.prototype.getSelectedData = function() {
 
 DewarListSelectorGrid.prototype.getStore = function(){
     this.store = Ext.create('Ext.data.Store', {
-        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type'],
-        sortInfo: { field: "sessionStartDate", direction: "DESC" },
+        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type']
+        /*sortInfo: { field: "sessionStartDate", direction: "DESC" },
         sorters:
                 {
                     field: 'sessionStartDate',
@@ -112,7 +113,7 @@ DewarListSelectorGrid.prototype.getStore = function(){
                             return (d1 < d2) ? 1 : -1;
                         }
                     }
-                }
+                }*/
     });
     return this.store;
 };
@@ -123,7 +124,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
         items: [
             {
                 xtype       : 'checkboxfield',
-                boxLabel    : 'Display only shipments scheduled for future sessions',
+                boxLabel    : 'Display only shipments scheduled for future sessions or in PROCESSING status',
                 checked     : this.filterByDate,
                 listeners : {
                     change : function( cb, newValue, oldValue, eOpts ){
@@ -139,7 +140,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
     this.panel = Ext.create('Ext.grid.Panel', {
             title: 'Select dewars',
             store: this.getStore(),
-            // cls : 'border-grid',           
+            sortableColumns : false,           
             height : this.height, 
             width : this.width,  
             flex : 0.5, 
@@ -150,7 +151,13 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     text    : 'Shipment',
                     columns : [
                          { text: 'Name',  dataIndex: 'shippingName', flex : 1 },
-                         { text: 'Status',  dataIndex: 'shippingStatus', flex: 1 },
+                         { text: 'Status',  dataIndex: 'shippingStatus', flex: 1,
+                        renderer : function(grid, a, record){
+                                      return record.data.shippingStatus.toUpperCase()
+                                 
+                                
+                            } 
+                         },
                          { text: 'Created on',  dataIndex: 'creationDate', flex: 1,   hidden : true,
                             renderer : function(grid, a, record){
                                 if (record.data.creationDate){

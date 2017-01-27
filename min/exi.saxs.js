@@ -473,7 +473,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
-                 disabled : true,
+                		disabled : true,
 				menu : this.getPreparationMenu() 
 		}, {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
@@ -7824,6 +7824,8 @@ SampleAutomaticPositionFactory.prototype.setPosition = function() {
  */
 function MeasurementGrid(args) {
 	this.id = BUI.id();
+    
+    this.onRemoved = new Event(this);
 }
 
 
