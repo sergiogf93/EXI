@@ -22,6 +22,10 @@ ExiSAXS.prototype.setUserMenu = Exi.prototype.setUserMenu;
 ExiSAXS.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiSAXS.prototype.addTimer = Exi.prototype.addTimer;
+ExiSAXS.prototype.clearTimers = Exi.prototype.clearTimers;
+ExiSAXS.prototype.addMainPanelWithTimer = Exi.prototype.addMainPanelWithTimer;
+ExiSAXS.prototype.addNavigationPanelWithTimer = Exi.prototype.addNavigationPanelWithTimer;
 
 ExiSAXS.prototype.getHeader = function(){
     var html = "";
@@ -40,4 +44,6 @@ ExiSAXS.prototype.getHeader = function(){
 ExiSAXS.prototype.getDataAdapter = function(args){
 	return new SaxsDataAdapterFactory(this.appendDataAdapterParameters(args));
 };
+
+
 

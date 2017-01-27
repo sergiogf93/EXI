@@ -1,6 +1,8 @@
 function ExiController(){
 	this.init();
+  
 }
+
 
 ExiController.prototype.loadNavigationPanel = function(listView) {
 	/** Cleaning up navigation panel * */
@@ -25,6 +27,7 @@ ExiController.prototype.loadNavigationPanel = function(listView) {
 };
 
 ExiController.prototype.init = function(){
+    var _this = this;
 	function setPageBackground() {
 
 	}
@@ -33,17 +36,20 @@ ExiController.prototype.init = function(){
 	}
 
 	/** Welcome Page **/
-	Path.map("#/").to(function() {       
+	Path.map("#/").to(function() {   
+          
 		location.hash = '/welcome';
 	}).enter(setPageBackground);
 	
 	Path.map("#/login").to(function() {
+       
         EXI.credentialManager.logout();
 		EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	
 	Path.map("#/welcome").to(function() {
+       
 		//EXI.addMainPanel(new WelcomeMainView());
         //location.hash = '/login';
          EXI.credentialManager.logout();
@@ -51,6 +57,7 @@ ExiController.prototype.init = function(){
 	}).enter(setPageBackground);
 	
 	Path.map("#/welcome/user/:user/main").to(function() {
+       
 		var user = this.params['user'];		
         var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -60,7 +67,7 @@ ExiController.prototype.init = function(){
 	
 
 	Path.map("#/welcome/manager/:user/main").to(function() {
-        
+       
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -69,7 +76,7 @@ ExiController.prototype.init = function(){
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
-    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                    
+    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                         
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -80,7 +87,7 @@ ExiController.prototype.init = function(){
    
     
 	
-	Path.map("#/logout").to(function() {
+	Path.map("#/logout").to(function() {     
 		EXI.credentialManager.logout();
          EXI.hideNavigationPanel();
 		EXI.proposalManager.clear();
