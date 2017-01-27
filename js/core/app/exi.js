@@ -174,7 +174,7 @@ Exi.prototype.addMainPanel = function(mainView) {
 	Ext.getCmp('main_panel').add(mainView.getPanel());
 	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
     
-   
+  
     this.clearTimers();
     
 };

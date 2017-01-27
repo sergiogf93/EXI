@@ -41,6 +41,11 @@ ExiMX.prototype.setUserMenu = Exi.prototype.setUserMenu;
 ExiMX.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiMX.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiMX.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiMX.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiMX.prototype.addTimer = Exi.prototype.addTimer;
+ExiMX.prototype.clearTimers = Exi.prototype.clearTimers;
+ExiMX.prototype.addMainPanelWithTimer = Exi.prototype.addMainPanelWithTimer;
+ExiMX.prototype.addNavigationPanelWithTimer = Exi.prototype.addNavigationPanelWithTimer;
  
 
 ExiMX.prototype.getHeader = function(){

@@ -546,6 +546,10 @@ function Exi(args) {
 	/** If false when opening a new tab it will close the already open ones **/
 	this.keepTabs = false;
 	
+    /** Timers for setInterval methods */
+    this.timers = [];
+    
+
 	
 	this.controllers = [new ExiController(), new ProposalExiController(), new ShippingExiController()];
 	
@@ -627,6 +631,19 @@ function Exi(args) {
 	this.onAfterRender = new Event(this);
 }
 
+
+Exi.prototype.addTimer = function(timer) {
+    this.timers.push(timer);
+    console.log(this.timers);
+};
+
+Exi.prototype.clearTimers = function() {
+    for (var i = 0; i < this.timers.length; i++) {
+        clearTimeout(this.timers[i]);        
+    }   
+    this.timers = [];
+    console.log(this.timers);
+}
 /**
  * This method append to args the values of the active connection: url, token and proposal
  */
@@ -681,6 +698,7 @@ Exi.prototype.loadSelected = function(selected) {
 /**
  * Adds a new Main panel to the center panel
  * @param mainView
+ * @param clearTimers if timers should be removed
  */
 Exi.prototype.addMainPanel = function(mainView) {
 	if (!this.keepTabs){
@@ -688,6 +706,19 @@ Exi.prototype.addMainPanel = function(mainView) {
 	}
 	Ext.getCmp('main_panel').add(mainView.getPanel());
 	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
+    
+  
+    this.clearTimers();
+    
+};
+
+Exi.prototype.addMainPanelWithTimer = function(mainView) {
+	if (!this.keepTabs){
+		Ext.getCmp('main_panel').removeAll();
+	}
+	Ext.getCmp('main_panel').add(mainView.getPanel());
+	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
+       
 };
 
 Exi.prototype.getSelectedDataCollections = function() {
@@ -704,6 +735,17 @@ Exi.prototype.addNavigationPanel = function(listView) {
 		Ext.getCmp("navigation").expand();
         this.showNavigationPanel();
 	}
+    this.clearTimers();
+};
+
+
+Exi.prototype.addNavigationPanelWithTimer = function(listView) {
+	Ext.getCmp('navigation').add(listView.getPanel());
+	if (Ext.getCmp("navigation") != null){
+		Ext.getCmp("navigation").expand();
+        this.showNavigationPanel();
+	}
+     
 };
 
 Exi.prototype.hideNavigationPanel = function(listView) {
@@ -1268,7 +1310,9 @@ AuthenticationManager.prototype.login = function(user, password, url){
 
 function ExiController(){
 	this.init();
+  
 }
+
 
 ExiController.prototype.loadNavigationPanel = function(listView) {
 	/** Cleaning up navigation panel * */
@@ -1293,6 +1337,7 @@ ExiController.prototype.loadNavigationPanel = function(listView) {
 };
 
 ExiController.prototype.init = function(){
+    var _this = this;
 	function setPageBackground() {
 
 	}
@@ -1301,17 +1346,20 @@ ExiController.prototype.init = function(){
 	}
 
 	/** Welcome Page **/
-	Path.map("#/").to(function() {       
+	Path.map("#/").to(function() {   
+          
 		location.hash = '/welcome';
 	}).enter(setPageBackground);
 	
 	Path.map("#/login").to(function() {
+       
         EXI.credentialManager.logout();
 		EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	
 	Path.map("#/welcome").to(function() {
+       
 		//EXI.addMainPanel(new WelcomeMainView());
         //location.hash = '/login';
          EXI.credentialManager.logout();
@@ -1319,6 +1367,7 @@ ExiController.prototype.init = function(){
 	}).enter(setPageBackground);
 	
 	Path.map("#/welcome/user/:user/main").to(function() {
+       
 		var user = this.params['user'];		
         var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -1328,7 +1377,7 @@ ExiController.prototype.init = function(){
 	
 
 	Path.map("#/welcome/manager/:user/main").to(function() {
-        
+       
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -1337,7 +1386,7 @@ ExiController.prototype.init = function(){
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
-    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                    
+    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                         
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -1348,7 +1397,7 @@ ExiController.prototype.init = function(){
    
     
 	
-	Path.map("#/logout").to(function() {
+	Path.map("#/logout").to(function() {     
 		EXI.credentialManager.logout();
          EXI.hideNavigationPanel();
 		EXI.proposalManager.clear();
@@ -1681,13 +1730,7 @@ SessionController.prototype.init = function() {
 	Path.map("#/session/nav").to(function() {
 			EXI.clearNavigationPanel();
             EXI.hideNavigationPanel();	
-			/*EXI.setLoadingNavigationPanel(true);
-			listView = new SessionListView();
-			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/mx/datacollection/session/" + selected[0].sessionId + "/main";
-			});
-			EXI.addNavigationPanel(listView);
-            */
+		
             var mainView = new SessionMainView({
                 title : "Sessions"
             });
@@ -1695,10 +1738,9 @@ SessionController.prototype.init = function() {
             EXI.addMainPanel(mainView);
             
             var onSuccess = function(sender, data){
-            //    listView.load(EXI.proposalManager.getSessions().slice(0, 50));
+          
                  mainView.load(EXI.proposalManager.getSessions());
-            //    EXI.hideNavigationPanel();		
-            //    EXI.setLoadingNavigationPanel(false);
+         
                  EXI.setLoadingMainPanel(false);    
             };
             EXI.setLoadingMainPanel();
@@ -2136,7 +2178,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
 		cls : 'ExiSAXSMenuToolBar',
 //		hidden : this.isHidden,
-        disabled : false,
+        disabled : true,
 		menu : Ext.create('Ext.menu.Menu', {
 			items : [ 
 						{
@@ -3886,9 +3928,10 @@ SessionMainView.prototype.showCalendar = function(data) {
      var _this = this;
      $('#' + _this.id).empty();
      function editEvent(event) {
-                         _this.loadByDate(moment(new Date(event.startDate)).format("YYYYMMDD"));
+                    _this.loadByDate(moment(new Date(event.startDate)).format("YYYYMMDD"));
       }
-        $('#' + this.id).calendar({
+      
+      $('#' + this.id).calendar({
             enableContextMenu: true,
             enableRangeSelection: true,
             selectRange: function(e) {
@@ -3951,9 +3994,9 @@ SessionMainView.prototype.load = function(sessions) {
            startDate : new Date(sessions[i].BLSession_startDate), 
            endDate : new Date(sessions[i].BLSession_endDate)
         });
-        
+       
     }
-    
+   
     this.showCalendar(sessionForCalendar);
     this.subpanel.insert( this.sessionGrid.getPanel());
     //this.sessionGrid.load(sessions);
@@ -3984,7 +4027,7 @@ SessionMainView.prototype.loadByDate = function(start) {
           var _this = this;
           this.panel.setLoading(true);
           function onSuccess(sender, sessions){              
-        	  //_this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
+        	 
              _this.sessionGrid.load(sessions);
         	  _this.panel.setLoading(false);
           }
