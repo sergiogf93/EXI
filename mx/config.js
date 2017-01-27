@@ -107,7 +107,7 @@ var ExtISPyB ={
          }
 
       }
-	/*,    
+	,    
 
       {
          name:'ESRF TEST',
@@ -158,7 +158,7 @@ var ExtISPyB ={
                }                                             
             ]
          }
-      }*/
+      }
    ]
 };
 

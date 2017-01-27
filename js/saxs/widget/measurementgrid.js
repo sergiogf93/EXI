@@ -18,6 +18,8 @@
  */
 function MeasurementGrid(args) {
 	this.id = BUI.id();
+    
+    this.onRemoved = new Event(this);
 }
 
 
