@@ -8,6 +8,7 @@ function PuckFormView(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.unsavedChanges = false;
 	
 	if (args != null) {
 		if (args.height != null) {
@@ -22,10 +23,14 @@ function PuckFormView(args) {
 	var _this = this;
 	
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
+	this.containerSpreadSheet.onModified.attach(function (sender, change) {
+		_this.unsavedChanges = true;
+	});
 
 	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
+		_this.unsavedChanges = true;
 		_this.containerTypeChanged(capacity);
 	});
 	
@@ -122,7 +127,7 @@ PuckFormView.prototype.getPanel = function() {
 																name : 'name',
 																width : 250,
 																margin : '5 5 5 5',
-																labelWidth : 100
+																labelWidth : 100,
 														},
 														this.capacityCombo.getPanel(),
                                                         {
@@ -218,7 +223,7 @@ PuckFormView.prototype.removePuck = function() {
 	this.panel.setLoading();
 	var onSuccess = function(sender, data){
 		_this.panel.setLoading(false);
-        _this.returnToShipment();
+        location.href = "#/shipping/" + _this.shippingId + "/main";
         // _this.onRemoved.notify(containerId);
 	};
 	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(this.containerId,this.containerId,this.containerId );
@@ -226,15 +231,35 @@ PuckFormView.prototype.removePuck = function() {
 };
 
 PuckFormView.prototype.returnToShipment = function(){
-    location.href = "#/shipping/" + this.shippingId + "/main";
+    /**Check if the container's name has been changed */
+	if (this.puck.code != Ext.getCmp(this.id + 'puck_name').getValue()) {
+		this.unsavedChanges = true;
+	}
+	if (this.unsavedChanges) {
+		this.showReturnWarning();
+	} else {
+		location.href = "#/shipping/" + this.shippingId + "/main";
+	}
 }
 
-PuckFormView.prototype.save = function() {
+/**
+* Saves the container
+*
+* @method save
+* @param {Boolean} returnToShipment True if you want to return to shipment after the save
+*/
+PuckFormView.prototype.save = function(returnToShipment) {
 	var _this = this;
-	this.panel.setLoading("Saving Puck");
 
 	var puck = this.containerSpreadSheet.getPuck();
-
+	/** Check if all samples have name */
+	if (puck.sampleVOs && puck.sampleVOs.length > 0) {
+		var sampleNames = _.map(puck.sampleVOs,"name");
+		if(sampleNames.indexOf(null) >= 0 || sampleNames.indexOf("") >= 0) {
+			$.notify("There are samples without a Sample Name", "error");
+			return;
+		}
+	}
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getSelectedCapacity();
@@ -246,10 +271,15 @@ PuckFormView.prototype.save = function() {
 	};
     
 	var onSuccess = function(sender, puck){
+		_this.unsavedChanges = false;
 		_this.panel.setLoading(false);
-		_this.load(_this.containerId, _this.shippingId);
+		if (returnToShipment){
+			location.href = "#/shipping/" + _this.shippingId + "/main";
+		} else {
+			_this.load(_this.containerId, _this.shippingId);
+		}
 	};
-	
+	this.panel.setLoading("Saving Puck");
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
@@ -263,31 +293,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
 	this.containerSpreadSheet.setContainerType(newType);
-	var data = this.containerSpreadSheet.spreadSheet.getData();
-	//Sets the appropiate number of rows according to the capacity
-	if (data.length < capacity){
-		for (var i = data.length + 1; i<= capacity; i++){
-			data.push([i]);
-		}
-	}
-	else{
-		data = data.slice(0, capacity);
-	}
-	//Resets editCrystalForm column if exists
-	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
-	// if (columnIndex >= 0){
-	// 	var tableData = this.containerSpreadSheet.parseTableData();
-	// 	for (var i = 0 ; i < tableData.length ; i++) {
-	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
-	// 	}
-	// }
-	
-	//Changes the grid when changed from or to the type OTHER
-	this.containerSpreadSheet.spreadSheet.loadData(data);
-	if (currentType == "OTHER" || newType == "OTHER"){
-		this.puck.containerType = newType;
-		this.fillSamplesGrid(this.puck);
-	}
+	this.containerSpreadSheet.updateNumberOfRows(capacity);
 };
 
 /**
@@ -302,4 +308,37 @@ PuckFormView.prototype.setValuesForEditCrystalColumn = function(capacity) {
 	}
 	this.panel.doLayout();
 };
-				
+
+PuckFormView.prototype.showReturnWarning = function() {
+	var _this = this;
+	var window = Ext.create('Ext.window.Window', {
+		title: 'Container',
+		width: 250,
+		layout: 'fit',
+		modal : true,
+		items: [
+					{
+						html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;">Do you want to save the changes to the container ' + _this.puck.code + '?</span></div></div>',
+					}
+		],
+		buttons : [ {
+						text : 'Yes',
+						handler : function() {
+							window.close();
+							_this.save(true);
+						}
+					},{
+						text : 'No',
+						handler : function() {
+							window.close();
+							location.href = "#/shipping/" + _this.shippingId + "/main";
+						}
+					}, {
+						text : 'Cancel',
+						handler : function() {
+							window.close();
+						}
+					} ]
+	});
+	window.show();
+}		

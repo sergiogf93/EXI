@@ -20,7 +20,8 @@ function ContainerParcelPanel(args) {
                 enableMouseOver : true,
                 enableClick : true,
                 enableMainClick : true,
-                enableMainMouseOver : true
+                enableMainMouseOver : true,
+                containerId : 0
     };
     this.width = 2*this.data.mainRadius + 20;
     this.container = new ContainerWidget(this.data);
@@ -38,6 +39,7 @@ function ContainerParcelPanel(args) {
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
+            this.data.containerId = this.containerId;
 		}
         if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
@@ -160,7 +162,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
     
     if (this.height >= 45) {
         this.panel.insert({
-                    html : "<div class='container-fluid' align='center'><span style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
+                    html : "<div class='container-fluid' align='center'><span id='" + this.id + "-name' style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
                     height : this.height*0.25,
                     width : this.width
                 });
@@ -180,7 +182,9 @@ ContainerParcelPanel.prototype.load = function (samples) {
     this.containerPanel.add(this.container.getPanel());
     if (samples.length > 0){
         this.container.loadSamples(samples);
-        this.containerId = this.container.containerId;
+        if (!this.container.containerId) {
+            this.container.containerId = this.containerId;
+        }
         // this.shippingId = samples[0].Shipping_shippingId;
     }
     var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
@@ -232,13 +236,16 @@ ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
 	/** Opens a window with the cas form **/
 	var otherContainerForm = new OtherContainerForm();
 	otherContainerForm.onSave.attach(function(sender,container){
-		window.close();
+        $("#" + _this.id + "-name").html(container.code);
+        _this.container.samples = container.sampleVOs;
+        _this.container.capacity = container.capacity;
+        window.close();
 	})
-
+    
 	otherContainerForm.onCancel.attach(function(sender){
 		window.close();
 	})
-
+    
 	var window = Ext.create('Ext.window.Window', {
 	    title: 'Container',
 	    height: 600,

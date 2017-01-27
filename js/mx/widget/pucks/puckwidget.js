@@ -241,13 +241,13 @@ PuckWidget.prototype.load = function (data) {
 					});
 					$('body').append(tooltipHtml);
 					$('#hoveringTooltipDiv').css({
-						"top" : $(this).offset().top - 3*_this.data.cells[i].radius,
-						"left" : $(this).offset().left + 1.5*_this.data.cells[i].radius
+						"top" : $(this).offset().top - 3*_this.data.cells[cellIndex].radius,
+						"left" : $(this).offset().left + 1.5*_this.data.cells[cellIndex].radius
 					});
 					if (_this.data.cells[cellIndex].y - _this.data.mainRadius < 0) {
 						$('#hoveringTooltipDiv').css({
-							"top" : $(this).offset().top + 2*_this.data.cells[i].radius,
-							"left" : $(this).offset().left + _this.data.cells[i].radius
+							"top" : $(this).offset().top + 2*_this.data.cells[cellIndex].radius,
+							"left" : $(this).offset().left + _this.data.cells[cellIndex].radius
 						});
 					}
 				}

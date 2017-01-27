@@ -23,8 +23,8 @@ ShipmentEditForm.prototype.load = function(shipment) {
 
 	this.shipment = shipment;
 
-	var toData = EXI.proposalManager.getLabcontacts();
-	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
+	var fromData = EXI.proposalManager.getLabcontacts();
+	var toData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
     var html = "";
 	var beamlineName = "";
@@ -48,9 +48,23 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	var sessions = EXI.proposalManager.getSessions();
 	sessions.sort(sessionSort);
 	var sessionsSelectData = [];
+	var currentDay = new Date((new Date()).toDateString());
 	for (var i = 0 ; i < sessions.length ; i++){
 		var session = sessions[i];
-		sessionsSelectData.push({sessionId : session.sessionId, date : (new Date(session.BLSession_startDate)).toLocaleDateString(), beamLineName : session.beamLineName});
+		var sessionStartDate = (new Date(session.BLSession_startDate));
+		if (currentDay <= (new Date(sessionStartDate.toDateString())) ){
+			var dd = sessionStartDate.getDate();
+			var mm = sessionStartDate.getMonth()+1; //January is 0!
+			var yyyy = sessionStartDate.getFullYear();
+			if(dd<10){
+				dd='0'+dd;
+			} 
+			if(mm<10){
+				mm='0'+mm;
+			} 
+			var formattedDate = dd+'/'+mm+'/'+yyyy;
+			sessionsSelectData.push({sessionId : session.sessionId, date : sessionStartDate.toLocaleDateString(), formattedDate : formattedDate, beamLineName : session.beamLineName});
+		}
 	}
 	
 	

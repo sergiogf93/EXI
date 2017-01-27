@@ -10,7 +10,7 @@
                      {.DataCollectionGroup_startTime}
                      </span>                                   
                 </span>
-             <p>{.DataCollection_imageDirectory}</p>      
+             <p><b>{.DataCollection_imageDirectory}</b></p>      
             
          </div>
          <div class="pull-right">
@@ -58,7 +58,7 @@
                                                 <div class='summary_datacollection_failed'></div>
                                             {/eq}
                                         </td>
-                                        <td>Mosaicity</td> <td class='column_parameter_value'>{.ScreeningOutput_mosaicity}</td>
+                                        <td>Mosaicity</td> <td class='column_parameter_value'>{@decimal key="ScreeningOutput_mosaicity" decimals=2 /}</td>
                                     </tr>
                                   
                                     {@ne key=ScreeningOutput_strategySuccess value=null}                    
@@ -77,7 +77,7 @@
                                                             <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
                                                         </tr>  
                                                         <tr>
-                                                             <td>Transmission</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_transmission}</td>
+                                                             <td>Transmission</td> <td class='column_parameter_value'>{@decimal key="ScreeningStrategySubWedge_transmission" decimals=2 /}%</td>
                                                              <td></td> <td class='column_parameter_value'></td>
                                                             
                                                         </tr>     
@@ -89,7 +89,7 @@
                                             </tr>
                                                                                                                 
                                     {/ne}                                                                                                                                                                                                           
-                            </table> 
+                            </table>
                             {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
                                 {>"unitcell.screening.mxdatacollectiongrid.template"  /}  
                             {/eq}                             
@@ -119,13 +119,14 @@
               
                <div class="container-fluid">
                    <div class="col-xs-12 col-md-12">
-                               {.DataCollectionGroup_comments}
-                                {?SpaceGroupModelResolvedByPhasing}
-                                    <div class="alert alert-success" style='font-size:14px;'>
-                                        Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
-                                    </div>
-                                {/SpaceGroupModelResolvedByPhasing}
-                               
+                        {?DataCollectionGroup_comments}
+                                    <b>{@dataCollectionComment key="DataCollectionGroup_comments" /}</b>
+                        {/DataCollectionGroup_comments}
+                        {?SpaceGroupModelResolvedByPhasing}
+                            <div class="alert alert-success" style='font-size:14px;'>
+                                Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
+                            </div>
+                        {/SpaceGroupModelResolvedByPhasing}
                     </div>
                </div>
                

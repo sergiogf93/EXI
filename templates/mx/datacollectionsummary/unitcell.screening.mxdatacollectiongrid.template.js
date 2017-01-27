@@ -1,7 +1,7 @@
    <table class='table-sm table table-striped'>
                 <thead>   
                 <tr>
-                    <th  style='padding:0 15px 0 15px;'>cell A</th>
+                    <th  style='padding:0 15px 0 15px;'>TEEESTcell A</th>
                     <th style='padding:0 15px 0 15px;'>cell B</th>
                     <th style='padding:0 15px 0 15px;'>cell C</th>
                     
@@ -10,9 +10,9 @@
              <tbody>
             
                 <tr>
-                    <td  style='padding:0 15px 0 15px;'>{.ScreeningOutputLattice_unitCell_a}</td>
-                    <td style='padding:0 15px 0 15px;'>{.ScreeningOutputLattice_unitCell_b}</td>
-                    <td style='padding:0 15px 0 15px;'>{.ScreeningOutputLattice_unitCell_c}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="ScreeningOutputLattice_unitCell_a" decimals=2 /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="ScreeningOutputLattice_unitCell_b" decimals=2 /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="ScreeningOutputLattice_unitCell_c" decimals=2 /}</td>
                     
                 </tr>
          
@@ -24,9 +24,9 @@
                 </tr>
                
                 <tr>
-                    <td  style='padding:0 15px 0 15px;'>{.ScreeningOutputLattice_unitCell_alpha}</td>
-                    <td style='padding:0 15px 0 15px;'>{.ScreeningOutputLattice_unitCell_beta}</td>
-                    <td style='padding:0 15px 0 15px;'>{.ScreeningOutputLattice_unitCell_gamma}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="ScreeningOutputLattice_unitCell_alpha" decimals=2 /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="ScreeningOutputLattice_unitCell_beta" decimals=2 /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="ScreeningOutputLattice_unitCell_gamma" decimals=2 /}</td>
                     
                 </tr>
                  </tbody>

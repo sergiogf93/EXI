@@ -73,9 +73,13 @@ ShipmentForm.prototype.getPanel = function() {
 ShipmentForm.prototype.edit = function(dewar) {
 	var _this = this;
 	var shippingEditForm = new ShipmentEditForm();
-
+	
 	shippingEditForm.onSaved.attach(function (sender, shipment) {
-		_this.load(shipment);
+		if (_this.shipment) {
+			_this.load(shipment);
+		} else {
+			_this.onSaved.notify(shipment);
+		}
 		window.close();
 	});
 

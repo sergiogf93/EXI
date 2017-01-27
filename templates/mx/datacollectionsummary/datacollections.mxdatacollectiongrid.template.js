@@ -7,9 +7,9 @@
                     <th>Run</th>
                     <th>Prefix</th>
                     <th>#Images</th>
-                    <th>ExposureTime</th>
+                    <th>Exposure <br />Time</th>
                     <th>Res. (corner)</th>
-                    <th>Wavelenth</th>
+                    <th>Wavelength</th>
                     <th>Transmission</th>
                     <th>Directory</th>
                     <th>Time</th>
@@ -30,7 +30,7 @@
                     <td >{.exposureTime} s</td>
                     <td >{@decimal key="resolution" decimals=1}{/decimal} &#8491; ({@decimal key="resolutionAtCorner" decimals=1}{/decimal} &#8491;)</td>
                     <td > {@decimal key="wavelength" decimals=1}{/decimal} &#8491;</td>
-                    <td>{.transmission}%</td>
+                    <td>{@decimal key="transmission" decimals=2 intIfPossible="true" /}%</td>
                     <td>{.imageDirectory}</td>
                     <td>{.startTime}</td>
                     <td>{.runStatus}</td>

@@ -22,19 +22,36 @@ function OtherContainerForm(args) {
 
 OtherContainerForm.prototype.load = function (container) {
     if (container) {
+        // var _this = this;
         this.container = container;
-        Ext.getCmp(this.id + "container_name").setValue(container.code);
-        if (container.samples) {
-            this.container.capacity = container.samples.length;
-        } else {
-            this.container.capacity = 1;
+        if (!this.container.samples) {
+            this.container.samples = [];
         }
+        if (!this.container.capacity) {
+            this.container.capacity = container.samples.length;
+        }
+        
+        Ext.getCmp(this.id + "container_name").setValue(container.code);
+        Ext.getCmp(this.id + "capacity").setValue(this.container.capacity);
         this.containerSpreadSheet.load(this.container);
-	    this.panel.doLayout();
+        this.panel.doLayout();
+        // this.panel.setLoading(true);
+        // var onSuccess = function (sender, samples) {
+        //     if (samples) {
+        //         _this.container.capacity = samples.length;
+        //         _this.container.samples = samples;
+        //         _this.containerSpreadSheet.load(_this.container);
+        //         _this.panel.doLayout();
+        //         _this.panel.setLoading(false);
+        //     }
+        // }
+        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(container.containerId);
     }
 }
 
 OtherContainerForm.prototype.getPanel = function() {
+    var _this = this;
+
     this.panel = Ext.create('Ext.form.Panel', {
         // width : this.width - 10,
         // height : this.height,
@@ -64,9 +81,26 @@ OtherContainerForm.prototype.getPanel = function() {
 																margin : '5 5 5 5',
 																labelWidth : 100
 														},
-                                            ]
-                                        }
-                                        ]
+                                                        {
+																xtype: 'numberfield',
+																id : this.id + 'capacity',
+																fieldLabel : 'Capacity',
+																width : 250,
+                                                                disabled : false,
+																margin : '5 5 5 10',
+																labelWidth : 100,
+                                                                minValue: 0,
+                                                                listeners: {
+                                                                    'change': function(el, newValue, oldValue){
+                                                                                    _this.panel.setLoading(true);
+                                                                                    _this.containerSpreadSheet.updateNumberOfRows(newValue);
+                                                                                    _this.panel.setLoading(false);
+                                                                                }
+														        }
+                                                        }
+                                            ]   
+                                         }
+                            ]
                 },
                     this.containerSpreadSheet.getPanel()
                 ]
@@ -100,23 +134,24 @@ OtherContainerForm.prototype.getContainer = function () {
 OtherContainerForm.prototype.save = function() {
 	var _this = this;
 	this.panel.setLoading("Saving Puck");
-
+    
 	var puck = this.containerSpreadSheet.getPuck();
 
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'container_name').getValue();
-	puck.capacity = this.container.samples.length;
+	puck.capacity = Ext.getCmp(_this.id + 'capacity').getValue();
 	puck.containerType = "OTHER";
+    puck.containerId = this.container.containerId;
 	
     var onError = function(sender, error){
 		_this.panel.setLoading(false);
 		EXI.setError(error.responseText);
 	};
     
-	var onSuccess = function(sender, puck){
+	var onSuccess = function(sender){
 		_this.panel.setLoading(false);
-        _this.onSave.notify();
+        _this.onSave.notify(puck);
 	};
-    debugger
+    
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.container.containerId, this.container.containerId, this.container.containerId, puck);
 };
