@@ -1,10 +1,22 @@
 dust.helpers.decimal = function(chunk, context, bodies, params) {
-    if (params.key){            
+    if (params.key){
         var value = context.current()[params.key];
+        if (params.key.split(".").length > 1) {
+            var keys = params.key.split(".");
+            value = context.current()[keys[0]][keys[1]];
+        }
         if (value){
             if (params.decimals != null){
                 try{
-                        chunk.write(Number(value).toFixed(params.decimals));
+                        if (params.intIfPossible){
+                            if (parseInt(Number(value)) == Number(value)) {
+                                chunk.write(parseInt(Number(value)));
+                            } else {
+                                chunk.write(Number(value).toFixed(params.decimals));
+                            }
+                        } else {
+                            chunk.write(Number(value).toFixed(params.decimals));
+                        }
                 }
                 catch(e){
                     
@@ -17,14 +29,27 @@ dust.helpers.decimal = function(chunk, context, bodies, params) {
                 chunk.write(context.current()[params.key]);
             }
         }
-        
     }
     else{
         chunk.write('WARN: NO KEY SET');
     }
-        return chunk;
-    
+    return chunk;
 };
+
+dust.helpers.dataCollectionComment = function (chunk, context, bodies, params) {
+    if (params.key) {
+        var value = context.current()[params.key];
+        if (value){
+            if (value.trim() != "") {
+                chunk.write('Comment: ' + value);
+            }
+        }
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+    return chunk;
+}
 
 dust.helpers.sizeOf = function(chunk, context, bodies, params) {
   var value = this.size(chunk, context, bodies, params);

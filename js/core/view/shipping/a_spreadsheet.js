@@ -188,3 +188,16 @@ SpreadSheet.prototype.updateNumberOfRows = function (n) {
 		this.spreadSheet.loadData(data);
 	}
 }
+
+/**
+* Sets an empty value for all the cells in a given row
+*
+* @method emptyRow
+* @param {Integer} row The row index to be emptied
+*/
+SpreadSheet.prototype.emptyRow = function (row) {
+	var columnIds = this.getHeaderId();
+	for (var i = 1 ; i < columnIds.length ; i++) {
+		this.setDataAtCell(row,i,"");
+	}
+}

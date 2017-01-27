@@ -21,11 +21,11 @@
         <div class="col-md-10">
             <div class="col-md-3" style="padding:0px">
                 <div class="form-group row" style="margin:5px">
-                    <label class="col-md-3 col-form-label" style="font-weight:100;"><b>To:</b></label>
+                    <label class="col-md-3 col-form-label" style="font-weight:100;"><b>From:</b></label>
                     <label class="col-md-8">{shipment.sendingLabContactVO.cardName}</label>
                 </div>
                 <div class="form-group row" style="margin:5px">
-                    <label class="col-md-3 col-form-label" style="font-weight:100;"><b>From:</b></label>
+                    <label class="col-md-3 col-form-label" style="font-weight:100;"><b>Return address:</b></label>
                     <label class="col-md-8">{shipment.returnLabContactVO.cardName}</label>
                 </div>
             </div>

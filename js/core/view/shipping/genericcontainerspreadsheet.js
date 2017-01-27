@@ -18,6 +18,7 @@ GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.get
 GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
 GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
 GenericContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+GenericContainerSpreadSheet.prototype.emptyRow  = SpreadSheet.prototype.emptyRow;
 
 
 GenericContainerSpreadSheet.prototype.load = function(container){

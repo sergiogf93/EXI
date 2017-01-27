@@ -1,10 +1,22 @@
 dust.helpers.decimal = function(chunk, context, bodies, params) {
-    if (params.key){            
+    if (params.key){
         var value = context.current()[params.key];
+        if (params.key.split(".").length > 1) {
+            var keys = params.key.split(".");
+            value = context.current()[keys[0]][keys[1]];
+        }
         if (value){
             if (params.decimals != null){
                 try{
-                        chunk.write(Number(value).toFixed(params.decimals));
+                        if (params.intIfPossible){
+                            if (parseInt(Number(value)) == Number(value)) {
+                                chunk.write(parseInt(Number(value)));
+                            } else {
+                                chunk.write(Number(value).toFixed(params.decimals));
+                            }
+                        } else {
+                            chunk.write(Number(value).toFixed(params.decimals));
+                        }
                 }
                 catch(e){
                     
@@ -17,14 +29,27 @@ dust.helpers.decimal = function(chunk, context, bodies, params) {
                 chunk.write(context.current()[params.key]);
             }
         }
-        
     }
     else{
         chunk.write('WARN: NO KEY SET');
     }
-        return chunk;
-    
+    return chunk;
 };
+
+dust.helpers.dataCollectionComment = function (chunk, context, bodies, params) {
+    if (params.key) {
+        var value = context.current()[params.key];
+        if (value){
+            if (value.trim() != "") {
+                chunk.write('Comment: ' + value);
+            }
+        }
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+    return chunk;
+}
 
 dust.helpers.sizeOf = function(chunk, context, bodies, params) {
   var value = this.size(chunk, context, bodies, params);
@@ -4173,6 +4198,19 @@ SpreadSheet.prototype.updateNumberOfRows = function (n) {
 		this.spreadSheet.loadData(data);
 	}
 }
+
+/**
+* Sets an empty value for all the cells in a given row
+*
+* @method emptyRow
+* @param {Integer} row The row index to be emptied
+*/
+SpreadSheet.prototype.emptyRow = function (row) {
+	var columnIds = this.getHeaderId();
+	for (var i = 1 ; i < columnIds.length ; i++) {
+		this.setDataAtCell(row,i,"");
+	}
+}
 function AddContainerForm(args) {
     this.id = BUI.id();
     var _this = this;
@@ -4455,6 +4493,7 @@ ContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnI
 ContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
 ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
 ContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+ContainerSpreadSheet.prototype.emptyRow  = SpreadSheet.prototype.emptyRow;
 
 ContainerSpreadSheet.prototype.load = function(puck){
 	var _this = this;
@@ -4512,16 +4551,27 @@ ContainerSpreadSheet.prototype.load = function(puck){
 							for (var i = 0 ; i < changes.length ; i++) {
 								var change = changes[i];
 								if (change[2] != change[3]) {
-									_this.manageChange(change);
+									_this.manageChange(change, source);
 								}
 							}
 						}
 					} else if (source == "autofill") {
 						if (changes){
-							for (var i = 0 ; i < changes.length ; i++) {
-								var change = changes[i];
-								if (change[2] != change[3]) {
-									_this.manageChange(change);
+							/**Get the direction of the autofill and manage the change following that direction*/
+							var direction = Math.sign(changes[0][0] - _this.spreadSheet.getSelected()[0]);
+							if (direction == 1){
+								for (var i = 0 ; i < changes.length ; i++) {
+									var change = changes[i];
+									if (change[2] != change[3]) {
+										_this.manageChange(change, source, direction);
+									}
+								}
+							} else {
+								for (var i = changes.length - 1 ; i >= 0 ; i--) {
+									var change = changes[i];
+									if (change[2] != change[3]) {
+										_this.manageChange(change, source, direction);
+									}
 								}
 							}
 						}
@@ -4614,7 +4664,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             }, 
             { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
             { text :'Crystal<br /> Form', id : 'Crystal Form',column : {
-                                                                        width : 300,
+                                                                        width : 250,
                                                                         type: 'dropdown',
                                                                         source: function(query, process) {
                                                                             var colIndex = _this.getColumnIndex("Protein Acronym");
@@ -4637,13 +4687,13 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             { text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
             { text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
             { text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
-            { text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
+            { text :'Number of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
             { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
             { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
             { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
             // { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
             { text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
-            { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
+            { text :'Smiles', id :'Smiles', column : {width : 140}}, 
             { text :'Comments', id :'Comments', column : {width : 200}}
             ];
 
@@ -4679,6 +4729,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
         } 
         
 		sample["name"] = rows[i]["Sample Name"];
+		sample["Dewar_barCode"] = rows[i]["Pin BarCode"];
 		sample["smiles"] = rows[i]["Smiles"];
 		sample["location"]= rows[i]["location"];
 		sample["comments"] = rows[i]["Comments"];
@@ -4761,15 +4812,13 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 			var splitted = dataAtCrystalFormColumn.split("-");
 			parsed.spaceGroup = splitted[0].trim();
 			if (splitted.length > 1){
-				if(splitted[1].indexOf("|") >= 0){
-					var cells = splitted[1].trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
-					parsed.cellA = (cells.split("|")[0].split(":")[0] == "null")? null : cells.split("|")[0].split(":")[0];
-					parsed.cellB = (cells.split("|")[0].split(":")[1] == "null")? null : cells.split("|")[0].split(":")[1];
-					parsed.cellC = (cells.split("|")[0].split(":")[1] == "null")? null : cells.split("|")[0].split(":")[2];
-					parsed.cellAlpha = (cells.split("|")[1].split(":")[0] == "null")? null : cells.split("|")[1].split(":")[0];
-					parsed.cellBeta = (cells.split("|")[1].split(":")[1] == "null")? null : cells.split("|")[1].split(":")[1];
-					parsed.cellGamma = (cells.split("|")[1].split(":")[2] == "null")? null : cells.split("|")[1].split(":")[2];
-				}
+				var cells = (splitted[1] + "-" + splitted[2]).trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
+				parsed.cellA = (cells.split("-")[0].split(",")[0] == "null")? null : cells.split("-")[0].split(",")[0];
+				parsed.cellB = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[1];
+				parsed.cellC = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[2];
+				parsed.cellAlpha = (cells.split("-")[1].split(",")[0] == "null")? null : cells.split("-")[1].split(",")[0];
+				parsed.cellBeta = (cells.split("-")[1].split(",")[1] == "null")? null : cells.split("-")[1].split(",")[1];
+				parsed.cellGamma = (cells.split("-")[1].split(",")[2] == "null")? null : cells.split("-")[1].split(",")[2];
 			} else {
 				parsed.cellA = 0;
 				parsed.cellB = 0;
@@ -4796,7 +4845,7 @@ ContainerSpreadSheet.prototype.getCrystalInfo = function (crystal) {
         } else if (crystal.cellA == 0 && crystal.cellB == 0 && crystal.cellC == 0 && crystal.cellAlpha == 0 && crystal.cellBeta == 0 && crystal.cellGamma == 0 ){
             return crystal.spaceGroup
         }
-        return crystal.spaceGroup + " - (" + crystal.cellA + " : " + crystal.cellB + " : " + crystal.cellC + " | " + crystal.cellAlpha + " : " + crystal.cellBeta + " : " + crystal.cellGamma + ")";
+        return crystal.spaceGroup + " - (" + crystal.cellA + " , " + crystal.cellB + " , " + crystal.cellC + " - " + crystal.cellAlpha + " , " + crystal.cellBeta + " , " + crystal.cellGamma + ")";
     } catch (e) {
         return "";
     }
@@ -4812,6 +4861,9 @@ ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
 
 ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	var _this = this;
+
+	/** Check if other samples share this crystal form */
+
 	var editCrystalForm = new EditCrystalFormView();
 
 	editCrystalForm.onSaved.attach(function (sender, crystal) {
@@ -4892,10 +4944,11 @@ ContainerSpreadSheet.prototype.disableAll = function () {
 * Method executed when a change is made on the spreadSheet. It manages the process when the crystal form or the protein acronym are changed
 *
 * @method manageChange
-* @param {Object} change The change made to the spreadSheet
+* @param {Array} change The change made to the spreadSheet as an array of the form [row, column, prevValue, newValue]
+* @param {String} source The kind of change. Can be "edit" or "autofill"
+* @param {Integer} direction In case of the source being autofill, this parameter indicates the direction of it
 */
-ContainerSpreadSheet.prototype.manageChange = function (change){
-	var _this = this;
+ContainerSpreadSheet.prototype.manageChange = function (change, source, direction){
 	switch (change[1]) { //Column Index
 		case this.crystalFormIndex : {
 			var parsed = this.parseCrystalFormColumn(change[3],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
@@ -4916,8 +4969,23 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 		}
 		case this.getColumnIndex("Protein Acronym") : {
             if (change[3] == ""){
-                this.resetCrystalGroup(change[0]);
+				this.emptyRow(change[0]);
             } else {
+				/**Manage the sample name column */
+				if (change[0] > 0){
+					var colIdx = this.getColumnIndex("Sample Name");
+					var currentName = this.spreadSheet.getDataAtCell(change[0],colIdx);
+					if (currentName == undefined || currentName == "") {
+						var nameSampleAbove = this.spreadSheet.getDataAtCell(change[0] - 1, colIdx);
+						if (nameSampleAbove != null && nameSampleAbove != "") {
+							var autoincremented = this.autoIncrement(nameSampleAbove, 1);
+							if (autoincremented != "") {
+								this.setDataAtCell(change[0],colIdx,autoincremented);
+							}
+						}
+					}
+				}
+				/**Manage the crystal form column */
                 var parsed = this.parseCrystalFormColumn(this.getData()[change[0]][this.crystalFormIndex],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
                 if (!this.isCrystalFormAvailable(parsed,change[3])){
                     this.resetCrystalGroup(change[0]);
@@ -4926,15 +4994,49 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
                         var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
                         if (crystalsByProteinId && crystalsByProteinId.length > 0){
                             var crystal = _.maxBy(crystalsByProteinId,"crystalId");
-                            _this.updateCrystalGroup(change[0],crystal);
+                            this.updateCrystalGroup(change[0],crystal);
                         }
                     }
                 }
             }
 			break;
 		}
+		case this.getColumnIndex("Sample Name") : {
+            if (source == "autofill" && change[3] != ""){
+				var autoincremented = this.autoIncrement(this.spreadSheet.getDataAtCell(change[0] - direction, change[1]), direction);
+				if (autoincremented != "") {
+					this.setDataAtCell(change[0],change[1],autoincremented);
+				}
+            }
+			break;
+		}
 	}
+	if (change[1] != this.getColumnIndex("editCrystalForm")){
+		this.onModified.notify(change);
+	}
+	$(".htInvalid").removeClass("htInvalid");
 };
+
+/**
+* Returns an autoincremented string
+*
+* @method autoIncrement
+* @param {String} value The string to be incremented
+* @param {Integer} direction The direction on which the string is going to be incremented
+*/
+ContainerSpreadSheet.prototype.autoIncrement = function (value, direction) {
+	var autoincremented = "";
+	var regex = /(\d+)/g;
+	var numbers = value.match(regex);
+	if (numbers) {
+		var lastNumber = numbers[numbers.length - 1];
+		/**Check if there are any other characters after the last number */
+		if (value.lastIndexOf(lastNumber) == value.length - lastNumber.length) {
+			autoincremented = value.substring(0,value.length - lastNumber.length) + (parseInt(lastNumber) + direction);
+		}
+	}
+	return autoincremented;
+}
 
 /**
 * Returns true if the parseCrystalForm is available for the given proteinAcronym
@@ -5289,6 +5391,7 @@ GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.get
 GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
 GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
 GenericContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+GenericContainerSpreadSheet.prototype.emptyRow  = SpreadSheet.prototype.emptyRow;
 
 
 GenericContainerSpreadSheet.prototype.load = function(container){
@@ -5759,6 +5862,7 @@ function PuckFormView(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.unsavedChanges = false;
 	
 	if (args != null) {
 		if (args.height != null) {
@@ -5773,10 +5877,14 @@ function PuckFormView(args) {
 	var _this = this;
 	
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
+	this.containerSpreadSheet.onModified.attach(function (sender, change) {
+		_this.unsavedChanges = true;
+	});
 
 	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
+		_this.unsavedChanges = true;
 		_this.containerTypeChanged(capacity);
 	});
 	
@@ -5873,7 +5981,7 @@ PuckFormView.prototype.getPanel = function() {
 																name : 'name',
 																width : 250,
 																margin : '5 5 5 5',
-																labelWidth : 100
+																labelWidth : 100,
 														},
 														this.capacityCombo.getPanel(),
                                                         {
@@ -5969,7 +6077,7 @@ PuckFormView.prototype.removePuck = function() {
 	this.panel.setLoading();
 	var onSuccess = function(sender, data){
 		_this.panel.setLoading(false);
-        _this.returnToShipment();
+        location.href = "#/shipping/" + _this.shippingId + "/main";
         // _this.onRemoved.notify(containerId);
 	};
 	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(this.containerId,this.containerId,this.containerId );
@@ -5977,15 +6085,35 @@ PuckFormView.prototype.removePuck = function() {
 };
 
 PuckFormView.prototype.returnToShipment = function(){
-    location.href = "#/shipping/" + this.shippingId + "/main";
+    /**Check if the container's name has been changed */
+	if (this.puck.code != Ext.getCmp(this.id + 'puck_name').getValue()) {
+		this.unsavedChanges = true;
+	}
+	if (this.unsavedChanges) {
+		this.showReturnWarning();
+	} else {
+		location.href = "#/shipping/" + this.shippingId + "/main";
+	}
 }
 
-PuckFormView.prototype.save = function() {
+/**
+* Saves the container
+*
+* @method save
+* @param {Boolean} returnToShipment True if you want to return to shipment after the save
+*/
+PuckFormView.prototype.save = function(returnToShipment) {
 	var _this = this;
-	this.panel.setLoading("Saving Puck");
 
 	var puck = this.containerSpreadSheet.getPuck();
-
+	/** Check if all samples have name */
+	if (puck.sampleVOs && puck.sampleVOs.length > 0) {
+		var sampleNames = _.map(puck.sampleVOs,"name");
+		if(sampleNames.indexOf(null) >= 0 || sampleNames.indexOf("") >= 0) {
+			$.notify("There are samples without a Sample Name", "error");
+			return;
+		}
+	}
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getSelectedCapacity();
@@ -5997,10 +6125,15 @@ PuckFormView.prototype.save = function() {
 	};
     
 	var onSuccess = function(sender, puck){
+		_this.unsavedChanges = false;
 		_this.panel.setLoading(false);
-		_this.load(_this.containerId, _this.shippingId);
+		if (returnToShipment){
+			location.href = "#/shipping/" + _this.shippingId + "/main";
+		} else {
+			_this.load(_this.containerId, _this.shippingId);
+		}
 	};
-	
+	this.panel.setLoading("Saving Puck");
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
@@ -6029,7 +6162,40 @@ PuckFormView.prototype.setValuesForEditCrystalColumn = function(capacity) {
 	}
 	this.panel.doLayout();
 };
-				
+
+PuckFormView.prototype.showReturnWarning = function() {
+	var _this = this;
+	var window = Ext.create('Ext.window.Window', {
+		title: 'Container',
+		width: 250,
+		layout: 'fit',
+		modal : true,
+		items: [
+					{
+						html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;">Do you want to save the changes to the container ' + _this.puck.code + '?</span></div></div>',
+					}
+		],
+		buttons : [ {
+						text : 'Yes',
+						handler : function() {
+							window.close();
+							_this.save(true);
+						}
+					},{
+						text : 'No',
+						handler : function() {
+							window.close();
+							location.href = "#/shipping/" + _this.shippingId + "/main";
+						}
+					}, {
+						text : 'Cancel',
+						handler : function() {
+							window.close();
+						}
+					} ]
+	});
+	window.show();
+}		
 function ShipmentEditForm(args) {
     this.id = BUI.id();
 
@@ -6055,8 +6221,8 @@ ShipmentEditForm.prototype.load = function(shipment) {
 
 	this.shipment = shipment;
 
-	var toData = EXI.proposalManager.getLabcontacts();
-	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
+	var fromData = EXI.proposalManager.getLabcontacts();
+	var toData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
     var html = "";
 	var beamlineName = "";
@@ -6080,9 +6246,23 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	var sessions = EXI.proposalManager.getSessions();
 	sessions.sort(sessionSort);
 	var sessionsSelectData = [];
+	var currentDay = new Date((new Date()).toDateString());
 	for (var i = 0 ; i < sessions.length ; i++){
 		var session = sessions[i];
-		sessionsSelectData.push({sessionId : session.sessionId, date : (new Date(session.BLSession_startDate)).toLocaleDateString(), beamLineName : session.beamLineName});
+		var sessionStartDate = (new Date(session.BLSession_startDate));
+		if (currentDay <= (new Date(sessionStartDate.toDateString())) ){
+			var dd = sessionStartDate.getDate();
+			var mm = sessionStartDate.getMonth()+1; //January is 0!
+			var yyyy = sessionStartDate.getFullYear();
+			if(dd<10){
+				dd='0'+dd;
+			} 
+			if(mm<10){
+				mm='0'+mm;
+			} 
+			var formattedDate = dd+'/'+mm+'/'+yyyy;
+			sessionsSelectData.push({sessionId : session.sessionId, date : sessionStartDate.toLocaleDateString(), formattedDate : formattedDate, beamLineName : session.beamLineName});
+		}
 	}
 	
 	
