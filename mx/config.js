@@ -83,10 +83,10 @@ var ExtISPyB ={
                    name : "ID30A-1",
                    sampleChangerType : 'RoboDiff'
                },
-            //    { 
-            //        name : "ID30A-2",
-            //        sampleChangerType : 'SC3'
-            //    },
+               { 
+                   name : "ID30A-2",
+                   sampleChangerType : 'SC3'
+               },
                { 
                    name : "ID30A-3",
                    sampleChangerType : 'SC3'
@@ -136,10 +136,10 @@ var ExtISPyB ={
                    name : "ID30A-1",
                    sampleChangerType : 'RoboDiff'
                },
-            //    { 
-            //        name : "ID30A-2",
-            //        sampleChangerType : 'SC3'
-            //    },
+               { 
+                   name : "ID30A-2",
+                   sampleChangerType : 'SC3'
+               },
                { 
                    name : "ID30A-3",
                    sampleChangerType : 'SC3'

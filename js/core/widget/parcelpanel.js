@@ -49,10 +49,11 @@ function ParcelPanel(args) {
 
 }
 
-ParcelPanel.prototype.load = function(dewar) {
+ParcelPanel.prototype.load = function(dewar, shipment) {
 	var _this = this;
 	this.dewar = dewar;
 	this.dewar.index = this.index;
+	this.shipment = shipment;
 	
 	/** Loading the template **/
 	var html = "";
@@ -161,7 +162,6 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				debugger
 				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
@@ -241,6 +241,13 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	} else {
 		var onSuccess = function(sender, container){
 			container.code = containerVO.code;
+			container.containerStatus = _this.dewar.dewarStatus;
+			container.sampleChangerLocation = _this.dewar.storageLocation;
+			if (_this.shipment) {
+				if (_this.shipment.sessions && _this.shipment.sessions.length > 0) {
+					container.beamlineLocation = _this.shipment.sessions[0].beamlineName;
+				}
+			}
 			container.sampleVOs = [];
 			_this.dewar.containerVOs.push(container);
 			

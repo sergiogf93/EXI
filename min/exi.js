@@ -1,10 +1,22 @@
 dust.helpers.decimal = function(chunk, context, bodies, params) {
-    if (params.key){            
+    if (params.key){
         var value = context.current()[params.key];
+        if (params.key.split(".").length > 1) {
+            var keys = params.key.split(".");
+            value = context.current()[keys[0]][keys[1]];
+        }
         if (value){
             if (params.decimals != null){
                 try{
-                        chunk.write(Number(value).toFixed(params.decimals));
+                        if (params.intIfPossible){
+                            if (parseInt(Number(value)) == Number(value)) {
+                                chunk.write(parseInt(Number(value)));
+                            } else {
+                                chunk.write(Number(value).toFixed(params.decimals));
+                            }
+                        } else {
+                            chunk.write(Number(value).toFixed(params.decimals));
+                        }
                 }
                 catch(e){
                     
@@ -17,14 +29,27 @@ dust.helpers.decimal = function(chunk, context, bodies, params) {
                 chunk.write(context.current()[params.key]);
             }
         }
-        
     }
     else{
         chunk.write('WARN: NO KEY SET');
     }
-        return chunk;
-    
+    return chunk;
 };
+
+dust.helpers.dataCollectionComment = function (chunk, context, bodies, params) {
+    if (params.key) {
+        var value = context.current()[params.key];
+        if (value){
+            if (value.trim() != "") {
+                chunk.write('Comment: ' + value);
+            }
+        }
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+    return chunk;
+}
 
 dust.helpers.sizeOf = function(chunk, context, bodies, params) {
   var value = this.size(chunk, context, bodies, params);
@@ -59,8 +84,8 @@ dust.helpers.exponential = function(chunk, context, bodies, params) {
     
 };
 
-dust.helpers.mmVolTest = function(chunk, context, bodies, params) {         
-    var value = context.current()["Subtraction_volumePorod"];
+dust.helpers.mmVolTest = function(chunk, context, bodies, params) {      
+    var value = context.current()["Subtraction_volume"];
     if (value){
         try{
                 chunk.write(Number(value / 2).toFixed(1) + " - " + Number(value / 1.5).toFixed(1));
@@ -1410,14 +1435,14 @@ LabContactExiController.prototype.init = function() {
 			adapter.proposal.labcontacts.getLabContacts();
 			
 			/** Loading welcome page **/
-			EXI.addMainPanel(new AddressWelcomeMainView());
+			// EXI.addMainPanel(new AddressWelcomeMainView());
 			
 		}).enter(this.setPageBackground);
 		
-		Path.map("#/proposal/address/:lacontactId/main").to(function() {
+		Path.map("#/proposal/address/:labcontactId/main").to(function() {
 			var mainView = new AddressMainView();
 			EXI.addMainPanel(mainView);
-			mainView.load(this.params['lacontactId']);
+			mainView.load(this.params['labcontactId']);
 		}).enter(this.setPageBackground);
 		
 };
@@ -1763,7 +1788,7 @@ ShippingExiController.prototype.init = function() {
 
 		Path.map("#/proposal/shipping/nav").to(function() {
 			loadShipmentNavigationList();
-			EXI.addMainPanel(new ShippingWelcomeMainView());
+			// EXI.addMainPanel(new ShippingWelcomeMainView());
 		});
 		
 		Path.map("#/shipping/:shippingId/main").to(function() {
@@ -1973,17 +1998,17 @@ MainMenu.prototype.getHomeItem = function() {
 
 MainMenu.prototype.getShipmentItem = function() { 
 	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Shipments") {
-			location.hash = "/proposal/shipping/nav";
-		}
-		if (item.text == "Manage shipping addresses") {
-			location.hash = "/proposal/addresses/nav";
-		}
-		if (item.text == "Shipment List") {
-			location.hash = "/proposal/shipping/nav";
-		}
-	}
+	// function onItemCheck(item, checked) {
+	// 	if (item.text == "Shipments") {
+	// 		location.hash = "/proposal/shipping/nav";
+	// 	}
+	// 	if (item.text == "Manage shipping addresses") {
+	// 		location.hash = "/proposal/addresses/nav";
+	// 	}
+	// 	if (item.text == "Shipment List") {
+	// 		location.hash = "/proposal/shipping/nav";
+	// 	}
+	// }
 
 	function getBiosaxsMenu() {
 		var _this = this;
@@ -2003,8 +2028,109 @@ MainMenu.prototype.getShipmentItem = function() {
 						} 
 			] });
 	}
+
+	function getLabContactsMenu() {
+		var _this = this;
+		function onItemCheck(item, checked) {
+			if (item.text == "Add new") {
+				var addressEditForm = new AddressEditForm();
 	
+				addressEditForm.onSaved.attach(function (sender, address) {
+					window.close();
+					location.hash = "#/proposal/address/" + address.labContactId + "/main";
+				});
+
+				var window = Ext.create('Ext.window.Window', {
+					title : 'Shipping Address Card',
+					height: 550,
+	   				width: 750,
+					modal : true,
+					layout : 'fit',
+					items : [ addressEditForm.getPanel() ],
+					buttons : [ {
+							text : 'Save',
+							handler : function() {
+								addressEditForm.save();
+							}
+						}, {
+							text : 'Cancel',
+							handler : function() {
+								window.close();
+							}
+						} ]
+				}).show();
+
+				addressEditForm.load();
+			} else if (item.text == "List") {
+				location.hash = "/proposal/addresses/nav";
+			}
+		}
+
+		return Ext.create('Ext.menu.Menu', {
+			items : [ 
+						{
+							text : 'Add new',
+							icon : '../images/icon/add.png',
+							handler : onItemCheck 
+						}, {
+							text : 'List',
+							icon : '../images/icon/ic_list_black_24dp.png',
+							handler : onItemCheck 
+						} 
+			] });
+	}
 	
+	function getShipmentsMenu() {
+		var _this = this;
+		function onItemCheck(item, checked) {
+			if (item.text == "Add new") {
+				var shippingEditForm = new ShipmentEditForm();
+				
+				shippingEditForm.onSaved.attach(function (sender, shipment) {
+					window.close();
+					location.hash = "#/shipping/"+ shipment.shippingId +"/main"
+				});
+
+				var window = Ext.create('Ext.window.Window', {
+					title : 'Shipment',
+					height : 450,
+					width : 600,
+					modal : true,
+					layout : 'fit',
+					items : [ shippingEditForm.getPanel() ],
+					buttons : [ {
+							text : 'Save',
+							handler : function() {
+								shippingEditForm.saveShipment();
+							}
+						}, {
+							text : 'Cancel',
+							handler : function() {
+								window.close();
+							}
+						} ]
+				}).show();
+
+				shippingEditForm.load();
+			} else if (item.text == "List") {
+				location.hash = "/proposal/shipping/nav";
+			}
+			
+		}
+
+		return Ext.create('Ext.menu.Menu', {
+			items : [ 
+						{
+							text : 'Add new',
+							icon : '../images/icon/add.png',
+							handler : onItemCheck 
+						}, {
+							text : 'List',
+							icon : '../images/icon/ic_list_black_24dp.png',
+							handler : onItemCheck 
+						} 
+			] });
+	}
 	
 	return {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
@@ -2021,12 +2147,12 @@ MainMenu.prototype.getShipmentItem = function() {
 						{
 							text : 'Manage shipping addresses',
 							icon : '../images/icon/contacts.png',
-							handler : onItemCheck 
+							menu : getLabContactsMenu() 
 						}, 
 						{
 							text : 'Shipments',
 							icon : '../images/icon/shipping.png',
-							handler : onItemCheck 
+							menu : getShipmentsMenu() 
 						} 
 					] })
 	};
@@ -2171,11 +2297,11 @@ MainMenu.prototype.getLoginButton = function() {
 };
 
 MainMenu.prototype.getPanel = function() {
-	var _this = this;
+	
 	
 	this.credentialsMenu = new Ext.menu.Menu({
-		id : _this.id + "menu",
-		items : [_this.getAddCredentialMenu()] 
+		id : this.id + "menu",
+		items : [this.getAddCredentialMenu()] 
 	});
 	
 	var items  = this.getMenuItems();
@@ -3003,7 +3129,7 @@ function AddressMainView() {
 
 	MainView.call(this);
 
-	this.addressForm = new AddressForm();
+	this.addressForm = new AddressForm({width : Ext.getBody().getWidth()*0.9});
 	
 	
 	this.onSelect = new Event(this);
@@ -3015,7 +3141,7 @@ AddressMainView.prototype.getPanel = MainView.prototype.getPanel;
 AddressMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
 	    layout: {
-	        type: 'hbox'
+	        type: 'fit'
 	    },
 	    margin : 15,
 	    border: 1,
@@ -3084,17 +3210,18 @@ ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 */
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
     
-    EXI.mainStatusBar.showBusy("Loading proposal " +proposal); 
+    //EXI.mainStatusBar.showBusy("Loading proposal " +proposal); 
     
 	EXI.credentialManager.setActiveProposal(this.username, proposal);
     EXI.proposalManager.clear();
 	/** I don't need this to be synchronous **/	
-    EXI.proposalManager.onActiveProposalChanged = new Event();
+    /*EXI.proposalManager.onActiveProposalChanged = new Event();
     EXI.proposalManager.onActiveProposalChanged.attach(function(){
         EXI.mainStatusBar.showReady();
-        console.log(EXI.proposalManager.get());
+        
     });
-	EXI.proposalManager.get();
+    
+	EXI.proposalManager.get();*/
 };
 
 
@@ -3898,6 +4025,7 @@ function SpreadSheet(args){
 			this.containerType = args.containerType;
 		}
 	}
+
 }
 
 SpreadSheet.prototype.getPanel = function(){
@@ -4047,6 +4175,41 @@ SpreadSheet.prototype.setDataAtCell = function (rowIndex, columnIndex, value) {
 */
 SpreadSheet.prototype.getColumnIndex = function (colId) {
 	return _.findIndex(this.getHeader(),{id :colId});
+}
+
+/**
+* Changes the number of rows in the grid
+*
+* @method updateNumberOfRows
+* @param {Integer} n The new number of rows
+*/
+SpreadSheet.prototype.updateNumberOfRows = function (n) {
+	if (this.spreadSheet) {
+		var data = this.spreadSheet.getData();
+		//Sets the appropiate number of rows according to the capacity
+		if (data.length < n){
+			for (var i = data.length + 1; i<= n; i++){
+				data.push([i]);
+			}
+		}
+		else{
+			data = data.slice(0, n);
+		}
+		this.spreadSheet.loadData(data);
+	}
+}
+
+/**
+* Sets an empty value for all the cells in a given row
+*
+* @method emptyRow
+* @param {Integer} row The row index to be emptied
+*/
+SpreadSheet.prototype.emptyRow = function (row) {
+	var columnIds = this.getHeaderId();
+	for (var i = 1 ; i < columnIds.length ; i++) {
+		this.setDataAtCell(row,i,"");
+	}
 }
 function AddContainerForm(args) {
     this.id = BUI.id();
@@ -4308,7 +4471,7 @@ function ContainerSpreadSheet(args){
     this.crystalInfoToIdMap = {};
 
 	this.crystalFormIndex = -1;
-	this.unitCellIndex = -1;
+	// this.unitCellIndex = -1;
 	this.spaceGroupIndex = -1;
 	
 	this.onModified = new Event(this);
@@ -4328,15 +4491,18 @@ ContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
 ContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
 ContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
 ContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
-ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+ContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
+ContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+ContainerSpreadSheet.prototype.emptyRow  = SpreadSheet.prototype.emptyRow;
 
 ContainerSpreadSheet.prototype.load = function(puck){
 	var _this = this;
 	this.puck = puck;
 	var container = document.getElementById(this.id + '_samples');
 	this.crystalFormIndex = this.getColumnIndex('Crystal Form');
-	this.unitCellIndex = this.getColumnIndex('Unit cell');
+	// this.unitCellIndex = this.getColumnIndex('Unit cell');
 	this.spaceGroupIndex = this.getColumnIndex("Space Group");
+	var data = this.getSamplesData(puck);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -4358,7 +4524,7 @@ ContainerSpreadSheet.prototype.load = function(puck){
 		    		td.className = 'custom-row-text-required';
 		  	    }
 	    }
-		if ((col == _this.unitCellIndex) || col == _this.spaceGroupIndex) {
+		if (/*(col == _this.unitCellIndex) || */col == _this.spaceGroupIndex) {
 			td.style.background = '#EEE';
 		}
 	  }
@@ -4367,6 +4533,9 @@ ContainerSpreadSheet.prototype.load = function(puck){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(container, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
@@ -4382,23 +4551,33 @@ ContainerSpreadSheet.prototype.load = function(puck){
 							for (var i = 0 ; i < changes.length ; i++) {
 								var change = changes[i];
 								if (change[2] != change[3]) {
-									_this.manageChange(change);
+									_this.manageChange(change, source);
 								}
 							}
 						}
 					} else if (source == "autofill") {
 						if (changes){
-							for (var i = 0 ; i < changes.length ; i++) {
-								var change = changes[i];
-								if (change[2] != change[3]) {
-									_this.manageChange(change);
+							/**Get the direction of the autofill and manage the change following that direction*/
+							var direction = Math.sign(changes[0][0] - _this.spreadSheet.getSelected()[0]);
+							if (direction == 1){
+								for (var i = 0 ; i < changes.length ; i++) {
+									var change = changes[i];
+									if (change[2] != change[3]) {
+										_this.manageChange(change, source, direction);
+									}
+								}
+							} else {
+								for (var i = changes.length - 1 ; i >= 0 ; i--) {
+									var change = changes[i];
+									if (change[2] != change[3]) {
+										_this.manageChange(change, source, direction);
+									}
 								}
 							}
 						}
 					}
 				},
-				data: this.getSamplesData(puck),
-			
+				data: data,
 				height : this.height,
 				width : this.width,
 				manualColumnResize: true,
@@ -4447,7 +4626,9 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
                         // crystal.crystalId,
                         (i+1), 
                         protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
-                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,this.getUnitCellInfo(crystal),crystal.spaceGroup, sample.smiles, sample.comments
+                        diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
+						// this.getUnitCellInfo(crystal),
+						crystal.spaceGroup, sample.smiles, sample.comments
                     ]
                 );
         }
@@ -4476,14 +4657,14 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             // { text :'', id :'crystalId', column : {width : 100}}, 
             { text : '#', 	id: 'position', column : {width : 20}}, 
             { text :'Protein <br />Acronym', id :'Protein Acronym', 	column :  {
-                                                                                        width : 60,
+                                                                                        width : 80,
                                                                                         type: 'dropdown',
                                                                                         source: this.getAcronyms()
                                                                                     }
             }, 
             { text :'Sample<br /> Name', id :'Sample Name', column : {width : 120}}, 
             { text :'Crystal<br /> Form', id : 'Crystal Form',column : {
-                                                                        width : 300,
+                                                                        width : 250,
                                                                         type: 'dropdown',
                                                                         source: function(query, process) {
                                                                             var colIndex = _this.getColumnIndex("Protein Acronym");
@@ -4506,13 +4687,13 @@ ContainerSpreadSheet.prototype.getHeader = function() {
             { text :'Pre-observed <br />resolution', id : 'Pre-observed resolution', column : {width : 80}}, 
             { text :'Needed<br /> resolution',  id :'Needed resolution', column : {width : 60}}, 
             { text :'Pref. <br />Diameter', id :'Pref. Diameter',column : {width : 60}}, 
-            { text :'Number Of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
+            { text :'Number of<br /> positions', id :'Number Of positions', column : {width : 80}}, 
             { text :'Radiation<br /> Sensitivity', id :'Radiation Sensitivity', column : {width : 80}}, 
             { text :'Required<br /> multiplicity', id :'Required multiplicity', column : {width : 60}}, 
             { text :'Required<br /> Completeness', id :'Required Completeness', column : {width : 80}}, 
-            { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
+            // { text :'Unit Cell', id :'Unit cell', column : {width : 150, renderer: disabledRenderer, editor : false, readOnly: true}}, 
             { text :'Space <br /> Group', id :'Space Group', column : {width : 55, renderer: disabledRenderer, editor : false, readOnly: true}}, 
-            { text :'Smiles', id :'Required Completeness', column : {width : 45}}, 
+            { text :'Smiles', id :'Smiles', column : {width : 140}}, 
             { text :'Comments', id :'Comments', column : {width : 200}}
             ];
 
@@ -4548,6 +4729,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
         } 
         
 		sample["name"] = rows[i]["Sample Name"];
+		sample["Dewar_barCode"] = rows[i]["Pin BarCode"];
 		sample["smiles"] = rows[i]["Smiles"];
 		sample["location"]= rows[i]["location"];
 		sample["comments"] = rows[i]["Comments"];
@@ -4630,15 +4812,13 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 			var splitted = dataAtCrystalFormColumn.split("-");
 			parsed.spaceGroup = splitted[0].trim();
 			if (splitted.length > 1){
-				if(splitted[1].indexOf("|") >= 0){
-					var cells = splitted[1].trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
-					parsed.cellA = (cells.split("|")[0].split(":")[0] == "null")? null : cells.split("|")[0].split(":")[0];
-					parsed.cellB = (cells.split("|")[0].split(":")[1] == "null")? null : cells.split("|")[0].split(":")[1];
-					parsed.cellC = (cells.split("|")[0].split(":")[1] == "null")? null : cells.split("|")[0].split(":")[2];
-					parsed.cellAlpha = (cells.split("|")[1].split(":")[0] == "null")? null : cells.split("|")[1].split(":")[0];
-					parsed.cellBeta = (cells.split("|")[1].split(":")[1] == "null")? null : cells.split("|")[1].split(":")[1];
-					parsed.cellGamma = (cells.split("|")[1].split(":")[2] == "null")? null : cells.split("|")[1].split(":")[2];
-				}
+				var cells = (splitted[1] + "-" + splitted[2]).trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
+				parsed.cellA = (cells.split("-")[0].split(",")[0] == "null")? null : cells.split("-")[0].split(",")[0];
+				parsed.cellB = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[1];
+				parsed.cellC = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[2];
+				parsed.cellAlpha = (cells.split("-")[1].split(",")[0] == "null")? null : cells.split("-")[1].split(",")[0];
+				parsed.cellBeta = (cells.split("-")[1].split(",")[1] == "null")? null : cells.split("-")[1].split(",")[1];
+				parsed.cellGamma = (cells.split("-")[1].split(",")[2] == "null")? null : cells.split("-")[1].split(",")[2];
 			} else {
 				parsed.cellA = 0;
 				parsed.cellB = 0;
@@ -4665,7 +4845,7 @@ ContainerSpreadSheet.prototype.getCrystalInfo = function (crystal) {
         } else if (crystal.cellA == 0 && crystal.cellB == 0 && crystal.cellC == 0 && crystal.cellAlpha == 0 && crystal.cellBeta == 0 && crystal.cellGamma == 0 ){
             return crystal.spaceGroup
         }
-        return crystal.spaceGroup + " - (" + crystal.cellA + " : " + crystal.cellB + " : " + crystal.cellC + " | " + crystal.cellAlpha + " : " + crystal.cellBeta + " : " + crystal.cellGamma + ")";
+        return crystal.spaceGroup + " - (" + crystal.cellA + " , " + crystal.cellB + " , " + crystal.cellC + " - " + crystal.cellAlpha + " , " + crystal.cellBeta + " , " + crystal.cellGamma + ")";
     } catch (e) {
         return "";
     }
@@ -4681,6 +4861,9 @@ ContainerSpreadSheet.prototype.getUnitCellInfo = function (crystal) {
 
 ContainerSpreadSheet.prototype.showEditForm = function (crystal, row) {
 	var _this = this;
+
+	/** Check if other samples share this crystal form */
+
 	var editCrystalForm = new EditCrystalFormView();
 
 	editCrystalForm.onSaved.attach(function (sender, crystal) {
@@ -4734,7 +4917,7 @@ ContainerSpreadSheet.prototype.addEditCrystalFormButton = function (row, column)
 ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
     if (crystal) {
         this.setDataAtCell(row,this.crystalFormIndex,this.getCrystalInfo(crystal));
-        this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
+        // this.setDataAtCell(row,this.unitCellIndex,this.getUnitCellInfo(crystal));
         this.setDataAtCell(row,this.spaceGroupIndex,crystal.spaceGroup);
         // this.setDataAtCell(row,0,crystal.crystalId); //crystal Id column
         this.addEditCrystalFormButton(row);
@@ -4745,7 +4928,7 @@ ContainerSpreadSheet.prototype.updateCrystalGroup = function (row, crystal) {
 
 ContainerSpreadSheet.prototype.resetCrystalGroup = function (row) {
 	this.setDataAtCell(row,this.crystalFormIndex,"");
-	this.setDataAtCell(row,this.unitCellIndex,"");
+	// this.setDataAtCell(row,this.unitCellIndex,"");
 	this.setDataAtCell(row,this.spaceGroupIndex,"");
 	// this.setDataAtCell(row,0,"");
 	this.setDataAtCell(row,this.getColumnIndex("editCrystalForm"),"");
@@ -4761,10 +4944,11 @@ ContainerSpreadSheet.prototype.disableAll = function () {
 * Method executed when a change is made on the spreadSheet. It manages the process when the crystal form or the protein acronym are changed
 *
 * @method manageChange
-* @param {Object} change The change made to the spreadSheet
+* @param {Array} change The change made to the spreadSheet as an array of the form [row, column, prevValue, newValue]
+* @param {String} source The kind of change. Can be "edit" or "autofill"
+* @param {Integer} direction In case of the source being autofill, this parameter indicates the direction of it
 */
-ContainerSpreadSheet.prototype.manageChange = function (change){
-	var _this = this;
+ContainerSpreadSheet.prototype.manageChange = function (change, source, direction){
 	switch (change[1]) { //Column Index
 		case this.crystalFormIndex : {
 			var parsed = this.parseCrystalFormColumn(change[3],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
@@ -4785,8 +4969,23 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
 		}
 		case this.getColumnIndex("Protein Acronym") : {
             if (change[3] == ""){
-                this.resetCrystalGroup(change[0]);
+				this.emptyRow(change[0]);
             } else {
+				/**Manage the sample name column */
+				if (change[0] > 0){
+					var colIdx = this.getColumnIndex("Sample Name");
+					var currentName = this.spreadSheet.getDataAtCell(change[0],colIdx);
+					if (currentName == undefined || currentName == "") {
+						var nameSampleAbove = this.spreadSheet.getDataAtCell(change[0] - 1, colIdx);
+						if (nameSampleAbove != null && nameSampleAbove != "") {
+							var autoincremented = this.autoIncrement(nameSampleAbove, 1);
+							if (autoincremented != "") {
+								this.setDataAtCell(change[0],colIdx,autoincremented);
+							}
+						}
+					}
+				}
+				/**Manage the crystal form column */
                 var parsed = this.parseCrystalFormColumn(this.getData()[change[0]][this.crystalFormIndex],change[0]); // parseCrystalFormColumn(dataAtCrystalFormColumn,row)
                 if (!this.isCrystalFormAvailable(parsed,change[3])){
                     this.resetCrystalGroup(change[0]);
@@ -4795,15 +4994,49 @@ ContainerSpreadSheet.prototype.manageChange = function (change){
                         var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
                         if (crystalsByProteinId && crystalsByProteinId.length > 0){
                             var crystal = _.maxBy(crystalsByProteinId,"crystalId");
-                            _this.updateCrystalGroup(change[0],crystal);
+                            this.updateCrystalGroup(change[0],crystal);
                         }
                     }
                 }
             }
 			break;
 		}
+		case this.getColumnIndex("Sample Name") : {
+            if (source == "autofill" && change[3] != ""){
+				var autoincremented = this.autoIncrement(this.spreadSheet.getDataAtCell(change[0] - direction, change[1]), direction);
+				if (autoincremented != "") {
+					this.setDataAtCell(change[0],change[1],autoincremented);
+				}
+            }
+			break;
+		}
 	}
+	if (change[1] != this.getColumnIndex("editCrystalForm")){
+		this.onModified.notify(change);
+	}
+	$(".htInvalid").removeClass("htInvalid");
 };
+
+/**
+* Returns an autoincremented string
+*
+* @method autoIncrement
+* @param {String} value The string to be incremented
+* @param {Integer} direction The direction on which the string is going to be incremented
+*/
+ContainerSpreadSheet.prototype.autoIncrement = function (value, direction) {
+	var autoincremented = "";
+	var regex = /(\d+)/g;
+	var numbers = value.match(regex);
+	if (numbers) {
+		var lastNumber = numbers[numbers.length - 1];
+		/**Check if there are any other characters after the last number */
+		if (value.lastIndexOf(lastNumber) == value.length - lastNumber.length) {
+			autoincremented = value.substring(0,value.length - lastNumber.length) + (parseInt(lastNumber) + direction);
+		}
+	}
+	return autoincremented;
+}
 
 /**
 * Returns true if the parseCrystalForm is available for the given proteinAcronym
@@ -5156,12 +5389,16 @@ GenericContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
 GenericContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
 GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
 GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
-GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
+GenericContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+GenericContainerSpreadSheet.prototype.emptyRow  = SpreadSheet.prototype.emptyRow;
+
 
 GenericContainerSpreadSheet.prototype.load = function(container){
 	var _this = this;
 	this.container = container;
 	var domElement = document.getElementById(this.id + '_samples');
+	var data = this.getSamplesData(container);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -5192,10 +5429,13 @@ GenericContainerSpreadSheet.prototype.load = function(container){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(domElement, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
-				data: this.getSamplesData(container),
+				data: data,
 			
 				height : this.height,
 				width : this.width,
@@ -5220,7 +5460,7 @@ GenericContainerSpreadSheet.prototype.getSamplesData = function(container) {
             if (i < container.samples.length){
                 var sample = container.samples[i];
                 data.push(
-                    [(i+1),sample.Protein_acronym, sample.Protein_name, sample.BLSample_comments]
+                    [(i+1),sample.Protein_acronym, sample.BLSample_name, sample.BLSample_comments]
                 );
             } else {
                 data.push([(i+1)]);
@@ -5257,29 +5497,32 @@ GenericContainerSpreadSheet.prototype.getHeader = function() {
 GenericContainerSpreadSheet.prototype.getPuck = function() {
     var rows = this.parseTableData();
     var myPuck = {};
-    myPuck.sampleVOs = this.container.samples;
-
+    myPuck.sampleVOs = [];
+	
     function filterByLocation(samples){
         return _.filter(samples, function(b){return b.BLSample_location == rows[i].location;} );
     }
     
     for (var i = 0; i < rows.length; i++) {
         var sample = {};
-        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        var sampleByLocation = filterByLocation(this.container.samples);
         if (sampleByLocation.length > 0){
             /** new sample */
 		    sample = sampleByLocation[0];
         }
-
-        sample["name"] = rows[i]["Sample Name"];
+		
+		sample["Protein_acronym"] = rows[i]["Protein Acronym"];
+        sample["BLSample_name"] = rows[i]["Sample Name"];
         sample["location"]= rows[i]["location"];
-		sample["comments"] = rows[i]["Comments"];
-        sample["crystalVO"] = {};
+		sample["BLSample_comments"] = rows[i]["Comments"];
+        sample["crystalVO"] = {
+									proteinVO : EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"])[0]
+								};
         sample["diffractionPlanVO"] = {};
 
         myPuck.sampleVOs.push(sample);
     }
-
+	
     return myPuck;
 }
 function OtherContainerForm(args) {
@@ -5306,19 +5549,36 @@ function OtherContainerForm(args) {
 
 OtherContainerForm.prototype.load = function (container) {
     if (container) {
+        // var _this = this;
         this.container = container;
-        Ext.getCmp(this.id + "container_name").setValue(container.code);
-        if (container.samples) {
-            this.container.capacity = container.samples.length;
-        } else {
-            this.container.capacity = 1;
+        if (!this.container.samples) {
+            this.container.samples = [];
         }
+        if (!this.container.capacity) {
+            this.container.capacity = container.samples.length;
+        }
+        
+        Ext.getCmp(this.id + "container_name").setValue(container.code);
+        Ext.getCmp(this.id + "capacity").setValue(this.container.capacity);
         this.containerSpreadSheet.load(this.container);
-	    this.panel.doLayout();
+        this.panel.doLayout();
+        // this.panel.setLoading(true);
+        // var onSuccess = function (sender, samples) {
+        //     if (samples) {
+        //         _this.container.capacity = samples.length;
+        //         _this.container.samples = samples;
+        //         _this.containerSpreadSheet.load(_this.container);
+        //         _this.panel.doLayout();
+        //         _this.panel.setLoading(false);
+        //     }
+        // }
+        // EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(container.containerId);
     }
 }
 
 OtherContainerForm.prototype.getPanel = function() {
+    var _this = this;
+
     this.panel = Ext.create('Ext.form.Panel', {
         // width : this.width - 10,
         // height : this.height,
@@ -5348,9 +5608,26 @@ OtherContainerForm.prototype.getPanel = function() {
 																margin : '5 5 5 5',
 																labelWidth : 100
 														},
-                                            ]
-                                        }
-                                        ]
+                                                        {
+																xtype: 'numberfield',
+																id : this.id + 'capacity',
+																fieldLabel : 'Capacity',
+																width : 250,
+                                                                disabled : false,
+																margin : '5 5 5 10',
+																labelWidth : 100,
+                                                                minValue: 0,
+                                                                listeners: {
+                                                                    'change': function(el, newValue, oldValue){
+                                                                                    _this.panel.setLoading(true);
+                                                                                    _this.containerSpreadSheet.updateNumberOfRows(newValue);
+                                                                                    _this.panel.setLoading(false);
+                                                                                }
+														        }
+                                                        }
+                                            ]   
+                                         }
+                            ]
                 },
                     this.containerSpreadSheet.getPanel()
                 ]
@@ -5384,24 +5661,25 @@ OtherContainerForm.prototype.getContainer = function () {
 OtherContainerForm.prototype.save = function() {
 	var _this = this;
 	this.panel.setLoading("Saving Puck");
-
+    
 	var puck = this.containerSpreadSheet.getPuck();
 
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'container_name').getValue();
-	puck.capacity = this.container.samples.length;
+	puck.capacity = Ext.getCmp(_this.id + 'capacity').getValue();
 	puck.containerType = "OTHER";
+    puck.containerId = this.container.containerId;
 	
     var onError = function(sender, error){
 		_this.panel.setLoading(false);
 		EXI.setError(error.responseText);
 	};
     
-	var onSuccess = function(sender, puck){
+	var onSuccess = function(sender){
 		_this.panel.setLoading(false);
-        _this.onSave.notify();
+        _this.onSave.notify(puck);
 	};
-    debugger
+    
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.container.containerId, this.container.containerId, this.container.containerId, puck);
 };
 
@@ -5450,9 +5728,10 @@ ParcelGrid.prototype._getTopButtons = function() {
 	var _this = this;
 	var actions = [];
 	return (Ext.create('Ext.Action', {
+		id : this.id + "-add-button",
 		icon : '../images/icon/add.png',
 		text : 'Add',
-		disabled : false,
+		disabled : true,
 		handler : function(widget, event) {
 			_this.edit();
 		}
@@ -5483,6 +5762,7 @@ ParcelGrid.prototype.load = function(shipment) {
     }
 
 	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
+	Ext.getCmp(this.id + "-add-button").enable();
 	for ( var i in this.dewars) {
 		var parcelPanel = new ParcelPanel({
 			height : 90,
@@ -5492,7 +5772,7 @@ ParcelGrid.prototype.load = function(shipment) {
 			index : Number(i)+1
 		});
 		this.panel.insert(parcelPanel.getPanel());
-		parcelPanel.load(this.dewars[i]);
+		parcelPanel.load(this.dewars[i],this.shipment);
 		parcelPanel.onSavedClick.attach(onSaved);
 	}
 };
@@ -5578,242 +5858,11 @@ ParcelGrid.prototype.getPanel = function() {
 * @class PuckForm
 * @constructor
 **/
-function PuckForm(args) {
-	this.id = BUI.id();
-	this.height = 500;
-	this.width = 500;
-	this.disableSave = false;
-	
-	if (args != null) {
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.disableSave != null) {
-			this.disableSave = args.disableSave;
-		}
-	}
-
-	
-	var _this = this;
-	
-	//this.puckLayout = new PuckPanel({width : 150, tbar : false});
-	this.containerSpreadSheet = new ContainerSpreadSheet({width : 1300});
-	
-	/*this.containerSpreadSheet.onModified.attach(function(sender, puck){
-		
-	});*/
-	
-	this.onRemoved = new Event(this);
-	this.onSaved = new Event(this);
-}
-
-/** Loads a puck into the form **/
-PuckForm.prototype.load = function(puck, shippingId) {
-	var _this = this;
-	this.puck = puck;
-    
-	if (puck != null){
-		Ext.getCmp(this.id + "puck_name").setValue(this.puck.code);
-		this.capacityCombo.setValue(this.puck.capacity);
-        Ext.getCmp(this.id + "puck_beamline").setValue(this.puck.beamlineLocation);
-        Ext.getCmp(this.id + "puck_sampleChangerLocation").setValue(this.puck.sampleChangerLocation);
-        Ext.getCmp(this.id + "puck_status").setValue(this.puck.containerStatus);                
-	}	
-	this.containerSpreadSheet.load(puck);
-};
-
-/*
-PuckForm.prototype.loadPlateLayout = function(puck) {
-	 try{
-		 this.puckLayout.load(puck);
-		 this.puckLayout.render(puck);
-	  }
-	  catch(e){
-		  console.log(e);
-	  }
-};*/
-
-PuckForm.prototype.getToolBar = function() {
-	var _this = this;
-	return [
-	        
-			{
-			    text: 'Remove',
-			    width : 100,
-			    height : 30,
-			    cls : 'btn-red',
-			    handler : function(){
-			    	function showResult(result){
-						if (result == "yes"){
-							_this.removePuck();							
-						}
-			    	}
-					  Ext.MessageBox.show({
-				           title:'Remove',
-				           msg: 'Removing a puck from this parcel will remove also its content. <br />Are you sure you want to continue?',
-				           buttons: Ext.MessageBox.YESNO,
-				           fn: showResult,
-				           animateTarget: 'mb4',
-				           icon: Ext.MessageBox.QUESTION
-				       });
-			    }
-			},
-	        "->",
-	        {
-	            text: 'Save',
-	            width : 100,
-	            height : 30,
-				disabled : this.disableSave,
-	            handler : function(){
-	            	_this.save();
-	            }
-	        }
-	];
-};
-
-PuckForm.prototype.removePuck = function() {
-	var _this = this;
-	this.panel.setLoading();
-	var onSuccess = function(sender, data){
-		_this.panel.setLoading(false);
-        _this.onRemoved.notify(containerId);
-	};
-	var containerId = this.puck.containerId;
-	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(containerId,containerId,containerId );
-	
-};
-
-PuckForm.prototype.save = function() {
-	var _this = this;
-	this.panel.setLoading("Saving Puck");
-
-	var puck = this.containerSpreadSheet.getPuck();
-	/** Updating general parameters **/
-	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
-	puck.capacity = _this.capacityCombo.getValue();
-	
-    var onError = function(sender, error){
-		_this.panel.setLoading(false);
-		EXI.setError(error.responseText);
-	};
-    
-	var onSuccess = function(sender, puck){
-		_this.panel.setLoading(false);
-		_this.load(puck);
-		_this.onSaved.notify(puck);
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.puck.containerId, this.puck.containerId, this.puck.containerId, puck);
-};
-
-
-/**
- * When container type has changed from SPINE|| UNIPUCK || PLATE
- * 
- * We make the spreadsheet longer and the platelayout is rendered again
- */
-PuckForm.prototype.containerTypeChanged = function(capacity) {
-	this.puck.capacity = capacity;
-	var data = this.containerSpreadSheet.spreadSheet.getData();
-	if (data.length < capacity){
-		for (var i = data.length; i<= capacity; i++){
-			data.push([i]);
-		}
-	}
-	else{
-		data = data.slice(0, capacity);
-	}
-	this.containerSpreadSheet.spreadSheet.loadData(data);
-};
-
-
-PuckForm.prototype.getPanel = function() {
-	var _this =this;
-	var capacityCombo = BIOSAXS_COMBOMANAGER.getComboPuckType({margin : '10 0 10 5', labelWidth : 100, width : 250});
-	capacityCombo.on('select', function(capacityCombo, record){
-		var capacity = record[0].data.value;
-		_this.containerTypeChanged(capacity);
-	});
-	
-	this.capacityCombo = capacityCombo;
-	this.panel = Ext.create('Ext.panel.Panel', {
-		buttons : this.getToolBar(),
-		items : [ 
-		         {
-							xtype : 'container',
-							margin : '5 0 2 5',
-							layout : 'hbox',
-							items : [
-										
-										
-								         {
-								        	 xtype : 'container',
-											margin : '12 0 2 0',
-											layout : 'vbox',
-											items : [ 
-							         				   {
-																xtype: 'requiredtextfield',
-																id : this.id + 'puck_name',
-																fieldLabel : 'Name',
-																name : 'name',
-																width : 250,
-																margin : '0 0 0 5',
-																labelWidth : 100
-														},
-														this.capacityCombo,
-                                                        {
-																xtype: 'textfield',
-																id : this.id + 'puck_beamline',
-																fieldLabel : 'Beamline',
-																width : 250,
-                                                                disabled : true,
-																margin : '0 0 0 5',
-																labelWidth : 100
-														},
-                                                        {
-																xtype: 'textfield',
-																id : this.id + 'puck_sampleChangerLocation',
-																fieldLabel : '#Sample Changer',
-																width : 250,
-                                                                disabled : true,
-																margin : '0 0 0 5',
-																labelWidth : 100
-														},                                                       
-                                                        {
-																xtype: 'textfield',
-																id : this.id + 'puck_status',
-																fieldLabel : 'Status',
-																width : 250,
-                                                                disabled : true,
-																margin : '0 0 0 5',
-																labelWidth : 100
-														}
-													]
-								         },
-                                         // this.puckLayout.getPanel()
-							         ]
-		         },
-		         this.containerSpreadSheet.getPanel(),
-                
-	         ] 
-		} 
-	);
-	return this.panel;
-};
-
-
-/**
-* This class containes name, description, samples spreadsheet and puck loyout for a given puck 
-*
-* @class PuckForm
-* @constructor
-**/
 function PuckFormView(args) {
 	this.id = BUI.id();
 	this.height = 500;
 	this.width = 500;
+	this.unsavedChanges = false;
 	
 	if (args != null) {
 		if (args.height != null) {
@@ -5828,10 +5877,14 @@ function PuckFormView(args) {
 	var _this = this;
 	
 	this.containerSpreadSheet = new ContainerSpreadSheet({width : Ext.getBody().getWidth() - 100, height : 600});
+	this.containerSpreadSheet.onModified.attach(function (sender, change) {
+		_this.unsavedChanges = true;
+	});
 
 	this.capacityCombo = new ContainerTypeComboBox({label : "Type:", labelWidth : 100, width : 250, initDisabled : true});
 	this.capacityCombo.onSelected.attach(function (sender, data) {
 		var capacity = data.capacity;
+		_this.unsavedChanges = true;
 		_this.containerTypeChanged(capacity);
 	});
 	
@@ -5928,7 +5981,7 @@ PuckFormView.prototype.getPanel = function() {
 																name : 'name',
 																width : 250,
 																margin : '5 5 5 5',
-																labelWidth : 100
+																labelWidth : 100,
 														},
 														this.capacityCombo.getPanel(),
                                                         {
@@ -6024,7 +6077,7 @@ PuckFormView.prototype.removePuck = function() {
 	this.panel.setLoading();
 	var onSuccess = function(sender, data){
 		_this.panel.setLoading(false);
-        _this.returnToShipment();
+        location.href = "#/shipping/" + _this.shippingId + "/main";
         // _this.onRemoved.notify(containerId);
 	};
 	EXI.getDataAdapter({onSuccess: onSuccess}).proposal.shipping.removeContainerById(this.containerId,this.containerId,this.containerId );
@@ -6032,15 +6085,35 @@ PuckFormView.prototype.removePuck = function() {
 };
 
 PuckFormView.prototype.returnToShipment = function(){
-    location.href = "#/shipping/" + this.shippingId + "/main";
+    /**Check if the container's name has been changed */
+	if (this.puck.code != Ext.getCmp(this.id + 'puck_name').getValue()) {
+		this.unsavedChanges = true;
+	}
+	if (this.unsavedChanges) {
+		this.showReturnWarning();
+	} else {
+		location.href = "#/shipping/" + this.shippingId + "/main";
+	}
 }
 
-PuckFormView.prototype.save = function() {
+/**
+* Saves the container
+*
+* @method save
+* @param {Boolean} returnToShipment True if you want to return to shipment after the save
+*/
+PuckFormView.prototype.save = function(returnToShipment) {
 	var _this = this;
-	this.panel.setLoading("Saving Puck");
 
 	var puck = this.containerSpreadSheet.getPuck();
-
+	/** Check if all samples have name */
+	if (puck.sampleVOs && puck.sampleVOs.length > 0) {
+		var sampleNames = _.map(puck.sampleVOs,"name");
+		if(sampleNames.indexOf(null) >= 0 || sampleNames.indexOf("") >= 0) {
+			$.notify("There are samples without a Sample Name", "error");
+			return;
+		}
+	}
 	/** Updating general parameters **/
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getSelectedCapacity();
@@ -6052,10 +6125,15 @@ PuckFormView.prototype.save = function() {
 	};
     
 	var onSuccess = function(sender, puck){
+		_this.unsavedChanges = false;
 		_this.panel.setLoading(false);
-		_this.load(_this.containerId, _this.shippingId);
+		if (returnToShipment){
+			location.href = "#/shipping/" + _this.shippingId + "/main";
+		} else {
+			_this.load(_this.containerId, _this.shippingId);
+		}
 	};
-	
+	this.panel.setLoading("Saving Puck");
 	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
 };
 
@@ -6069,31 +6147,7 @@ PuckFormView.prototype.containerTypeChanged = function(capacity) {
 	var newType = this.capacityCombo.getTypeByCapacity(capacity);
 	this.puck.capacity = capacity;
 	this.containerSpreadSheet.setContainerType(newType);
-	var data = this.containerSpreadSheet.spreadSheet.getData();
-	//Sets the appropiate number of rows according to the capacity
-	if (data.length < capacity){
-		for (var i = data.length + 1; i<= capacity; i++){
-			data.push([i]);
-		}
-	}
-	else{
-		data = data.slice(0, capacity);
-	}
-	//Resets editCrystalForm column if exists
-	// var columnIndex = _.findIndex(this.containerSpreadSheet.getHeader(),{id : "editCrystalForm"});
-	// if (columnIndex >= 0){
-	// 	var tableData = this.containerSpreadSheet.parseTableData();
-	// 	for (var i = 0 ; i < tableData.length ; i++) {
-	// 		this.containerSpreadSheet.setDataAtCell(tableData[i].location - 1,columnIndex,""); 
-	// 	}
-	// }
-	
-	//Changes the grid when changed from or to the type OTHER
-	this.containerSpreadSheet.spreadSheet.loadData(data);
-	if (currentType == "OTHER" || newType == "OTHER"){
-		this.puck.containerType = newType;
-		this.fillSamplesGrid(this.puck);
-	}
+	this.containerSpreadSheet.updateNumberOfRows(capacity);
 };
 
 /**
@@ -6108,7 +6162,40 @@ PuckFormView.prototype.setValuesForEditCrystalColumn = function(capacity) {
 	}
 	this.panel.doLayout();
 };
-				
+
+PuckFormView.prototype.showReturnWarning = function() {
+	var _this = this;
+	var window = Ext.create('Ext.window.Window', {
+		title: 'Container',
+		width: 250,
+		layout: 'fit',
+		modal : true,
+		items: [
+					{
+						html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;">Do you want to save the changes to the container ' + _this.puck.code + '?</span></div></div>',
+					}
+		],
+		buttons : [ {
+						text : 'Yes',
+						handler : function() {
+							window.close();
+							_this.save(true);
+						}
+					},{
+						text : 'No',
+						handler : function() {
+							window.close();
+							location.href = "#/shipping/" + _this.shippingId + "/main";
+						}
+					}, {
+						text : 'Cancel',
+						handler : function() {
+							window.close();
+						}
+					} ]
+	});
+	window.show();
+}		
 function ShipmentEditForm(args) {
     this.id = BUI.id();
 
@@ -6134,8 +6221,8 @@ ShipmentEditForm.prototype.load = function(shipment) {
 
 	this.shipment = shipment;
 
-	var toData = EXI.proposalManager.getLabcontacts();
-	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
+	var fromData = EXI.proposalManager.getLabcontacts();
+	var toData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
     var html = "";
 	var beamlineName = "";
@@ -6159,9 +6246,23 @@ ShipmentEditForm.prototype.load = function(shipment) {
 	var sessions = EXI.proposalManager.getSessions();
 	sessions.sort(sessionSort);
 	var sessionsSelectData = [];
+	var currentDay = new Date((new Date()).toDateString());
 	for (var i = 0 ; i < sessions.length ; i++){
 		var session = sessions[i];
-		sessionsSelectData.push({sessionId : session.sessionId, date : (new Date(session.BLSession_startDate)).toLocaleDateString(), beamLineName : session.beamLineName});
+		var sessionStartDate = (new Date(session.BLSession_startDate));
+		if (currentDay <= (new Date(sessionStartDate.toDateString())) ){
+			var dd = sessionStartDate.getDate();
+			var mm = sessionStartDate.getMonth()+1; //January is 0!
+			var yyyy = sessionStartDate.getFullYear();
+			if(dd<10){
+				dd='0'+dd;
+			} 
+			if(mm<10){
+				mm='0'+mm;
+			} 
+			var formattedDate = dd+'/'+mm+'/'+yyyy;
+			sessionsSelectData.push({sessionId : session.sessionId, date : sessionStartDate.toLocaleDateString(), formattedDate : formattedDate, beamLineName : session.beamLineName});
+		}
 	}
 	
 	
@@ -6323,9 +6424,13 @@ ShipmentForm.prototype.getPanel = function() {
 ShipmentForm.prototype.edit = function(dewar) {
 	var _this = this;
 	var shippingEditForm = new ShipmentEditForm();
-
+	
 	shippingEditForm.onSaved.attach(function (sender, shipment) {
-		_this.load(shipment);
+		if (_this.shipment) {
+			_this.load(shipment);
+		} else {
+			_this.onSaved.notify(shipment);
+		}
 		window.close();
 	});
 
@@ -6368,7 +6473,8 @@ function ShippingMainView() {
 	*/
     this.shipmentForm = new ShipmentForm({width : Ext.getBody().getWidth() - 200});
 	this.shipmentForm.onSaved.attach(function(sender, shipment){
-		location.hash = "#/proposal/shipping/nav?nomain";
+		// location.hash = "#/proposal/shipping/nav?nomain";
+		location.hash = "#/shipping/" + shipment.shippingId + "/main";
 	});
 
     /**
@@ -6414,112 +6520,10 @@ ShippingMainView.prototype.load = function(shippingId) {
     }	
     else{
         
-        _this.shipmentForm.load();
-		_this.parcelGrid.load();
+        _this.shipmentForm.load();	
 		_this.panel.setLoading(false);
     }
 };
-function ShippingWelcomeMainView() {
-	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
-
-	MainView.call(this);
-	this.title = "Welcome";
-	this.closable = false;
-}
-
-ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-
-
-ShippingWelcomeMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('panel',
-			{
-				plain : true,
-				margin : '10',
-				layout : 'fit',
-				items : [
-					{
-						tabConfig : {
-							title : 'Welcome'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							padding : 20,
-							margin : 0,
-							cls : 'border-grid',
-							items : [ 
-							        
-							         {
-							        	 html : '<div class="landing-title" ><h2>Shipments</h2></div>'
-							         },
-							         {
-							        	 html : '<div class="landing-text"> A Shipment consists of a set of Dewars which is sent from your home lab to the synchrotron via a courier company. Each dry shipping Dewar within the shipment is identified by a label (barcode or sticker). The dewars(s) contains a set of Containers (Pucks or canes). Containers (typically Pucks), contain Samples. A Sample (Sample Holder) contains the Crystal</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : this.getOptions(),
-//							        	 margin : '0 0 0 40'
-//							         },
-							         
-							         {
-							        	 html : '<br/><div class="landing-text">Do you want to ship your samples to the beamline?</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-							         {
-							        	xtype : 'container',
-							        	layout : 'hbox',
-							        	cls : 'option-bar-menu',
-							        	items :[
-							        	    
-										         {
-										        	 xtype : 'button',
-										        	 cls : 'square-option',
-										        	 maxWidth : 200,
-										        	 minWidth : 200,
-										        	 margin : '0 0 0 150',
-										        	 height : 100,
-										        	 text : '<div class="square-option-text"; >Create a new Shipment</div>',
-										        	 icon : '../images/icon/add.png',
-										        	 iconAlign : 'top',
-										        	 handler : function(){
-
-										        		 //if (EXI.proposalManager.getFutureSessions().length > 0){
-										     				location.hash = '/shipping/main';
-										     			 //}
-										        		 //else{
-											        	//	 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
-										        		 //}
-										        	 }
-										         }]
-							         }
-							       
-							        
-							]
-						}
-					
-						]
-					}
-			]});
-	};
-
-
-ShippingWelcomeMainView.prototype.load = function() {
-	
-};
-
 function WelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 	MainView.call(this);
@@ -6549,6 +6553,92 @@ WelcomeMainView.prototype.load = function() {
 	
 };
 
+function AddressEditForm (args) {
+    this.id = BUI.id();
+    this.height = 450;
+	this.width = 740;
+    this.padding = 10
+
+
+	if (args != null) {
+		if (args.height != null) {
+			this.height = args.height;
+		}
+		if (args.width != null) {
+			this.width = args.width;
+		}
+	}
+
+    this.onSaved = new Event(this);
+}
+
+AddressEditForm.prototype.load = function(address) {
+    this.address = {};
+    if (address) {
+        this.address = address;
+    }
+    this.address.id = this.id;
+
+	var html = "";
+	dust.render("address.edit.form.template", this.address, function(err, out){
+		html = out;
+	});
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
+};
+
+AddressEditForm.prototype.getPanel = function() {
+
+	this.panel = Ext.create("Ext.panel.Panel",{
+		items :	[{
+					// cls	: 'border-grid',
+                    html : '<div id="' + this.id + '"></div>',
+                    autoScroll : false,
+					margin : 10,
+					padding : this.padding,
+					width : this.width
+                }]
+	});
+
+	return this.panel;
+};
+
+AddressEditForm.prototype.save = function() {
+    var _this = this;
+	var address = this.getAddress();
+    var onSuccess = function (sender,addressSaved) {
+        _this.onSaved.notify(address);
+    }
+    
+    EXI.getDataAdapter({onSuccess : onSuccess}).proposal.labcontacts.saveLabContact(address);
+};
+
+AddressEditForm.prototype.getAddress = function () {
+    var address = {};
+    address = this.address;
+    if (!address.labContactId){
+        address.labContactId = null;
+    }
+    if (!address.personVO) {
+        address.personVO = {};
+        address.personVO.personId = null;
+    }
+    address.personVO.emailAddress = $("#" + this.id + "-emailAddress").val();
+    address.personVO.familyName = $("#" + this.id + "-familyName").val();
+    address.personVO.givenName = $("#" + this.id + "-givenName").val();
+    address.personVO.phoneNumber = $("#" + this.id + "-phoneNumber").val();
+    address.personVO.faxNumber = $("#" + this.id + "-faxNumber").val();
+    address.cardName = $("#" + this.id + "-cardName").val();
+    address.courierAccount = $("#" + this.id + "-courierAccount").val();
+    address.defaultCourrierCompany = $("#" + this.id + "-defaultCourrierCompany").val();
+    address.dewarAvgCustomsValue = $("#" + this.id + "-dewarAvgCustomsValue").val();
+    address.dewarAvgTransportValue = $("#" + this.id + "-dewarAvgTransportValue").val();
+    address.billingReference = $("#" + this.id + "-billingReference").val();
+    address.labName = $("#" + this.id + "-labName").val();
+    address.labAddress = $("#" + this.id + "-labAddress").val();
+    
+    return address;
+}
 /**
  * Edit the information of a buffer
  * 
@@ -6559,8 +6649,6 @@ function AddressForm(args) {
 	this.height = 500;
 	this.width = 500;
 
-	this.isSaveButtonHidden = false;
-	this.isHidden = false;
 
 	if (args != null) {
 		if (args.height != null) {
@@ -6569,13 +6657,6 @@ function AddressForm(args) {
 		if (args.width != null) {
 			this.width = args.width;
 		}
-		if (args.isSaveButtonHidden != null) {
-			this.isSaveButtonHidden = args.isSaveButtonHidden;
-		}
-		if (args.isHidden != null) {
-			this.isHidden = args.isHidden;
-		}
-		
 	}
 }
 
@@ -6605,211 +6686,91 @@ AddressForm.prototype.getAddress = function() {
 	return this.address;
 };
 
-AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
-	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
-	Ext.getCmp(this.id + "familyName").setValue(familyName);
-	Ext.getCmp(this.id + "name").setValue(givenName);
-	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
-	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
-};
-
 AddressForm.prototype.load = function(address) {
 	this.address = address;
 
-	if (address != null) {
-		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
-		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
-		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
-		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
-		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
-		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
-
-		if (address.personVO != null) {
-			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
-					address.personVO.faxNumber, address.personVO.phoneNumber);
-		}
-	}
-};
-
-AddressForm.prototype.getPersonPanel = function() {
-	this.personPanel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		margin : '10',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'hbox',
-			border : false,
-			items : [ {
-					xtype : 'requiredtextfield',
-					id : this.id + 'name',
-					fieldLabel : 'Name',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					disabled : true,
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'familyName',
-					fieldLabel : 'Surname',
-					labelWidth : 75,
-					disabled : true,
-					margin : "0 0 0 10",
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'emailAddress',
-					fieldLabel : 'Email',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 300 
-				}, 
-				{
-					id : this.id + 'phoneNumber',
-					fieldLabel : 'Phone',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				}, 
-				{
-					id : this.id + 'faxNumber',
-					fieldLabel : 'Fax',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				} ] },
-				
-				 {
-					padding : 10,
-					xtype : 'container',
-					layout : 'hbox',
-					border : false,
-					items : [ {
-						xtype : 'requiredtextfield',
-						id : this.id + 'cardName',
-						fieldLabel : 'Card Name',
-						name : 'CardName',
-						labelWidth : 150,
-						margin : "0 0 0 10",
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courierAccount',
-						fieldLabel : 'Courier Account',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courrierCompany',
-						fieldLabel : 'Courier Company',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}  ] },
-					
-					 {
-						padding : 10,
-						xtype : 'container',
-						layout : 'hbox',
-						border : false,
-						items : [ {
-							id : this.id + 'dewarAvgCustomsValue',
-							fieldLabel : 'Average Custom Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 10",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-							id : this.id + 'dewarAvgTransportValue',
-							fieldLabel : 'Average Transport Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 30",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-						id : this.id + 'billingReference',
-						xtype : 'textfield',
-						fieldLabel : 'Billing Reference',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					} ] }
-
-		] });
-	return this.personPanel;
-};
-
-AddressForm.prototype.getPackagePanel = function() {
-	this.packagePanel = Ext.create('Ext.panel.Panel', {
-		layout : 'hbox',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'vbox',
-			border : false,
-			items : [ {
-				xtype : 'container',
-				layout : 'hbox',
-				items : [ 
-					] 
-			}, {
-				xtype : 'container',
-				layout : 'hbox',
-				margin : "10 0 0 0",
-				items : [ 
-
-				] } ] } ] });
-	return this.packagePanel;
+	var html = "";
+	dust.render("address.form.template", address, function(err, out){
+		html = out;
+	});
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
 };
 
 AddressForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-		hidden : this.isHidden,
-		layout : 'vbox',
-		title : 'Shipping Address Card',
+	var _this = this;
+
+	this.panel = Ext.create("Ext.panel.Panel",{
 		cls : "border-grid",
+		title : 'Shipping Address Card',
 		buttons : this.getToolBar(),
 		icon : '../images/icon/ic_email_black_24dp.png',
-		items : [  
-		           this.getPersonPanel() 
-		           ] });
+		items :	[{
+					// cls	: 'border-grid',
+                    html : '<div id="' + this.id + '"></div>',
+                    autoScroll : false,
+					margin : 10,
+					padding : this.padding,
+					width : this.width
+                }]
+	});
+
 	return this.panel;
 };
 
-AddressForm.prototype.save = function() {
-	var _this = this;
+// AddressForm.prototype.save = function() {
+// 	var _this = this;
 
-	_this.panel.setLoading();
-	var onSuccess = function(sender) {
-		_this.panel.setLoading(false);
-		EXI.getDataAdapter().proposal.proposal.update();
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-};
+// 	_this.panel.setLoading();
+// 	var onSuccess = function(sender) {
+// 		_this.panel.setLoading(false);
+// 		EXI.getDataAdapter().proposal.proposal.update();
+// 	};
+// 	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
+// };
 
 AddressForm.prototype.getToolBar = function() {
 	var _this = this;
 	return [ {
-		text : 'Save',
+		text : 'Edit',
 		hidden : _this.isSaveButtonHidden,
 		width : 100,
 		handler : function() {
-			_this.save();
+			_this.edit();
 
 		} } ];
+};
+
+AddressForm.prototype.edit = function(dewar) {
+	var _this = this;
+	var addressEditForm = new AddressEditForm();
+	
+	addressEditForm.onSaved.attach(function (sender, address) {
+		window.close();
+		_this.load(address);
+	});
+
+	var window = Ext.create('Ext.window.Window', {
+		title : 'Shipping Address Card',
+		height: 550,
+		width: 750,
+		modal : true,
+		layout : 'fit',
+		items : [ addressEditForm.getPanel() ],
+		buttons : [ {
+				text : 'Save',
+				handler : function() {
+					addressEditForm.save();
+				}
+			}, {
+				text : 'Cancel',
+				handler : function() {
+					window.close();
+				}
+			} ]
+	}).show();
+
+	addressEditForm.load(this.address);
 };
 
 function AuthenticationForm(){
@@ -7006,7 +6967,8 @@ function ContainerParcelPanel(args) {
                 enableMouseOver : true,
                 enableClick : true,
                 enableMainClick : true,
-                enableMainMouseOver : true
+                enableMainMouseOver : true,
+                containerId : 0
     };
     this.width = 2*this.data.mainRadius + 20;
     this.container = new ContainerWidget(this.data);
@@ -7024,6 +6986,7 @@ function ContainerParcelPanel(args) {
 		}
         if (args.containerId != null) {
 			this.containerId = args.containerId;
+            this.data.containerId = this.containerId;
 		}
         if (args.shippingId != null) {
 			this.shippingId = args.shippingId;
@@ -7146,7 +7109,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
     
     if (this.height >= 45) {
         this.panel.insert({
-                    html : "<div class='container-fluid' align='center'><span style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
+                    html : "<div class='container-fluid' align='center'><span id='" + this.id + "-name' style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
                     height : this.height*0.25,
                     width : this.width
                 });
@@ -7166,7 +7129,9 @@ ContainerParcelPanel.prototype.load = function (samples) {
     this.containerPanel.add(this.container.getPanel());
     if (samples.length > 0){
         this.container.loadSamples(samples);
-        this.containerId = this.container.containerId;
+        if (!this.container.containerId) {
+            this.container.containerId = this.containerId;
+        }
         // this.shippingId = samples[0].Shipping_shippingId;
     }
     var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
@@ -7218,13 +7183,16 @@ ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
 	/** Opens a window with the cas form **/
 	var otherContainerForm = new OtherContainerForm();
 	otherContainerForm.onSave.attach(function(sender,container){
-		window.close();
+        $("#" + _this.id + "-name").html(container.code);
+        _this.container.samples = container.sampleVOs;
+        _this.container.capacity = container.capacity;
+        window.close();
 	})
-
+    
 	otherContainerForm.onCancel.attach(function(sender){
 		window.close();
 	})
-
+    
 	var window = Ext.create('Ext.window.Window', {
 	    title: 'Container',
 	    height: 600,
@@ -7354,6 +7322,9 @@ function ContainerWidget(args) {
 	if (args){
 		if (args.code){
 			this.code = args.code;
+		}
+		if (args.containerId){
+			this.containerId = args.containerId;
 		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
@@ -7833,10 +7804,11 @@ function ParcelPanel(args) {
 
 }
 
-ParcelPanel.prototype.load = function(dewar) {
+ParcelPanel.prototype.load = function(dewar, shipment) {
 	var _this = this;
 	this.dewar = dewar;
 	this.dewar.index = this.index;
+	this.shipment = shipment;
 	
 	/** Loading the template **/
 	var html = "";
@@ -7945,7 +7917,6 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				debugger
 				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
@@ -8025,6 +7996,13 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 	} else {
 		var onSuccess = function(sender, container){
 			container.code = containerVO.code;
+			container.containerStatus = _this.dewar.dewarStatus;
+			container.sampleChangerLocation = _this.dewar.storageLocation;
+			if (_this.shipment) {
+				if (_this.shipment.sessions && _this.shipment.sessions.length > 0) {
+					container.beamlineLocation = _this.shipment.sessions[0].beamlineName;
+				}
+			}
 			container.sampleVOs = [];
 			_this.dewar.containerVOs.push(container);
 			
@@ -8354,6 +8332,7 @@ SessionGrid.prototype.load = function(sessions) {
 };
 
 SessionGrid.prototype.filterByBeamline = function(beamlines) {
+    console.log(beamlines);
     if (beamlines){
         if (beamlines.length > 0){
             var filtered = [];
@@ -8376,9 +8355,13 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     if (selected){
                         _this.beamlineFilter.push(a.boxLabel);
                     }
-                    else{                        
-                        _this.beamlineFilter =_.remove(_this.beamlineFilter,a.boxLabel );
+                    else{          
+                                      
+                        _this.beamlineFilter =_.remove(_this.beamlineFilter, function(n) {                            
+                                return n  != a.boxLabel;
+                        });
                     }
+                     
                     _this.filterByBeamline(_this.beamlineFilter);
     };
 
@@ -8687,7 +8670,7 @@ StockSolutionContainer.prototype.getPanel = function () {
 		    y: this.templateData.yMargin,
 		    width : this.templateData.width + 1,
 		    height : this.templateData.height + 1,
-		//    cls:'border-grid',
+		   cls:'border-grid',
 		    frame: false,
 			border: false,
 			bodyStyle: 'background:transparent;',
@@ -8775,9 +8758,9 @@ StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
 
 StockSolutionContainer.prototype.focus = function (bool) {
 	if (bool){
-		$("#" + this.id + "-img").addClass("stock-solution-selected");		
+		$("#" + this.id + "-container").addClass("stock-solution-selected");		
 	} else {
-		$("#" + this.id + "-img").removeClass("stock-solution-selected");	
+		$("#" + this.id + "-container").removeClass("stock-solution-selected");	
 	}
 };
 /**

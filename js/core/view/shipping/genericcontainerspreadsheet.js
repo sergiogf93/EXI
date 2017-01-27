@@ -16,12 +16,16 @@ GenericContainerSpreadSheet.prototype.loadData = SpreadSheet.prototype.loadData;
 GenericContainerSpreadSheet.prototype.setDataAtCell = SpreadSheet.prototype.setDataAtCell;
 GenericContainerSpreadSheet.prototype.getColumnIndex = SpreadSheet.prototype.getColumnIndex;
 GenericContainerSpreadSheet.prototype.disableAll = SpreadSheet.prototype.disableAll;
-GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType ;
+GenericContainerSpreadSheet.prototype.setContainerType  = SpreadSheet.prototype.setContainerType;
+GenericContainerSpreadSheet.prototype.updateNumberOfRows  = SpreadSheet.prototype.updateNumberOfRows;
+GenericContainerSpreadSheet.prototype.emptyRow  = SpreadSheet.prototype.emptyRow;
+
 
 GenericContainerSpreadSheet.prototype.load = function(container){
 	var _this = this;
 	this.container = container;
 	var domElement = document.getElementById(this.id + '_samples');
+	var data = this.getSamplesData(container);
     
 	  function firstRowRenderer(instance, td, row, col, prop, value, cellProperties) {
 	    Handsontable.renderers.TextRenderer.apply(this, arguments);
@@ -52,10 +56,13 @@ GenericContainerSpreadSheet.prototype.load = function(container){
 	  // maps function to lookup string
 	  Handsontable.renderers.registerRenderer('ValueRenderer', ValueRenderer);
 	  this.spreadSheet = new Handsontable(domElement, {
+		  		afterCreateRow: function (index, numberOfRows) {
+                    data.splice(index, numberOfRows);
+                },
 				beforeChange: function (changes, source) {
 					lastChange = changes;
 				},
-				data: this.getSamplesData(container),
+				data: data,
 			
 				height : this.height,
 				width : this.width,
@@ -80,7 +87,7 @@ GenericContainerSpreadSheet.prototype.getSamplesData = function(container) {
             if (i < container.samples.length){
                 var sample = container.samples[i];
                 data.push(
-                    [(i+1),sample.Protein_acronym, sample.Protein_name, sample.BLSample_comments]
+                    [(i+1),sample.Protein_acronym, sample.BLSample_name, sample.BLSample_comments]
                 );
             } else {
                 data.push([(i+1)]);
@@ -117,28 +124,31 @@ GenericContainerSpreadSheet.prototype.getHeader = function() {
 GenericContainerSpreadSheet.prototype.getPuck = function() {
     var rows = this.parseTableData();
     var myPuck = {};
-    myPuck.sampleVOs = this.container.samples;
-
+    myPuck.sampleVOs = [];
+	
     function filterByLocation(samples){
         return _.filter(samples, function(b){return b.BLSample_location == rows[i].location;} );
     }
     
     for (var i = 0; i < rows.length; i++) {
         var sample = {};
-        var sampleByLocation = filterByLocation(myPuck.sampleVOs);
+        var sampleByLocation = filterByLocation(this.container.samples);
         if (sampleByLocation.length > 0){
             /** new sample */
 		    sample = sampleByLocation[0];
         }
-
-        sample["name"] = rows[i]["Sample Name"];
+		
+		sample["Protein_acronym"] = rows[i]["Protein Acronym"];
+        sample["BLSample_name"] = rows[i]["Sample Name"];
         sample["location"]= rows[i]["location"];
-		sample["comments"] = rows[i]["Comments"];
-        sample["crystalVO"] = {};
+		sample["BLSample_comments"] = rows[i]["Comments"];
+        sample["crystalVO"] = {
+									proteinVO : EXI.proposalManager.getProteinByAcronym(rows[i]["Protein Acronym"])[0]
+								};
         sample["diffractionPlanVO"] = {};
 
         myPuck.sampleVOs.push(sample);
     }
-
+	
     return myPuck;
 }

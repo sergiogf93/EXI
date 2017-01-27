@@ -66,9 +66,8 @@ OverviewQueueGrid.prototype.render = function(data) {
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
         }
 	}
-
     
-	dust.render("overview.queue.grid.template", data, function(err, out) {                                                                                               
+	dust.render("overview.queue.grid.template", data, function(err, out) {   
 		html = html + out;
 	});
 	

@@ -374,10 +374,13 @@ LoadSampleChangerView.prototype.getPanel = function () {
         _this.reloadSampleChangerWidget();
         $("#" + _this.id + "-unloadSC-button").unbind('click').click(function(sender){
                 var containerIds = _.map(_.map(_this.sampleChangerWidget.getAllFilledPucks(),"puckWidget"),"containerId");
-                var onSuccess = function (sender,c) {
-                    _this.load();
+                if (containerIds.length > 0){
+                    var onSuccess = function (sender,c) {
+                        _this.returnToSelectionStatus();
+                        _this.load();
+                    }
+                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(containerIds);
                 }
-                EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(containerIds);
 			});
     });
 

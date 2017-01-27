@@ -20,6 +20,9 @@ function ContainerWidget(args) {
 		if (args.code){
 			this.code = args.code;
 		}
+		if (args.containerId){
+			this.containerId = args.containerId;
+		}
 		if (args.xMargin){
 			this.templateData.xMargin = args.xMargin;
 		}

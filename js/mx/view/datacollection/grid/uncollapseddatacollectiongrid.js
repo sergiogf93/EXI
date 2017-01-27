@@ -291,13 +291,12 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
     var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
     if (dc){
         if ($("#sample_puck_layout_" +dataCollectionId)){
-            
             if (dc.Container_containerId){
-                var container =_.filter(grid.dataCollectionGroup, {"Container_containerId":Number(dc.Container_containerId)});
-                if(container){
+                var containers =_.filter(grid.dataCollectionGroup, {"Container_containerId":Number(dc.Container_containerId)});
+                if(containers){
                     var dataCollectionIds = {};
-                    for (var i = 1 ; i <= container[0].Container_capacity ; i++) {
-                        var sampleByLocation = _.filter(container,{"BLSample_location":i.toString()});
+                    for (var i = 1 ; i <= containers[0].Container_capacity ; i++) {
+                        var sampleByLocation = _.filter(containers,{"BLSample_location":i.toString()});
                         if (sampleByLocation.length > 0) {
                             var ids = [];
                             for (sample in sampleByLocation){
@@ -317,17 +316,23 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                 var puckLegend = new PuckLegend();
 
                 $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
-    
-                var puck = new UniPuckWidget(attributesContainerWidget);
-                
-                if (dc.Container_capacity == 10){
-                    puck = new SpinePuckWidget(attributesContainerWidget);
-                }
-                
-                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                 
                 var onSuccess = function(sender, samples){
                     if (samples){
+                        var puck = new UniPuckWidget(attributesContainerWidget);
+                        if (dc.Container_capacity == 10){
+                            puck = new SpinePuckWidget(attributesContainerWidget);
+                        }
+                        var locations = _.map(samples,"BLSample_location").map(function (i) {return parseInt(i)});
+                        var maxLocation = _.max(locations);
+                        if (maxLocation) {
+                            if (maxLocation > 10) {
+                                puck = new UniPuckWidget(attributesContainerWidget);
+                            } else {
+                                puck = new SpinePuckWidget(attributesContainerWidget);
+                            }
+                        }
+                        $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                         puck.loadSamples(samples,dc.BLSample_location);
                     }
                 };

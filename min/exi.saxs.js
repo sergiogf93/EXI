@@ -236,6 +236,13 @@ SAXSExiController.prototype.routeDataCollection = function() {
 			primaryMainView.load(this.params['dataCollectionId']);		
 		
 	}).enter(this.setPageBackground);
+    
+    Path.map("#/saxs/datacollection/dataCollectionId/:dataCollectionId/abinitio").to(function() {		
+			var primaryMainView = new AbinitioMainView();    
+            EXI.addMainPanel(primaryMainView);        		            
+			primaryMainView.load(this.params['dataCollectionId']);		
+		
+	}).enter(this.setPageBackground);
 	
 	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
 		var onSuccess = function(sender, data) {
@@ -339,9 +346,9 @@ SAXSExiController.prototype.init = function() {
 	
 
     /** Loading a single session on the navigation panel * */
-	Path.map("#/session/nav/:sessionId/session").to(function() {
-       
+	Path.map("#/session/nav/:sessionId/session").to(function() {           
         EXI.clearNavigationPanel();
+        EXI.setLoadingMainPanel(true);    
 		var listView = new SessionSaxsListView();		
 		/** When selected move to hash * */
 		listView.onSelect.attach(function(sender, selected) {
@@ -457,10 +464,8 @@ SAXSMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 SAXSMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
 
-SAXSMainMenu.prototype.getMenuItems = function() {
-	
-	
-	
+SAXSMainMenu.prototype.getMenuItems = function() {	
+    		
 	return [	
     	this.getHomeItem(),
     	this.getShipmentItem(),
@@ -468,6 +473,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
+                 disabled : true,
 				menu : this.getPreparationMenu() 
 		}, {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
@@ -929,6 +935,37 @@ TemplateListView.prototype.getFields = function(){
 	        	{name : 'name', type : 'string'}, 
 	        	{name : 'experimentType', type : 'string'} 
 	         ];
+};
+
+
+function AbinitioMainView() {		
+	MainView.call(this);
+				
+	/** Abinitio **/
+	this.abinitioForm = new AbinitioForm({
+		height : 700
+	});	
+}
+
+
+AbinitioMainView.prototype.getPanel = function() {
+	return this.abinitioForm.getPanel()
+};
+
+AbinitioMainView.prototype.load = function(dataCollectionId) {
+	var _this = this;
+	
+	var onSuccess = function (sender, dataCollections) {        
+		if (dataCollections){
+            if (dataCollections[0].Subtraction_subtractionId){
+                   var onSuccessSubtraction = function(sender, subtractions) {                 
+                        _this.abinitioForm.load(subtractions);
+                    };			
+                    EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([dataCollections[0].Subtraction_subtractionId]);	                  
+            }
+        }
+	}
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
 };
 
 
@@ -2218,11 +2255,6 @@ function PrimaryDataMainView() {
 	this.onMeasurementSelectionChange = new Event(this);
 	
 	var _this = this;
-	
-	this.frameSelectorGrid = new FrameSelectorGrid();
-	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){        
-		_this.plotter.load(selections);
-	});
 
 	this.framesGrid = new FramesGrid();
 	this.framesGrid.onSelectionChange.attach(function(sender, selections){
@@ -2233,14 +2265,7 @@ function PrimaryDataMainView() {
 	this.plotter = new CurvePlotter({
 	});
 
-	this.grid = new OverviewQueueGrid({height : 220});
-	
-	
-	/** Abinitio **/
-	this.abinitioForm = new AbinitioForm({
-		height : 700
-	});
-	
+	this.grid = new OverviewQueueGrid({height : 220});				
 }
 
 
@@ -2270,9 +2295,8 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        			borderColor : '#000000',
 		        			borderStyle : 'solid',
 		        			borderWidth : '1px' },
-		        	 items : [
-		        	        //   this.frameSelectorGrid.getPanel()
-		        	         this.framesGrid.getPanel()
+		        	 items : [		        	        
+		        	                this.framesGrid.getPanel()
 		        	          ]
 		         },
 		         this.plotter.getPanel()		        
@@ -2280,73 +2304,28 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 	};
 };
 
-
-
 PrimaryDataMainView.prototype.getPanel = function() {
-	return Ext.createWidget('tabpanel',
-			{
-				plain : true,
-				layout : 'fit',
-				margin : '10 0 0 0',
-				items : [
-					{
-						tabConfig : {
-							title : 'Primary Data Reduction'
-						},
-						items : [ {
-							xtype : 'container',
-							autoScroll : true,
-							height : 700,
-							// layout : 'fit',
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-										{
-											xtype : 'container',
-											items : [
-											         	this.grid.getPanel(),
-											        	this.getSlavePanel()         
-											]
-										}
-							]
-						}
-
-						]
-					},
-					{
-						tabConfig : {
-							title : 'Abinitio Modeling'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							autoScroll : true,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-										{
-											xtype : 'container',
-											items : [
-											         	this.abinitioForm.getPanel()
-											]
-										}
-							]
-						}
-
-						]
-					}
-			]
-			});
+	return {
+            xtype : 'container',
+            autoScroll : true,							
+            layout : 'fit',
+            padding : 10,
+            style : {
+                borderColor : 'gray',
+                borderStyle : 'solid',
+                borderWidth : '1px',
+                'background-color' : 'white' 
+            },
+            items : [ 
+                        {
+                            xtype : 'container',
+                            items : [
+                                        this.grid.getPanel(),
+                                        this.getSlavePanel()         
+                            ]
+                        }
+            ]
+        };
 };
 
 PrimaryDataMainView.prototype.load = function(dataCollectionId) {
@@ -2355,9 +2334,7 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 
 	var onSuccessA = function (sender, dataCollections) {        
 		_this.grid.load(dataCollections);
-		console.log(dataCollections);
-		
-
+				
 		var onSuccessFrames = function (sender, averages){
 			var allFrames = _.map(_.flatten(_.map(_.map(JSON.parse(averages), 'framelist3VO'), 'frametolist3VOs')), 'frame3VO');
 			/** Retrieve subtraction */
@@ -2365,54 +2342,60 @@ PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 			 var onSuccessSubtractions = function(sender, data) {				 				 
 				 if (data){
 					 if (data[0].substraction3VOs){
-						 var subtraction = data[0].substraction3VOs[0];						 
-						 var frameFromSampleAveraged = _.map(subtraction.sampleOneDimensionalFiles.frametolist3VOs, 'frame3VO');
-						 var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						 var subtraction = data[0].substraction3VOs[0];
+						 if (subtraction.sampleOneDimensionalFiles){			 
+							var frameFromSampleAveraged = _.map(subtraction.sampleOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+							var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						 
+							/** Identify discarded frames */
+							for (var i in allFrames){
+								var frame = allFrames[i];
+								debugger
+								if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
+									frame.discarded = false;
+								}
+								else{
+									frame.discarded = true;								
+								}
+								frame.type = 'Frame';
+								frame.domId = frame.frameId;
+							}
 						
-						/** Identify discarded frames */
-						for (var frameId in allFrames){
-							var frame = allFrames[frameId];
-							if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
-								frame.discarded = false;
-							}
-							else{
-								frame.discarded = true;								
-							}
-							frame.type = 'Frame';
-						}
-						allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
-						allFrames.unshift({
-							filePath : subtraction.substractedFilePath,
-							frameId : subtraction.subtractionId,
-							type : 'Subtraction'
-						});
-						allFrames.unshift({
-							filePath : subtraction.bufferAverageFilePath,
-							frameId : subtraction.subtractionId,
-							type : 'BufferAverage'
-						});
-						allFrames.unshift({
-							filePath : subtraction.sampleAverageFilePath,
-							frameId : subtraction.subtractionId,
-							type : 'SampleAverage'
-						});
-						_this.framesGrid.load(allFrames);
-						// _this.frameSelectorGrid.load(data);	
-						if (subtraction.subtractionId){
-							var onSuccessSubtraction = function(sender, subtractions) {                 
-								_this.abinitioForm.load(subtractions);
-							};			
-							EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
+							allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
+							allFrames.unshift({
+								filePath : subtraction.substractedFilePath,
+								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'Subtraction',
+								type : 'Subtraction'
+							});
+							allFrames.unshift({
+								filePath : subtraction.bufferAverageFilePath,
+								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'BufferAverage',
+								type : 'BufferAverage'
+							});
+							allFrames.unshift({
+								filePath : subtraction.sampleAverageFilePath,
+								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'SampleAverage',
+								type : 'SampleAverage'
+							});
+							_this.framesGrid.load(allFrames);	
+							// if (subtraction.subtractionId){
+							// 	var onSuccessSubtraction = function(sender, subtractions) {                 
+							// 		_this.abinitioForm.load(subtractions);
+							// 	};			
+							// 	EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
+							// }
+						} else {
+							_this.framesGrid.load(null);
 						}
 					 }
 				 }
 			 };
-
  			EXI.getDataAdapter({onSuccess : onSuccessSubtractions}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
-		}
-		
+		}		
 		EXI.getDataAdapter({onSuccess : onSuccessFrames}).saxs.frame.getFramesByAverageId(_.map(dataCollections, 'Merge_mergeId'));
-
 	}
 	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
 };
@@ -3027,93 +3010,12 @@ function AbinitioForm(args) {
 		width : 700,
 		height : 600
 	});
-
-	this.abinitioGrid.onSelected.attach(function(sender, models) {
-		var modelsIdList = [];
-		for ( var i in models) {
-			modelsIdList.push(models[i].modelId);
-		}
-		
-		_this.curvePlotter.loadUrl(EXI.getDataAdapter().saxs.frame.getFramesURL([],[],[],[],[],modelsIdList));
-		_this._renderPDB(modelsIdList);
-	});
-
-	/** Dygraph Widget that plots fir files**/
-	this.curvePlotter = new CurvePlotter({
-	});
-	/** PDB viewer **/
-	this.viewer = new PDBViewer({
-		width : 500,
-		height : 300
-	});
-
 }
-
-
-AbinitioForm.prototype._renderPDB = function(modelsIdList) {
-	/** Trying to plot the PDB file **/
-	try {
-		var viz = [];
-		for (var i = 0; i < modelsIdList.length; i++) {
-			viz.push({
-				modelId : modelsIdList[i],
-				color : new THREE.Color(0xFF6600),
-				opacity : 0.8
-			});
-		}
-		this.viewer.refresh(viz);
-	} catch (e) {
-		console.log(e);
-	}
-};
 
 
 
 AbinitioForm.prototype.getPanel = function() {
-	var _this = this;
-	this.panel = Ext.create('Ext.panel.Panel', {
-		width : this.width,
-		cls : 'border-grid',
-		layout : 'hbox',
-		height : this.height,
-		margin : 5,
-		border : 1,
-		defaultType : 'textfield',
-		items : [
-						{
-							xtype : 'container',
-							layout : 'vbox',
-							items : [
-//										{
-//											xtype : 'label',
-//											forId : 'myFieldId',
-//											text : 'INLINE HELP: To be updated',
-//											margin : '15 0 20 10',
-//											cls : "inline-help"
-//										}, 
-										this.abinitioGrid.getPanel() 
-									]
-						},
-						{
-							xtype : 'container',
-							layout : 'vbox',
-							items : [
-										{
-											xtype : 'container',
-											layout : 'fit',
-											height : 300,
-											margin : '10 0 0 0',
-											width : 500,
-											items : [
-											         	this.curvePlotter.getPanel()
-										     ]
-										},
-							         this.viewer.getPanel() 
-					         ]
-						}
-         ]
-	});
-	return this.panel;
+	return this.abinitioGrid.getPanel();
 };
 
 
@@ -3145,7 +3047,7 @@ function AbinitioGrid(args) {
 
 
 AbinitioGrid.prototype.refresh = function(subtractions){
-	this.store.loadData(this._prepareData(subtractions));
+    $('#' + this.id).html(this.doTemplate(this._prepareData(subtractions)));
 };
 
 AbinitioGrid.prototype._prepareData = function(subtractions){
@@ -3175,185 +3077,31 @@ AbinitioGrid.prototype._prepareData = function(subtractions){
 			}
 		}
 	}
+    console.log(models)
 	return models;
 };
 
-AbinitioGrid.prototype.getPanel = function(){
-	var _this = this;
-	
-	
-	var modelFields = [ "modelId", "type", "chiSqrt", "dmax", "firFile", "logFile", "fitFile", "pdbFile", "rfactor", "rg", "volume" ];
-	Ext.define('AbinitioModel', {
-		extend : 'Ext.data.Model',
-		fields : modelFields
-		
+AbinitioGrid.prototype.doTemplate = function(data){
+    var html = "";
+    dust.render("abinitiogrid.template", data, function(err, out) {                                                                                               
+		html = html + out;
 	});
-
-	/**
-	 * Store in Memory
-	 */
-	this.store = Ext.create('Ext.data.Store', {
-		model : 'AbinitioModel',
-		autoload : true,
-		groupField : 'type'
-	});
-	
-	
-	  var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-	        groupHeaderTpl: '{name} ({rows.length} model{[values.rows.length > 1 ? "s" : ""]})',
-	        startCollapsed: false,
-	        collapsible : true
-	  });
-	
-	  var selModel = Ext.create('Ext.selection.RowModel', {
-			allowDeselect : true,
-//			mode : 'multi',
-			listeners : {
-				selectionchange : function(sm, selections) {
-					if (selections.length > 0){
-						_this.onSelected.notify([selections[0].data]); 
-					}
-
-				}
-
-			} });
-	  
-	this.grid = Ext.create('Ext.grid.Panel', {
-		collapsible : false,
-		resizable : true,
-		selModel : selModel,
-		features: [groupingFeature],
-		autoscroll : true,
-		multiSelect : true,
-		store : this.store,
-		cls : 'border-grid',
-		height : this.height,
-		width : this.width,
-		margin : 10,
-		columns : [ {
-			text : "Type",
-			dataindex : "type",
-			hidden : true,
-			renderer : function(a, b, record) {
-				return record.data.type;
-			},
-			flex : 1
-		},
-		{
-			text : "ModelId",
-			dataindex : "modelId",
-			hidden : true,
-			renderer : function(a, b, record) {
-					return record.data.modelId;
-				
-			},
-			flex : 1
-		},
-		
-		{
-			text : "chiSqrt",
-			dataindex : "chiSqrt",
-			renderer : function(a, b, record) {
-				if (record.data.dmax != null) {
-					return BUI.formatValuesUnits(record.data.chiSqrt, "", 12, this.decimals);
-				}
-				
-			},
-			flex : 1
-		},
-		{
-			text : "Dmax",
-			dataindex : "dmax",
-			renderer : function(a, b, record) {
-				if (record.data.dmax != null) {
-					return BUI.formatValuesUnits(record.data.dmax, "nm", 12, this.decimals);
-				}
-				
-			},
-			flex : 1
-		}, {
-			text : "rFactor",
-			dataindex : "rfactor",
-			hidden : true,
-			renderer : function(a, b, record) {
-				if (record.data.rfactor != null) {
-					return record.data.rfactor;
-				}
-			},
-			flex : 1
-		}, {
-			text : "Rg",
-			dataindex : "rg",
-			renderer : function(a, b, record) {
-				if (record.data.rg != null) {
-					return BUI.formatValuesUnits(record.data.rg, "nm", 12, this.decimals);
-				}
-				
-			},
-			flex : 1
-		},
-		{
-			text : "Volume",
-			dataindex : "volume",
-			renderer : function(a, b, record) {
-				if (record.data.volume != null){
-					return BUI.formatValuesUnits(record.data.volume, '') + "<span style='font-size:8px;color:gray;'> nm<sub>3</sub></span>";
-				}
-			},
-			flex : 1
-		},
-		{
-			text : "PDB",
-			dataindex : "pdbFile",
-			renderer : function(a, b, record) {
-				if (record.data.pdbFile != null){
-					return record.data.pdbFile.split("/")[record.data.pdbFile.split("/").length - 1];
-				}
-			},
-			flex : 1
-		}, {
-			text : "Fir",
-			dataindex : "firFile",
-			renderer : function(a, b, record) {
-				if (record.data.firFile != null){
-					return record.data.firFile.split("/")[record.data.firFile.split("/").length - 1];
-				}
-			},
-			flex : 1
-		}, {
-			text : "LOG",
-			dataindex : "logFile",
-			hidden : true,
-			renderer : function(a, b, record) {
-				if (record.data.logFile != null){
-					return record.data.logFile.split("/")[record.data.logFile.split("/").length - 1];
-				}
-			},
-			flex : 1
-		}
-		],
-		viewConfig : {
-			enableTextSelection : true,
-			preserveScrollOnRefresh : true,
-			stripeRows : true,
-			listeners : {
-//				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//				},
-//				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//					var models = [];
-//					debugger
-//					for (var i = 0; i < grid.getSelectionModel().selected.items.length; i++) {
-//						models.push(grid.getSelectionModel().selected.items[i].data);
-//					}
-//					
-//				}
-			}
-		}
-	});
-	return this.grid;
-	
+    return html;
 };
 
+AbinitioGrid.prototype.getPanel = function(){
+	
+	
+    var html = this.doTemplate({});
+	
+	return [{
+		html : '<div id="' + this.id + '">' + html + '</div>',
+		autoScroll : true,
+        border : 1,
+        padding : 0,
+		height : this.height
+	}];
+};
 
 
 /**
@@ -5931,251 +5679,6 @@ ExperimentHeaderForm.prototype.getPanel = function() {
 };
 
 
-function FrameSelectorGrid(args) {
-
-	this.onSelectionChange = new Event(this);
-}
-
-/**
- * Fill the tree with information about the subtraction: samples, buffers,
- * averages and subtrated curve *
- */
-FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
-	var _this = this;
-    
-	/**
-	 * Given a data collection return the run numbers, sample and buffer
-	 * acronym *
-	 */
-	function getSubtractionTitleByDataCollection(dataCollection) {
-        
-		return  "DataCollection";
-		/** Sorts datacollection by data collection order 
-		dataCollection.measurementtodatacollection3VOs.sort(function(a, b) {
-			return a.dataCollectionOrder - b.dataCollectionOrder;
-		});
-		for (var i = 0; i < dataCollection.measurementtodatacollection3VOs.length; i++) {
-			function getMeasurementTitle(measurementId) {
-				for (var i = 0; i < _this.measurements.length; i++) {
-					if (_this.measurements[i].measurementId == measurementId) {
-						if (_this.measurements[i].macromoleculeId != null) {
-							return _this.measurements[i].macromoleculeAcronym + ":  " + _this.measurements[i].concentration + "mg/ml";
-						}
-						return "";
-					};
-				};
-			};
-			title = title + " " + getMeasurementTitle(dataCollection.measurementtodatacollection3VOs[i].measurementId);
-		}
-		return title;**/
-	}
-
-	/** Gets the sample and buffer frames * */
-	function getChildren(dataCollection) {
-		var children = [];
-		function getTreeFromFrameList(OneDimensionalFiles) {
-			var sampleFrames = [];
-			if (OneDimensionalFiles.frametolist3VOs) {
-				for (var j = 0; j < OneDimensionalFiles.frametolist3VOs.length; j++) {
-					sampleFrames.push({
-						text : OneDimensionalFiles.frametolist3VOs[j].frame3VO.filePath,
-						type : "Frame",
-						frameId : OneDimensionalFiles.frametolist3VOs[j].frame3VO.frameId,
-						leaf : true });
-				}
-			}
-			return sampleFrames;
-		}
-
-		if (dataCollection != null) {
-			if (dataCollection.substraction3VOs != null) {
-				dataCollection.substraction3VOs.sort(function(a, b) {
-					return a.subtractionId - b.subtractionId
-				});
-				if (dataCollection.substraction3VOs.length > 0) {
-					var lastSubtraction = dataCollection.substraction3VOs[dataCollection.substraction3VOs.length - 1];
-					children.push({
-						text : lastSubtraction.substractedFilePath,
-						subtractionId : lastSubtraction.subtractionId,
-						type : "Subtraction",
-						leaf : true, }
-
-					);
-					children.push({
-						text : lastSubtraction.sampleAverageFilePath,
-						subtractionId : lastSubtraction.subtractionId,
-						type : "SampleAverage",
-						leaf : true, }
-
-					);
-					children.push({
-						text : lastSubtraction.bufferAverageFilePath,
-						subtractionId : lastSubtraction.subtractionId,
-						type : "BufferAverage",
-						leaf : true, }
-
-					);
-
-					if (lastSubtraction.sampleOneDimensionalFiles != null) {
-						children.push({
-							text : "Sample",
-							leaf : false,
-							type : 'Sample',
-							children : getTreeFromFrameList(lastSubtraction.sampleOneDimensionalFiles, 'Sample') }
-
-						);
-					}
-					if (lastSubtraction.bufferOneDimensionalFiles != null) {
-						children.push({
-							text : "Buffer",
-							leaf : false,
-							type : 'Buffer',
-							children : getTreeFromFrameList(lastSubtraction.bufferOneDimensionalFiles, 'Buffer') }
-
-						);
-					}
-
-				}
-			}
-		}
-		return children;
-	}
-
-	var parsed = [];
-	for (var i = 0; i < dataCollections.length; i++) {
-		parsed.push({
-			text : getSubtractionTitleByDataCollection(dataCollections[i]),
-			leaf : false,
-			children : getChildren(dataCollections[i]) });
-	}
-
-	_this.treePanel.setRootNode({
-		expanded : true,
-		children : parsed }
-	);
-};
-
-FrameSelectorGrid.prototype.load = function(data) {
-	var _this = this;
-	this.measurements = data;
-	this.subtractionIds = [];
-	
-	var dataCollectionIdList = [];
-	if (this.measurements != null) {
-		for (var i = 0; i < this.measurements.length; i++) {
-			if (this.measurements[i].dataCollectionId != null) {
-				dataCollectionIdList.push(this.measurements[i].dataCollectionId);
-				this.subtractionIds.push(this.measurements[i].subtractionId);
-			}
-		}
-	}
-	this.subtractionIds = $.unique(this.subtractionIds);
-	
-	var onSuccess = (function(sender, data) {
-		if (data != null) {
-			_this.loadData(_this.measurements, data);
-		}
-
-	});
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIdList);
-
-};
-
-FrameSelectorGrid.prototype.getPanel = function() {
-	var _this = this;
-	this.store = Ext.create('Ext.data.TreeStore', {
-		 proxy: {
-		        type: 'memory'
-		    },
-		columns : [ {
-			xtype : 'treecolumn', //this is so we know which column will show the tree
-			text : 'Text',
-			dataIndex : 'text' } ] });
-
-	var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect : true,
-		mode : 'multi',
-		listeners : {
-			selectionchange : function(sm, selections) {
-				var frameIds = [];
-				var sampleAverages = [];
-				var bufferAverages = [];
-				var subtractions = [];
-				if (selections != null) {
-					for (var i = 0; i < selections.length; i++) {
-						if (selections[i].data.type) {
-							if (selections[i].data.type == "Frame") {
-								frameIds.push(selections[i].data.frameId);
-							}
-							if (selections[i].data.type == "SampleAverage") {
-								sampleAverages.push(selections[i].data.subtractionId);
-							}
-							if (selections[i].data.type == "BufferAverage") {
-								bufferAverages.push(selections[i].data.subtractionId);
-							}
-							if (selections[i].data.type == "Subtraction") {
-								subtractions.push(selections[i].data.subtractionId);
-							}
-						}
-					}
-
-					/** Event is only triggered if node is a leaf **/
-					_this.onSelectionChange.notify({
-						frame : frameIds,
-						average : [],
-						sampleaverage : sampleAverages,
-						bufferaverage : bufferAverages,
-						subtracted : subtractions });
-				}
-
-			}
-
-		} });
-
-	this.treePanel = Ext.create('Ext.tree.Panel', {
-		title : 'Data Collections',
-		selModel : selModel,
-		store : this.store,
-		rootVisible : false,
-		buttons : [ {
-			text : "Download",
-			xtype : 'button',
-			handler : function(sender) {
-//				var params = _this.getParams();
-				window.open(EXI.getDataAdapter().saxs.subtraction.getZip(_this.subtractionIds.toString()));
-			}
-		}],
-		columns : [ {
-			xtype : 'treecolumn',
-			dataIndex : 'text',
-			flex : 1,
-			renderer : function(tree, opts, record) {
-				if (record.data.leaf) {
-					if (record.data.text.lastIndexOf("/") != -1) {
-						return record.data.text.substr(record.data.text.lastIndexOf("/") + 1);
-					}
-				}
-				return record.data.text;
-			} } ]
-//	,
-//			dockedItems : [ {
-//				dock : 'bottom',
-//				xtype : 'toolbar',
-//				height : 50,
-//				items : [ {
-//					glyph : 61,
-//					xtype : 'button' }, '-', {
-//					glyph : 88,
-//					xtype : 'button' }, {
-//					glyph : 70,
-//					xtype : 'button' }, '-', {
-//					text : 'Sent to idealized curve maker',
-//					glyph : 1,
-//					xtype : 'button' } ] } ] 
-	});
-	return this.treePanel;
-};
-
 function FramesGrid (args) {
     this.id = BUI.id();
     this.selectedFrames = [];
@@ -6203,38 +5706,40 @@ FramesGrid.prototype.load = function (frames) {
         $("#" + this.id).html(html);
 
         this.setClickListeners();
+    } else {
+        $("#" + this.id).html("<h4>No frames found</h4>");
     }
 };
 
 FramesGrid.prototype.setClickListeners = function () {
     var _this = this;
     $('#' + this.id + '-frames-table').unbind('click').on('click', '.frame-cell-element', function(event) {
-        var fileName = event.target.id;
+        var domId = event.target.id;
         if (event.shiftKey && _this.selectedFrames.length > 0){
-            var last = _this.getFileName(_this.selectedFrames[_this.selectedFrames.length-1].filePath);
-            if (last != fileName) {
-                var lastIndex = _this.frames.indexOf(_this.getFrameByFileName(last));
-                var currentIndex = _this.frames.indexOf(_this.getFrameByFileName(fileName));
+            var last = _this.selectedFrames[_this.selectedFrames.length-1].domId;
+            if (last != domId) {
+                var lastIndex = _this.frames.indexOf(_this.getFrameByDomId(last));
+                var currentIndex = _this.frames.indexOf(_this.getFrameByDomId(domId));
                 var begin = Math.min(lastIndex, currentIndex);
                 var end = Math.max(lastIndex, currentIndex);
                 _this.deselectAll();
                 for (var i = begin ; i <= end ; i++) {
-                    _this.select(_this.getFileName(_this.frames[i].filePath));
+                    _this.select(_this.frames[i].domId);
                 }
             }
         } else {
             if (event.ctrlKey) {
-                if (_this.selectedFrames.indexOf(_this.getFrameByFileName(fileName)) >= 0) {
-                    _this.deselect(fileName);
+                if (_this.selectedFrames.indexOf(_this.getFrameByDomId(domId)) >= 0) {
+                    _this.deselect(domId);
                 } else {
-                    _this.select(fileName);
+                    _this.select(domId);
                 }
             } else {
-                if (_this.selectedFrames.length == 1 && _this.getFileName(_this.selectedFrames[0].filePath) == fileName) {
-                    _this.deselect(fileName);
+                if (_this.selectedFrames.length == 1 && _this.selectedFrames[0].domId == domId) {
+                    _this.deselect(domId);
                 } else {
                     _this.deselectAll();
-                    _this.select(fileName);
+                    _this.select(domId);
                 }
             }
         }
@@ -6242,15 +5747,15 @@ FramesGrid.prototype.setClickListeners = function () {
     });
 }
 
-FramesGrid.prototype.select = function (fileName) {
-    this.selectedFrames.push(this.getFrameByFileName(fileName));
-    $("#" + fileName).addClass('x-grid-item-selected');
+FramesGrid.prototype.select = function (domId) {
+    this.selectedFrames.push(this.getFrameByDomId(domId));
+    $("#" + domId).addClass('x-grid-item-selected');
 }
 
-FramesGrid.prototype.deselect = function (fileName) {
+FramesGrid.prototype.deselect = function (domId) {
     var _this = this;
-    _.remove(this.selectedFrames,function(o) {return _this.getFileName(o.filePath) == fileName});
-    $("#" + fileName).removeClass('x-grid-item-selected');
+    _.remove(this.selectedFrames,function(o) {return o.domId == domId});
+    $("#" + domId).removeClass('x-grid-item-selected');
 }
 
 FramesGrid.prototype.deselectAll = function () {
@@ -6258,14 +5763,14 @@ FramesGrid.prototype.deselectAll = function () {
     $(".frame-cell-element").removeClass("x-grid-item-selected");
 }
 
-FramesGrid.prototype.getFileName = function (filePath) {
-    var withExtension = filePath.substring(filePath.lastIndexOf('/')+1);
-    return withExtension.substring(0,withExtension.indexOf("."));
-}
+// FramesGrid.prototype.getFileName = function (filePath) {
+//     var withExtension = filePath.substring(filePath.lastIndexOf('/')+1);
+//     return withExtension.substring(0,withExtension.indexOf("."));
+// }
 
-FramesGrid.prototype.getFrameByFileName = function (fileName) {
+FramesGrid.prototype.getFrameByDomId = function (domId) {
     var _this = this;
-    return _.filter(this.frames,function (o) {return _this.getFileName(o.filePath) == fileName})[0];
+    return _.filter(this.frames,function (o) {return o.domId == domId})[0];
 };
 
 FramesGrid.prototype.parseSelected = function () {
@@ -12819,24 +12324,25 @@ OverviewQueueGrid.prototype.render = function(data) {
 		    o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
         }
 	});
-    
+     
 	for (var dataCollectionId in grouped){
 		var last = _.maxBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder');
-		if (last.Subtraction_subtractionId){
-            last.rowSpan = grouped[dataCollectionId].length;
-            last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
-            last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
-            last.density = this.getImage(last.Subtraction_subtractionId,"density");
-            last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
-            if (last.Run_runId) {
-                last.dataReduction = true;
+        if(last){
+            if (last.Subtraction_subtractionId){
+                last.rowSpan = grouped[dataCollectionId].length;
+                last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
+                last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
+                last.density = this.getImage(last.Subtraction_subtractionId,"density");
+                last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
+                if (last.Run_runId) {
+                    last.dataReduction = true;
+                }
             }
-        }
 		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
+        }
 	}
-
-
-	dust.render("overview.queue.grid.test.template", data, function(err, out) {                                                                                               
+    
+	dust.render("overview.queue.grid.template", data, function(err, out) {   
 		html = html + out;
 	});
 	
@@ -16569,12 +16075,18 @@ function SpecimenWidget(args){
 
 	this.samplePlateGroupWidget.onClick.attach(function(sender, args) {
 		/** Clicking on a plate * */
-		var row = args.row;
-		var column = args.column;
-		var samplePlate = args.samplePlate;
+		// var row = args.row;
+		// var column = args.column;
+		// var samplePlate = args.samplePlate;
 		var specimenId = args.specimenId;
-
-		_this.specimenGrid.selectById(specimenId);
+		if (_this.specimenSelected && _this.specimenSelected.Specimen_specimenId == specimenId) {
+			_this.samplePlateGroupWidget.selectSpecimens([]);
+			_this.specimenGrid.deselectAll();
+			_this.specimenSelected = null;
+		} else {
+			_this.specimenSelected = {Specimen_specimenId : specimenId};
+			_this.specimenGrid.selectById(specimenId);
+		}
 
 // 		/** is specimen selected on the grid? * */
 // 		if (_this.specimenSelected != null) {

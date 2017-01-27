@@ -73,7 +73,7 @@ ShippingExiController.prototype.init = function() {
 
 		Path.map("#/proposal/shipping/nav").to(function() {
 			loadShipmentNavigationList();
-			EXI.addMainPanel(new ShippingWelcomeMainView());
+			// EXI.addMainPanel(new ShippingWelcomeMainView());
 		});
 		
 		Path.map("#/shipping/:shippingId/main").to(function() {
