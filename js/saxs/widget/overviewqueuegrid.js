@@ -73,7 +73,7 @@ OverviewQueueGrid.prototype.render = function(data) {
 	
 	$('#' + this.id).html(html);
 
-	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.id)
 	
 	this.attachCallBackAfterRender(nodeWithScroll);
 };

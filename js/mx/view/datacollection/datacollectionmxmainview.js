@@ -28,7 +28,6 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                             this.genericDataCollectionPanel.getPanel()
                         ]
                 }, 
-              
                 {
                         title: 'Energy Scans',
                         cls : 'border-grid',
@@ -48,7 +47,6 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                ]
         });
 	    return this.container;
-	
 };
 
 DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
