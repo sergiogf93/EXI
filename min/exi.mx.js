@@ -264,10 +264,6 @@ MxDataCollectionController.prototype.init = function() {
 			EXI.setLoadingMainPanel(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByDataCollectionId(this.params['datacollectionid']);
-
-
-		
-        
 	}).enter(this.setPageBackground);
     
     
@@ -3024,7 +3020,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 if (data.workflows == null) {
                     data.workflows = [];
                 }
-             
+                
                 dust.render(_this.template, data, function(err, out) {                                                                       
                     html = html + out;
                 });
@@ -3083,7 +3079,6 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                             this.genericDataCollectionPanel.getPanel()
                         ]
                 }, 
-              
                 {
                         title: 'Energy Scans',
                         cls : 'border-grid',
@@ -3103,7 +3098,6 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                ]
         });
 	    return this.container;
-	
 };
 
 DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
@@ -5700,29 +5694,26 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
-        if (_this.filterByDate){
-            if (value.shippingStatus){
-                if (value.shippingStatus.toUpperCase() == "PROCESSING"){
-                    data.push(value);
-                    return;
-                }                        
-            }       
-        
-            /** Filtering only future sessions */            
-            if (value.sessionStartDate){
-                if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
-                    data.push(value);
+        if (value.sessionId){
+            if (_this.filterByDate){
+                if (value.shippingStatus){
+                    if (value.shippingStatus.toUpperCase() == "PROCESSING"){
+                        data.push(value);
+                        return;
+                    }                        
+                }       
+            
+                /** Filtering only future sessions */
+                if (value.sessionStartDate){
+                    if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
+                        data.push(value);
+                    }
                 }
             }
             else{
-                /** No session or not parseable */
-                data.push(value);
+                    data.push(value);
             }
         }
-        else{
-                data.push(value);
-        }
-        
     });
         
     this.panel.setTitle(data.length + " shipments candidates for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);    

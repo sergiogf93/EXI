@@ -2970,8 +2970,8 @@ QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
             }
     };
        
-    var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
-	var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
+    var timer1 = setTimeout(function() { $('.img-responsive').lazy(lazy);}, 500);
+	// var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
 
 };
 
@@ -2980,7 +2980,7 @@ QueueGrid.prototype.getPanel = function(){
 
 	return {
 		html : '<div id="' + this.id + '"></div>',
-		autoScroll : true,
+		autoScroll : false,
         padding : this.padding
 	}
 };
@@ -12348,7 +12348,7 @@ OverviewQueueGrid.prototype.render = function(data) {
 	
 	$('#' + this.id).html(html);
 
-	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.id)
 	
 	this.attachCallBackAfterRender(nodeWithScroll);
 };
