@@ -39,7 +39,7 @@ MeasurementGrid.prototype.getPanel = function(){
 
 	return {
 		html : '<div id="' + this.id + '"></div>',
-		autoScroll : true
+		autoScroll : false
 	}
 };
 

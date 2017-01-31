@@ -12348,9 +12348,11 @@ OverviewQueueGrid.prototype.render = function(data) {
 	
 	$('#' + this.id).html(html);
 
-	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.id)
+	// $(".queue-img").lazyload();	
+
+	// var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.id)
 	
-	this.attachCallBackAfterRender(nodeWithScroll);
+	// this.attachCallBackAfterRender(nodeWithScroll);
 };
 
 
