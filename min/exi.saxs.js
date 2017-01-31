@@ -406,6 +406,7 @@ SAXSExiController.prototype.init = function() {
 function ExiSAXS() {
 	 Exi.call(this, {
 		 					menu: new SAXSMainMenu(),
+                            managerMenu : new ManagerMenu(),
 		 					anonymousMenu: new MainMenu(),
 		 					controllers : [new SAXSExiController(),  new OfflineExiController(), new ProposalExiController(), new SessionController(), new LabContactExiController()]
 	 });
