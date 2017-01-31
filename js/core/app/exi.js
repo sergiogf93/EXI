@@ -138,12 +138,8 @@ Exi.prototype.setUserMenu = function() {
 	Ext.getCmp("mainMenu").add(EXI.mainMenu.getPanel());
 };
 
-
 Exi.prototype.loadSelected = function(selected) {
 };
-
-
-
 
 /**
  * Adds a new Main panel to the center panel
