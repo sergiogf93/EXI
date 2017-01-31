@@ -11,6 +11,7 @@ ManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredential
 ManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
 ManagerMenu.prototype.setText = MainMenu.prototype.setText;
 ManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
+ManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
 ManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 ManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
@@ -41,7 +42,7 @@ ManagerMenu.prototype.getMenuItems = function() {
         {
 			text : this._convertToHTMLWhiteSpan("Manager"),
 			cls : 'ExiSAXSMenuToolBar',
-			menu : this.getHelpMenu() 
+			menu : this.getManagerMenu() 
 		},
 		{
 			text : this._convertToHTMLWhiteSpan("Help"),
