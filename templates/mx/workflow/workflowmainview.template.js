@@ -57,9 +57,17 @@
             <div class="alert alert-info">
                     {.value}
             </div>
-        </div>
-	   		
+        </div>	   		
 	{/eq}
+    
+      {@eq key=type value="warning"}
+        <div class="container">
+            <div class="alert alert-warning">
+                    {.value}
+            </div>
+        </div>	   		
+	{/eq}
+    
      
     {@eq key=type value="table"}
         <div class="container">

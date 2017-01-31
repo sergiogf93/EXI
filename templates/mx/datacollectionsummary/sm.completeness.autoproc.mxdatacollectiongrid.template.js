@@ -56,7 +56,7 @@
         <td  style='padding:0 15px 0 15px;'>
             {@gt key=overall.completeness value=20}
                 {@gt key=overall.completeness value=70}
-                    <div  style="background-repeat: repeat-x;border:1px solid gray;color:#fff;background-image:linear-gradient(to bottom,#337ab7 0,#286090 100%);width:{.overall.completeness}%">{.outerShell.completeness}%</div>
+                    <div  style="background-repeat: repeat-x;border:1px solid gray;color:#fff;background-image:linear-gradient(to bottom,#337ab7 0,#286090 100%);width:{.overall.completeness}%">{.overall.completeness}%</div>
                 {:else}
                     <div  style="background-repeat: repeat-x;border:1px solid #f0ad4e;color:#fff;background-color:#f0ad4e;width:{.overall.completeness}%">{.overall.completeness}%</div>
                 {/gt}

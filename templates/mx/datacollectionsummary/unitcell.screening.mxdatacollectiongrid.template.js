@@ -1,7 +1,7 @@
    <table class='table-sm table table-striped'>
                 <thead>   
                 <tr>
-                    <th  style='padding:0 15px 0 15px;'>TEEESTcell A</th>
+                    <th  style='padding:0 15px 0 15px;'>cell A</th>
                     <th style='padding:0 15px 0 15px;'>cell B</th>
                     <th style='padding:0 15px 0 15px;'>cell C</th>
                     

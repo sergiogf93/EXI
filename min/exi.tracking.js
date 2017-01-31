@@ -47,6 +47,11 @@ ExiTracking.prototype.setUserMenu = Exi.prototype.setUserMenu;
 ExiTracking.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiTracking.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiTracking.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiTracking.prototype.addTimer = Exi.prototype.addTimer;
+ExiTracking.prototype.clearTimers = Exi.prototype.clearTimers;
+ExiTracking.prototype.addMainPanelWithTimer = Exi.prototype.addMainPanelWithTimer;
+ExiTracking.prototype.addNavigationPanelWithTimer = Exi.prototype.addNavigationPanelWithTimer;
+
 
 ExiTracking.prototype.getHeader = function(){
     var html = "";
