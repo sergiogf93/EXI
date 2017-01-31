@@ -28,7 +28,7 @@
             </td>
             <td valign="top" style='padding:0 15px 0 15px;'>{.innerShell.resolutionsLimitHigh}</td>
             <td valign="top">{.innerShell.rMerge}</td>
-        </tr>
+        </tr> 
             <tr>
             <td valign="top">Outer</td>
             <td>
