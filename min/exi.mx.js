@@ -2920,6 +2920,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     var cell_beta = getArrayValues(data.Autoprocessing_cell_beta);
     var cell_gamma = getArrayValues(data.Autoprocessing_cell_gamma);
 
+    var anomalous = getArrayValues(data.Autoprocessing_anomalous);
+
     data = {};
     /** Returning if no autoprocs */
     if (autoProcIds) {
@@ -2931,7 +2933,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         if (data[autoProcIds[i]] == null) {
             data[autoProcIds[i]] = {
                 autoProcId: autoProcIds[i],
-                spaceGroup: autoProc_spaceGroups[i]
+                spaceGroup: autoProc_spaceGroups[i],
+                anomalous: anomalous[i]
             };
         }
         
@@ -2948,7 +2951,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
             cell_c: cell_c[i],
             cell_alpha: cell_alpha[i],
             cell_beta: cell_beta[i],
-            cell_gamma: cell_gamma[i]
+            cell_gamma: cell_gamma[i],
+            anomalous : anomalous[i]
 
         });
 
@@ -2960,8 +2964,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
-    
-    return new AutoprocessingRanker().rank(result, "spaceGroup");  
+    /** Rank results when anomouls is 0 */
+    return new AutoprocessingRanker().rank(_.filter(result, {anomalous : '0'}), "spaceGroup");  
 };
 
 
@@ -3013,8 +3017,10 @@ DataCollectionGrid.prototype.getColumns = function() {
 
                 /** Image quality indicator **/
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
-                data.onlineresults = _this._getAutoprocessingStatistics(record.data);
+
                 
+                data.onlineresults = _this._getAutoprocessingStatistics(record.data);
+               
                 /** We dont show screen if there are results of autoprocessing */
                 data.isScreeningVisible = true;
                 if (data.onlineresults){
@@ -4001,6 +4007,7 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
     try{
         this.dataCollectionGroup = dataCollectionGroup;
+        
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
@@ -4039,6 +4046,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
 UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(target, dataCollectionGroupId) {
     var onSuccess = function(sender, data){
         var html = "";
+        
         dust.render("datacollections.mxdatacollectiongrid.template", data, function(err, out) {                                                                                               
             html = html + out;
         });

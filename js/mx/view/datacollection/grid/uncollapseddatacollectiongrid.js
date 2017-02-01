@@ -23,6 +23,7 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
     try{
         this.dataCollectionGroup = dataCollectionGroup;
+        
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
@@ -61,6 +62,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
 UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(target, dataCollectionGroupId) {
     var onSuccess = function(sender, data){
         var html = "";
+        
         dust.render("datacollections.mxdatacollectiongrid.template", data, function(err, out) {                                                                                               
             html = html + out;
         });
