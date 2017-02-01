@@ -1342,7 +1342,6 @@ function ExperimentMainView() {
 			direction : 'ASC'
 		} ]
 	});
-	
 
 	this.activePanel = this.queueGrid;
 	
@@ -1364,8 +1363,9 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },
-		,{
+
+        },{
+
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);
@@ -1391,14 +1391,15 @@ ExperimentMainView.prototype.getToolBar = function() {
 };
 
 ExperimentMainView.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-	    margin : 10,
-		layout : 'fit',
-		height : 600,	
-		tbar : this.getToolBar(),
-	    items: []
-	});
 
+	this.panel = Ext.create('Ext.panel.Panel', {   
+		margin : 10,
+		// minHeight : 900,
+		layout : 'fit',
+		minHeight : 600,
+		tbar : this.getToolBar(),
+		items: []
+	});
 	return this.panel;
 };
 
@@ -7857,7 +7858,7 @@ MeasurementGrid.prototype.getPanel = function(){
 
 	return {
 		html : '<div id="' + this.id + '"></div>',
-		autoScroll : true
+		autoScroll : false
 	}
 };
 
@@ -12359,12 +12360,10 @@ OverviewQueueGrid.prototype.render = function(data) {
 	});
 	
 	$('#' + this.id).html(html);
-
-	// $(".queue-img").lazyload();	
-
-	// var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.id)
 	
-	// this.attachCallBackAfterRender(nodeWithScroll);
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.id);
+	
+	this.attachCallBackAfterRender(nodeWithScroll);
 };
 
 
@@ -12373,7 +12372,7 @@ OverviewQueueGrid.prototype.render = function(data) {
 *
 * @method getPanel
 */
-OverviewQueueGrid.prototype.getPanel = function(){    
+OverviewQueueGrid.prototype.getPanel = function(){ 
 	return {
 		html : '<div id="' + this.id + '"></div>',
 		autoScroll : true,

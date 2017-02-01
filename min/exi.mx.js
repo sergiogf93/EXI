@@ -3079,48 +3079,48 @@ function DataCollectionMxMainView() {
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 DataCollectionMxMainView.prototype.getContainer = function() {
-		this.container = Ext.create('Ext.tab.Panel', {   
-        minHeight : 900,    
-        padding : "5 40 0 5",
-        items: [ {
-                        title: 'Data Collections',
-                        cls : 'border-grid',
-                        id : this.id + "_dataCollectionTab",                        
-                        items:[
-                            this.genericDataCollectionPanel.getPanel()
-                        ]
-                }, 
+    this.container = Ext.create('Ext.tab.Panel', {   
+    minHeight : 900,    
+    padding : "5 40 0 5",
+    items: [ {
+                    title: 'Data Collections',
+                    cls : 'border-grid',
+                    id : this.id + "_dataCollectionTab",                        
+                    items:[
+                        this.genericDataCollectionPanel.getPanel()
+                    ]
+            }, 
+            {
+                    title: 'Energy Scans',
+                    cls : 'border-grid',
+                    id : this.id + "_energyTab",
+                    items:[
+                            this.energyScanGrid.getPanel()
+                    ]
+            },
                 {
-                        title: 'Energy Scans',
-                        cls : 'border-grid',
-                        id : this.id + "_energyTab",
-                        items:[
-                             this.energyScanGrid.getPanel()
-                        ]
-                },
-                 {
-                        title: 'Fluorescence Spectra',
-                        id : this.id + "_xfeTab",
-                        cls : 'border-grid',                         
-                        items:[
-                            this.xfeScanGrid.getPanel()
-                        ]
-                }
-               ]
-        });
-	    return this.container;
+                    title: 'Fluorescence Spectra',
+                    id : this.id + "_xfeTab",
+                    cls : 'border-grid',                         
+                    items:[
+                        this.xfeScanGrid.getPanel()
+                    ]
+            }
+            ]
+    });
+    return this.container;
 };
 
 DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
-     if (data){
-         if (data.length > 0){
-            Ext.getCmp(this.id + "_energyTab").setTitle(data.length + " Energy Scans");  
-            this.energyScanGrid.load(data);
-            return;
-         }
-     }
-     
-     Ext.getCmp(this.id + "_energyTab").setDisabled(true);
+    if (data){
+        if (data.length > 0){
+        Ext.getCmp(this.id + "_energyTab").setTitle(data.length + " Energy Scans");  
+        this.energyScanGrid.load(data);
+        return;
+        }
+    }
+    
+    Ext.getCmp(this.id + "_energyTab").setDisabled(true);
 };
 
 DataCollectionMxMainView.prototype.loadFXEScans = function(data) {  
@@ -3129,10 +3129,10 @@ DataCollectionMxMainView.prototype.loadFXEScans = function(data) {
             Ext.getCmp(this.id + "_xfeTab").setTitle(data.length + " Fluorescence Spectra");  
             this.xfeScanGrid.load(data);
             return;
-         }
-     }
-     
-     Ext.getCmp(this.id + "_xfeTab").setDisabled(true);
+            }
+        }
+        
+    Ext.getCmp(this.id + "_xfeTab").setDisabled(true);
 };
 
 DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
@@ -5707,12 +5707,8 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
-<<<<<<< HEAD
         
         if ((value.sessionId) ||(value.shippingStatus.toUpperCase() == "PROCESSING")){
-=======
-        if (value.sessionId){
->>>>>>> 384dd25c94a4dde6855064e361cad5c9da9c4520
             if (_this.filterByDate){
                 if (value.shippingStatus){
                     if (value.shippingStatus.toUpperCase() == "PROCESSING"){
