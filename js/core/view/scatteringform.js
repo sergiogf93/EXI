@@ -24,7 +24,8 @@ ScatteringForm.prototype.getPanel = function() {
 		items :	[{
 					html : '<div id="' + this.id + '"></div>',
 					autoScroll : false,
-					width : this.width
+					width : this.width,
+					height : this.height
 				}]
 	});
 
@@ -46,6 +47,9 @@ ScatteringForm.prototype.load = function(data) {
 		this.data.chunkedKeys = _.chunk(this.data.keys,Math.ceil(this.data.keys.length/3.0));
 	}
 
+	this.data.today = moment().format("YYYY-MM-DD");
+	this.data.tenDaysAgo = moment().subtract(10,'d').format("YYYY-MM-DD");
+
     var html = "";
     dust.render("scattering.form.template", this.data, function (err, out) {
         html = out;
@@ -62,11 +66,17 @@ ScatteringForm.prototype.plot = function() {
 	$('.scattering-checkbox:checked').each(function(i){
 		checkedValues.push($(this).val());
 	});
-	var token = EXI.getDataAdapter().proposal.authentication.token;
 
 	if (startDate != "" && endDate != "" && checkedValues.length > 0) {
-		var urlParams = "url=http://ispyvalid.esrf.fr:8080/ispyb/ispyb-ws/rest/" + token + "/stats/autoprocstatistics/innerShell/" + startDate + "/" + endDate + "/csv&/&title=" + this.data.title + "&/&y=" + checkedValues.toString() + "&/&x=recordTimeStamp&";
-		var url = '../viewer/scatter/index.html?' + urlParams;
-		window.open(url,'_blank');
+		var diffDays = moment(endDate,"YYYY-MM-DD").diff(moment(startDate,"YYYY-MM-DD"), 'days');
+		if (diffDays <= 10){
+			var url = EXI.getDataAdapter().mx.stats.getStatisticsByDate(startDate,endDate);
+			var urlParams = "url=" + url + "&/&title=" + this.data.title + "&/&y=" + checkedValues.toString() + "&/&x=recordTimeStamp&";
+			window.open("../viewer/scatter/index.html?" + urlParams,"_blank");
+		} else {
+			$("#" + this.id + "-dates").notify("Date interval must be 10 days or lower.", "error");
+		}
+	} else {
+		$("#" + this.id + "-notifications").notify("Set the dates correctly and select the values to plot.", "error");
 	}
 }

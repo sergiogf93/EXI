@@ -1,7 +1,7 @@
 function ExiMX() {
 	 Exi.call(this, {
 		 					menu: new MXMainMenu(),
-							managerMenu : new ManagerMenu(),
+							managerMenu : new MXManagerMenu(),
 		 					anonymousMenu: new MainMenu(),
 		 					controllers : [									
 									new SessionController(), 									

@@ -123,7 +123,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		var _this = this;
 		function onItemCheck(item, checked) {
 			if (item.text == "Add new") {
-				var shippingEditForm = new ShipmentEditForm();
+				var shippingEditForm = new ShipmentEditForm({width : 600, height : 700});
 				
 				shippingEditForm.onSaved.attach(function (sender, shipment) {
 					window.close();
@@ -132,8 +132,8 @@ MainMenu.prototype.getShipmentItem = function() {
 
 				var window = Ext.create('Ext.window.Window', {
 					title : 'Shipment',
-					height : 700,
-					width : 600,
+					height : 500,
+					width : 650,
 					padding : '10 10 10 10',
 					modal : true,
 					layout : 'fit',
@@ -197,63 +197,6 @@ MainMenu.prototype.getShipmentItem = function() {
 					] })
 	};
 
-};
-
-MainMenu.prototype.getManagerMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "AutoprocIntegrator") {
-			var scatteringForm = new ScatteringForm();
-
-			var window = Ext.create('Ext.window.Window', {
-				title : 'Scattering',
-				height : 450,
-				width : 600,
-				modal : true,
-				layout : 'fit',
-				items : [ scatteringForm.getPanel() ],
-				buttons : [ {
-						text : 'Plot',
-						handler : function() {
-							scatteringForm.plot();
-						}
-					}, {
-						text : 'Cancel',
-						handler : function() {
-							window.close();
-						}
-					} ]
-			}).show();
-
-			var keys = ["rPimWithinIPlusIMinus","anomalousMultiplicity","blSubSampleId","recordTimeStamp","multiplicity",
-			"endTime","resolutionLimitLow","ccHalf","strategySubWedgeOrigId","startTime","completeness","rMerge","anomalous",
-			"dataCollectionNumber","meanIOverSigI","proposalId","ccAno","autoProcScalingId","beamLineName","scalingStatisticsType",
-			"nTotalObservations","sigAno","rMeasWithinIPlusIMinus","dataCollectionId","anomalousCompleteness","autoProcScalingStatisticsId",
-			"sessionId","resolutionLimitHigh","fractionalPartialBias","rMeasAllIPlusIMinus","detectorId","nTotalUniqueObservations","rPimAllIPlusIMinus"];
-
-			var scatteringData = {title : "AutoprocIntegrator", keys : keys};
-
-			scatteringForm.load(scatteringData);
-		}
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [
-					{
-						text : 'Statistics',
-						icon : '../images/icon/ic_insert_chart_black_36dp.png',
-						menu : {       
-								items: [
-									{
-										text: 'AutoprocIntegrator',
-										icon : '../images/icon/ic_insert_chart_black_36dp.png',
-										handler: onItemCheck
-									}
-								]
-							}
-					}
-			] 
-	});
 };
 
 MainMenu.prototype.getHelpMenu = function() {

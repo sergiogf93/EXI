@@ -85,7 +85,8 @@ ShipmentEditForm.prototype.getPanel = function() {
 		items :	[{
 					html : '<div id="' + this.id + '"></div>',
 					autoScroll : false,
-					width : this.width
+					width : this.width,
+					height : this.height
 				}]
 	});
 

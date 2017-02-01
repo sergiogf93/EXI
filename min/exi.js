@@ -2087,7 +2087,7 @@ MainMenu.prototype.getShipmentItem = function() {
 		var _this = this;
 		function onItemCheck(item, checked) {
 			if (item.text == "Add new") {
-				var shippingEditForm = new ShipmentEditForm();
+				var shippingEditForm = new ShipmentEditForm({width : 600, height : 700});
 				
 				shippingEditForm.onSaved.attach(function (sender, shipment) {
 					window.close();
@@ -2096,8 +2096,9 @@ MainMenu.prototype.getShipmentItem = function() {
 
 				var window = Ext.create('Ext.window.Window', {
 					title : 'Shipment',
-					height : 450,
-					width : 600,
+					height : 500,
+					width : 650,
+					padding : '10 10 10 10',
 					modal : true,
 					layout : 'fit',
 					items : [ shippingEditForm.getPanel() ],
@@ -2160,63 +2161,6 @@ MainMenu.prototype.getShipmentItem = function() {
 					] })
 	};
 
-};
-
-MainMenu.prototype.getManagerMenu = function() {
-	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "AutoprocIntegrator") {
-			var scatteringForm = new ScatteringForm();
-
-			var window = Ext.create('Ext.window.Window', {
-				title : 'Scattering',
-				height : 450,
-				width : 600,
-				modal : true,
-				layout : 'fit',
-				items : [ scatteringForm.getPanel() ],
-				buttons : [ {
-						text : 'Plot',
-						handler : function() {
-							
-						}
-					}, {
-						text : 'Cancel',
-						handler : function() {
-							window.close();
-						}
-					} ]
-			}).show();
-
-			var keys = ["rPimWithinIPlusIMinus","anomalousMultiplicity","blSubSampleId","recordTimeStamp","multiplicity",
-			"endTime","resolutionLimitLow","ccHalf","strategySubWedgeOrigId","startTime","completeness","rMerge","anomalous",
-			"dataCollectionNumber","meanIOverSigI","proposalId","ccAno","autoProcScalingId","beamLineName","scalingStatisticsType",
-			"nTotalObservations","sigAno","rMeasWithinIPlusIMinus","dataCollectionId","anomalousCompleteness","autoProcScalingStatisticsId",
-			"sessionId","resolutionLimitHigh","fractionalPartialBias","rMeasAllIPlusIMinus","detectorId","nTotalUniqueObservations","rPimAllIPlusIMinus"];
-
-			var scatteringData = {title : "AutoprocIntegrator", keys : keys};
-
-			scatteringForm.load(scatteringData);
-		}
-	}
-
-	return Ext.create('Ext.menu.Menu', {
-		items : [
-					{
-						text : 'Statistics',
-						icon : '../images/icon/ic_insert_chart_black_36dp.png',
-						menu : {       
-								items: [
-									{
-										text: 'AutoprocIntegrator',
-										icon : '../images/icon/ic_insert_chart_black_36dp.png',
-										handler: onItemCheck
-									}
-								]
-							}
-					}
-			] 
-	});
 };
 
 MainMenu.prototype.getHelpMenu = function() {
@@ -2387,7 +2331,6 @@ ManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredential
 ManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
 ManagerMenu.prototype.setText = MainMenu.prototype.setText;
 ManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
-ManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
 ManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 ManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
@@ -2415,11 +2358,6 @@ ManagerMenu.prototype.getMenuItems = function() {
 //			hidden : this.isHidden,
 //			menu : this.getOnlineDataAnalisysMenu() 
 //		}, 
-        {
-			text : this._convertToHTMLWhiteSpan("Manager"),
-			cls : 'ExiSAXSMenuToolBar',
-			menu : this.getManagerMenu() 
-		},
 		{
 			text : this._convertToHTMLWhiteSpan("Help"),
 			cls : 'ExiSAXSMenuToolBar',
@@ -2441,9 +2379,6 @@ ManagerMenu.prototype.getMenuItems = function() {
 	}
 	];
 };
-
-
-
 
 ManagerMenu.prototype.getPreparationMenu = function() {
 	var _this = this;
@@ -4122,34 +4057,61 @@ ScatteringForm.prototype.getPanel = function() {
 		items :	[{
 					html : '<div id="' + this.id + '"></div>',
 					autoScroll : false,
-					width : this.width
+					width : this.width,
+					height : this.height
 				}]
 	});
 
-    this.panel.on('boxready', function() {
-        _this.load();
-    });
+    // this.panel.on('boxready', function() {
+    //     _this.load();
+    // });
 
 	return this.panel;
 };
 
 ScatteringForm.prototype.load = function(data) {
-    if (!data) {
-        var data = {};
+	this.data = data;
+    if (!this.data) {
+        this.data = {};
     }
-    data.id = this.id;
+    this.data.id = this.id;
 
-	if (data.keys) {
-		data.chunkedKeys = _.chunk(data.keys,Math.ceil(data.keys.length/3.0));
+	if (this.data.keys) {
+		this.data.chunkedKeys = _.chunk(this.data.keys,Math.ceil(this.data.keys.length/3.0));
 	}
 
+	this.data.today = moment().format("YYYY-MM-DD");
+	this.data.tenDaysAgo = moment().subtract(10,'d').format("YYYY-MM-DD");
+
     var html = "";
-    dust.render("scattering.form.template", data, function (err, out) {
+    dust.render("scattering.form.template", this.data, function (err, out) {
         html = out;
     });
 
 	$('#' + this.id).hide().html(html).fadeIn('fast');
 	this.panel.doLayout();
+}
+
+ScatteringForm.prototype.plot = function() {
+	var startDate= $("#" + this.id + "-startDate").val();
+	var endDate = $("#" + this.id + "-endDate").val();
+	var checkedValues = [];
+	$('.scattering-checkbox:checked').each(function(i){
+		checkedValues.push($(this).val());
+	});
+
+	if (startDate != "" && endDate != "" && checkedValues.length > 0) {
+		var diffDays = moment(endDate,"YYYY-MM-DD").diff(moment(startDate,"YYYY-MM-DD"), 'days');
+		if (diffDays <= 10){
+			var url = EXI.getDataAdapter().mx.stats.getStatisticsByDate(startDate,endDate);
+			var urlParams = "url=" + url + "&/&title=" + this.data.title + "&/&y=" + checkedValues.toString() + "&/&x=recordTimeStamp&";
+			window.open("../viewer/scatter/index.html?" + urlParams,"_blank");
+		} else {
+			$("#" + this.id + "-dates").notify("Date interval must be 10 days or lower.", "error");
+		}
+	} else {
+		$("#" + this.id + "-notifications").notify("Set the dates correctly and select the values to plot.", "error");
+	}
 }
 function SessionMainView(args) {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -4943,7 +4905,7 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
                     [
                         // crystal.crystalId,
                         (i+1), 
-                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.BLSample_code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
                         diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
 						// this.getUnitCellInfo(crystal),
 						crystal.spaceGroup, sample.smiles, sample.comments
@@ -5031,9 +4993,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 ContainerSpreadSheet.prototype.getPuck = function() {
 	var myPuck = JSON.parse(JSON.stringify(this.puck));
 	var rows = this.parseTableData();
-	myPuck['barcode'] = rows[0]["Pin BarCode"];
     
-	//myPuck.sampleVOs = [];
     var aux = [];
     
     function filterByLocation(samples){
@@ -5048,7 +5008,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
         } 
         
 		sample["name"] = rows[i]["Sample Name"];
-		// sample["Dewar_barCode"] = rows[i]["Pin BarCode"];
+		sample["BLSample_code"] = rows[i]["Pin BarCode"];
 		sample["smiles"] = rows[i]["Smiles"];
 		sample["location"]= rows[i]["location"];
 		sample["comments"] = rows[i]["Comments"];
@@ -6603,7 +6563,8 @@ ShipmentEditForm.prototype.getPanel = function() {
 		items :	[{
 					html : '<div id="' + this.id + '"></div>',
 					autoScroll : false,
-					width : this.width
+					width : this.width,
+					height : this.height
 				}]
 	});
 

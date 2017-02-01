@@ -11,7 +11,6 @@ ManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredential
 ManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
 ManagerMenu.prototype.setText = MainMenu.prototype.setText;
 ManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
-ManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
 ManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 ManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
@@ -39,11 +38,6 @@ ManagerMenu.prototype.getMenuItems = function() {
 //			hidden : this.isHidden,
 //			menu : this.getOnlineDataAnalisysMenu() 
 //		}, 
-        {
-			text : this._convertToHTMLWhiteSpan("Manager"),
-			cls : 'ExiSAXSMenuToolBar',
-			menu : this.getManagerMenu() 
-		},
 		{
 			text : this._convertToHTMLWhiteSpan("Help"),
 			cls : 'ExiSAXSMenuToolBar',
@@ -65,9 +59,6 @@ ManagerMenu.prototype.getMenuItems = function() {
 	}
 	];
 };
-
-
-
 
 ManagerMenu.prototype.getPreparationMenu = function() {
 	var _this = this;
@@ -120,7 +111,6 @@ ManagerMenu.prototype.getPreparationMenu = function() {
 
 		] });
 };
-
 
 ManagerMenu.prototype.getDataReductionMenu = function() {
 	var _this = this;
