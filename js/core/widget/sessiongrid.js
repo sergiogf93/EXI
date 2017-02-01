@@ -68,11 +68,13 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
-    this.sessions = sessions;
-	this.store.loadData(sessions, false);
+    /** Filtering session by the beamlines of the configuration file */    
+    this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
+	this.store.loadData(this.sessions, false);
 };
 
 SessionGrid.prototype.filterByBeamline = function(beamlines) {
+    console.log(beamlines);
     if (beamlines){
         if (beamlines.length > 0){
             var filtered = [];
@@ -95,9 +97,13 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     if (selected){
                         _this.beamlineFilter.push(a.boxLabel);
                     }
-                    else{                        
-                        _this.beamlineFilter =_.remove(_this.beamlineFilter,a.boxLabel );
+                    else{          
+                                      
+                        _this.beamlineFilter =_.remove(_this.beamlineFilter, function(n) {                            
+                                return n  != a.boxLabel;
+                        });
                     }
+                     
                     _this.filterByBeamline(_this.beamlineFilter);
     };
 

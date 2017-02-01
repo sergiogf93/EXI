@@ -26,12 +26,15 @@ module.exports = function(grunt) {
 	  concat : {
 		  prod:{
 			  files : {
-				 'min/exi.js' 		            : [ "js/dust/**/*js", "js/core/**/*js"],  
-                 'min/exi.mx.js' 		        : ["js/mx/**/*js"], 
-                 'min/exi.saxs.js' 		        : ["js/saxs/**/*js"],
-                 'min/exi.test.js' 		        : ["js/test/**/*js"],               				
-				 'min/bower_components.min.js'  : [ 
-								                    "bower_components/jquery/dist/jquery.min.js",
+		  
+		 'min/exi.js' 		                : [ "js/dust/**/*js", "js/core/**/*js"],  
+         'min/exi.mx.js' 		            : ["js/mx/**/*js"], 
+         'min/exi.saxs.js' 		            : ["js/saxs/**/*js"],
+         'min/exi.test.js' 		            : ["js/test/**/*js"],               				
+         'min/exi.tracking.js' 		        : ["js/tracking/**/*js"],
+		 'min/bower_components.min.js'      : [ 
+						                            
+                                                    "bower_components/jquery/dist/jquery.min.js",
                                                     "bower_components/lightbox2/dist/js/lightbox.min.js",
                                                     "bower_components/jquery-lazy/jquery.lazy.min.js", 
                                                     "bower_components/dustjs-linkedin/dist/dust-full.min.js",
@@ -48,7 +51,9 @@ module.exports = function(grunt) {
                                                     "bower_components/pathjs-amd/dist/path.min.js",                                                    
                                                     "bower_components/exi-ui-utils/min/exi-ui-utils.min.js",
                                                     "bower_components/ispyb-js-api/min/ispyb-js-api.min.js",
-                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js"                                                    								  								    								 
+                                                    "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
+                                                    "bower_components/three/build/three.min.js",
+                                                    "bower_components/notifyjs/dist/notify.js"                                                      								  								    								 
                 ]
 			  }
 		  }
@@ -59,8 +64,8 @@ module.exports = function(grunt) {
 			  files : {
 				   'min/exi.min.js' 		: [				 
 				                   		    'min/exi.js', 
-                                            'min/exi.mx.js',
-                                            'min/exi.test.js',
+						                    'min/exi.mx.js',
+						                    'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
 				                   		   ],
                    'min/exi.saxs.min.js' 		: [				 
@@ -69,7 +74,13 @@ module.exports = function(grunt) {
                                             'min/exi.test.js',
 				                   		    'min/precompiled.templates.min.js'
 				                   		   ],
-                  'min/lightbox.js' 		: [				 
+                    'min/exi.tracking.min.js' 		: [				 
+				                   		    'min/exi.js', 
+                                            'min/exi.tracking.js',
+                                            'min/exi.test.js',
+				                   		    'min/precompiled.templates.min.js'
+				                   		   ],
+                   'min/lightbox.js' 		: [				 
 				                   		    'bower_components/lightbox2/dist/js/lightbox.js'
 				                   		    
 				                   		   ],                            
@@ -106,7 +117,7 @@ module.exports = function(grunt) {
  		      reporter: require('jshint-stylish'),
 		      jshintrc : '.jshintrc'
 		 },
-		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js', 'js/viewer/**/*.js']
+		 prod: [ 'js/core/**/*.js', 'js/mx/**/*.js', 'js/saxs/**/*.js', 'js/tracking/**/*.js', 'js/viewer/**/*.js']
 	},
     plato: {
                   all : {
@@ -135,6 +146,19 @@ module.exports = function(grunt) {
                             'reports/mx': ['js/mx/**/*.js'],                           
                     }
                 },
+                 tracking: {
+                    options : {
+                    complexity : {
+                        logicalor : true,
+                        switchcase : true,
+                        forin : true,
+                        trycatch : true
+                    }
+                    },
+                    files: {
+                            'reports/tracking': ['js/tracking/**/*.js'],                           
+                    }
+                },
                 saxs: {
                     options : {
                     complexity : {
@@ -159,13 +183,13 @@ module.exports = function(grunt) {
                         switchcase : true,
                         forin : true,
                         trycatch : true
-                    }
+                    	}
                     },
                     files: {
                             'reports/core': ['js/core/**/*.js'],                           
                     }
-                }
-    },
+                
+    	},
 	includeSource: {
 	    	options: {
 		      basePath: '',
@@ -176,6 +200,8 @@ module.exports = function(grunt) {
 		    	  		'saxs/dev.html': 'saxs/index.tpl.html'
 		      },{
 		    	  		'mx/dev.html'  : 'mx/index.tpl.html'
+		      },{
+		    	  		'tracking/dev.html'  : 'tracking/index.tpl.html'
 		      }]
 		}
 	},
@@ -190,7 +216,7 @@ module.exports = function(grunt) {
 	},
 	 wiredep: {
 	      target: {
-	                    src: ['mx/dev.html', 'saxs/dev.html'], // point to your HTML file.
+	                    src: ['mx/dev.html', 'saxs/dev.html', 'tracking/dev.html'], // point to your HTML file.
 	      }
 	},
 	dustjs: {

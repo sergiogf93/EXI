@@ -49,17 +49,17 @@ MainMenu.prototype.getHomeItem = function() {
 
 MainMenu.prototype.getShipmentItem = function() { 
 	var _this = this;
-	function onItemCheck(item, checked) {
-		if (item.text == "Shipments") {
-			location.hash = "/proposal/shipping/nav";
-		}
-		if (item.text == "Manage shipping addresses") {
-			location.hash = "/proposal/addresses/nav";
-		}
-		if (item.text == "Shipment List") {
-			location.hash = "/proposal/shipping/nav";
-		}
-	}
+	// function onItemCheck(item, checked) {
+	// 	if (item.text == "Shipments") {
+	// 		location.hash = "/proposal/shipping/nav";
+	// 	}
+	// 	if (item.text == "Manage shipping addresses") {
+	// 		location.hash = "/proposal/addresses/nav";
+	// 	}
+	// 	if (item.text == "Shipment List") {
+	// 		location.hash = "/proposal/shipping/nav";
+	// 	}
+	// }
 
 	function getBiosaxsMenu() {
 		var _this = this;
@@ -79,8 +79,109 @@ MainMenu.prototype.getShipmentItem = function() {
 						} 
 			] });
 	}
+
+	function getLabContactsMenu() {
+		var _this = this;
+		function onItemCheck(item, checked) {
+			if (item.text == "Add new") {
+				var addressEditForm = new AddressEditForm();
 	
+				addressEditForm.onSaved.attach(function (sender, address) {
+					window.close();
+					location.hash = "#/proposal/address/" + address.labContactId + "/main";
+				});
+
+				var window = Ext.create('Ext.window.Window', {
+					title : 'Shipping Address Card',
+					height: 550,
+	   				width: 750,
+					modal : true,
+					layout : 'fit',
+					items : [ addressEditForm.getPanel() ],
+					buttons : [ {
+							text : 'Save',
+							handler : function() {
+								addressEditForm.save();
+							}
+						}, {
+							text : 'Cancel',
+							handler : function() {
+								window.close();
+							}
+						} ]
+				}).show();
+
+				addressEditForm.load();
+			} else if (item.text == "List") {
+				location.hash = "/proposal/addresses/nav";
+			}
+		}
+
+		return Ext.create('Ext.menu.Menu', {
+			items : [ 
+						{
+							text : 'Add new',
+							icon : '../images/icon/add.png',
+							handler : onItemCheck 
+						}, {
+							text : 'List',
+							icon : '../images/icon/ic_list_black_24dp.png',
+							handler : onItemCheck 
+						} 
+			] });
+	}
 	
+	function getShipmentsMenu() {
+		var _this = this;
+		function onItemCheck(item, checked) {
+			if (item.text == "Add new") {
+				var shippingEditForm = new ShipmentEditForm();
+				
+				shippingEditForm.onSaved.attach(function (sender, shipment) {
+					window.close();
+					location.hash = "#/shipping/"+ shipment.shippingId +"/main"
+				});
+
+				var window = Ext.create('Ext.window.Window', {
+					title : 'Shipment',
+					height : 450,
+					width : 600,
+					modal : true,
+					layout : 'fit',
+					items : [ shippingEditForm.getPanel() ],
+					buttons : [ {
+							text : 'Save',
+							handler : function() {
+								shippingEditForm.saveShipment();
+							}
+						}, {
+							text : 'Cancel',
+							handler : function() {
+								window.close();
+							}
+						} ]
+				}).show();
+
+				shippingEditForm.load();
+			} else if (item.text == "List") {
+				location.hash = "/proposal/shipping/nav";
+			}
+			
+		}
+
+		return Ext.create('Ext.menu.Menu', {
+			items : [ 
+						{
+							text : 'Add new',
+							icon : '../images/icon/add.png',
+							handler : onItemCheck 
+						}, {
+							text : 'List',
+							icon : '../images/icon/ic_list_black_24dp.png',
+							handler : onItemCheck 
+						} 
+			] });
+	}
 	
 	return {
 		text : this._convertToHTMLWhiteSpan("Shipment"),
@@ -97,12 +198,12 @@ MainMenu.prototype.getShipmentItem = function() {
 						{
 							text : 'Manage shipping addresses',
 							icon : '../images/icon/contacts.png',
-							handler : onItemCheck 
+							menu : getLabContactsMenu() 
 						}, 
 						{
 							text : 'Shipments',
 							icon : '../images/icon/shipping.png',
-							handler : onItemCheck 
+							menu : getShipmentsMenu() 
 						} 
 					] })
 	};
@@ -247,11 +348,11 @@ MainMenu.prototype.getLoginButton = function() {
 };
 
 MainMenu.prototype.getPanel = function() {
-	var _this = this;
+	
 	
 	this.credentialsMenu = new Ext.menu.Menu({
-		id : _this.id + "menu",
-		items : [_this.getAddCredentialMenu()] 
+		id : this.id + "menu",
+		items : [this.getAddCredentialMenu()] 
 	});
 	
 	var items  = this.getMenuItems();

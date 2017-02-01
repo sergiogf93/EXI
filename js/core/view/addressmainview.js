@@ -4,7 +4,7 @@ function AddressMainView() {
 
 	MainView.call(this);
 
-	this.addressForm = new AddressForm();
+	this.addressForm = new AddressForm({width : Ext.getBody().getWidth()*0.9});
 	
 	
 	this.onSelect = new Event(this);
@@ -16,7 +16,7 @@ AddressMainView.prototype.getPanel = MainView.prototype.getPanel;
 AddressMainView.prototype.getContainer = function() {
 	return Ext.create('Ext.container.Container', {
 	    layout: {
-	        type: 'hbox'
+	        type: 'fit'
 	    },
 	    margin : 15,
 	    border: 1,
