@@ -264,10 +264,6 @@ MxDataCollectionController.prototype.init = function() {
 			EXI.setLoadingMainPanel(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByDataCollectionId(this.params['datacollectionid']);
-
-
-		
-        
 	}).enter(this.setPageBackground);
     
     
@@ -3035,7 +3031,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 if (data.workflows == null) {
                     data.workflows = [];
                 }
-             
+                
                 dust.render(_this.template, data, function(err, out) {                                                                       
                     html = html + out;
                 });
@@ -3094,7 +3090,6 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                             this.genericDataCollectionPanel.getPanel()
                         ]
                 }, 
-              
                 {
                         title: 'Energy Scans',
                         cls : 'border-grid',
@@ -3114,7 +3109,6 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                ]
         });
 	    return this.container;
-	
 };
 
 DataCollectionMxMainView.prototype.loadEnergyScans = function(data) {
@@ -5713,8 +5707,12 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
+<<<<<<< HEAD
         
         if ((value.sessionId) ||(value.shippingStatus.toUpperCase() == "PROCESSING")){
+=======
+        if (value.sessionId){
+>>>>>>> 384dd25c94a4dde6855064e361cad5c9da9c4520
             if (_this.filterByDate){
                 if (value.shippingStatus){
                     if (value.shippingStatus.toUpperCase() == "PROCESSING"){

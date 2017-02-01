@@ -255,6 +255,7 @@ ContainerSpreadSheet.prototype.getHeader = function() {
 ContainerSpreadSheet.prototype.getPuck = function() {
 	var myPuck = JSON.parse(JSON.stringify(this.puck));
 	var rows = this.parseTableData();
+	myPuck['barcode'] = rows[0]["Pin BarCode"];
     
 	//myPuck.sampleVOs = [];
     var aux = [];
@@ -271,7 +272,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
         } 
         
 		sample["name"] = rows[i]["Sample Name"];
-		sample["Dewar_barCode"] = rows[i]["Pin BarCode"];
+		// sample["Dewar_barCode"] = rows[i]["Pin BarCode"];
 		sample["smiles"] = rows[i]["Smiles"];
 		sample["location"]= rows[i]["location"];
 		sample["comments"] = rows[i]["Comments"];
@@ -311,6 +312,7 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 		
 	}
     myPuck.sampleVOs = aux;
+
     
 	return myPuck;
 };

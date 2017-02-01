@@ -73,10 +73,6 @@ MxDataCollectionController.prototype.init = function() {
 			EXI.setLoadingMainPanel(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getByDataCollectionId(this.params['datacollectionid']);
-
-
-		
-        
 	}).enter(this.setPageBackground);
     
     

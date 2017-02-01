@@ -109,22 +109,22 @@
                     {?.rowSpan}
                         <td rowspan="{.rowSpan}" class="blue-bottom-border-row" style="border-left:1px solid #ccc;">
                             <a href="{.scattering}" data-lightbox="{.scattering}" data-title="Scattering">
-                                <center><img alt="Image not found" class="img-responsive queue-img smallazy" src="{.scattering}" style="display: block;margin:0px;"  height="150px" width="150px"/></center>
+                                <center><img id="scattering-{.MeasurementToDataCollection_dataCollectionId}" alt="Image not found" class="img-responsive" data-src="{.scattering}" style="display: block;margin:0px;" height="150px" width="150px"/></center>
                             </a> 
                         </td>
                         <td rowspan="{.rowSpan}" class="blue-bottom-border-row">
                             <a href="{.kratky}" data-lightbox="{.kratky}" data-title="Kratky">
-                                <center><img alt="Image not found" class="img-responsive queue-img smallazy" src="{.kratky}" style="display: block;margin:0px;"  height="150px" width="150px"/></center>
+                                <center><img id="kratky-{.MeasurementToDataCollection_dataCollectionId}" alt="Image not found" class="img-responsive" data-src="{.kratky}" style="display: block;margin:0px;" height="150px" width="150px"/></center>
                             </a>  
                         </td>
                         <td rowspan="{.rowSpan}" class="blue-bottom-border-row">
                             <a href="{.density}" data-lightbox="{.density}" data-title="Density">
-                                <center><img alt="Image not found" class="img-responsive queue-img smallazy" src="{.density}" style="display: block;margin:0px;" height="150px" width="150px"/></center>
+                                <center><img id="density-{.MeasurementToDataCollection_dataCollectionId}" alt="Image not found" class="img-responsive" data-src="{.density}" style="display: block;margin:0px;" height="150px" width="150px"/></center>
                             </a> 
                         </td>
                         <td rowspan="{.rowSpan}" class="blue-bottom-border-row">
                             <a href="{.guinier}" data-lightbox="{.guinier}" data-title="Guinier">
-                                <center><img alt="Image not found" class="img-responsive queue-img smallazy" src="{.guinier}" style="display: block;margin:0px;" height="150px" width="150px" /></center>
+                                <center><img id="guinier-{.MeasurementToDataCollection_dataCollectionId}" alt="Image not found" class="img-responsive" data-src="{.guinier}" style="display: block;margin:0px;" height="150px" width="150px" /></center>
                             </a> 
                         </td>
                         <td rowspan="{.rowSpan}" class="blue-bottom-border-row">

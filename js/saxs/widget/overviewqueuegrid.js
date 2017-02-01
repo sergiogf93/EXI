@@ -72,8 +72,8 @@ OverviewQueueGrid.prototype.render = function(data) {
 	});
 	
 	$('#' + this.id).html(html);
-
-	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
+	
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.id);
 	
 	this.attachCallBackAfterRender(nodeWithScroll);
 };
@@ -84,7 +84,7 @@ OverviewQueueGrid.prototype.render = function(data) {
 *
 * @method getPanel
 */
-OverviewQueueGrid.prototype.getPanel = function(){    
+OverviewQueueGrid.prototype.getPanel = function(){ 
 	return {
 		html : '<div id="' + this.id + '"></div>',
 		autoScroll : true,

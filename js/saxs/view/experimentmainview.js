@@ -32,7 +32,6 @@ function ExperimentMainView() {
 			direction : 'ASC'
 		} ]
 	});
-	
 
 	this.activePanel = this.queueGrid;
 	
@@ -54,8 +53,9 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },
-		,{
+
+        },{
+
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);
@@ -81,14 +81,15 @@ ExperimentMainView.prototype.getToolBar = function() {
 };
 
 ExperimentMainView.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-	    margin : 10,
-		layout : 'fit',
-		height : 600,	
-		tbar : this.getToolBar(),
-	    items: []
-	});
 
+	this.panel = Ext.create('Ext.panel.Panel', {   
+		margin : 10,
+		// minHeight : 900,
+		layout : 'fit',
+		minHeight : 600,
+		tbar : this.getToolBar(),
+		items: []
+	});
 	return this.panel;
 };
 
