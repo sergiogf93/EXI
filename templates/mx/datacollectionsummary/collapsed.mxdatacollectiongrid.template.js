@@ -51,6 +51,12 @@
             </tbody>
          </table>
       </div>
+      <div class="col-xs-1 col-md-1"> 
+         <a href="{.indicator}" data-lightbox='{.indicator}' data-title="#{.runNumber} {.folder}"> 
+            <img alt="Image not found" class="img-responsive lazy"  src="{.indicator}" 
+                 style='height:60px;width:60px'/>
+         </a> 
+      </div>
       <div class="col-xs-6 col-md-2">
          {#.onlineresults[0]}       
             {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
