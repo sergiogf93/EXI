@@ -2999,7 +2999,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 catch(e){}
                 /** For Phasing */
                 
-                if (data.phasingStepType) {
+                if (data.phasingStepType) { 
                     var phasingSteps = data.phasingStepType.split(",");
                     data.phasingStepLength = phasingSteps.length;
                 
@@ -3013,6 +3013,7 @@ DataCollectionGrid.prototype.getColumns = function() {
 
                 /** Image quality indicator **/
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
+
 
                 
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
