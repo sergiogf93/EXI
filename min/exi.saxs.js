@@ -444,6 +444,7 @@ ExiSAXS.prototype.getHeader = function(){
     return html;	
 };
 
+
 ExiSAXS.prototype.getDataAdapter = function(args){
 	return new SaxsDataAdapterFactory(this.appendDataAdapterParameters(args));
 };
@@ -649,20 +650,24 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 
 function SAXSManagerMenu() {
 	this.id = BUI.id();
-	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
+	ManagerMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
 }
 
-SAXSManagerMenu.prototype.populateCredentialsMenu = MainMenu.prototype.populateCredentialsMenu;
-SAXSManagerMenu.prototype.init = MainMenu.prototype.init;
-SAXSManagerMenu.prototype.getPanel = MainMenu.prototype.getPanel;
-SAXSManagerMenu.prototype._convertToHTMLWhiteSpan = MainMenu.prototype._convertToHTMLWhiteSpan;
-SAXSManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredentialMenu;
-SAXSManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
-SAXSManagerMenu.prototype.setText = MainMenu.prototype.setText;
-SAXSManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
-SAXSManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
-SAXSManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
-SAXSManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+SAXSManagerMenu.prototype.populateCredentialsMenu = ManagerMenu.prototype.populateCredentialsMenu;
+SAXSManagerMenu.prototype.init = ManagerMenu.prototype.init;
+SAXSManagerMenu.prototype.getPanel = ManagerMenu.prototype.getPanel;
+SAXSManagerMenu.prototype._convertToHTMLWhiteSpan = ManagerMenu.prototype._convertToHTMLWhiteSpan;
+SAXSManagerMenu.prototype.getAddCredentialMenu = ManagerMenu.prototype.getAddCredentialMenu;
+SAXSManagerMenu.prototype.getLoginButton = ManagerMenu.prototype.getLoginButton;
+SAXSManagerMenu.prototype.setText = ManagerMenu.prototype.setText;
+SAXSManagerMenu.prototype.getHelpMenu = ManagerMenu.prototype.getHelpMenu;
+SAXSManagerMenu.prototype.getManagerMenu = ManagerMenu.prototype.getManagerMenu;
+SAXSManagerMenu.prototype.getHomeItem = ManagerMenu.prototype.getHomeItem;
+SAXSManagerMenu.prototype.getShipmentItem = ManagerMenu.prototype.getShipmentItem;
+SAXSManagerMenu.prototype.getPreparationMenu = ManagerMenu.prototype.getPreparationMenu;
+SAXSManagerMenu.prototype.getDataReductionMenu = ManagerMenu.prototype.getDataReductionMenu;
+SAXSManagerMenu.prototype.getDataExplorerMenu = ManagerMenu.prototype.getDataExplorerMenu;
+SAXSManagerMenu.prototype.getOnlineDataAnalisysMenu = ManagerMenu.prototype.getOnlineDataAnalisysMenu;
 
 SAXSManagerMenu.prototype.getMenuItems = function() {	
     		
@@ -729,6 +734,7 @@ SAXSManagerMenu.prototype.getManagerMenu = function() {
 								items: [
 									{
 										text: 'Substraction',
+                                        disabled : true,
 										icon : '../images/icon/ic_insert_chart_black_36dp.png',
 										handler: onItemCheck
 									}

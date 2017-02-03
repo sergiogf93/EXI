@@ -2432,7 +2432,6 @@ ManagerMenu.prototype.getPreparationMenu = function() {
 		] });
 };
 
-
 ManagerMenu.prototype.getDataReductionMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
@@ -7076,7 +7075,6 @@ AuthenticationForm.prototype.show = function(){
 	);
 	this.window.show();
 };
-
 
 AuthenticationForm.prototype.getAuthenticationForm = function(){         
      if (ExtISPyB.sites){

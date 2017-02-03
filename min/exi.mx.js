@@ -911,20 +911,23 @@ MXMainMenu.prototype.getDataExplorerMenu = function() {
 
 function MXManagerMenu() {
 	this.id = BUI.id();
-	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
+	ManagerMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
 }
 
-MXManagerMenu.prototype.populateCredentialsMenu = MainMenu.prototype.populateCredentialsMenu;
-MXManagerMenu.prototype.init = MainMenu.prototype.init;
-MXManagerMenu.prototype.getPanel = MainMenu.prototype.getPanel;
-MXManagerMenu.prototype._convertToHTMLWhiteSpan = MainMenu.prototype._convertToHTMLWhiteSpan;
-MXManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredentialMenu;
-MXManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
-MXManagerMenu.prototype.setText = MainMenu.prototype.setText;
-MXManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
-MXManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
-MXManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
-MXManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+MXManagerMenu.prototype.populateCredentialsMenu = ManagerMenu.prototype.populateCredentialsMenu;
+MXManagerMenu.prototype.init = ManagerMenu.prototype.init;
+MXManagerMenu.prototype.getPanel = ManagerMenu.prototype.getPanel;
+MXManagerMenu.prototype._convertToHTMLWhiteSpan = ManagerMenu.prototype._convertToHTMLWhiteSpan;
+MXManagerMenu.prototype.getAddCredentialMenu = ManagerMenu.prototype.getAddCredentialMenu;
+MXManagerMenu.prototype.getLoginButton = ManagerMenu.prototype.getLoginButton;
+MXManagerMenu.prototype.setText = ManagerMenu.prototype.setText;
+MXManagerMenu.prototype.getHelpMenu = ManagerMenu.prototype.getHelpMenu;
+MXManagerMenu.prototype.getHomeItem = ManagerMenu.prototype.getHomeItem;
+MXManagerMenu.prototype.getShipmentItem = ManagerMenu.prototype.getShipmentItem;
+MXManagerMenu.prototype.getPreparationMenu = ManagerMenu.prototype.getPreparationMenu;
+MXManagerMenu.prototype.getDataReductionMenu = ManagerMenu.prototype.getDataReductionMenu;
+MXManagerMenu.prototype.getDataExplorerMenu = ManagerMenu.prototype.getDataExplorerMenu;
+MXManagerMenu.prototype.getOnlineDataAnalisysMenu = ManagerMenu.prototype.getOnlineDataAnalisysMenu;
 
 MXManagerMenu.prototype.getMenuItems = function() {	
     		
