@@ -2829,7 +2829,6 @@ ShippingListView.prototype.getFilter = ListView.prototype.getFilter;
 ShippingListView.prototype.getFields = ListView.prototype.getFields;
 ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 
-
 /**
 * Calls to the dust template in order to render to puck in HTML
 *
@@ -2839,6 +2838,8 @@ ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 ShippingListView.prototype.getRow = function(record){
 	var html = "";
     
+	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
+
 	dust.render("shipping.listview", record.data, function(err, out){
         	html = out;
      	});
@@ -4904,7 +4905,7 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
                     [
                         // crystal.crystalId,
                         (i+1), 
-                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.BLSample_code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.BLSample_code ,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
                         diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
 						// this.getUnitCellInfo(crystal),
 						crystal.spaceGroup, sample.smiles, sample.comments
@@ -6479,7 +6480,7 @@ function ShipmentEditForm(args) {
     this.id = BUI.id();
 
     this.width = 600;
-    this.height = 200;
+    this.height = 700;
 	this.showTitle = true;
 	if (args != null) {
 		if (args.showTitle != null) {
@@ -6691,7 +6692,7 @@ ShipmentForm.prototype.getPanel = function() {
 
 	this.panel = Ext.create("Ext.panel.Panel",{
 		items :	[{
-					cls	: 'border-grid',
+					// cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					margin : 10,
@@ -8090,6 +8091,11 @@ ParcelPanel.prototype.load = function(dewar, shipment) {
 	this.dewar = dewar;
 	this.dewar.index = this.index;
 	this.shipment = shipment;
+	if (shipment){
+		if (shipment.sessions.length > 0){
+			this.dewar.beamlineName = shipment.sessions[0].beamlineName;
+		}
+	}
 	
 	/** Loading the template **/
 	var html = "";

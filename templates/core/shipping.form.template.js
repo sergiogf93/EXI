@@ -3,13 +3,13 @@
         <div class="panel-heading clearfix">
             <div class="pull-right">
                 <ul class="nav nav-tabs" id="myTabs">
-                    <li class="active"><a data-toggle="tab" href="#datacollection_{.DataCollection_dataCollectionId}"> Information</a></li>
-                    <li><a data-toggle="tab" href="#experimentparameters_{.DataCollection_dataCollectionId}">Transport history</a></li>               
+                    <li class="active"><a data-toggle="tab" href="#{id}-shipping-information"> Information</a></li>
+                    <li><a data-toggle="tab" href="##{id}-shipping-transport-history">Transport history</a></li>               
                 </ul>
             </div>
         </div>
         <div class="tab-content">
-            <div style="padding:10px;">
+            <div id="{id}-shipping-information" class="tab-pane fade in active" style="padding:10px;">
                 <div class="form-group row" style="margin:0px">
 
                     <div class="col-md-2" style="padding:0px">
@@ -91,6 +91,8 @@
                         <button id="{id}-edit-button" class="btn btn-primary btn-lg" style="margin-left:10px;height:90px;" disabled>Edit</button>
                     </div>
                 </div>
+            </div>
+            <div id="{id}-shipping-transport-history" class="tab-pane fade in active" style="padding:10px;">
             </div>
         </div>
     </div>

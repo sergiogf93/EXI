@@ -5822,6 +5822,7 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
+        
         if ((value.sessionId) ||(value.shippingStatus.toUpperCase() == "PROCESSING")){
             if (_this.filterByDate){
                 if (value.shippingStatus){
