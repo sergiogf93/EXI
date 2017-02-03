@@ -167,7 +167,7 @@ ContainerSpreadSheet.prototype.getSamplesData = function(puck) {
                     [
                         // crystal.crystalId,
                         (i+1), 
-                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.BLSample_code,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
+                        protein.acronym, sample.name, this.getCrystalInfo(crystal), diffraction.experimentKind, sample.BLSample_code ,  getValue(diffraction["observedResolution"]),  diffraction.requiredResolution, diffraction.preferredBeamDiameter, 
                         diffraction.numberOfPositions, diffraction.radiationSensitivity, diffraction.requiredMultiplicity, diffraction.requiredCompleteness,
 						// this.getUnitCellInfo(crystal),
 						crystal.spaceGroup, sample.smiles, sample.comments
