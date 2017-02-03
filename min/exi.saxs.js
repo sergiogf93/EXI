@@ -1,5 +1,4 @@
 function SAXSExiController() {
-    
 	this.init();
 }
 
@@ -406,6 +405,7 @@ SAXSExiController.prototype.init = function() {
 function ExiSAXS() {
 	 Exi.call(this, {
 		 					menu: new SAXSMainMenu(),
+                            managerMenu : new SAXSManagerMenu(),
 		 					anonymousMenu: new MainMenu(),
 		 					controllers : [new SAXSExiController(),  new OfflineExiController(), new ProposalExiController(), new SessionController(), new LabContactExiController()]
 	 });
@@ -424,6 +424,8 @@ ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiSAXS.prototype.show = Exi.prototype.show;
 ExiSAXS.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiSAXS.prototype.setUserMenu = Exi.prototype.setUserMenu;
+ExiSAXS.prototype.setManagerMenu = Exi.prototype.setManagerMenu;
+ExiSAXS.prototype.manageMenu = Exi.prototype.manageMenu;
 ExiSAXS.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
@@ -645,6 +647,97 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 };
 
 
+function SAXSManagerMenu() {
+	this.id = BUI.id();
+	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
+}
+
+SAXSManagerMenu.prototype.populateCredentialsMenu = MainMenu.prototype.populateCredentialsMenu;
+SAXSManagerMenu.prototype.init = MainMenu.prototype.init;
+SAXSManagerMenu.prototype.getPanel = MainMenu.prototype.getPanel;
+SAXSManagerMenu.prototype._convertToHTMLWhiteSpan = MainMenu.prototype._convertToHTMLWhiteSpan;
+SAXSManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredentialMenu;
+SAXSManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
+SAXSManagerMenu.prototype.setText = MainMenu.prototype.setText;
+SAXSManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
+SAXSManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
+SAXSManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
+SAXSManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+
+SAXSManagerMenu.prototype.getMenuItems = function() {	
+    		
+	return [	
+    	this.getHomeItem(),
+    	this.getShipmentItem(),
+    	{
+				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+				cls : 'ExiSAXSMenuToolBar',
+				hidden : this.isHidden,
+                 disabled : true,
+				menu : this.getPreparationMenu() 
+		}, {
+				text : this._convertToHTMLWhiteSpan("Data Explorer"),
+				cls : 'ExiSAXSMenuToolBar',
+				hidden : this.isHidden,
+				menu : this.getDataExplorerMenu() 
+		},
+//		{
+//			text : '<span style="color:white">Offline Data Analysis</span>',
+//			cls : 'ExiSAXSMenuToolBar',
+//			hidden : this.isHidden,
+//			menu : this.getOnlineDataAnalisysMenu() 
+//		}, 
+        {
+			text : this._convertToHTMLWhiteSpan("Manager"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getManagerMenu() 
+		},
+		{
+			text : this._convertToHTMLWhiteSpan("Help"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getHelpMenu() 
+		}, 
+		'->', 
+		{
+			xtype : 'textfield',
+			name : 'field1',
+			emptyText : 'search macromolecule',
+			hidden : this.isHidden,
+			listeners : {
+				specialkey : function(field, e) {
+					if (e.getKey() == e.ENTER) {                        
+						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
+					}
+				} 
+			} 
+	}
+	];
+};
+
+SAXSManagerMenu.prototype.getManagerMenu = function() {
+	var _this = this;
+	function onItemCheck(item, checked) {
+
+	}
+
+	return Ext.create('Ext.menu.Menu', {
+		items : [
+					{
+						text : 'Statistics',
+						icon : '../images/icon/ic_insert_chart_black_36dp.png',
+						menu : {       
+								items: [
+									{
+										text: 'Substraction',
+										icon : '../images/icon/ic_insert_chart_black_36dp.png',
+										handler: onItemCheck
+									}
+								]
+							}
+					}
+			] 
+	});
+};
 function BufferListView(){
 	ListView.call(this);
 }
