@@ -54,6 +54,11 @@ ParcelPanel.prototype.load = function(dewar, shipment) {
 	this.dewar = dewar;
 	this.dewar.index = this.index;
 	this.shipment = shipment;
+	if (shipment){
+		if (shipment.sessions.length > 0){
+			this.dewar.beamlineName = shipment.sessions[0].beamlineName;
+		}
+	}
 	
 	/** Loading the template **/
 	var html = "";

@@ -9,7 +9,6 @@ ShippingListView.prototype.getFilter = ListView.prototype.getFilter;
 ShippingListView.prototype.getFields = ListView.prototype.getFields;
 ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 
-
 /**
 * Calls to the dust template in order to render to puck in HTML
 *
@@ -19,6 +18,8 @@ ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 ShippingListView.prototype.getRow = function(record){
 	var html = "";
     
+	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
+
 	dust.render("shipping.listview", record.data, function(err, out){
         	html = out;
      	});
