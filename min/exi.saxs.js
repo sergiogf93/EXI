@@ -476,7 +476,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
-                 disabled : true,
+                		disabled : true,
 				menu : this.getPreparationMenu() 
 		}, {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
@@ -1399,16 +1399,7 @@ function ExperimentMainView() {
 		} ]
 	});
 
-	// Create the combo box, attached to the states data store
-	// var viscosityEditor = Ext.create('Ext.form.ComboBox', {
-	// 	fieldLabel : '',
-	// 	store : storeViscosity,
-	// 	queryMode : 'local',
-	// 	displayField : 'name',
-	// 	valueField : 'name'
-	// });
-	
-	
+		
 	/** Specimen Widget contains a specimenGrid and a sampleChangerWidget than can be displayed with are vertical or horizontal layout **/
 	this.specimenWidget = new SpecimenWidget({
 		height : this.height,
@@ -1419,7 +1410,7 @@ function ExperimentMainView() {
 	
 	this.queueGrid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
-//		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
+
 		sorters : [ {
 			property : 'macromoleculeAcronym',
 			direction : 'ASC'
@@ -1446,7 +1437,8 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },{
+        },
+		,{
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);
@@ -1490,6 +1482,7 @@ ExperimentMainView.prototype.load = function(dataCollections) {
 	this.panel.insert(this.activePanel.getPanel());
 	this.activePanel.load(dataCollections);	
 };
+
 function ExperimentWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
@@ -7915,6 +7908,8 @@ SampleAutomaticPositionFactory.prototype.setPosition = function() {
  */
 function MeasurementGrid(args) {
 	this.id = BUI.id();
+    
+    this.onRemoved = new Event(this);
 }
 
 

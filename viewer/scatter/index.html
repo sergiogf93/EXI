@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <title>Scatter</title>
+  <title>EXI CSV Scatter Viewer</title>
   <meta charset="utf-8">
-  <style></style>
+  
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
@@ -49,20 +49,17 @@
       }
 
       var layout = {
-        title:getParameterByName("title"),
-        // yaxis: {title: "Wind Speed"},       // set the y axis title
-        xaxis: {
-          // showgrid: false,                  // remove the x-axis grid lines
-          tickformat: "%c"              // customize the date format to "month, day"
+        title : getParameterByName("title"),
+        xaxis : {
+        
+          tickformat: "%c"   
         },
         hovermode:'closest',
         margin: {                           // update the left, bottom, right, top margin
           l: 70, b: 200, r: 100, t:50
         },
-        // width: '100%',
-        // height: '100%'
       };
-      console.log(data);
+  
       Plotly.newPlot("plotDiv", data, layout);
   });
 
