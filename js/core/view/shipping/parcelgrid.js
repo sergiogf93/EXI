@@ -54,11 +54,11 @@ ParcelGrid.prototype._getTopButtons = function() {
 	}));
 };
 
-ParcelGrid.prototype.load = function(shipment) {
+ParcelGrid.prototype.load = function(shipment,hasExportedData) {
 	var _this = this;
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
-
+	this.hasExportedData = hasExportedData;
 
 	this.panel.removeAll();
 

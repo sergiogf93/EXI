@@ -31,12 +31,12 @@
 
                     <div class="col-md-2" style="padding:0px">
                         <div class="form-group row" style="margin:5px">
-                            <label class="col-md-3 col-form-label" style="font-weight:100;"><b>From:</b></label>
-                            <label class="col-md-9">{shipment.sendingLabContactVO.cardName}</label>
+                            <label class="col-md-3 col-form-label" ><b>From:</b></label>
+                            <label class="col-md-9" style="font-weight: normal">{shipment.sendingLabContactVO.cardName}</label>
                         </div>
                         <div class="form-group row" style="margin:5px">
-                            <label class="col-md-3 col-form-label" style="font-weight:100;"><b>Return address:</b></label>
-                            <label class="col-md-9">{?shipment.returnLabContactVO}
+                            <label class="col-md-3 col-form-label" ><b>Return address:</b></label>
+                            <label class="col-md-9" style="font-weight: normal">{?shipment.returnLabContactVO}
                                                         {shipment.returnLabContactVO.cardName}
                                                     {:else}
                                                         NO RETURN
@@ -69,20 +69,20 @@
 
                     <div class="col-md-2" style="padding:0px">
                         <div class="form-group row" style="margin:5px">
-                            <a id="{id}-add-button" class="btn btn-md disabled">
+                            <a id="{id}-send-button" class="btn btn-md disabled">
                                 <span class="glyphicon glyphicon-plane"></span> Send shipment to ESRF
                             </a>
                         </div>
                         <div class="form-group row" style="margin:5px">
-                            <a id="{id}-add-button" class="btn btn-md disabled">
-                                <span class="glyphicon glyphicon-remove"></span> Remove shipment
+                            <a id="{id}-remove-button" class="btn btn-md disabled">
+                                <span class="glyphicon glyphicon-remove" style="color:red"></span> Remove shipment
                             </a>
                         </div>
                     </div>
 
                     <div class="col-md-3" style="padding:0px">
                         <div class="form-group row" style="margin:5px">
-                            <label class="col-md-3 col-form-label " style="font-weight:100;"><b>Comments:</b></label>
+                            <label class="col-md-3 col-form-label " ><b>Comments:</b></label>
                             <textarea  class="col-md-9" rows="4" disabled>{shipment.comments}</textarea >
                         </div>
                     </div>
@@ -92,7 +92,27 @@
                     </div>
                 </div>
             </div>
-            <div id="{id}-shipping-transport-history" class="tab-pane fade in active" style="padding:10px;">
+            <div id="{id}-shipping-transport-history" class="tab-pane fade" style="padding:10px;">
+                <div class="form-group row" style="margin:0px">
+                    <div class="col-md-2" style="padding:0px">
+                        <div class="form-group row" style="margin:5px">
+                            <label class="col-md-7 col-form-label" ><b>Creation date:</b></label>
+                            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.creationDate format="DD-MM-YYYY" /}</label>
+                        </div>
+                        <div class="form-group row" style="margin:5px">
+                            <label class="col-md-7 col-form-label" ><b>Sending date:</b></label>
+                            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.dateOfShippingToUser format="DD-MM-YYYY" /}</label>
+                        </div>
+                        <div class="form-group row" style="margin:5px">
+                            <label class="col-md-7 col-form-label" ><b>Expected arrival date:</b></label>
+                            <label class="col-md-5" style="font-weight: normal"></label>
+                        </div>
+                        <div class="form-group row" style="margin:5px">
+                            <label class="col-md-7 col-form-label" ><b>Return date:</b></label>
+                            <label class="col-md-5" style="font-weight: normal"></label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

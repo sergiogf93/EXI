@@ -34,7 +34,6 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var _this = this;
     this.dewars = dewars;
     /** Filter by Dewars */ 
-      
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
@@ -67,12 +66,12 @@ DewarListSelectorGrid.prototype.load = function(dewars){
 };
 
 /**
-* Return the number of containers and samples for a given dewar 
+* Return the number of containers and samples for a given shipment 
 *
-* @method getStatsByDewarId
-* @param {Integer} dewarId DewarId
+* @method getStatsByShippingId
+* @param {Integer} shippingId ShippingId
 */
-DewarListSelectorGrid.prototype.getStatsByDewarId = function(shippingId){ 
+DewarListSelectorGrid.prototype.getStatsByShippingId = function(shippingId){ 
     var _this = this;
     var containers = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
     var sampleCount = 0;
@@ -187,7 +186,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                         text: '#',     
                         flex: 1,
                         renderer : function(grid, e, record){
-                            var stats =  _this.getStatsByDewarId(record.data.shippingId);
+                            var stats =  _this.getStatsByShippingId(record.data.shippingId);
                             return stats.dewars + " parcels / " + stats.containers + " containers (" +  stats.samples + " samples)";
                             
                         }
