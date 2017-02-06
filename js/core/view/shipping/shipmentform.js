@@ -68,7 +68,7 @@ ShipmentForm.prototype.getPanel = function() {
 	this.panel = Ext.create("Ext.panel.Panel",{
 		layout : 'fit',
 		items :	[{
-					cls	: 'border-grid',
+					// cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					// margin : 10,
