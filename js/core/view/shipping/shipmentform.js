@@ -71,7 +71,7 @@ ShipmentForm.prototype.getPanel = function() {
 					// cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
-					margin : 10,
+					// margin : 10,
 					padding : this.padding,
 					width : this.width
                 }]

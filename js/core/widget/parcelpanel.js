@@ -348,7 +348,7 @@ ParcelPanel.prototype.showAddContainerForm = function() {
 
 ParcelPanel.prototype.getPanel = function() {
 	this.panel = Ext.create("Ext.panel.Panel",{
-		cls 		: "border-grid",
+		cls 		: "border-grid-light",
 		margin 		: 10,
 		height 		: this.height,
 		width 		: this.width,
