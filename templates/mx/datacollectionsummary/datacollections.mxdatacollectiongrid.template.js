@@ -1,7 +1,7 @@
  <div class="container-fluid containerWithScroll" >
     <div class="row">
         <div class="col-xs-12 col-md-2">        
-            <table class="table table-hover">
+            <table class="table table-striped table-hover">
               <thead>
                 <tr>
                     <th>Run</th>
@@ -72,7 +72,7 @@
                     </td>
                 </tr>
                     
-               
+                   
              {/.}    
              </table>
         </div>

@@ -1,5 +1,4 @@
 function SAXSExiController() {
-    
 	this.init();
 }
 
@@ -101,17 +100,29 @@ SAXSExiController.prototype.notFound = function() {
 SAXSExiController.prototype.routeExperiment = function() {
 	Path.map("#/experiment/experimentId/:experimentId/main").to(function() {
 		var mainView = new ExperimentMainView();
-		EXI.addMainPanel(mainView);
-		mainView.load(this.params['experimentId']);
-		/** Selecting data collections from experiment * */
-		mainView.onSelect.attach(function(sender, element) {
-			EXI.localExtorage.selectedSubtractionsManager.append(element);
-		});
-		mainView.onDeselect.attach(function(sender, element) {
-			EXI.localExtorage.selectedSubtractionsManager.remove(element);
-		});
+		EXI.addMainPanel(mainView);	
+		mainView.panel.setLoading();		
+		var onSuccess = function(sender, dataCollections){			
+			mainView.load(dataCollections);
+			mainView.panel.setLoading(false);				
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(this.params['experimentId']);
+		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(this.params['experimentId']);
 
 	}).enter(this.setPageBackground);
+    
+    Path.map("#/experiment/session/:sessionId/main").to(function() {
+		var mainView = new ExperimentMainView();
+		EXI.addMainPanel(mainView);	
+		mainView.panel.setLoading();		
+		var onSuccess = function(sender, dataCollections){			
+			mainView.load(dataCollections);
+			mainView.panel.setLoading(false);				
+		};
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsBySessionId(this.params['sessionId']);
+
+	}).enter(this.setPageBackground);
+    
 	
 	Path.map("#/experiment/hplc/:experimentId/main").to(function() {
 		var mainView = new HPLCMainView();
@@ -178,40 +189,24 @@ SAXSExiController.prototype.routeExperiment = function() {
 SAXSExiController.prototype.routeDataCollection = function() {
 	Path.map("#/datacollection/macromoleculeAcronym/:value/main").to(function() {
 		/** Loading navidation menu **/
-		EXI.setLoadingMainPanel("Searching " + this.params['value']+  "...");
-		var onSuccess = function(sender, dataCollections) {
-			if (dataCollections != null){
-				if (dataCollections.length > 0){
-					var mainView = new DataCollectionMainView();
-					EXI.addMainPanel(mainView);
-					mainView.load(dataCollections);
-					/** Selecting data collections from experiment * */
-					mainView.onSelect.attach(function(sender, element) {
-						EXI.localExtorage.selectedSubtractionsManager.append(element);
-					});
-					mainView.onDeselect.attach(function(sender, element) {
-						EXI.localExtorage.selectedSubtractionsManager.remove(element);
-					});
-					
-					var listView = new DataCollectionListView();
-					listView.onSelect.attach(function(sender, selected) {
-						mainView.filter( selected[0].macromoleculeId, selected[0].bufferAcronym);
-					});
-					EXI.addNavigationPanel(listView);
-					listView.load(dataCollections);
-					EXI.setLoadingNavigationPanel(false);
-				}
-				else{
-					BUI.showWarning("No macromolecule has been found");
-				}
-			}
-			else{
-				BUI.showWarning("No data to display");
-			}
-//			EXI.setLoadingNavigationPanel(false);
-			EXI.setLoadingMainPanel(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
+		    EXI.setLoadingMainPanel("Searching " + this.params['value']+  "...");
+
+			var mainView = new ExperimentMainView();
+            EXI.addMainPanel(mainView);	
+           		
+            var onSuccess = function(sender, dataCollections){			                
+                mainView.load(dataCollections);
+               
+                EXI.setLoadingMainPanel(false);				
+            };            
+            if (EXI.proposalManager.getMacromoleculeByAcronym(this.params['value']) != null){
+                EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByMacromoleculeId(EXI.proposalManager.getMacromoleculeByAcronym(this.params['value']).macromoleculeId);
+            }
+            else{
+                BUI.showError("No Macromolecule Found");
+                 EXI.setLoadingMainPanel(false);	
+            }
+
 
 	}).enter(this.setPageBackground);
 	
@@ -234,14 +229,18 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 
-	Path.map("#/saxs/datacollection/:key/:value/primaryviewer").to(function() {
-		var onSuccess = function(sender, data) {
-			var primaryMainView = new PrimaryDataMainView();
-			EXI.addMainPanel(primaryMainView);
-			primaryMainView.load(data);
-
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
+	Path.map("#/saxs/datacollection/dataCollectionId/:dataCollectionId/primaryviewer").to(function() {		
+			var primaryMainView = new PrimaryDataMainView();    
+            EXI.addMainPanel(primaryMainView);        		            
+			primaryMainView.load(this.params['dataCollectionId']);		
+		
+	}).enter(this.setPageBackground);
+    
+    Path.map("#/saxs/datacollection/dataCollectionId/:dataCollectionId/abinitio").to(function() {		
+			var primaryMainView = new AbinitioMainView();    
+            EXI.addMainPanel(primaryMainView);        		            
+			primaryMainView.load(this.params['dataCollectionId']);		
+		
 	}).enter(this.setPageBackground);
 	
 	Path.map("#/saxs/datacollection/:key/:value/merge").to(function() {
@@ -254,8 +253,6 @@ SAXSExiController.prototype.routeDataCollection = function() {
 		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByKey(this.params['key'], this.params['value']);
 	}).enter(this.setPageBackground);
 };
-
-
 
 SAXSExiController.prototype.routePrepare = function() {
 	Path.map("#/buffer/:bufferId/main").to(function() {
@@ -348,9 +345,9 @@ SAXSExiController.prototype.init = function() {
 	
 
     /** Loading a single session on the navigation panel * */
-	Path.map("#/session/nav/:sessionId/session").to(function() {
-       
+	Path.map("#/session/nav/:sessionId/session").to(function() {           
         EXI.clearNavigationPanel();
+        EXI.setLoadingMainPanel(true);    
 		var listView = new SessionSaxsListView();		
 		/** When selected move to hash * */
 		listView.onSelect.attach(function(sender, selected) {
@@ -408,6 +405,7 @@ SAXSExiController.prototype.init = function() {
 function ExiSAXS() {
 	 Exi.call(this, {
 		 					menu: new SAXSMainMenu(),
+                            managerMenu : new SAXSManagerMenu(),
 		 					anonymousMenu: new MainMenu(),
 		 					controllers : [new SAXSExiController(),  new OfflineExiController(), new ProposalExiController(), new SessionController(), new LabContactExiController()]
 	 });
@@ -426,6 +424,8 @@ ExiSAXS.prototype.setLoadingMainPanel = Exi.prototype.setLoadingMainPanel;
 ExiSAXS.prototype.show = Exi.prototype.show;
 ExiSAXS.prototype.setAnonymousMenu = Exi.prototype.setAnonymousMenu;
 ExiSAXS.prototype.setUserMenu = Exi.prototype.setUserMenu;
+ExiSAXS.prototype.setManagerMenu = Exi.prototype.setManagerMenu;
+ExiSAXS.prototype.manageMenu = Exi.prototype.manageMenu;
 ExiSAXS.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
@@ -466,10 +466,8 @@ SAXSMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 SAXSMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
 
-SAXSMainMenu.prototype.getMenuItems = function() {
-	
-	
-	
+SAXSMainMenu.prototype.getMenuItems = function() {	
+    		
 	return [	
     	this.getHomeItem(),
     	this.getShipmentItem(),
@@ -477,6 +475,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
+                 disabled : true,
 				menu : this.getPreparationMenu() 
 		}, {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
@@ -503,7 +502,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 			hidden : this.isHidden,
 			listeners : {
 				specialkey : function(field, e) {
-					if (e.getKey() == e.ENTER) {
+					if (e.getKey() == e.ENTER) {                        
 						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
 					}
 				} 
@@ -648,6 +647,97 @@ SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
 };
 
 
+function SAXSManagerMenu() {
+	this.id = BUI.id();
+	MainMenu.call(this, {isHidden : false, cssClass : 'mainMenu'});
+}
+
+SAXSManagerMenu.prototype.populateCredentialsMenu = MainMenu.prototype.populateCredentialsMenu;
+SAXSManagerMenu.prototype.init = MainMenu.prototype.init;
+SAXSManagerMenu.prototype.getPanel = MainMenu.prototype.getPanel;
+SAXSManagerMenu.prototype._convertToHTMLWhiteSpan = MainMenu.prototype._convertToHTMLWhiteSpan;
+SAXSManagerMenu.prototype.getAddCredentialMenu = MainMenu.prototype.getAddCredentialMenu;
+SAXSManagerMenu.prototype.getLoginButton = MainMenu.prototype.getLoginButton;
+SAXSManagerMenu.prototype.setText = MainMenu.prototype.setText;
+SAXSManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
+SAXSManagerMenu.prototype.getManagerMenu = MainMenu.prototype.getManagerMenu;
+SAXSManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
+SAXSManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+
+SAXSManagerMenu.prototype.getMenuItems = function() {	
+    		
+	return [	
+    	this.getHomeItem(),
+    	this.getShipmentItem(),
+    	{
+				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+				cls : 'ExiSAXSMenuToolBar',
+				hidden : this.isHidden,
+                 disabled : true,
+				menu : this.getPreparationMenu() 
+		}, {
+				text : this._convertToHTMLWhiteSpan("Data Explorer"),
+				cls : 'ExiSAXSMenuToolBar',
+				hidden : this.isHidden,
+				menu : this.getDataExplorerMenu() 
+		},
+//		{
+//			text : '<span style="color:white">Offline Data Analysis</span>',
+//			cls : 'ExiSAXSMenuToolBar',
+//			hidden : this.isHidden,
+//			menu : this.getOnlineDataAnalisysMenu() 
+//		}, 
+        {
+			text : this._convertToHTMLWhiteSpan("Manager"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getManagerMenu() 
+		},
+		{
+			text : this._convertToHTMLWhiteSpan("Help"),
+			cls : 'ExiSAXSMenuToolBar',
+			menu : this.getHelpMenu() 
+		}, 
+		'->', 
+		{
+			xtype : 'textfield',
+			name : 'field1',
+			emptyText : 'search macromolecule',
+			hidden : this.isHidden,
+			listeners : {
+				specialkey : function(field, e) {
+					if (e.getKey() == e.ENTER) {                        
+						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
+					}
+				} 
+			} 
+	}
+	];
+};
+
+SAXSManagerMenu.prototype.getManagerMenu = function() {
+	var _this = this;
+	function onItemCheck(item, checked) {
+
+	}
+
+	return Ext.create('Ext.menu.Menu', {
+		items : [
+					{
+						text : 'Statistics',
+						icon : '../images/icon/ic_insert_chart_black_36dp.png',
+						menu : {       
+								items: [
+									{
+										text: 'Substraction',
+										icon : '../images/icon/ic_insert_chart_black_36dp.png',
+										handler: onItemCheck
+									}
+								]
+							}
+					}
+			] 
+	});
+};
 function BufferListView(){
 	ListView.call(this);
 }
@@ -941,6 +1031,37 @@ TemplateListView.prototype.getFields = function(){
 };
 
 
+function AbinitioMainView() {		
+	MainView.call(this);
+				
+	/** Abinitio **/
+	this.abinitioForm = new AbinitioForm({
+		height : 700
+	});	
+}
+
+
+AbinitioMainView.prototype.getPanel = function() {
+	return this.abinitioForm.getPanel()
+};
+
+AbinitioMainView.prototype.load = function(dataCollectionId) {
+	var _this = this;
+	
+	var onSuccess = function (sender, dataCollections) {        
+		if (dataCollections){
+            if (dataCollections[0].Subtraction_subtractionId){
+                   var onSuccessSubtraction = function(sender, subtractions) {                 
+                        _this.abinitioForm.load(subtractions);
+                    };			
+                    EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([dataCollections[0].Subtraction_subtractionId]);	                  
+            }
+        }
+	}
+	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
+};
+
+
 function BufferMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -1094,9 +1215,10 @@ function DataCollectionMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGrid({
+	this.grid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
 		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
+		padding : 40,
 		sorters : [ {
 			property : 'macromoleculeAcronym',
 			direction : 'ASC' } ] });
@@ -1111,7 +1233,7 @@ DataCollectionMainView.prototype.getContainer = MainView.prototype.getContainer;
 
 DataCollectionMainView.prototype.filter = function(macromoleculeAcronym, bufferAcronym) {
 	this.grid.key = {};
-	this.grid.store.filter( [{property : "bufferAcronym", value : bufferAcronym, anyMacth : true}]);
+	this.grid.filter("bufferAcronym",bufferAcronym);
 };
 
 DataCollectionMainView.prototype.load = function(selected) {
@@ -1131,9 +1253,9 @@ DataCollectionMainView.prototype.load = function(selected) {
 
 	this.container.insert(0, this.grid.getPanel());
 
-	this.grid.panel.setLoading();
-	this.grid.store.loadData(selected);
-	this.grid.panel.setLoading(false);
+	//this.grid.panel.setLoading();
+	this.grid.load(selected);
+	//this.grid.panel.setLoading(false);
 };
 
 function DesignerMainView() {
@@ -1257,7 +1379,7 @@ ExperimentDesignerMainView.prototype.load = function() {
 function ExperimentMainView() {
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
 	MainView.call(this);
-	this.experimentHeaderForm = new ExperimentHeaderForm();
+	// this.experimentHeaderForm = new ExperimentHeaderForm();
 	var _this = this;
 	/** Viscosity **/
 	var storeViscosity = Ext.create('Ext.data.Store', {
@@ -1272,13 +1394,13 @@ function ExperimentMainView() {
 	});
 
 	// Create the combo box, attached to the states data store
-	var viscosityEditor = Ext.create('Ext.form.ComboBox', {
-		fieldLabel : '',
-		store : storeViscosity,
-		queryMode : 'local',
-		displayField : 'name',
-		valueField : 'name'
-	});
+	// var viscosityEditor = Ext.create('Ext.form.ComboBox', {
+	// 	fieldLabel : '',
+	// 	store : storeViscosity,
+	// 	queryMode : 'local',
+	// 	displayField : 'name',
+	// 	valueField : 'name'
+	// });
 	
 	
 	/** Specimen Widget contains a specimenGrid and a sampleChangerWidget than can be displayed with are vertical or horizontal layout **/
@@ -1287,83 +1409,9 @@ function ExperimentMainView() {
 		width : 1200
 	});
 	
-	this.measurementGrid = new MeasurementGrid({
-//		maxWidth : 1500,
-//		width : 1200,
-		height : 600,
-		minHeight : 600,
-		maxHeight : 600,
-		estimateTime : false,
-		positionColumnsHidden : false,
-		isPriorityColumnHidden : true,
-		isStatusColumnHidden : false,
-		addBtnEnable : false,
-		isTimeColumnHidden : false,
-		updateRowEnabled : false,
-		collapsed : false,
-		removeBtnEnabled : false,
-		showTitle : false,
-		collapseBtnEnable : false,
-		addBtnMultipleEdit : false,
-		sortingBtnEnable : false,
-		editor : {
-			exposureTemperature : {
-				xtype : 'textfield',
-				allowBlank : true
-			},
-			comments : {
-				xtype : 'textfield',
-				allowBlank : true
-			},
-			volumeToLoad : {
-				xtype : 'numberfield',
-				allowBlank : true
-			},
-			transmission : {
-				xtype : 'numberfield',
-				allowBlank : true
-			},
-			viscosity : viscosityEditor,
-			waitTime : {
-				xtype : 'numberfield',
-				allowBlank : true
-			},
-			flow : {
-				xtype : 'checkbox',
-				allowBlank : true
-			}
-		}
-	});
-
-//	this.measurementGrid.onSelected.attach(function(sender, measurements) {
-//		var specimens = [];
-//		for ( var i = 0; i < measurements.length; i++) {
-//			specimens.push(_this.experiment.getSampleById(measurements[i].specimenId));
-//		}
-//	});
-
-	this.measurementGrid.onMeasurementChanged.attach(function(sender, measurement) {
-//		debugger
-		_this.experiment.setMeasurement(measurement);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.volumePlanificator.load(_this.experiment);
-	});
-
-	this.measurementGrid.onExperimentChanged.attach(function(sender, json) {
-		_this.experiment = new Experiment(json);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.specimenWidget.refresh(_this.experiment);
-		_this.volumePlanificator.load(_this.experiment);
-	});
-
-	this.measurementGrid.onRemoved.attach(function(sender, experiments) {
-		_this.experiment = new Experiment(experiments[0]);
-		_this.specimenWidget.refresh(_this.experiment);
-		_this.volumePlanificator.load(_this.experiment);
-	});
-
+	this.measurementGrid = new MeasurementGrid();
 	
-	this.queueGrid = new QueueGrid({
+	this.queueGrid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
 //		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
 		sorters : [ {
@@ -1371,144 +1419,71 @@ function ExperimentMainView() {
 			direction : 'ASC'
 		} ]
 	});
-	
+
+	this.activePanel = this.queueGrid;
 	
 }
 
-ExperimentMainView.prototype.getPanel = MainView.prototype.getPanel;
 
-ExperimentMainView.prototype.getSelected = function() {
-	var selected = [];
-	for (var i = 0; i < this.queueGridList.length; i++) {
-		selected = this.queueGridList[i].getSelected().concat(selected);
-	}
-	return selected;
+ExperimentMainView.prototype.getToolBar = function() {
+    var _this = this;
+    function onMenuClicked(widget){
+        if (_this.activePanel != widget){
+            _this.activePanel = widget;
+			_this.load(_this.dataCollections);
+        }
+    }
+
+    var menu =  Ext.create('Ext.menu.Menu', {     
+        items: [{
+            text: 'Online Data Analysis',
+            handler: function(){
+                onMenuClicked(_this.queueGrid);
+            }
+        },{
+            text: 'Measurements',            
+            handler: function(){
+                onMenuClicked(_this.measurementGrid);
+            }
+        },{
+            text: 'Sample Plate Setup',            
+            handler: function(){
+                onMenuClicked(_this.specimenWidget);
+            }
+        }]
+   });
+    return Ext.create('Ext.toolbar.Toolbar', {
+        width: 500,
+		
+        items: [
+           {
+                text:'View',
+                iconCls: 'bmenu',  // <-- icon
+                menu : menu  // assign menu by instance
+            }
+        ]
+    });
 };
 
+ExperimentMainView.prototype.getPanel = function() {
 
-ExperimentMainView.prototype.getTabs = function() {
-	return  Ext.createWidget('tabpanel',
-			{
-				plain : true,
-				margin : '20 0 0 0',
-				activeTab: 2,
-				items : [
-					{
-						tabConfig : {
-							title : "Sample Plate Setup"
-						},
-						items : [  
-									{
-										xtype : 'container',
-										layout : 'vbox',
-										height : 700,
-										padding : 20,
-										style : {
-											borderColor : 'gray',
-											borderStyle : 'solid',
-											borderWidth : '1px',
-											'background-color' : 'white' 
-										},
-										items : [ 
-										     	this.specimenWidget.getPanel()
-										     	]
-									}
-									]
-					},
-					{
-						tabConfig : {
-							title : 'Measurements'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							height : 700,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-							         
-							         this.measurementGrid.getPanel()
-							]
-						}
-
-						]
-					},
-					{
-						tabConfig : {
-							title : 'Online Data Analysis'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							height : 700,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-							     this.queueGrid.getPanel()    
-							]
-						}
-					
-						]
-					}
-			]
-	}
-	);
-};
-
-
-ExperimentMainView.prototype.getContainer = function() {
-	return Ext.create('Ext.container.Container', {
-	    layout: {
-	        type: 'anchor'
-	    },
-	    defaults : {
-			anchor : '100%',
-			hideEmptyLabel : false },
-	    margin : 30,
-		bodyStyle : {
-			"background-color" : "#E6E6E6" 
-		},
-	    items: [
-	            this.experimentHeaderForm.getPanel(),
-	            this.getTabs()
-	    ]
+	this.panel = Ext.create('Ext.panel.Panel', {   
+		margin : 10,
+		// minHeight : 900,
+		layout : 'fit',
+		minHeight : 600,
+		tbar : this.getToolBar(),
+		items: []
 	});
+	return this.panel;
 };
 
-
-
-ExperimentMainView.prototype.load = function(experimentId) {
-	var _this = this;
-	_this.panel.setLoading();
-	_this.queueGrid.panel.setLoading();
-	var onSuccess = function(sender, experiments){
-		_this.experiment = new Experiment(experiments[0]);
-		_this.experimentHeaderForm.load(_this.experiment);
-		_this.measurementGrid.loadExperiment(_this.experiment);
-		_this.specimenWidget.refresh(_this.experiment);
-		_this.panel.setTitle(experiments[0].name);
-		_this.panel.setLoading(false);	
-		var onSuccess = function(sender, data){
-			_this.queueGrid.load(data);
-			_this.queueGrid.panel.setLoading(false);
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(experimentId);
+ExperimentMainView.prototype.load = function(dataCollections) {
+	this.dataCollections = dataCollections;
+	this.panel.removeAll();
+	this.panel.insert(this.activePanel.getPanel());
+	this.activePanel.load(dataCollections);	
 };
-
-
-
 function ExperimentWelcomeMainView() {
 	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
 
@@ -1589,13 +1564,8 @@ function HPLCMainView() {
 
 	MainView.call(this);
 
-	this.grid = new QueueGrid({
-		collapsed : true,
-		positionColumnsHidden : true,
-		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
-		sorters : [ {
-			property : 'macromoleculeAcronym',
-			direction : 'ASC' } ] });
+	this.grid = new OverviewQueueGrid({
+		height : 220 });
 
 	this.grid.onSelectionChange.attach(function(sender, elements) {
 		_this.onSelectionChange.notify(elements);
@@ -1614,20 +1584,20 @@ function HPLCMainView() {
 	_this.selectedFrameNumber = [];
 	this.hplcGraph = new HPLCGraph({
 		title : 'I0',
-		width : 800,
-		height : 350,
+		width : 300,
+		height : 300,
 		bbar : true,
 		plots : {
 			"I0" : true,
 			"Rg" : true },
-		xlabel : "HPLC Frames",
+		xlabel : "Frames",
 		scaled : true,
 		interactionModel : {
 			'dblclick' : function(event, g, context) {
-				_this.selectedFrameNumber.push(g.lastx_);
+				//_this.selectedFrameNumber.push(g.lastx_);
+                _this.selectedFrameNumber = [g.lastx_];
 				_this.plotter.loadHPLCFrame(_this.experimentId, _this.selectedFrameNumber);
-
-				_this.annotations.push({
+				/*_this.annotations.push({
 					series : g.selPoints_[0].name,
 					x : g.lastx_,
 					width : 30,
@@ -1635,10 +1605,43 @@ function HPLCMainView() {
 					tickHeight : 2,
 					shortText : g.lastx_,
 					text : g.lastx_,
-					attachAtBottom : true });
+					attachAtBottom : true });*/
+                    _this.annotations= [({
+					series : g.selPoints_[0].name,
+					x : g.lastx_,
+					width : 30,
+					height : 23,
+					tickHeight : 2,
+					shortText : g.lastx_,
+					text : g.lastx_,
+					attachAtBottom : true })];
 				g.setAnnotations(_this.annotations);
-
-			} } });
+                
+                /** Summary Panel */
+                var summary = {
+                        frame :  _this.selectedFrameNumber,
+                        quality : _.find(_this.hplcGraph.hplcData, {param : 'quality'}).data[_this.selectedFrameNumber],
+                        Qr : _.find(_this.hplcGraph.hplcData, {param : 'Qr'}).data[_this.selectedFrameNumber],
+                        Vc : _.find(_this.hplcGraph.hplcData, {param : 'Vc'}).data[_this.selectedFrameNumber],
+                        Mass : _.find(_this.hplcGraph.hplcData, {param : 'Mass'}).data[_this.selectedFrameNumber],
+                        Rg : _.find(_this.hplcGraph.hplcData, {param : 'Rg'}).data[_this.selectedFrameNumber],
+                        I0 : _.find(_this.hplcGraph.hplcData, {param : 'I0'}).data[_this.selectedFrameNumber],
+                        downloadURL : EXI.getDataAdapter().saxs.hplc.getDownloadHDF5FramesURL(_this.experimentId, _this.selectedFrameNumber, _this.selectedFrameNumber)
+                }
+                
+                
+                
+               
+                var html = "";
+                dust.render("summary.hplcmainview.template", [summary], function(err, out) {
+                                                                                                                                       
+                    html = html + out;
+                });
+                $('#' + _this.id + "summary").html(html);
+                
+			} 
+        } 
+    });
 
 	this.hplcGraph.onClearSelection.attach(function(sender) {
 		_this.annotations = [];
@@ -1647,7 +1650,9 @@ function HPLCMainView() {
 	});
 
 	this.plotter = new CurvePlotter({
-		margin : '10 0 0 0' });
+		margin : 10,
+        width : 300
+     });
 
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
@@ -1661,21 +1666,66 @@ HPLCMainView.prototype.getHeader = function(beamlineName, startDate) {
 };
 
 HPLCMainView.prototype.getPlotContainer = function() {
-	return {
-		xtype : 'container',
-		cls : 'defaultGridPanel',
-		border : 0,
-		defaults : {
-			height : 450 },
-		items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
+	return  {
+                xtype : 'container',
+                cls : 'defaultGridPanel',
+                layout : 'hbox',
+                border : 1,
+                defaults : {height : 400 },
+		        items : [ this.hplcGraph.getPanel(), this.plotter.getPanel()
 		] };
 };
 
-HPLCMainView.prototype.getContainer = function() {
 
+HPLCMainView.prototype.getSecondaryContainer = function() {
+	return  {
+                xtype : 'container',
+                cls : 'defaultGridPanel',
+                layout : 'hbox',
+                border : 0,
+                defaults : {height : 400 },
+		        items : [
+                    {
+                        html : '<div style="text-align:center;" class="alert alert-info" role="alert">Select a frame by double-clicking on the HPLC Frames plot</div>',
+                        margin : 10,
+                        flex : 1
+                    },
+                    {
+                        html : '<div id="' + this.id + 'summary"></div>',
+                        margin : 10,
+                        flex : 1
+                    }
+                    
+                ] };
+};
+
+HPLCMainView.prototype.getContainer = function() {
+    
 	return {
 		xtype : 'container',
-		items : [ this.grid.getPanel(), this.getPlotContainer() ] };
+        margin : 10,
+		items : [ 
+            
+            {
+              html : '<div id="' + this.id +'header"></div>',
+              margin : 10 ,
+              height : 160 
+            },
+            {
+              html : ' <div class="panel panel-primary"><div class="panel-heading">Data Collection</div></div>',
+              margin : 10 ,
+              height : 40 
+            },
+           
+            this.grid.getPanel(), 
+              {
+              html : '<div class="panel panel-primary"><div class="panel-heading">Size-exclusion chromatography</div></div>',
+              margin : 10 ,
+              height : 40 
+            },
+            this.getPlotContainer(), 
+            this.getSecondaryContainer()
+             ] };
 };
 
 HPLCMainView.prototype.getSelected = function() {
@@ -1730,8 +1780,8 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 			color : "#FF00FF",
 			data : data.quality,
 			std : zeroArray } ];
-		_this.hplcGraph.loadData(data);
-
+		_this.hplcGraph.loadData(data, experimentId);
+        
 	};
 
 	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.hplc.getHPLCOverviewByExperimentId(experimentId);
@@ -1740,15 +1790,32 @@ HPLCMainView.prototype.loadHPLCGraph = function(experimentId) {
 HPLCMainView.prototype.load = function(experimentId) {
 		var _this = this;
 		this.experimentId = experimentId;
-
-		this.grid.panel.setLoading();
-
-		var onSuccess = function(sender, data) {
-			_this.grid.load(data);
-			_this.grid.panel.setLoading(false);
+	
+		var onSuccess = function(sender, data) {  
+            if (data){          
+			    _this.grid.load(data);
+                if (data[0]){
+                    var header = {
+                        creationDate : data[0].Experiment_creationDate,
+                        name : data[0].Experiment_name,
+                        type : data[0].Experiment_experimentType,
+                        hdf5 : data[0].Experiment_dataAcquisitionFilePath,
+                        url : EXI.getDataAdapter().saxs.hplc.getDownloadHDF5URL(data[0].Experiment_experimentId)
+                    }
+                    
+                    /** Renedering header */
+                     var html = "";
+                     
+                    dust.render("header.hplcmainview.template", header, function(err, out) {
+                                                                                                                                        
+                        html = html + out;
+                    });
+                    $('#' + _this.id + "header").html(html);
+                }
+            }			
 		};
 
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experimentId);
+		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(experimentId);
 		this.loadHPLCGraph(experimentId);
 };
 
@@ -2273,9 +2340,9 @@ function PrimaryDataMainView() {
 	this.onMeasurementSelectionChange = new Event(this);
 	
 	var _this = this;
-	
-	this.frameSelectorGrid = new FrameSelectorGrid();
-	this.frameSelectorGrid.onSelectionChange.attach(function(sender, selections){
+
+	this.framesGrid = new FramesGrid();
+	this.framesGrid.onSelectionChange.attach(function(sender, selections){
 		_this.plotter.load(selections);
 	});
 	
@@ -2283,19 +2350,10 @@ function PrimaryDataMainView() {
 	this.plotter = new CurvePlotter({
 	});
 
-	this.grid = new QueueGrid({
-		maxHeight : 300
-	});
-	
-	
-	/** Abinitio **/
-	this.abinitioForm = new AbinitioForm({
-		height : 700
-	});
-	
+	this.grid = new OverviewQueueGrid({height : 220});				
 }
 
-PrimaryDataMainView.prototype.getPanel = MainView.prototype.getPanel;
+
 
 PrimaryDataMainView.prototype.getSlavePanel = function() {
 	return {
@@ -2305,9 +2363,9 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		margin : 5,
 		border : 0,
 		defaults : {
-			height : 600 
+			height : 400 
 		},
-		items : [ 
+		items : [
 		         {
 		        	 xtype : 'panel',
 		        	 layout: {
@@ -2316,138 +2374,121 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		        	        animate: true,
 		        	        activeOnTop: true
 		        	    },
-		        	    flex : 0.3,
+		        	    flex : 0.2,
 		        		border : 1,
 		        		style : {
 		        			borderColor : '#000000',
 		        			borderStyle : 'solid',
 		        			borderWidth : '1px' },
-		        	 items : [
-		        	          this.frameSelectorGrid.getPanel()
-		        	         
+		        	 items : [		        	        
+		        	                this.framesGrid.getPanel()
 		        	          ]
 		         },
-		         this.plotter.getPanel()
-		        
+		         this.plotter.getPanel()		        
 		    ]
 	};
-
 };
 
-
-PrimaryDataMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('tabpanel',
-			{
-				plain : true,
-				height : 900,
-				margin : '10 0 0 0',
-				items : [
-					{
-						tabConfig : {
-							title : 'Primary Data Reduction'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							height : 850,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-										{
-											xtype : 'container',
-											items : [
-											         	this.grid.getPanel(),
-											        	this.getSlavePanel()         
-											]
-										}
-							]
-						}
-
-						]
-					},
-					{
-						tabConfig : {
-							title : 'Abinitio Modeling'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							height : 850,
-							padding : 20,
-							style : {
-								borderColor : 'gray',
-								borderStyle : 'solid',
-								borderWidth : '1px',
-								'background-color' : 'white' 
-							},
-							items : [ 
-										{
-											xtype : 'container',
-											items : [
-											         	this.abinitioForm.getPanel()
-											]
-										}
-							]
-						}
-
-						]
-					}
-			]
-			});
+PrimaryDataMainView.prototype.getPanel = function() {
+	return {
+            xtype : 'container',
+            autoScroll : true,							
+            layout : 'fit',
+            padding : 10,
+            style : {
+                borderColor : 'gray',
+                borderStyle : 'solid',
+                borderWidth : '1px',
+                'background-color' : 'white' 
+            },
+            items : [ 
+                        {
+                            xtype : 'container',
+                            items : [
+                                        this.grid.getPanel(),
+                                        this.getSlavePanel()         
+                            ]
+                        }
+            ]
+        };
 };
 
-
-//PrimaryDataMainView.prototype.getContainer = function() {
-//	return {
-//		xtype : 'container',
-//		items : [
-//		         	this.grid.getPanel(),
-//		        	this.getSlavePanel()         
-//		]
-//	};
-//};
-
-PrimaryDataMainView.prototype.load = function(selected) {
+PrimaryDataMainView.prototype.load = function(dataCollectionId) {
 	var _this = this;
-	this.panel.setTitle(" Data Collection");
-	this.grid.panel.setLoading();
-	var onSuccess = function(sender, data) {
-		_this.grid.load(data);
-		_this.grid.panel.setLoading(false);
-		/** Measurements Grid * */
-		_this.frameSelectorGrid.load(data);
-		
-		/** Getting abinitio **/
-		if (data[0].subtractionId){
-			var onSuccessSubtraction = function(sender, subtractions) {
-				_this.abinitioForm.load(subtractions);
-			};
-			
-			EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([data[0].subtractionId]);
-			
-		}
-	};
+	
 
-	var dataCollectionIds = [];
-	for (var i = 0; i < selected.length; i++) {
-		dataCollectionIds.push(selected[i].dataCollectionId);
+	var onSuccessA = function (sender, dataCollections) {        
+		_this.grid.load(dataCollections);
+				
+		var onSuccessFrames = function (sender, averages){
+			var allFrames = _.map(_.flatten(_.map(_.map(JSON.parse(averages), 'framelist3VO'), 'frametolist3VOs')), 'frame3VO');
+			/** Retrieve subtraction */
 
+			 var onSuccessSubtractions = function(sender, data) {				 				 
+				 if (data){
+					 if (data[0].substraction3VOs){
+						 var subtraction = data[0].substraction3VOs[0];
+						 if (subtraction.sampleOneDimensionalFiles){			 
+							var frameFromSampleAveraged = _.map(subtraction.sampleOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+							var frameFromBufferAveraged = _.map(subtraction.bufferOneDimensionalFiles.frametolist3VOs, 'frame3VO');
+						 
+							/** Identify discarded frames */
+							for (var i in allFrames){
+								var frame = allFrames[i];
+								debugger
+								if (_.find(_.concat(frameFromSampleAveraged, frameFromBufferAveraged), {filePath : frame.filePath})){
+									frame.discarded = false;
+								}
+								else{
+									frame.discarded = true;								
+								}
+								frame.type = 'Frame';
+								frame.domId = frame.frameId;
+							}
+						
+							allFrames = _.orderBy(allFrames, ['filePath'], ['asc']);
+							allFrames.unshift({
+								filePath : subtraction.substractedFilePath,
+								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'Subtraction',
+								type : 'Subtraction'
+							});
+							allFrames.unshift({
+								filePath : subtraction.bufferAverageFilePath,
+								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'BufferAverage',
+								type : 'BufferAverage'
+							});
+							allFrames.unshift({
+								filePath : subtraction.sampleAverageFilePath,
+								frameId : subtraction.subtractionId,
+								domId : subtraction.subtractionId + 'SampleAverage',
+								type : 'SampleAverage'
+							});
+							_this.framesGrid.load(allFrames);	
+							// if (subtraction.subtractionId){
+							// 	var onSuccessSubtraction = function(sender, subtractions) {                 
+							// 		_this.abinitioForm.load(subtractions);
+							// 	};			
+							// 	EXI.getDataAdapter({onSuccess : onSuccessSubtraction}).saxs.subtraction.getSubtractionsBySubtractionIdList([subtraction.subtractionId]);			
+							// }
+						} else {
+							_this.framesGrid.load(null);
+						}
+					 }
+				 }
+			 };
+ 			EXI.getDataAdapter({onSuccess : onSuccessSubtractions}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionId);
+		}		
+		EXI.getDataAdapter({onSuccess : onSuccessFrames}).saxs.frame.getFramesByAverageId(_.map(dataCollections, 'Merge_mergeId'));
 	}
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByDataCollectionId(dataCollectionIds);
-	
-	
-	
+	EXI.getDataAdapter({onSuccess : onSuccessA}).saxs.dataCollection.getDataCollectionsById(dataCollectionId);
 };
 
 
 
 
-function ShippingMainView() {
+function ShipmentPreparationMainView() {
 	
 	MainView.call(this);
 	
@@ -2472,10 +2513,10 @@ function ShippingMainView() {
 	});
 }
 
-ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
+ShipmentPreparationMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 
-ShippingMainView.prototype.getContainer = function() {
+ShipmentPreparationMainView.prototype.getContainer = function() {
 	this.tabPanel =  Ext.createWidget('tabpanel',
 			{
 				margin : 10,
@@ -2509,7 +2550,7 @@ ShippingMainView.prototype.getContainer = function() {
 };
 
 
-ShippingMainView.prototype.load = function(shippingId) {
+ShipmentPreparationMainView.prototype.load = function(shippingId) {
 	this.shippingId = shippingId;
 	
 	if (shippingId == null){
@@ -2527,107 +2568,6 @@ ShippingMainView.prototype.load = function(shippingId) {
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
 	}
 };
-function ShippingWelcomeMainView() {
-	this.icon = '../images/icon/rsz_ic_home_black_24dp.png';
-
-	MainView.call(this);
-	this.title = "Welcome";
-	this.closable = false;
-}
-
-ShippingWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
-ShippingWelcomeMainView.prototype.getContainer = MainView.prototype.getContainer;
-
-ShippingWelcomeMainView.prototype.getContainer = function() {
-	return  Ext.createWidget('panel',
-			{
-				plain : true,
-				margin : '10',
-				layout : 'fit',
-				items : [
-					{
-						tabConfig : {
-							title : 'Welcome'
-						},
-						items : [ {
-							xtype : 'container',
-							layout : 'fit',
-							padding : 20,
-							margin : 0,
-							cls : 'border-grid',
-							items : [ 
-							        
-							         {
-							        	 html : '<div class="landing-title" ><h2>Shipments</h2></div>'
-							         },
-							         {
-							        	 html : '<div class="landing-text"> A Shipment consists of a set of Dewars which is sent from your home lab to the synchrotron via a courier company. Each dry shipping Dewar within the shipment is identified by a label (barcode or sticker). The dewars(s) contains a set of Containers (Pucks or canes). Containers (typically Pucks), contain Samples. A Sample (Sample Holder) contains the Crystal</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/ShippingObjects_02.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : '<div class="landing-text">Tracking your shipment & contents (Dewars, toolboxes etc) allows you to follow the progress of your shipment from your home Lab to The ESRF.</div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         
-//							         {
-//							        	 html : '<div class="landing-text"><img src="../images/dewarTrackingWF_01.png" /></div>',
-//							        	 margin : '0 0 0 20'
-//							         },
-//							         {
-//							        	 html : this.getOptions(),
-//							        	 margin : '0 0 0 40'
-//							         },
-							         
-							         {
-							        	 html : '<br/><div class="landing-text">Do you want to ship your samples to the beamline?</div><br/>',
-							        	 margin : '0 0 0 20'
-							         },
-							         {
-							        	xtype : 'container',
-							        	layout : 'hbox',
-							        	cls : 'option-bar-menu',
-							        	items :[
-							        	    
-										         {
-										        	 xtype : 'button',
-										        	 cls : 'square-option',
-										        	 maxWidth : 200,
-										        	 minWidth : 200,
-										        	 margin : '0 0 0 150',
-										        	 height : 100,
-										        	 text : '<div class="square-option-text"; >Create a new Shipment</div>',
-										        	 icon : '../images/icon/add.png',
-										        	 iconAlign : 'top',
-										        	 handler : function(){
-
-										        		 //if (EXI.proposalManager.getFutureSessions().length > 0){
-										     				location.hash = '/shipping/main';
-										     			 //}
-										        		 //else{
-											        	//	 BUI.showError("Sorry, there are not sessions scheduled for this proposal");
-										        		 //}
-										        	 }
-										         }]
-							         }
-							       
-							        
-							]
-						}
-					
-						]
-					}
-			]});
-	};
-
-
-ShippingWelcomeMainView.prototype.load = function() {
-	
-};
-
 function StockSolutionMainView() {
 	
 	this.icon = 'images/icon/ic_satellite_black_18dp.png';
@@ -3026,6 +2966,109 @@ TemplateMainView.prototype.load = function(experiments) {
 	this.panel.setTitle("Template");
 };
 
+function QueueGrid(args) {
+    this.decimals = 3;
+	this.onSelect = new Event();
+
+	this.maxHeight = 600;
+	this.imgWidth = 77;
+	this.padding = 0;
+	
+	this.id = BUI.id();
+	this.title = 'Data Collections';
+	this.key = {};
+
+	this.selectionMode = 'MULTI';
+	
+	this.collapsible = true;
+	this.collapsed = false;
+	
+	var _this = this;
+	this.filters = [ function(item) {
+		if (item.data.dataCollectionId == null) {
+			return false;
+		}
+		if (_this.key[item.data.dataCollectionId] == null) {
+			_this.key[item.data.dataCollectionId] = [];
+		}
+		_this.key[item.data.dataCollectionId].push(item.data);
+		return item.data.macromoleculeId != null;
+	} ];
+	if (args!= null){
+		if (args.maxHeight != null){
+			this.maxHeight = args.maxHeight;
+		}
+		if (args.padding != null){
+			this.padding = args.padding;
+		}
+		if (args.collapsible != null){
+			this.collapsible = args.collapsible;
+		}
+		if (args.collapsed != null){
+			this.collapsed = args.collapsed;
+		}
+		if (args.selectionMode != null){
+			this.selectionMode = args.selectionMode;
+		}
+		if (args.title != null){
+			if (args.title == false){
+				this.title = null;
+			}
+		}
+	}
+	
+	this.selected = []; 
+	this.onSelectionChange = new Event();
+	this.onDeselect = new Event(this);
+	this.onSelect = new Event(this)
+}
+
+
+/**
+* It loads a set of data collections
+*
+* @method getImage
+* @param {subtractionId} subtractionId
+* @param {category} ['scattering' | 'kratky' | 'density' | 'guinier']
+*/
+QueueGrid.prototype.getImage = function(subtractionId, category) {	
+		return EXI.getDataAdapter().saxs.subtraction.getImage(subtractionId, category);
+};
+
+/**
+* Attaches the events to lazy load to the images. Images concerned are with the class queue-img
+*
+* @method attachCallBackAfterRender
+*/
+QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
+    
+    var _this = this;
+    var lazy = {
+            bind: 'event',
+            /** !!IMPORTANT this is the parent node which contains the scroll **/
+            appendScroll: nodeWithScroll,
+            beforeLoad: function(element) {
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
+            },           
+            onFinishedAll: function() {
+                EXI.mainStatusBar.showReady();
+            }
+    };
+       
+    var timer1 = setTimeout(function() { $('.img-responsive').lazy(lazy);}, 500);
+	// var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
+
+};
+
+QueueGrid.prototype.getPanel = function(){
+    var _this = this;
+
+	return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : false,
+        padding : this.padding
+	}
+};
 /**
  * Example form
  * 
@@ -3052,93 +3095,12 @@ function AbinitioForm(args) {
 		width : 700,
 		height : 600
 	});
-
-	this.abinitioGrid.onSelected.attach(function(sender, models) {
-		var modelsIdList = [];
-		for ( var i in models) {
-			modelsIdList.push(models[i].modelId);
-		}
-		
-		_this.curvePlotter.loadUrl(EXI.getDataAdapter().saxs.frame.getFramesURL([],[],[],[],[],modelsIdList));
-		_this._renderPDB(modelsIdList);
-	});
-
-	/** Dygraph Widget that plots fir files**/
-	this.curvePlotter = new CurvePlotter({
-	});
-	/** PDB viewer **/
-	this.viewer = new PDBViewer({
-		width : 500,
-		height : 300
-	});
-
 }
-
-
-AbinitioForm.prototype._renderPDB = function(modelsIdList) {
-	/** Trying to plot the PDB file **/
-	try {
-		var viz = [];
-		for (var i = 0; i < modelsIdList.length; i++) {
-			viz.push({
-				modelId : modelsIdList[i],
-				color : new THREE.Color(0xFF6600),
-				opacity : 0.8
-			});
-		}
-		this.viewer.refresh(viz);
-	} catch (e) {
-		console.log(e);
-	}
-};
 
 
 
 AbinitioForm.prototype.getPanel = function() {
-	var _this = this;
-	this.panel = Ext.create('Ext.panel.Panel', {
-		width : this.width,
-		cls : 'border-grid',
-		layout : 'hbox',
-		height : this.height,
-		margin : 5,
-		border : 1,
-		defaultType : 'textfield',
-		items : [
-						{
-							xtype : 'container',
-							layout : 'vbox',
-							items : [
-//										{
-//											xtype : 'label',
-//											forId : 'myFieldId',
-//											text : 'INLINE HELP: To be updated',
-//											margin : '15 0 20 10',
-//											cls : "inline-help"
-//										}, 
-										this.abinitioGrid.getPanel() 
-									]
-						},
-						{
-							xtype : 'container',
-							layout : 'vbox',
-							items : [
-										{
-											xtype : 'container',
-											layout : 'fit',
-											height : 300,
-											margin : '10 0 0 0',
-											width : 500,
-											items : [
-											         	this.curvePlotter.getPanel()
-										     ]
-										},
-							         this.viewer.getPanel() 
-					         ]
-						}
-         ]
-	});
-	return this.panel;
+	return this.abinitioGrid.getPanel();
 };
 
 
@@ -3170,7 +3132,7 @@ function AbinitioGrid(args) {
 
 
 AbinitioGrid.prototype.refresh = function(subtractions){
-	this.store.loadData(this._prepareData(subtractions));
+    $('#' + this.id).html(this.doTemplate(this._prepareData(subtractions)));
 };
 
 AbinitioGrid.prototype._prepareData = function(subtractions){
@@ -3200,448 +3162,31 @@ AbinitioGrid.prototype._prepareData = function(subtractions){
 			}
 		}
 	}
+    console.log(models)
 	return models;
 };
 
+AbinitioGrid.prototype.doTemplate = function(data){
+    var html = "";
+    dust.render("abinitiogrid.template", data, function(err, out) {                                                                                               
+		html = html + out;
+	});
+    return html;
+};
+
 AbinitioGrid.prototype.getPanel = function(){
-	var _this = this;
 	
 	
-	var modelFields = [ "modelId", "type", "chiSqrt", "dmax", "firFile", "logFile", "fitFile", "pdbFile", "rfactor", "rg", "volume" ];
-	Ext.define('AbinitioModel', {
-		extend : 'Ext.data.Model',
-		fields : modelFields
-		
-	});
-
-	/**
-	 * Store in Memory
-	 */
-	this.store = Ext.create('Ext.data.Store', {
-		model : 'AbinitioModel',
-		autoload : true,
-		groupField : 'type'
-	});
+    var html = this.doTemplate({});
 	
-	
-	  var groupingFeature = Ext.create('Ext.grid.feature.Grouping',{
-	        groupHeaderTpl: '{name} ({rows.length} model{[values.rows.length > 1 ? "s" : ""]})',
-	        startCollapsed: false,
-	        collapsible : true
-	  });
-	
-	  var selModel = Ext.create('Ext.selection.RowModel', {
-			allowDeselect : true,
-//			mode : 'multi',
-			listeners : {
-				selectionchange : function(sm, selections) {
-					if (selections.length > 0){
-						_this.onSelected.notify([selections[0].data]); 
-					}
-
-				}
-
-			} });
-	  
-	this.grid = Ext.create('Ext.grid.Panel', {
-		collapsible : false,
-		resizable : true,
-		selModel : selModel,
-		features: [groupingFeature],
-		autoscroll : true,
-		multiSelect : true,
-		store : this.store,
-		cls : 'border-grid',
-		height : this.height,
-		width : this.width,
-		margin : 10,
-		columns : [ {
-			text : "Type",
-			dataindex : "type",
-			hidden : true,
-			renderer : function(a, b, record) {
-				return record.data.type;
-			},
-			flex : 1
-		},
-		{
-			text : "ModelId",
-			dataindex : "modelId",
-			hidden : true,
-			renderer : function(a, b, record) {
-					return record.data.modelId;
-				
-			},
-			flex : 1
-		},
-		
-		{
-			text : "chiSqrt",
-			dataindex : "chiSqrt",
-			renderer : function(a, b, record) {
-				if (record.data.dmax != null) {
-					return BUI.formatValuesUnits(record.data.chiSqrt, "", 12, this.decimals);
-				}
-				
-			},
-			flex : 1
-		},
-		{
-			text : "Dmax",
-			dataindex : "dmax",
-			renderer : function(a, b, record) {
-				if (record.data.dmax != null) {
-					return BUI.formatValuesUnits(record.data.dmax, "nm", 12, this.decimals);
-				}
-				
-			},
-			flex : 1
-		}, {
-			text : "rFactor",
-			dataindex : "rfactor",
-			hidden : true,
-			renderer : function(a, b, record) {
-				if (record.data.rfactor != null) {
-					return record.data.rfactor;
-				}
-			},
-			flex : 1
-		}, {
-			text : "Rg",
-			dataindex : "rg",
-			renderer : function(a, b, record) {
-				if (record.data.rg != null) {
-					return BUI.formatValuesUnits(record.data.rg, "nm", 12, this.decimals);
-				}
-				
-			},
-			flex : 1
-		},
-		{
-			text : "Volume",
-			dataindex : "volume",
-			renderer : function(a, b, record) {
-				if (record.data.volume != null){
-					return BUI.formatValuesUnits(record.data.volume, '') + "<span style='font-size:8px;color:gray;'> nm<sub>3</sub></span>";
-				}
-			},
-			flex : 1
-		},
-		{
-			text : "PDB",
-			dataindex : "pdbFile",
-			renderer : function(a, b, record) {
-				if (record.data.pdbFile != null){
-					return record.data.pdbFile.split("/")[record.data.pdbFile.split("/").length - 1];
-				}
-			},
-			flex : 1
-		}, {
-			text : "Fir",
-			dataindex : "firFile",
-			renderer : function(a, b, record) {
-				if (record.data.firFile != null){
-					return record.data.firFile.split("/")[record.data.firFile.split("/").length - 1];
-				}
-			},
-			flex : 1
-		}, {
-			text : "LOG",
-			dataindex : "logFile",
-			hidden : true,
-			renderer : function(a, b, record) {
-				if (record.data.logFile != null){
-					return record.data.logFile.split("/")[record.data.logFile.split("/").length - 1];
-				}
-			},
-			flex : 1
-		}
-		],
-		viewConfig : {
-			enableTextSelection : true,
-			preserveScrollOnRefresh : true,
-			stripeRows : true,
-			listeners : {
-//				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//				},
-//				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-//					var models = [];
-//					debugger
-//					for (var i = 0; i < grid.getSelectionModel().selected.items.length; i++) {
-//						models.push(grid.getSelectionModel().selected.items[i].data);
-//					}
-//					
-//				}
-			}
-		}
-	});
-	return this.grid;
-	
+	return [{
+		html : '<div id="' + this.id + '">' + html + '</div>',
+		autoScroll : true,
+        border : 1,
+        padding : 0,
+		height : this.height
+	}];
 };
-
-/**
- * Edit the information of a buffer
- * 
- * #onRemoveAdditive
- */
-function AddressForm(args) {
-	this.id = BUI.id();
-	this.height = 500;
-	this.width = 500;
-
-	this.isSaveButtonHidden = false;
-	this.isHidden = false;
-
-	if (args != null) {
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.isSaveButtonHidden != null) {
-			this.isSaveButtonHidden = args.isSaveButtonHidden;
-		}
-		if (args.isHidden != null) {
-			this.isHidden = args.isHidden;
-		}
-		
-	}
-}
-
-AddressForm.prototype.getAddress = function() {
-	if (this.address == null) {
-		this.address = {};
-	}
-	this.address["billingReference"] = Ext.getCmp(this.id + "billingReference").getValue();
-	this.address["cardName"] = Ext.getCmp(this.id + "cardName").getValue();
-	this.address["courierAccount"] = Ext.getCmp(this.id + "courierAccount").getValue();
-	this.address["defaultCourrierCompany"] = Ext.getCmp(this.id + "courrierCompany").getValue();
-	this.address["dewarAvgCustomsValue"] = Ext.getCmp(this.id + "dewarAvgCustomsValue").getValue();
-	this.address["dewarAvgTransportValue"] = Ext.getCmp(this.id + "dewarAvgTransportValue").getValue();
-
-	if (this.address.personVO == null) {
-		this.address.personVO = {};
-	}
-	else{
-		
-	}
-
-	this.address.personVO["emailAddress"] = Ext.getCmp(this.id + "emailAddress").getValue();
-	this.address.personVO["familyName"] = Ext.getCmp(this.id + "familyName").getValue();
-	this.address.personVO["givenName"] = Ext.getCmp(this.id + "name").getValue();
-	this.address.personVO["faxNumber"] = Ext.getCmp(this.id + "faxNumber").getValue();
-	this.address.personVO["phoneNumber"] = Ext.getCmp(this.id + "phoneNumber").getValue();
-	return this.address;
-};
-
-AddressForm.prototype._loadPerson = function(givenName, familyName, emailAddress, faxNumber, phoneNumber) {
-	Ext.getCmp(this.id + "emailAddress").setValue(emailAddress);
-	Ext.getCmp(this.id + "familyName").setValue(familyName);
-	Ext.getCmp(this.id + "name").setValue(givenName);
-	Ext.getCmp(this.id + "faxNumber").setValue(faxNumber);
-	Ext.getCmp(this.id + "phoneNumber").setValue(phoneNumber);
-};
-
-AddressForm.prototype.load = function(address) {
-	this.address = address;
-
-	if (address != null) {
-		Ext.getCmp(this.id + "cardName").setValue(address.cardName);
-		Ext.getCmp(this.id + "courrierCompany").setValue(address.defaultCourrierCompany);
-		Ext.getCmp(this.id + "dewarAvgCustomsValue").setValue(address.dewarAvgCustomsValue);
-		Ext.getCmp(this.id + "dewarAvgTransportValue").setValue(address.dewarAvgTransportValue);
-		Ext.getCmp(this.id + "courierAccount").setValue(address.courierAccount);
-		Ext.getCmp(this.id + "billingReference").setValue(address.billingReference);
-
-		if (address.personVO != null) {
-			this._loadPerson(address.personVO.givenName, address.personVO.familyName, address.personVO.emailAddress,
-					address.personVO.faxNumber, address.personVO.phoneNumber);
-		}
-	}
-};
-
-AddressForm.prototype.getPersonPanel = function() {
-	this.personPanel = Ext.create('Ext.panel.Panel', {
-		layout : 'vbox',
-		margin : '10',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'hbox',
-			border : false,
-			items : [ {
-					xtype : 'requiredtextfield',
-					id : this.id + 'name',
-					fieldLabel : 'Name',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					disabled : true,
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'familyName',
-					fieldLabel : 'Surname',
-					labelWidth : 75,
-					disabled : true,
-					margin : "0 0 0 10",
-					width : 200 
-				}, 
-				{
-					xtype : 'requiredtextfield',
-					id : this.id + 'emailAddress',
-					fieldLabel : 'Email',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 300 
-				}, 
-				{
-					id : this.id + 'phoneNumber',
-					fieldLabel : 'Phone',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				}, 
-				{
-					id : this.id + 'faxNumber',
-					fieldLabel : 'Fax',
-					xtype : 'textfield',
-					labelWidth : 75,
-					margin : "0 0 0 10",
-					width : 220 
-				} ] },
-				
-				 {
-					padding : 10,
-					xtype : 'container',
-					layout : 'hbox',
-					border : false,
-					items : [ {
-						xtype : 'requiredtextfield',
-						id : this.id + 'cardName',
-						fieldLabel : 'Card Name',
-						name : 'CardName',
-						labelWidth : 150,
-						margin : "0 0 0 10",
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courierAccount',
-						fieldLabel : 'Courier Account',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}, 
-					{
-						xtype : 'requiredtextfield',
-						id : this.id + 'courrierCompany',
-						fieldLabel : 'Courier Company',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					}  ] },
-					
-					 {
-						padding : 10,
-						xtype : 'container',
-						layout : 'hbox',
-						border : false,
-						items : [ {
-							id : this.id + 'dewarAvgCustomsValue',
-							fieldLabel : 'Average Custom Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 10",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-							id : this.id + 'dewarAvgTransportValue',
-							fieldLabel : 'Average Transport Value',
-							xtype : 'numberfield',
-							margin : "0 0 0 30",
-							minValue : 0,
-							maxValue : 15,
-							labelWidth : 150,
-							width : 300 
-					}, 
-					{
-						id : this.id + 'billingReference',
-						xtype : 'textfield',
-						fieldLabel : 'Billing Reference',
-						margin : "0 0 0 30",
-						labelWidth : 150,
-						width : 300 
-					} ] }
-
-		] });
-	return this.personPanel;
-};
-
-AddressForm.prototype.getPackagePanel = function() {
-	this.packagePanel = Ext.create('Ext.panel.Panel', {
-		layout : 'hbox',
-		items : [ {
-			padding : 10,
-			xtype : 'container',
-			layout : 'vbox',
-			border : false,
-			items : [ {
-				xtype : 'container',
-				layout : 'hbox',
-				items : [ 
-					] 
-			}, {
-				xtype : 'container',
-				layout : 'hbox',
-				margin : "10 0 0 0",
-				items : [ 
-
-				] } ] } ] });
-	return this.packagePanel;
-};
-
-AddressForm.prototype.getPanel = function() {
-	this.panel = Ext.create('Ext.panel.Panel', {
-		hidden : this.isHidden,
-		layout : 'vbox',
-		title : 'Shipping Address Card',
-		cls : "border-grid",
-		buttons : this.getToolBar(),
-		icon : '../images/icon/ic_email_black_24dp.png',
-		items : [  
-		           this.getPersonPanel() 
-		           ] });
-	return this.panel;
-};
-
-AddressForm.prototype.save = function() {
-	var _this = this;
-
-	_this.panel.setLoading();
-	var onSuccess = function(sender) {
-		_this.panel.setLoading(false);
-		EXI.getDataAdapter().proposal.proposal.update();
-	};
-	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-};
-
-AddressForm.prototype.getToolBar = function() {
-	var _this = this;
-	return [ {
-		text : 'Save',
-		hidden : _this.isSaveButtonHidden,
-		width : 100,
-		handler : function() {
-			_this.save();
-
-		} } ];
-};
-
 
 
 /**
@@ -6219,249 +5764,127 @@ ExperimentHeaderForm.prototype.getPanel = function() {
 };
 
 
-function FrameSelectorGrid(args) {
+function FramesGrid (args) {
+    this.id = BUI.id();
+    this.selectedFrames = [];
 
-	this.onSelectionChange = new Event(this);
+    this.onSelectionChange = new Event(this);
 }
 
-/**
- * Fill the tree with information about the subtraction: samples, buffers,
- * averages and subtrated curve *
- */
-FrameSelectorGrid.prototype.loadData = function(measurements, dataCollections) {
-	var _this = this;
-	/**
-	 * Given a data collection return the run numbers, sample and buffer
-	 * acronym *
-	 */
-	function getSubtractionTitleByDataCollection(dataCollection) {
-		var title = "";
-		/** Sorts datacollection by data collection order * */
-		dataCollection.measurementtodatacollection3VOs.sort(function(a, b) {
-			return a.dataCollectionOrder - b.dataCollectionOrder;
-		});
-		for (var i = 0; i < dataCollection.measurementtodatacollection3VOs.length; i++) {
-			function getMeasurementTitle(measurementId) {
-				for (var i = 0; i < _this.measurements.length; i++) {
-					if (_this.measurements[i].measurementId == measurementId) {
-						if (_this.measurements[i].macromoleculeId != null) {
-							return _this.measurements[i].macromoleculeAcronym + ":  " + _this.measurements[i].concentration + "mg/ml";
-						}
-						return "";
-					};
-				};
-			};
-			title = title + " " + getMeasurementTitle(dataCollection.measurementtodatacollection3VOs[i].measurementId);
-		}
-		return title;
+FramesGrid.prototype.getPanel = function () {
+    return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : true
 	}
-
-	/** Gets the sample and buffer frames * */
-	function getChildren(dataCollection) {
-		var children = [];
-		function getTreeFromFrameList(OneDimensionalFiles) {
-			var sampleFrames = [];
-			if (OneDimensionalFiles.frametolist3VOs) {
-				for (var j = 0; j < OneDimensionalFiles.frametolist3VOs.length; j++) {
-					sampleFrames.push({
-						text : OneDimensionalFiles.frametolist3VOs[j].frame3VO.filePath,
-						type : "Frame",
-						frameId : OneDimensionalFiles.frametolist3VOs[j].frame3VO.frameId,
-						leaf : true });
-				}
-			}
-			return sampleFrames;
-		}
-
-		if (dataCollection != null) {
-			if (dataCollection.substraction3VOs != null) {
-				dataCollection.substraction3VOs.sort(function(a, b) {
-					return a.subtractionId - b.subtractionId
-				});
-				if (dataCollection.substraction3VOs.length > 0) {
-					var lastSubtraction = dataCollection.substraction3VOs[dataCollection.substraction3VOs.length - 1];
-					children.push({
-						text : lastSubtraction.substractedFilePath,
-						subtractionId : lastSubtraction.subtractionId,
-						type : "Subtraction",
-						leaf : true, }
-
-					);
-					children.push({
-						text : lastSubtraction.sampleAverageFilePath,
-						subtractionId : lastSubtraction.subtractionId,
-						type : "SampleAverage",
-						leaf : true, }
-
-					);
-					children.push({
-						text : lastSubtraction.bufferAverageFilePath,
-						subtractionId : lastSubtraction.subtractionId,
-						type : "BufferAverage",
-						leaf : true, }
-
-					);
-
-					if (lastSubtraction.sampleOneDimensionalFiles != null) {
-						children.push({
-							text : "Sample",
-							leaf : false,
-							type : 'Sample',
-							children : getTreeFromFrameList(lastSubtraction.sampleOneDimensionalFiles, 'Sample') }
-
-						);
-					}
-					if (lastSubtraction.bufferOneDimensionalFiles != null) {
-						children.push({
-							text : "Buffer",
-							leaf : false,
-							type : 'Buffer',
-							children : getTreeFromFrameList(lastSubtraction.bufferOneDimensionalFiles, 'Buffer') }
-
-						);
-					}
-
-				}
-			}
-		}
-		return children;
-	}
-
-	var parsed = [];
-	for (var i = 0; i < dataCollections.length; i++) {
-		parsed.push({
-			text : getSubtractionTitleByDataCollection(dataCollections[i]),
-			leaf : false,
-			children : getChildren(dataCollections[i]) });
-	}
-
-	_this.treePanel.setRootNode({
-		expanded : true,
-		children : parsed }
-	);
 };
 
-FrameSelectorGrid.prototype.load = function(data) {
-	var _this = this;
-	this.measurements = data;
-	this.subtractionIds = [];
-	
-	var dataCollectionIdList = [];
-	if (this.measurements != null) {
-		for (var i = 0; i < this.measurements.length; i++) {
-			if (this.measurements[i].dataCollectionId != null) {
-				dataCollectionIdList.push(this.measurements[i].dataCollectionId);
-				this.subtractionIds.push(this.measurements[i].subtractionId);
-			}
-		}
-	}
-	this.subtractionIds = $.unique(this.subtractionIds);
-	
-	var onSuccess = (function(sender, data) {
-		if (data != null) {
-			_this.loadData(_this.measurements, data);
-		}
+FramesGrid.prototype.load = function (frames) {
+    if (frames) {
+        this.frames = frames;
+        this.frames.id = this.id;
 
-	});
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByIdList(dataCollectionIdList);
+        var html = "";
+        dust.render("frames.grid.template",frames,function (err,out){
+            html += out;
+        });
 
+        $("#" + this.id).html(html);
+
+        this.setClickListeners();
+    } else {
+        $("#" + this.id).html("<h4>No frames found</h4>");
+    }
 };
 
-FrameSelectorGrid.prototype.getPanel = function() {
-	var _this = this;
-	this.store = Ext.create('Ext.data.TreeStore', {
-		 proxy: {
-		        type: 'memory'
-		    },
-		columns : [ {
-			xtype : 'treecolumn', //this is so we know which column will show the tree
-			text : 'Text',
-			dataIndex : 'text' } ] });
+FramesGrid.prototype.setClickListeners = function () {
+    var _this = this;
+    $('#' + this.id + '-frames-table').unbind('click').on('click', '.frame-cell-element', function(event) {
+        var domId = event.target.id;
+        if (event.shiftKey && _this.selectedFrames.length > 0){
+            var last = _this.selectedFrames[_this.selectedFrames.length-1].domId;
+            if (last != domId) {
+                var lastIndex = _this.frames.indexOf(_this.getFrameByDomId(last));
+                var currentIndex = _this.frames.indexOf(_this.getFrameByDomId(domId));
+                var begin = Math.min(lastIndex, currentIndex);
+                var end = Math.max(lastIndex, currentIndex);
+                _this.deselectAll();
+                for (var i = begin ; i <= end ; i++) {
+                    _this.select(_this.frames[i].domId);
+                }
+            }
+        } else {
+            if (event.ctrlKey) {
+                if (_this.selectedFrames.indexOf(_this.getFrameByDomId(domId)) >= 0) {
+                    _this.deselect(domId);
+                } else {
+                    _this.select(domId);
+                }
+            } else {
+                if (_this.selectedFrames.length == 1 && _this.selectedFrames[0].domId == domId) {
+                    _this.deselect(domId);
+                } else {
+                    _this.deselectAll();
+                    _this.select(domId);
+                }
+            }
+        }
+        _this.onSelectionChange.notify(_this.parseSelected());
+    });
+}
 
-	var selModel = Ext.create('Ext.selection.RowModel', {
-		allowDeselect : true,
-		mode : 'multi',
-		listeners : {
-			selectionchange : function(sm, selections) {
-				var frameIds = [];
-				var sampleAverages = [];
-				var bufferAverages = [];
-				var subtractions = [];
-				if (selections != null) {
-					for (var i = 0; i < selections.length; i++) {
-						if (selections[i].data.type) {
-							if (selections[i].data.type == "Frame") {
-								frameIds.push(selections[i].data.frameId);
-							}
-							if (selections[i].data.type == "SampleAverage") {
-								sampleAverages.push(selections[i].data.subtractionId);
-							}
-							if (selections[i].data.type == "BufferAverage") {
-								bufferAverages.push(selections[i].data.subtractionId);
-							}
-							if (selections[i].data.type == "Subtraction") {
-								subtractions.push(selections[i].data.subtractionId);
-							}
-						}
-					}
+FramesGrid.prototype.select = function (domId) {
+    this.selectedFrames.push(this.getFrameByDomId(domId));
+    $("#" + domId).addClass('x-grid-item-selected');
+}
 
-					/** Event is only triggered if node is a leaf **/
-					_this.onSelectionChange.notify({
-						frame : frameIds,
-						average : [],
-						sampleaverage : sampleAverages,
-						bufferaverage : bufferAverages,
-						subtracted : subtractions });
-				}
+FramesGrid.prototype.deselect = function (domId) {
+    var _this = this;
+    _.remove(this.selectedFrames,function(o) {return o.domId == domId});
+    $("#" + domId).removeClass('x-grid-item-selected');
+}
 
-			}
+FramesGrid.prototype.deselectAll = function () {
+    this.selectedFrames = [];
+    $(".frame-cell-element").removeClass("x-grid-item-selected");
+}
 
-		} });
+// FramesGrid.prototype.getFileName = function (filePath) {
+//     var withExtension = filePath.substring(filePath.lastIndexOf('/')+1);
+//     return withExtension.substring(0,withExtension.indexOf("."));
+// }
 
-	this.treePanel = Ext.create('Ext.tree.Panel', {
-		title : 'Data Collections',
-		selModel : selModel,
-		store : this.store,
-		rootVisible : false,
-		buttons : [ {
-			text : "Download",
-			xtype : 'button',
-			handler : function(sender) {
-//				var params = _this.getParams();
-				window.open(EXI.getDataAdapter().saxs.subtraction.getZip(_this.subtractionIds.toString()));
-			}
-		}],
-		columns : [ {
-			xtype : 'treecolumn',
-			dataIndex : 'text',
-			flex : 1,
-			renderer : function(tree, opts, record) {
-				if (record.data.leaf) {
-					if (record.data.text.lastIndexOf("/") != -1) {
-						return record.data.text.substr(record.data.text.lastIndexOf("/") + 1);
-					}
-				}
-				return record.data.text;
-			} } ]
-//	,
-//			dockedItems : [ {
-//				dock : 'bottom',
-//				xtype : 'toolbar',
-//				height : 50,
-//				items : [ {
-//					glyph : 61,
-//					xtype : 'button' }, '-', {
-//					glyph : 88,
-//					xtype : 'button' }, {
-//					glyph : 70,
-//					xtype : 'button' }, '-', {
-//					text : 'Sent to idealized curve maker',
-//					glyph : 1,
-//					xtype : 'button' } ] } ] 
-	});
-	return this.treePanel;
+FramesGrid.prototype.getFrameByDomId = function (domId) {
+    var _this = this;
+    return _.filter(this.frames,function (o) {return o.domId == domId})[0];
 };
 
+FramesGrid.prototype.parseSelected = function () {
+    var parsed = {
+                    average         : [],
+                    bufferaverage   : [],
+                    frame           : [],
+                    sampleaverage   : [],
+                    subtracted      : []
+                };
+    for (var i = 0 ; i < this.selectedFrames.length ; i++) {
+        var frame = this.selectedFrames[i];
+        switch (frame.type) {
+            case 'Frame':
+                parsed.frame.push(frame.frameId);
+                break;
+            case 'Subtraction':
+                parsed.subtracted.push(frame.frameId);
+                break;
+            case 'BufferAverage':
+                parsed.bufferaverage.push(frame.frameId);
+                break;
+            case 'SampleAverage':
+                parsed.sampleaverage.push(frame.frameId);
+                break;
+        }
+    }
+    return parsed;
+}
 /**
  * Class for managing wizards
  * 
@@ -6518,10 +5941,7 @@ function HPLCGraph(args) {
 	if (args != null) {
 		if (args.interactionModel != null) {
 			this.interactionModel = args.interactionModel;
-		}
-		if (args.width != null) {
-			this.width = args.width;
-		}
+		}		
 		if (args.height != null) {
 			this.height = args.height;
 		}
@@ -6666,8 +6086,7 @@ HPLCGraph.prototype.getPoint = function(data, i) {
 			return [ data.fstd(y - error), data.fdata(y), data.fstd(y + error) ];
 		}
 		return [ data.fdata(y) - error, data.fdata(y), data.fdata(y) + error ];
-	}
-	return point;
+	}	
 };
 
 HPLCGraph.prototype.reloadData = function(hplcData) {
@@ -6766,8 +6185,9 @@ HPLCGraph.prototype._renderDygraph = function(parsed, colors, labels) {
 
 };
 
-HPLCGraph.prototype.loadData = function(data) {
+HPLCGraph.prototype.loadData = function(data,experimentId) {
 	var _this = this;
+    this.experimentId = experimentId;
 	this.reloadData(data);
 	this.panel.addDocked({
 		cls : 'hplcMenu',
@@ -6817,6 +6237,28 @@ HPLCGraph.prototype.loadData = function(data) {
 						isZoomedIgnoreProgrammaticZoom : true,
 						dateWindow : [ start, end ] });
 				} },
+                {
+				xtype : 'button',
+				text : 'Download Range',
+                icon : '../images/icon/ic_get_app_black_24dp.png',
+				handler : function() {
+					var start = parseFloat(Ext.getCmp("main_field_start").getValue());
+					var end = parseFloat(Ext.getCmp("main_field_end").getValue());
+
+					if (start < 0) {
+						start = 0;
+					}
+					if (end < 0) {
+						end = 0;
+					}
+					if (start > end) {
+						var aux = end;
+						end = start;
+						start = aux;
+					}
+
+					location.href = EXI.getDataAdapter().saxs.hplc.getDownloadHDF5FramesURL(_this.experimentId,start, end)
+				} },
 				"->",
 				 {
 					xtype : 'button',
@@ -6831,13 +6273,11 @@ HPLCGraph.prototype.loadData = function(data) {
 HPLCGraph.prototype.getPanel = function() {
 	var _this = this;
 	this.panel = Ext.create('Ext.panel.Panel', {
-		padding : this.plotPanelPadding,
-		//		width : this.width + 4 * this.plotInnerPanelPadding,
-		//		height : this.height + 4 * this.plotInnerPanelPadding - 100,
+		margin : this.plotPanelPadding, 
+        flex : 1,       		
 		items : [ {
 			html : "",
-			id : this.id,
-			flex : 1,
+			id : this.id,			
 			height : this.height } ] });
 
 	this.panel.on("afterrender", function(panel) {
@@ -6849,9 +6289,7 @@ HPLCGraph.prototype.getPanel = function() {
 	return this.panel;
 };
 
-HPLCGraph.prototype.input = function() {
-	return DATADOC.getHPLCData();
-};
+
 
 HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	var data = {};
@@ -6862,23 +6300,6 @@ HPLCGraph.prototype.getDataByFrameNumber = function(frameNumber) {
 	return data;
 };
 
-HPLCGraph.prototype.test = function(targetId) {
-	var mainPlotPanel = new HPLCGraph({
-		title : 'I0',
-		width : 800,
-		height : 400,
-		plots : {
-			"I0" : true,
-			"Rg" : true,
-			"Mass" : true },
-		xlabel : "HPLC Frames",
-		scaled : this.scaled,
-		interactionModel : {
-			'dblclick' : function(event, g, context) {} } });
-	mainPlotPanel.getPanel().render(targetId);
-	mainPlotPanel.loadData(mainPlotPanel.input());
-
-};
 
 function MergesHPLCGraph(args) {
 	HPLCGraph.prototype.constructor.call(this, args);
@@ -6979,7 +6400,7 @@ MergesHPLCGraph.prototype.getMenu = function() {
 	actions.push({
 		text : "Save",
 		scope : this,
-		icon : 'images/icon/ic_get_app_black_24dp.png',
+		icon : '../images/icon/ic_get_app_black_24dp.png',
 		handler : function(item, pressed) {
 			var largeImage = document.createElement("img");
 			largeImage.style.display = 'block';
@@ -6990,26 +6411,6 @@ MergesHPLCGraph.prototype.getMenu = function() {
 		} });
 
 	return actions;
-};
-
-MergesHPLCGraph.prototype.input = function() {
-	return DATADOC.getScatteringHPLCFrameData();
-};
-
-MergesHPLCGraph.prototype.test = function(targetId) {
-	var mainPlotPanel = new MergesHPLCGraph({
-		title : 'Scattering',
-		width : this.plotWidth,
-		height : 500,
-		showRangeSelector : false,
-		xParam : 0,
-		xlabel : "scattering_I",
-		plots : {
-			"scattering_I" : true,
-			"subtracted_I" : true,
-			"buffer_I" : true } });
-	mainPlotPanel.getPanel().render(targetId);
-	mainPlotPanel.loadData(mainPlotPanel.input());
 };
 
 /**
@@ -8507,772 +7908,93 @@ SampleAutomaticPositionFactory.prototype.setPosition = function() {
  * #onMacromoleculesChanged
  */
 function MeasurementGrid(args) {
-	
 	this.id = BUI.id();
-
-	this.height = 500;
-	this.width = 900;
-
-	this.maxWidth = 1200;
-	this.minHeight = 500;
-
-	this.unitsFontSize = 9;
-	this.title = "Measurements";
-	this.estimateTime = false;
-	this.collapsed = true;
-	this.tbar = true;
-
-	this.showTitle = true;
-	this.resizable = true;
-	this.updateRowEnabled = true;
-	
-	this.isStatusColumnHidden = true;
-	this.isTimeColumnHidden = true;
-	this.removeBtnEnabled = true;
-	this.margin = "10 10 0 10";
-	
-	this.height = 250;
-	this.maxHeight = 250;
-	
-	this.collapsible = false;
-	
-	this.addBtnEnable = false;
-	/**
-	 * Hash map containing the keys of the editable columns. Ex:
-	 * 'exposureTemperature' *
-	 */
-	this.editor = {
-		comments : {
-			xtype : 'textfield',
-			allowBlank : true
-		}
-	};
-	
-	this.sorter = [ {
-		property : 'priority',
-		direction : 'ASC'
-	} ];
-	
-//	this.selModel = Ext.create('Ext.selection.RowModel', {
-//		allowDeselect : true,
-//		mode : 'MULTI',
-//		listeners : {
-//			selectionchange : function(sm, selections) {
-//				var selected = [];
-//				for (var i = 0; i < selections.length; i++) {
-//					selected.push(selections[i].raw);
-//				}
-//				_this.onSelected.notify(selected);
-//			}
-//		}
-//	});
-	
-	
-	if (args != null) {
-		if (args.selModel != null) {
-			this.selModel = args.selModel;
-		}
-		if (args.removeBtnEnabled != null) {
-			this.removeBtnEnabled = args.removeBtnEnabled;
-		}
-
-		if (args.addBtnMultipleEdit != null) {
-			this.addBtnMultipleEdit = args.addBtnMultipleEdit;
-		}
-		if (args.collapsed != null) {
-			this.collapsed = args.collapsed;
-		}
-		if (args.resizable != null) {
-			this.resizable = args.resizable;
-		}
-
-		if (args.editor != null) {
-			this.editor = args.editor;
-		}
-
-		if (args.collapseBtnEnable != null) {
-			this.collapseBtnEnable = args.collapseBtnEnable;
-		}
-
-		if (args.addBtnEnable != null) {
-			this.addBtnEnable = args.addBtnEnable;
-		}
-		if (args.sortingBtnEnable != null) {
-			this.sortingBtnEnable = args.sortingBtnEnable;
-		}
-
-		if (args.isPriorityColumnHidden != null) {
-			this.isPriorityColumnHidden = args.isPriorityColumnHidden;
-		}
-
-		if (args.width != null) {
-			this.width = args.width;
-		}
-		if (args.updateRowEnabled != null) {
-			this.updateRowEnabled = args.updateRowEnabled;
-		}
-
-		if (args.showTitle != null) {
-			this.showTitle = args.showTitle;
-			if (this.showTitle == false) {
-				this.title = null;
-			}
-		}
-		if (args.height != null) {
-			this.height = args.height;
-		}
-		if (args.maxHeight != null) {
-			this.maxHeight = args.maxHeight;
-		}
-		if (args.minHeight != null) {
-			this.minHeight = args.minHeight;
-		}
-		if (args.maxWidth != null) {
-			this.maxWidth = args.maxWidth;
-		}
-		if (args.isStatusColumnHidden != null) {
-			this.isStatusColumnHidden = args.isStatusColumnHidden;
-		}
-		if (args.isTimeColumnHidden != null) {
-			this.isTimeColumnHidden = args.isTimeColumnHidden;
-		}
-		if (args.title != null) {
-			this.title = args.title;
-		}
-		if (args.estimateTime != null) {
-			this.estimateTime = args.estimateTime;
-		}
-		if (args.margin != null) {
-			this.margin = args.margin;
-		}
-		if (args.tbar != null) {
-			this.tbar = args.tbar;
-		}
-		if (args.sorter != null) {
-			this.sorter = args.sorter;
-		}
-	}
-	
-	this.onRemoved = new Event(this);
-	this.onMeasurementChanged = new Event(this);
-	this.onExperimentChanged = new Event(this);
 }
 
 
-
-
-
-MeasurementGrid.prototype.edit = function(macromolecule) {
-	var _this = this;
-	var window = new MacromoleculeWindow();
-	window.onSave.attach(function(sender) {
-//		_this.store.loadData(BIOSAXS.proposal.getMacromolecules());
-//		_this.onMacromoleculesChanged.notify();
+MeasurementGrid.prototype.load = function(dataCollections) {
+	dataCollections = _.orderBy(dataCollections, ['MeasurementToDataCollection_dataCollectionId', 'MeasurementToDataCollection_dataCollectionOrder'], ['desc', 'desc']);
+	_.map(dataCollections, function(o){ 
+											o.samplePlateLetter = BUI.getSamplePlateLetters()[o.SamplePlatePosition_rowNumber - 1];
+										});
+	var html = "";
+	dust.render("measurement.grid.template", dataCollections, function(err, out) {                                                                                               
+		html = html + out;
 	});
-	window.draw(macromolecule);
+	
+	$('#' + this.id).html(html);
 };
 
-//MeasurementGrid.prototype.getTbar = function() {
-//	var _this = this;
-//	var actions = [];
-//
-//	actions.push(Ext.create('Ext.Action', {
-//		icon: '../images/icon/add.png',
-//		text : 'Add',
-//		disabled : false,
-//		handler : function(widget, event) {
-//			_this.edit();
-//		}
-//	}));
-//	actions.push("->");
-//	actions.push(Ext.create('Ext.Action', {
-//		icon : '../images/icon/refresh.png',
-//		text : 'Update From SMIS',
-//		tooltip : "Retrieve all the macromolecules of your proposal from SMIS database",
-//		disabled : false,
-//		handler : function(widget, event) {
-//			_this.grid.setLoading("Connecting to SMIS");
-//			var adapter = new BiosaxsDataAdapter();
-//			adapter.onSuccess.attach(function(sender, data) {
-//				BIOSAXS.proposal.setMacromolecules(data.macromolecules);
-//				_this.refresh(BIOSAXS.proposal.macromolecules);
-//				_this.grid.setLoading(false);
-//			});
-//			adapter.onError.attach(function(sender, data) {
-//				_this.grid.setLoading(false);
-//			});
-//			adapter.updateDataBaseFromSMIS();
-//		}
-//	}));
-//	return actions;
-//};
+MeasurementGrid.prototype.getPanel = function(){
+    var _this = this;
 
-MeasurementGrid.prototype.deselectAll = function() {
-	this.grid.getSelectionModel().deselectAll();
-};
-
-MeasurementGrid.prototype.selectById = function(macromoleculeId) {
-	this.grid.getSelectionModel().deselectAll();
-	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
-		var item = this.grid.getStore().data.items[i].raw;
-		if (item.macromoleculeId == macromoleculeId) {
-			this.grid.getSelectionModel().select(i);
-		}
+	return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : false
 	}
 };
 
-MeasurementGrid.prototype.load = function(data) {
-	this.store.loadData(data, false);
-};
-
-MeasurementGrid.prototype.loadExperiment = function(experiment) {
-	this.experimentList = new ExperimentList([ experiment ]);
-	var data = this._prepareData(this.experimentList.getMeasurements(), this.experimentList);
-	this.load(data);
-};
-
-MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
-	var data = [];
+// MeasurementGrid.prototype._prepareData = function(measurements, experiments) {
+// 	var data = [];
 	
-	for (var i = 0; i < measurements.length; i++) {
-		var measurement = measurements[i];
-		var specimen = experiments.getSampleById(measurement.specimenId);
-		var buffer = EXI.proposalManager.getBufferById(specimen.bufferId);
-		measurement.buffer_acronym = buffer.acronym;
-		measurement.bufferId = buffer.bufferId;
-		measurement.volume = specimen.volume;
-		if (specimen.macromolecule3VO != null) {
-			measurement.acronym = specimen.macromolecule3VO.acronym;
-			measurement.macromoleculeId = specimen.macromolecule3VO.macromoleculeId;
-		}
-		measurement.concentration = specimen.concentration;
-		if (measurement.run3VO != null) {
-			measurement.energy = measurement.run3VO.energy;
-			measurement.expExposureTemperature = measurement.run3VO.exposureTemperature;
-			measurement.storageTemperature = measurement.run3VO.storageTemperature;
-			measurement.timePerFrame = measurement.run3VO.timePerFrame;
-			measurement.radiationAbsolute = measurement.run3VO.radiationAbsolute;
-			measurement.radiationRelative = measurement.run3VO.radiationRelative;
-			measurement.status = "DONE";
+// 	for (var i = 0; i < measurements.length; i++) {
+// 		var measurement = measurements[i];
+// 		var specimen = experiments.getSampleById(measurement.specimenId);
+// 		var buffer = EXI.proposalManager.getBufferById(specimen.bufferId);
+// 		measurement.buffer_acronym = buffer.acronym;
+// 		measurement.bufferId = buffer.bufferId;
+// 		measurement.volume = specimen.volume;
+// 		if (specimen.macromolecule3VO != null) {
+// 			measurement.acronym = specimen.macromolecule3VO.acronym;
+// 			measurement.macromoleculeId = specimen.macromolecule3VO.macromoleculeId;
+// 		}
+// 		measurement.concentration = specimen.concentration;
+// 		if (measurement.run3VO != null) {
+// 			measurement.energy = measurement.run3VO.energy;
+// 			measurement.expExposureTemperature = measurement.run3VO.exposureTemperature;
+// 			measurement.storageTemperature = measurement.run3VO.storageTemperature;
+// 			measurement.timePerFrame = measurement.run3VO.timePerFrame;
+// 			measurement.radiationAbsolute = measurement.run3VO.radiationAbsolute;
+// 			measurement.radiationRelative = measurement.run3VO.radiationRelative;
+// 			measurement.status = "DONE";
 
-			try {
+// 			try {
 				
-				if (measurement.run3VO.timeStart != null) {
-					if (measurement.run3VO.timeStart != "") {
-						measurement.miliseconds = moment(measurement.run3VO.timeStart).format("X");
-					}
-				}
-			} catch (E) {
-				console.log(E);
-			}
-		}
+// 				if (measurement.run3VO.timeStart != null) {
+// 					if (measurement.run3VO.timeStart != "") {
+// 						measurement.miliseconds = moment(measurement.run3VO.timeStart).format("X");
+// 					}
+// 				}
+// 			} catch (E) {
+// 				console.log(E);
+// 			}
+// 		}
 
-		if (experiments.getDataCollectionByMeasurementId(measurement.measurementId).length > 0) {
-			var measurementtodatacollection3VOs = experiments.getDataCollectionByMeasurementId(measurement.measurementId)[0].measurementtodatacollection3VOs;
-			for (var k = 0; k < measurementtodatacollection3VOs.length; k++) {
-				if (measurementtodatacollection3VOs[k].dataCollectionOrder == 1) {
-					var specimenBuffer = experiments.getSampleById(experiments.getMeasurementById(measurementtodatacollection3VOs[k].measurementId).specimenId);
-					if (specimenBuffer.sampleplateposition3VO != null) {
-						measurement.bufferSampleplateposition3VO = specimenBuffer.sampleplateposition3VO;
-						measurement.bufferSampleplate = (experiments.getSamplePlateById(specimenBuffer.sampleplateposition3VO.samplePlateId));
-					}
-				}
-			}
-		}
+// 		if (experiments.getDataCollectionByMeasurementId(measurement.measurementId).length > 0) {
+// 			var measurementtodatacollection3VOs = experiments.getDataCollectionByMeasurementId(measurement.measurementId)[0].measurementtodatacollection3VOs;
+// 			for (var k = 0; k < measurementtodatacollection3VOs.length; k++) {
+// 				if (measurementtodatacollection3VOs[k].dataCollectionOrder == 1) {
+// 					var specimenBuffer = experiments.getSampleById(experiments.getMeasurementById(measurementtodatacollection3VOs[k].measurementId).specimenId);
+// 					if (specimenBuffer.sampleplateposition3VO != null) {
+// 						measurement.bufferSampleplateposition3VO = specimenBuffer.sampleplateposition3VO;
+// 						measurement.bufferSampleplate = (experiments.getSamplePlateById(specimenBuffer.sampleplateposition3VO.samplePlateId));
+// 					}
+// 				}
+// 			}
+// 		}
 
-		if (this.collapsed) {
-			/** If collapsed only the samples * */
-			if (specimen.macromolecule3VO != null) {
-				data.push(measurement);
-			}
-		} else {
-			data.push(measurement);
-		}
+// 		if (this.collapsed) {
+// 			/** If collapsed only the samples * */
+// 			if (specimen.macromolecule3VO != null) {
+// 				data.push(measurement);
+// 			}
+// 		} else {
+// 			data.push(measurement);
+// 		}
 
-	}
-	return data;
-};
-
-/**
- * @key name of the columns mathing the this.editor[key]
- */
-MeasurementGrid.prototype._getEditor = function(key) {
-	if (this.editor != null){
-		if (this.editor[key] != null) {
-			return this.editor[key];
-		}
-	}
-	return null;
-};
-
-MeasurementGrid.prototype.getColumns = function() {
-	var _this = this;
-	var columns = [{
-			text : 'Order',
-			dataIndex : 'priority',
-			flex : 0.3,
-			hidden : _this.isPriorityColumnHidden,
-			sortable : true,
-			hidden : true
-		},
-		{
-			text : 'Run Number',
-			dataIndex : 'code',
-			flex : 0.5,
-			hidden : true,
-			sortable : true
-		},
-		{
-			text : 'Specimen',
-			columns : [
-
-					{
-						text : '',
-						dataIndex : 'macromoleculeId',
-						flex : 1,
-						hidden : true,
-						sortable : true
-					},
-					{
-						text : 'Macromolecule',
-						dataIndex : 'acronym',
-						flex : 1,
-						sortable : true
-					},
-					{
-						text : 'Conc. ',
-						dataIndex : 'concentration',
-						flex : 1,
-						sortable : true
-					},
-					{
-						text : '',
-						dataIndex : 'bufferId',
-						flex : 1,
-						hidden : true,
-						sortable : true
-					},
-					{
-						text : 'Buffer',
-						dataIndex : 'buffer_acronym',
-						flex : 1,
-						renderer : function(val, y, sample) {
-							if (sample.data.bufferSampleplateposition3VO != null) {
-								return EXI.proposalManager.getBufferById(sample.data.bufferId).acronym + "<span style='font-style:oblique;'> Plate: ["
-										+ sample.data.bufferSampleplate.slotPositionColumn + ", "
-										+ BUI.getSamplePlateLetters()[sample.data.bufferSampleplateposition3VO.rowNumber - 1] + "-"
-										+ sample.data.bufferSampleplateposition3VO.columnNumber + "]</span>";
-							}
-							return val;
-						},
-						sortable : true
-					}, {
-						text : 'Position',
-						flex : 1,
-						hidden : true,
-					} ]
-		},
-		{
-			text : 'Parameters',
-			columns : [
-					{
-						text : 'Ex. Flow. time (s)',
-						dataIndex : 'extraFlowTime',
-						flex : 1,
-						hidden : true,
-					},
-					{
-						text : 'Exp. Temp.',
-						dataIndex : 'exposureTemperature',
-						flex : 1,
-						sortable : true,
-						editor : this._getEditor("exposureTemperature")
-					},
-					{
-						text : 'Vol. Load',
-						dataIndex : 'volumeToLoad',
-						flex : 0.5,
-						hidden : false,
-						editor : this._getEditor("volumeToLoad"),
-					},
-					{
-						text : 'Volume in Well',
-						dataIndex : 'volume',
-						hidden : true,
-						editor : this._getEditor("volume"),
-						flex : 1
-					},
-					{
-						text : 'Trans.',
-						dataIndex : 'transmission',
-						flex : 1,
-						editor : this._getEditor("transmission"),
-					},
-					{
-						text : 'Wait T.',
-						dataIndex : 'waitTime',
-						editor : this._getEditor("waitTime"),
-						flex : 0.5
-					},
-					{
-						text : 'Flow',
-						dataIndex : 'flow',
-						editor : this._getEditor("flow"),
-						flex : 0.3
-					},
-					{
-						text : 'Viscosity',
-						dataIndex : 'viscosity',
-						tooltip : 'The viscosity of a fluid is a measure of its resistance to gradual deformation by shear stress or tensile stress. For liquids, it corresponds to the informal notion of "thickness"',
-						editor : this._getEditor("viscosity"),
-						flex : 0.5
-					} ]
-		}, {
-			text : 'Status',
-			dataIndex : 'status',
-//			width : 50,
-			flex : 1,
-			hidden : _this.isStatusColumnHidden,
-			renderer : function(val, record, r){
-				if (val != null){
-					return "<span style='font-weight: bold;'>" + val +"</span>"
-				}
-			}
-		}, {
-			text : 'Time',
-			dataIndex : 'time',
-			flex : 1,
-			hidden : _this.isTimeColumnHidden,
-		}, {
-			text : 'Energy',
-			dataIndex : 'energy',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Real Exp. Temp.(C)',
-			flex : 1,
-			dataIndex : 'expExposureTemperature',
-			hidden : true
-		}, {
-			text : 'Storage Temp.(C)',
-			flex : 1,
-			dataIndex : 'storageTemperature',
-			hidden : true
-		}, {
-			text : 'Time/Frame (s)',
-			flex : 1,
-			dataIndex : 'timePerFrame',
-			hidden : true
-		}, {
-			text : 'Radiation Relative',
-			dataIndex : 'radiationRelative',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Radiation Absolute',
-			dataIndex : 'radiationAbsolute',
-			flex : 1,
-			hidden : true
-		}, {
-			text : 'Comments',
-			dataIndex : 'comments',
-			flex : 1,
-			hidden : true,
-			editor : this._getEditor("comments")
-
-		}, 
-		{
-			id : _this.id + 'buttonRemoveSample',
-			text : '',
-			hidden : !_this.removeBtnEnabled,
-			flex : 1,
-//			sortable : false,
-			renderer : function(value, metaData, record, rowIndex, colIndex, store) {
-//				return "asdsad"
-				if (record.data.macromoleculeId != null) {
-					if (_this.removeBtnEnabled) {
-						return BUI.getRedButton('REMOVE');
-					}
-				}
-			}
-		}
-//		{
-//			xtype : 'actioncolumn',
-//			text : 'Remove',
-//			flex : 1,
-//			sortable : false,
-//			editable : false,
-//			items : [{
-//			         	icon : '../images/icon/ic_delete_black_24dp.png',
-//		                tooltip: 'Remove',
-//		                handler: function(grid, rowIndex, colIndex) {
-//		                    grid.getStore().removeAt(rowIndex);
-//		                }
-//			}
-//			]
-//		} 
-		];
-	return columns;
-};
-
-
-/**
- * If updateRowEnabled returns an array with Ext.grid.plugin.RowEditing
- */
-MeasurementGrid.prototype._getPlugins = function() {
-	var _this = this;
-	var plugins = [];
-	if (this.updateRowEnabled) {
-		plugins.push(Ext.create('Ext.grid.plugin.RowEditing', {
-			clicksToEdit : 1,
-			listeners : {
-				validateedit : function(grid, e) {
-					/** Setting values * */
-					for ( var key in _this.editor) {
-						e.record.data[key] = e.newValues[key];
-					}
-					/** Comments are always updatable* */
-					e.record.data.comments = e.newValues.comments;
-					
-					var onSuccess = (function(sender, measurement) {
-						_this.onMeasurementChanged.notify(measurement);
-						_this.grid.setLoading(false);
-					});
-					_this.grid.setLoading();
-					EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.saveMeasurement(e.record.data);
-				}
-			}
-		}));
-	}
-	return plugins;
-};
-
-
-/** Returns the grid **/
-MeasurementGrid.prototype.getPanel = function() {
-	var _this = this;
-
-	this.store = Ext.create('Ext.data.Store', {
-		fields : [ 'macromoleculeId', 'name', 'acronym', 'comments' ],
-		data : [],
-		sorters : this.sorter
-	});
-
-
-	if (this.multiselect) {
-		this.selModel = Ext.create('Ext.selection.CheckboxModel', {
-			multiSelect : this.multiselect,
-			listeners : {
-				selectionchange : function(sm, selections) {
-					var macromolecules = [];
-					for ( var i = 0; i < selections.length; i++) {
-						macromolecules.push(selections[i].raw);
-					}
-					_this.onSelected.notify(macromolecules);
-				}
-			}
-		});
-	}
-	
-	 var rowEditing = Ext.create('Ext.grid.plugin.RowEditing', {
-	        clicksToEdit: 1,
-	        autoCancel: true
-	    });
-	  
-	 var bbar = {};
-		try {
-			bbar = Ext.create('Ext.ux.StatusBar', {
-				id : _this.id + 'basic-statusbar',
-				defaultText : 'Ready',
-				text : 'Ready',
-				iconCls : 'x-status-valid',
-				items : []
-			});
-		} catch (exp) {
-			console.log("bbar error");
-		}
-		
-		
-	this.grid = Ext.create('Ext.grid.Panel', {
-		id : this.id,
-		title : this.title,
-		plugins : this._getPlugins(),
-		margin : this.margin,
-		store : this.store,
-		height : this.height,
-		maxHeight : this.maxHeight,
-		columns : this.getColumns(),
-		bbar : bbar,
-		tbar :  this._getMenu(),
-		cls : 'border-grid',
-		viewConfig : {
-			stripeRows : true,
-			getRowClass : function(record, index, rowParams, store) {
-				if (record.data.status == "DONE") {
-					return 'green-row';
-				}
-			},
-			listeners : {
-				'celldblclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-				},
-				'cellclick' : function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts) {
-					if (td.innerHTML.indexOf("REMOVE") != -1){
-						grid.getStore().removeAt(rowIndex);
-					
-						
-						if (record.data.measurementId != null) {
-							/** For testing * */
-							grid.setLoading("ISPyB: Removing measurement");
-							var onSuccess = (function(sender, data) {
-								grid.setLoading(false);
-								/**
-								 * We get and refresh experiment
-								 * because specimens has changed *
-								 */
-								var onExperimentRetrievedSuccess =  (function(sender, experiment) {
-									_this.onRemoved.notify(experiment);
-									_this._showStatusBarReady('Ready');
-								});
-								EXI.getDataAdapter({onSuccess : onExperimentRetrievedSuccess}).saxs.experiment.getExperimentById(_this.experimentList.experiments[0].experimentId, "MEDIUM");
-								_this._showStatusBarBusy("ISPyB: Removing Unused Specimens");
-							});
-							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.removeMeasurement(record.data);
-						}
-					}
-				}
-
-			}
-		}
-	});
-	return this.grid;
-};
-
-/**
- * Set status bar to ready (ok icon)
- * 
- * @msg message to be displayed on the bar
- */
-MeasurementGrid.prototype._showStatusBarReady = function(msg) {
-	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
-	statusBar.setStatus({
-		text : msg,
-		iconCls : 'x-status-valid',
-		clear : false
-	});
-};
-
-/**
- * Set status bar to busy (refreshing icon)
- * 
- * @msg message to be displayed on the bar
- */
-MeasurementGrid.prototype._showStatusBarBusy = function(msg) {
-	var statusBar = Ext.getCmp(this.id + 'basic-statusbar');
-	statusBar.setStatus({
-		text : msg,
-		iconCls : 'x-status-busy',
-		clear : false
-	});
-};
-
-/** Opens WizardWidget for adding new measurements * */
-MeasurementGrid.prototype._openAddMeasurementWindow = function(measurements, experiments) {
-	var _this = this;
-	var wizardWidget = new WizardWidget({
-		windowMode : true,
-		width : 1200
-	});
-	wizardWidget.onFinished.attach(function(sender, result) {
-		_this.grid.setLoading();
-		wizardWidget.window.close();
-		var onSuccess = (function(sender, data) {
-			_this.onExperimentChanged.notify(data);
-			_this.grid.setLoading(false);
-			
-		});
-		wizardWidget.current.setLoading("ISPyB: Adding measurements");
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.template.saveTemplate(result.name, result.comments, result.data, _this.experimentList.experiments[0].experimentId);
-	});
-
-	wizardWidget.draw(null, new MeasurementCreatorStepWizardForm(EXI.proposalManager.getMacromolecules(),EXI.proposalManager.getBuffers(), {
-		noNext : true
-	}));
-};
-
-MeasurementGrid.prototype._getMenu = function() {
-	var _this = this;
-	if (this.tbar) {
-
-		var items = [];
-		if (_this.addBtnEnable) {
-			items.push({
-				icon: '../images/icon/add.png',
-				text : 'Add',
-				handler : function() {
-					_this._openAddMeasurementWindow();
-				}
-			});
-		}
-
-
-		if (_this.sortingBtnEnable) {
-			var split = Ext.create('Ext.button.Split', {
-				text : 'Sort by',
-				icon: '../images/icon/sort.png',
-				handler : function() {
-				},
-				menu : new Ext.menu.Menu({
-					items : [
-					{
-						text : 'First Created First Measured',
-						handler : function() {
-							_this._sortBy("FIFO");
-						}
-					}, "-", {
-						text : 'Default',
-						handler : function() {
-							_this._sortBy("DEFAULT");
-						}
-					} ]
-				})
-			});
-			items.push(split);
-		}
-
-		if (_this.collapseBtnEnable) {
-			items.push({
-				text : 'Collapse buffers',
-				enableToggle : true,
-				scope : this,
-				toggleHandler : function(item, pressed) {
-					this.collapsed = pressed;
-					this.grid.getStore().loadData(this._prepareData(this.measurements, this.experiments), false);
-				},
-				pressed : this.collapsed
-			});
-		}
-
-		var tb = Ext.create('Ext.toolbar.Toolbar', {
-			cls : 'exi-top-bar',
-			 height : 45,
-			items : items
-		});
-		return tb;
-	}
-	return null;
-};
-
-MeasurementGrid.prototype._sortBy = function(sort) {
-	var _this = this;
-	var adapter = new DataAdapter();
-	var onSuccess = (function(sender, data) {
-		_this.onExperimentChanged.notify(data);
-		_this.grid.setLoading(false);
-	});
-	_this.grid.setLoading("Sorting");
-	EXI.getDataAdapter({onSuccess : onSuccess}).saxs.measurement.sortMeasurements(this.experimentList.experiments[0].experimentId, sort);
-};
-
+// 	}
+// 	return data;
+// };
 /**
  * Example form
  * 
@@ -13636,6 +12358,100 @@ function OctagonVertexGraphFormatter(id, defaultFormat, selectedFormat, overForm
 };
 
 
+
+function OverviewQueueGrid(args) {
+	QueueGrid.call(this,args);
+
+	this.height = 0;
+	if (args) {
+		if (args.height) {
+			this.height = args.height;
+		}
+	}
+}
+
+OverviewQueueGrid.prototype.getPercentage = QueueGrid.prototype.getPercentage;
+OverviewQueueGrid.prototype.getImage = QueueGrid.prototype.getImage;
+OverviewQueueGrid.prototype.parseDataById = QueueGrid.prototype.parseDataById;
+OverviewQueueGrid.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCallBackAfterRender;
+
+/**
+* It loads a set of data collections
+*
+* @method load
+* @param {dataCollections} Measurements retrieved from v_saxs_datacollections
+*/
+OverviewQueueGrid.prototype.load = function(dataCollections) {	
+	if (dataCollections != null && dataCollections.length > 0) {				
+		this.render(_.orderBy(dataCollections, ['MeasurementToDataCollection_dataCollectionId', 'MeasurementToDataCollection_dataCollectionOrder'], ['desc', 'desc']));
+	} else {
+		$('#' + this.id).hide().html("<h4>No results found</h4>").fadeIn('fast');
+	}	
+};
+
+/**
+* Fills overview.queue.grid.test.template with data collections
+*
+* @method render
+* @param {dataCollections} Measurements retrieved from v_saxs_datacollections
+*/
+OverviewQueueGrid.prototype.render = function(data) {
+	var html = "";
+
+	/** Calculates the rowSpan so the template knows when to plot the images. Alsp finds where to draw stronger borders*/	
+	var grouped = _.groupBy(data, "MeasurementToDataCollection_dataCollectionId");
+    
+	_.map(data, function(o){ 
+        if(o.Subtraction_subtractionId){
+		    o.urlDownload = EXI.getDataAdapter().saxs.subtraction.getZip(o.Subtraction_subtractionId);
+        }
+        if(o.Merge_mergeId){
+		    o.urlSpecific = EXI.getDataAdapter().saxs.frame.downloadFramesByAverageIdList(o.Merge_mergeId);
+        }
+	});
+     
+	for (var dataCollectionId in grouped){
+		var last = _.maxBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder');
+        if(last){
+            if (last.Subtraction_subtractionId){
+                last.rowSpan = grouped[dataCollectionId].length;
+                last.scattering = this.getImage(last.Subtraction_subtractionId,"scattering");
+                last.kratky = this.getImage(last.Subtraction_subtractionId,"kratky");
+                last.density = this.getImage(last.Subtraction_subtractionId,"density");
+                last.guinier = this.getImage(last.Subtraction_subtractionId,"guinier");
+                if (last.Run_runId) {
+                    last.dataReduction = true;
+                }
+            }
+		 _.minBy(grouped[dataCollectionId], 'MeasurementToDataCollection_dataCollectionOrder').rowClass = "blue-bottom-border-row";
+        }
+	}
+    
+	dust.render("overview.queue.grid.template", data, function(err, out) {   
+		html = html + out;
+	});
+	
+	$('#' + this.id).html(html);
+	
+	var nodeWithScroll = document.getElementById(document.getElementById(this.id).parentNode.parentNode.parentNode.id);
+	
+	this.attachCallBackAfterRender(nodeWithScroll);
+};
+
+
+/**
+* Return an Ext HTML object with a DIV
+*
+* @method getPanel
+*/
+OverviewQueueGrid.prototype.getPanel = function(){ 
+	return {
+		html : '<div id="' + this.id + '"></div>',
+		autoScroll : true,
+		height : this.height
+	}
+};
+
 function PDBViewer(args) {
 	this.id = BUI.id();
 	this.glMol = null;
@@ -14759,6 +13575,199 @@ QueueGrid.prototype.onDataReductionButtonClicked = function(record) {
 };
 
 
+/**
+* Displays the data collections by session or acronym of the protein in a collapsed way
+*
+* @class QueueGridTest
+* @constructor
+*/
+function QueueGridTest(args) {
+    this.id = BUI.id();
+
+    QueueGrid.call(this,args);
+    this.imgWidth = 130;
+
+    this.store = Ext.create('Ext.data.Store', {
+            fields: ["experiment"]
+     });
+}
+
+QueueGridTest.prototype.getPercentage = QueueGrid.prototype.getPercentage;
+QueueGridTest.prototype.getImage = QueueGrid.prototype.getImage;
+QueueGridTest.prototype.parseDataById = QueueGrid.prototype.parseDataById;
+QueueGridTest.prototype.attachCallBackAfterRender = QueueGrid.prototype.attachCallBackAfterRender;
+
+
+QueueGridTest.prototype.load = function(experiment){
+    var _this = this;
+    
+    this.setLoading();
+    try{
+        if (experiment.experimentId){
+            var onSuccess = function(sender, data){
+                if (data != null) {
+                    _this.dataByDataCollectionId = _this.parseDataById(data);
+                    _this.store.loadData(_.keys(_.keyBy(data,'dataCollectionId')), true);
+                    _this.attachCallBackAfterRender(document.getElementById(_this.id + "-body").childNodes[0]);
+                }
+                _this.setLoading(false);
+            };
+
+            EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperimentId(experiment.experimentId);
+        } else {
+            this.dataByDataCollectionId = this.parseDataById(experiment);
+            this.store.loadData(_.keys(_.keyBy(experiment,'dataCollectionId')), true);
+            _this.attachCallBackAfterRender();
+            _this.setLoading(false);
+        }
+    }
+    catch(e){
+        console.log(e);
+    }
+};
+
+QueueGridTest.prototype.getPanel = function (dataCollectionGroup) {
+    var _this = this;
+    this.panel = Ext.create('Ext.grid.Panel', {
+        id: this.id,
+        border: 1,        
+        store: this.store,       
+        disableSelection: true,
+        columns: this.getColumns(),
+        viewConfig: {
+            enableTextSelection: true,
+            stripeRows: false
+        }
+    });
+
+    return this.panel;
+};
+
+QueueGridTest.prototype.setLoading = function(bool){
+	this.panel.setLoading(bool);
+};
+
+QueueGridTest.prototype.filter = function(key, value) {
+    var filtered = _.filter(this.dataByDataCollectionId,function(o) {return o[0]["bufferAcronym"] == value});
+    this.store.loadData(_.keys(_.keyBy([].concat.apply([], filtered),'dataCollectionId')));
+}
+
+
+QueueGridTest.prototype.getColumns = function() {
+    var _this = this;
+    var columns = [
+        {
+            dataIndex: 'experiment',
+            name: 'experiment',
+            flex: 1.5,
+            hidden: false,
+            renderer: function(grid, e, record) {
+
+                var dataCollectionId = record.data;
+                var currentDataCollection = _this.dataByDataCollectionId[dataCollectionId];                              
+                var html = "";
+
+                var codes = [];
+                var macromoleculeInfo = [];
+                var averages = [];
+                var expTemp = currentDataCollection[0].exposureTemperature + " C";
+
+                var rg = "NA";
+                var points = "NA";
+                if (currentDataCollection[0].rg != null) {
+                    rg = Number(currentDataCollection[0].rg).toFixed(_this.decimals);
+                    points = currentDataCollection[0].firstPointUsed + " - " + currentDataCollection[0].lastPointUsed + " (" + (currentDataCollection[0].lastPointUsed - currentDataCollection[0].firstPointUsed) + ")";
+                }	
+                var I0 = "NA";
+                if (currentDataCollection[0].I0 != null){
+                    var I0 = Number(currentDataCollection[0].I0).toFixed(_this.decimals-2);
+                    var I0Stdev = Number(Number(currentDataCollection[0].I0Stdev).toFixed(_this.decimals)).toExponential();
+                }
+
+                var rgGnom = "NA";
+                if (currentDataCollection[0].rgGnom != null) {
+                    rgGnom = Number(currentDataCollection[0].rgGnom).toFixed(_this.decimals);
+                }	
+                var total = "NA";
+                if (currentDataCollection[0].total != null) {
+                    total = Number(currentDataCollection[0].total).toFixed(_this.decimals);
+                }
+                var dmax = "NA";
+                if (currentDataCollection[0].dmax != null) {
+                    dmax = Number(currentDataCollection[0].dmax).toFixed(_this.decimals);
+                }
+
+                var volumePorod = "NA";
+                var mmvolest = "NA";
+                if (currentDataCollection[0].volumePorod != null) {
+                    volumePorod = Number(currentDataCollection[0].volumePorod).toFixed(_this.decimals);
+                    mmvolest = Number(currentDataCollection[0].volumePorod / 2).toFixed(1) + " - "
+                                            + Number(currentDataCollection[0].volumePorod / 1.5).toFixed(1);
+                }
+
+                var scattering = "";
+                var kratky = "";
+                var density = "";
+                var guinier = "";
+                var concentration = "";
+
+                for (var j = 0 ; j < currentDataCollection.length ; j++) {
+                    var experiment = currentDataCollection[j];
+                    // codes.push(experiment.code);
+                    if (experiment.concentration != 0) {
+                        concentration = Number(experiment.concentration).toFixed(_this.decimals-1);
+                    }
+                    if (experiment.macromoleculeId != null) {
+                        scattering = _this.getImage(experiment,"scattering");
+                        kratky = _this.getImage(experiment,"kratky");
+                        density = _this.getImage(experiment,"density");
+                        guinier = _this.getImage(experiment,"guinier");
+                    }
+                    var macromoleculeAcronym = "";
+                    if (experiment.macromoleculeAcronym != null) {
+                        macromoleculeAcronym = experiment.macromoleculeAcronym;
+                    }
+                    // macromoleculeInfo.push({ acronym : macromoleculeAcronym, concentration : concentration});
+                    // averages.push(_this.getPercentage(experiment.framesMerge,experiment.framesCount));
+
+                    codes.push({code : experiment.code, acronym : macromoleculeAcronym, average : _this.getPercentage(experiment.framesMerge,experiment.framesCount)});
+                }                      
+
+                var templateData = {
+									codes : codes,
+									macromoleculeAcronym : macromoleculeAcronym,
+                                    concentration : concentration,
+									// averages : averages,
+									expTemp : expTemp,
+									rg : rg,
+									points : points,
+									I0 : I0,
+									I0Stdev : I0Stdev,
+									rgGnom : rgGnom,
+									total : total,
+									dmax : dmax,
+									volumePorod : volumePorod,
+									mmvolest : mmvolest,
+									scattering : scattering,
+									kratky : kratky,
+									density : density,
+									guinier : guinier,
+									imgWidth : _this.imgWidth,
+                                    creationDate : currentDataCollection[0].creationDate
+								};
+
+                dust.render("queue.grid.test.template", templateData, function(err, out) {                                                                       
+                    html = html + out;
+                });
+                
+                return html;
+
+            }
+        }
+    ];
+
+    return columns;
+};
 
 function RigidModelGrid(args) {
 	this.height = null;
@@ -15259,10 +14268,29 @@ function SamplePlateGroupWidget(args){
 	/** Events * */
 	this.onClick = new Event(this);
 	this.onExperimentChanged = new Event(this);
+
+	this.plateGroup = [{
+				type: 'Deep Well',
+				rowCount : 8,
+				columnCount : 12,
+				id : 'deep-well'
+			},
+			{
+				type: ' 4 x ( 8 + 3 ) Block',
+				rowCount : 4,
+				columnCount : 11,
+				id : 'block'
+			},
+			{
+				type: '96 Well plate',
+				rowCount : 8,
+				columnCount : 12,
+				id : 'well-plate'
+			}];
 }
 
 
-SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetId){
+SamplePlateGroupWidget.prototype.drawPlate = function(dataCollections, plate, targetId){
 	var _this = this;
 	
 	var samplePlateWidget = new SamplePlateWidget(
@@ -15270,8 +14298,9 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 				width		: (this.width/3) - 5, 
 				height		: this.heightPlates + 10 , 
 				nodeSize	: this.nodeSize, 
-				fontSize	: 0, 
-				strokeWidth	: 1.5
+				fontSize	: 8, 
+				strokeWidth	: 1.5,
+				enableClick : true
 			});
 
 	if (this.isVerticalLayout()){
@@ -15279,34 +14308,42 @@ SamplePlateGroupWidget.prototype.drawPlate = function(experiment, plate, targetI
 		samplePlateWidget.height = this.heightPlates - 10;
 	}
 	
-	samplePlateWidget.draw(experiment, plate, targetId );
-	samplePlateWidget.onVertexUp.attach(function(sender, args){
+	samplePlateWidget.draw(dataCollections, plate, targetId );
+
+	samplePlateWidget.onNodeSelected.attach(function(sender, args){
 		_this.onClick.notify(
 				{
 					samplePlate	: args.samplePlate, 
-					row			: args.row, 
-					column		: args.column
-
+					row			: args.node.row, 
+					column		: args.node.column,
+					specimenId 	: args.node.specimenId
 				}
 		);
 	});
 
+	// samplePlateWidget.onVertexUp.attach(function(sender, args){
+	// 	_this.onClick.notify(
+	// 			{
+	// 				samplePlate	: args.samplePlate, 
+	// 				row			: args.row, 
+	// 				column		: args.column
+
+	// 			}
+	// 	);
+	// });
+
 	this.samplePlateWidgets.push(samplePlateWidget);
 };
 
-SamplePlateGroupWidget.prototype.drawPlates = function(experiment){
-	if (experiment){
-		var plateGroups = experiment.getPlateGroups();
-		for ( var i = 0; i < plateGroups.length; i++) {
-			var id = plateGroups[i].plateGroupId;
-			var plates = experiment.getPlatesByPlateGroupId(id);
-			for ( var j = 0; j < plates.length; j++) {
-				var targetId = ('id', this.id + "_" + plates[j].samplePlateId);
-				if (document.getElementById(targetId) != null){
-					this.drawPlate(experiment, plates[j], targetId);
-				}
+SamplePlateGroupWidget.prototype.drawPlates = function(dataCollections){
+	if (dataCollections){
+		for (var i = 0 ; i < this.plateGroup.length ; i++){
+			var plate = this.plateGroup[i];
+			var targetId = ('id', this.id + "_" + plate.id);
+			if (document.getElementById(targetId) != null){
+				this.drawPlate(dataCollections, plate, targetId);
 			}
-		} 
+		}
 	}
 };
 
@@ -15317,11 +14354,11 @@ SamplePlateGroupWidget.prototype._sortPlates = function(a, b) {
 */
 
 /** This returns maxSlotPositionRow and maxSlotPositionColumn to set visually the sample changer layout **/
-SamplePlateGroupWidget.prototype.getDimensions = function(plates) {
+SamplePlateGroupWidget.prototype.getDimensions = function(sample) {
 	var maxSlotPositionRow = 0;
 	var maxSlotPositionColumn = 0;
 	
-	if (plates != null){
+	if (sample != null){
 		for (var i = 0; i < plates.length; i++) {
 			/** Row **/
 			var slotPositionRow = plates[i].slotPositionRow;
@@ -15370,12 +14407,8 @@ SamplePlateGroupWidget.prototype.getPlateBySlotPosition = function(plates, row, 
 };
 
 /** Returns the html that will be used to display the plates **/
-SamplePlateGroupWidget.prototype.getPlatesContainer = function(experiment){
+SamplePlateGroupWidget.prototype.getPlatesContainer = function(dataCollections){
 	var plateGroups = [];
-	
-	if (experiment!= null){
-		plateGroups = experiment.getPlateGroups();
-	}
 
 	var div  = document.createElement("div");
 	var table  = document.createElement("table");
@@ -15383,30 +14416,25 @@ SamplePlateGroupWidget.prototype.getPlatesContainer = function(experiment){
 	table.setAttribute('width', this.width - 30 + 'px');
 	table.setAttribute('height', this.heightPlates + 'px');
 	
-	for ( var i = 0; i < plateGroups.length; i++) {
-		var id = plateGroups[i].plateGroupId;
-		var plates = experiment.getPlatesByPlateGroupId(id);
-		var dimensions = this.getDimensions(plates);
-		
-		for ( var j = 1; j <= dimensions.maxSlotPositionRow; j++) {
-			for ( var k = 1; k <= dimensions.maxSlotPositionColumn; k++) {
+	if (dataCollections!= null){
+		for (var i = 0 ; i < this.plateGroup.length ; i++) {
 			var tr = document.createElement("tr");
-				var plate = this.getPlateBySlotPosition(plates,j,k);
-				var td = document.createElement("td");
-				td.setAttribute('id', this.id + "_" + plate.samplePlateId);
-				td.setAttribute('style', "background-color:#E6E6E6;border-width:1px;border-style:solid;");
-				/** plate Type title * */
-				var divTitle = document.createElement("div");
-				divTitle.setAttribute("class", "menu-title");
-				var text = document.createTextNode(plate.platetype3VO.name);
-				divTitle.appendChild(text);
-				
-				td.appendChild(divTitle);
-				tr.appendChild(td);
-				table.appendChild(tr);
-			}
+			// var plate = this.getPlateBySlotPosition(plates,j,k);
+			var td = document.createElement("td");
+			// td.setAttribute('id', this.id + "_" + plate.samplePlateId);
+			td.setAttribute('id', this.id + "_" + this.plateGroup[i].id);
+			td.setAttribute('style', "background-color:#E6E6E6;border-width:1px;border-style:solid;");
+			/** plate Type title * */
+			var divTitle = document.createElement("div");
+			divTitle.setAttribute("class", "menu-title");
+			var text = document.createTextNode(this.plateGroup[i].type);
+			divTitle.appendChild(text);
+			
+			td.appendChild(divTitle);
+			tr.appendChild(td);
+			table.appendChild(tr);
 		}
-	} 
+	}
 	div.appendChild(table);
 	return div.innerHTML;
 };
@@ -15422,11 +14450,9 @@ SamplePlateGroupWidget.prototype.selectSpecimens = function(specimens){
 };
 
 SamplePlateGroupWidget.prototype.selectSpecimen = function(specimen){
-	if (specimen.sampleplateposition3VO != null){
-//		var samplePlateId = specimen.sampleplateposition3VO.samplePlateId;
+	if (specimen.SamplePlatePosition_samplePlateId != null){
 		for ( var i = 0; i < this.samplePlateWidgets.length; i++) {
-//			var samplePlateId = this.samplePlateWidgets[i].samplePlate.samplePlateId;
-			if ( this.samplePlateWidgets[i].samplePlate.samplePlateId == specimen.sampleplateposition3VO.samplePlateId){
+			if ( this.samplePlateWidgets[i].samplePlate.type == specimen.SamplePlate_name){
 				this.samplePlateWidgets[i].selectSpecimen(specimen);
 				return;
 			}
@@ -15441,20 +14467,17 @@ SamplePlateGroupWidget.prototype._refreshBbar = function(){
 	}
 };
 
-SamplePlateGroupWidget.prototype.refresh = function(experiment){
-	this.experiment = experiment;
+SamplePlateGroupWidget.prototype.refresh = function(dataCollections){
+	this.dataCollections = dataCollections;
 	this.samplePlateWidgets = [];
-
 	if (document.getElementById(this.id + "_container") != null){
 		document.getElementById(this.id + "_container").innerHTML = "";
-		document.getElementById(this.id + "_container").innerHTML = this.getPlatesContainer(experiment);
-		this.drawPlates(experiment);
+		document.getElementById(this.id + "_container").innerHTML = this.getPlatesContainer(dataCollections);
+		this.drawPlates(dataCollections);
 	}
 
 	/** We refrsh also the bbar  but it could not exist yet* */
 	this._refreshBbar();	
-	
-
 };
 
 SamplePlateGroupWidget.prototype._getAutoFillButton = function(){
@@ -15802,6 +14825,8 @@ function SamplePlateWidget(args) {
 	this.showFullName = false;
 	this.showLabels = false;
 
+	this.enableClick = true;
+
 	if (args != null) {
 		if (args.showBorderLabels != null) {
 			this.showBorderLabels = args.showBorderLabels;
@@ -15836,14 +14861,19 @@ function SamplePlateWidget(args) {
 		if (args.strokeWidth != null) {
 			this.strokeWidth = args.strokeWidth;
 		}
+		if (args.enableClick != null) {
+			this.enableClick = args.enableClick;
+		}
 	}
+
+	this.onNodeSelected = new Event(this);
 
 	/** this is the ids[specimenId] = nodeId **/
 	this.ids = {};
 	this.onVertexUp = new Event(this);
 	this.selectedSVGNodes = [];
 	this.markedSpecimenId = {};
-}
+};
 
 SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) {
 	if (document.getElementById(this.targetId) != null) {
@@ -15851,32 +14881,40 @@ SamplePlateWidget.prototype.clear = function(experiment, samplePlate, targetId) 
 	}
 };
 
-SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, windowContainerId) {
-	var _this = this;
-
-	/** This is the id of the window where the sampleplateform is just to position correctly the tooltips **/
-	this.windowContainerId = windowContainerId;
-	if (Ext.isIE6 || Ext.isIE7 || Ext.isIE8) {
-		document.getElementById(targetId).innerHTML = BUI.getWarningHTML(this.notSupportedMessage);
-		return;
+SamplePlateWidget.prototype.load = function (dataCollections) {
+	for (var i = 0 ; i < dataCollections.length ; i++) {
+		var specimen = dataCollections[i];
+		if (specimen.SamplePlate_name == this.samplePlate.type) {
+			var nodeId = this.id + "-node-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
+			// var color = experiment.getSpecimenColorByBufferId(specimen.Specimen_specimenId);
+			// if (specimen.Macromolecule_macromoleculeId != null) {
+			// 	color = experiment.macromoleculeColors[specimen.macromolecule3VO.macromoleculeId]
+			// }
+			var color = "blue";
+			this.getNodeById(nodeId).specimenId = specimen.Specimen_specimenId;
+			$("#" + nodeId).attr("fill",color);
+			if (specimen.Measurement_measurementId) {
+				if (specimen.Run_runId != null) {
+					$("#" + this.id + "-square-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber).attr("visibility","visible");
+				}
+			}
+		}
 	}
+};
 
+SamplePlateWidget.prototype.draw = function(dataCollections, samplePlate, targetId, windowContainerId) {
 	this.onVertexUp = new Event(this);
 	this.samplePlate = samplePlate;
-	this.experiment = experiment;
+	this.dataCollections = dataCollections;
 
 	this.targetId = targetId;
+	$("#" + this.targetId).append( "<div id='" + this.targetId + "-div-svg" + "'></div>" );
 
-	var rows = this.samplePlate.platetype3VO.rowCount;
-	var columns = this.samplePlate.platetype3VO.columnCount;
+	var rows = this.samplePlate.rowCount;
+	var columns = this.samplePlate.columnCount;
 
-	this.network = new NetworkWidget({
-		targetId : targetId
-	});
-	var dataset = new GraphDataset();
-	var formatter = new NetworkDataSetFormatter({
-		defaultFormat : {
-			type : "LineEdgeNetworkFormatter",
+	var formatter = {
+			// type : "LineEdgeNetworkFormatter",
 			'fill-opacity' : 1,
 			fill : this.wellColor,
 			'stroke-width' : this.strokeWidth,
@@ -15887,63 +14925,126 @@ SamplePlateWidget.prototype.draw = function(experiment, samplePlate, targetId, w
 			title : {
 				fontSize : this.fontSize,
 				fill : "#000000"
-			}
-		}
-	}, null, {
-		labeled : false,
-		height : this.height,
-		width : this.width,
-       
-		right : this.width,
-		backgroundColor : this.backgroundColor,
-		balanceNodes : false,
-		nodesMaxSize : 12,
-		nodesMinSize : 2
-	});
+			},
+			labeled : false,
+			height : this.height,
+			width : this.width,
+		
+			right : this.width,
+			backgroundColor : this.backgroundColor,
+			balanceNodes : false,
+			nodesMaxSize : 12,
+			nodesMinSize : 2
+		};
 
-	formatter.dataBind(dataset);
-	var layout = new LayoutDataset();
-	layout.dataBind(dataset);
-	this.network.draw(dataset, formatter, layout);
+	this.nodes = [];
+	var text = [];
+	var margin = 10;
+	var nodeRadius = Math.min((this.width-margin)/columns,(this.height-margin)/rows)/2;
+	nodeRadius = Math.min(nodeRadius, formatter.nodesMaxSize);
+	nodeRadius = Math.max(nodeRadius, formatter.nodesMinSize);
+
+	var horizontalMargin = ((this.width-margin) - 2*nodeRadius*columns)/(columns + 1);
+	var verticalMargin = ((this.height-margin) - 2*nodeRadius*rows)/(rows + 1);
 
 	for ( var i = 1; i <= rows; i++) {
 		for ( var j = 1; j <= columns; j++) {
-			this.network.getDataset().addNode("", {
-				row : i,
-				column : j
-			});
-
-			if (this.samplePlate.platetype3VO.name == " 4 x ( 8 + 3 ) Block") {
-				if (j < 9) {
-					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 0.8);
+			var factor = 0.8;
+			if (this.samplePlate.type == " 4 x ( 8 + 3 ) Block") {
+				if (j >= 9) {
+					factor = 1.0;
 				} else {
-					this.network.getFormatter().vertices[this.network.getDataset().getVerticesCount() - 1].getDefault().setSize(this.nodeSize * 1.4);
+					factor = 0.6;
 				}
 			}
+			var squareSide = Math.min(horizontalMargin,verticalMargin) + 2*nodeRadius*factor;
 
+			this.nodes.push({
+							nodeId 		:	this.id + "-node-" + i + "-" + j,
+							squareId 	:	this.id + "-square-" + i + "-" + j,
+							radius 		: 	nodeRadius*factor,
+							x 			: 	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
+							y 			: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin,
+							row 		: 	i,
+							column 		: 	j,
+							xSquare 	:	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin - squareSide/2 ,
+							ySquare		: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin - squareSide/2,
+							squareSide	:	squareSide
+			});
+			if (j == 1) {
+				var letter = ["A","B","C","D","E","F","G","H"][i-1];
+				text.push({
+							text 	:	letter,
+							x		:	Math.max(horizontalMargin,nodeRadius) / 2,
+							y 		: 	margin/2 + (i-1)*(2*nodeRadius + verticalMargin) + nodeRadius + verticalMargin + this.fontSize/2
+				});
+			}
+			if (i == rows) {
+				text.push({
+							text 	:	j,
+							x		:	margin/2 + (j-1)*(2*nodeRadius + horizontalMargin) + nodeRadius + horizontalMargin,
+							y 		: 	this.height
+				});
+			}
 		}
 	}
 
-	/** EVENT WHEN USER CLICK ON A WELL **/
-	this.network.graphCanvas.onVertexUp.attach(function(sender, nodeId) {
-		_this.onVertexUp.notify({
-			samplePlate : _this.samplePlate,
-			row : _this.network.getDataset().getVertexById(nodeId).args.row,
-			column : _this.network.getDataset().getVertexById(nodeId).args.column
-
-		});
-	});
-
-	this.network.graphCanvas.onVertexOver.attach(function(sender, nodeId) {
-	});
-
-	this.relayout(this.network, rows, columns);
-	this.fillSimulator(this.experiment.getSamples());
-
-	if (this.showBorderLabels) {
-		this.drawBorders();
+	var templateData = {
+							id 			: 	this.id,
+							nodes 		: 	this.nodes,
+							text		:	text,
+							formatter 	: 	formatter,
+							enableClick	:	this.enableClick
 	}
 
+	var html = "";
+	dust.render("sample.plate.template", templateData, function(err, out) {                                                                                               
+		html = html + out;
+	});
+	
+	$("#" + this.targetId + "-div-svg").html(html);
+
+	if (this.enableClick){
+		this.attachClickListeners();
+	}
+
+	this.load(this.dataCollections);
+
+};
+
+SamplePlateWidget.prototype.attachClickListeners = function () {
+	var _this = this;
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		$("#" + node.nodeId).unbind('click').click(function(sender){
+			_this.onNodeSelected.notify({
+										samplePlate : _this.samplePlate,
+										node : _this.getNodeById(sender.target.id)
+									});
+		});
+	}
+};
+
+SamplePlateWidget.prototype.getNodeById = function (id) {
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		if (node.nodeId == id) {
+			return node;
+		}
+	}
+	return;
+};
+
+SamplePlateWidget.prototype.clearSelection = function() {
+	for (var i = 0 ; i < this.nodes.length ; i++) {
+		var node = this.nodes[i];
+		$("#" + node.nodeId).removeClass("plate-square-selected");
+	}
+};
+
+SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
+	var nodeId = this.id + "-node-"+ specimen.SamplePlatePosition_rowNumber + "-" +specimen.SamplePlatePosition_columnNumber;
+	$("#" + nodeId).addClass("plate-square-selected");
 };
 
 SamplePlateWidget.prototype.drawBorders = function() {
@@ -15989,40 +15090,10 @@ SamplePlateWidget.prototype.addOkIcon = function(x, y, id, specimen) {
 	var id = id + "_marked";
 	if (this.markedSpecimenId[id] == null) {
 		SVG.drawRectangle(x - 10, y - 10, 22, 22, svg, [ [ "id", id ], [ "fill", "gray" ],["stroke-opacity", "0.5"], [ "fill-opacity", "0.2" ], [ 'stroke', 'black' ] ]);
-//		$('#' + id).qtip({
-//			content : {
-//				text : _this._getToolTipContent(specimen)
-//			},
-//			position : {
-//				adjust : {
-//					x : 0,
-//					y : 20
-//				}
-//			},
-//			style : {
-//				width : true,
-//				classes : 'ui-tooltip-shadow'
-//			}
-//		});
 		this.markedSpecimenId[id] = true;
 	}
 };
 
-SamplePlateWidget.prototype.selectSpecimen = function(specimen) {
-	var vertex = this.getVertexByPosition(specimen.sampleplateposition3VO.rowNumber, specimen.sampleplateposition3VO.columnNumber);
-	var x = this.network.getLayout().vertices[vertex.id].x * this.width;
-	var y = this.network.getLayout().vertices[vertex.id].y * this.height;
-	var svg = this.network.graphCanvas._svg;
-	this.selectedSVGNodes.push(SVG.drawRectangle(x - 9, y - 9, 20, 20, svg, [["fill", "red"], ["fill-opacity", "0"], ['stroke', 'blue' ], [ 'stroke-width', '2' ] ]));
-};
-
-SamplePlateWidget.prototype.clearSelection = function() {
-	var svg = this.network.graphCanvas._svg;
-	for ( var i = 0; i < this.selectedSVGNodes.length; i++) {
-		svg.removeChild(this.selectedSVGNodes[i]);
-	}
-	this.selectedSVGNodes = [];
-};
 
 SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	var vertices = this.network.getDataset().getVertices();
@@ -16033,20 +15104,6 @@ SamplePlateWidget.prototype.getVertexByPosition = function(row, column) {
 	}
 	return null;
 };
-
-//SamplePlateWidget.prototype.getOpacity = function(specimen) {
-//	var concentrations = this.experiment.getConcentrationsBysample(specimen);
-//	var normalized = Normalizer.normalizeArray(concentrations);
-//	for ( var i = 0; i < concentrations.length; i++) {
-//		if (concentrations[i] == specimen.concentration) {
-//			if (normalized[i] == 0)
-//				return 0.2;
-//			return 0.2 + normalized[i] * 0.6;
-//		}
-//	}
-//	return 1;
-//
-//};
 
 SamplePlateWidget.prototype.showLabel = function(row, column, specimen) {
 	if (specimen != null) {
@@ -16164,32 +15221,6 @@ SamplePlateWidget.prototype.fillWell = function(row, column, specimen) {
 
 		if (this.showTooltip) {
 			var id = this.network.getGraphCanvas().getSVGNodeId(vertex.id);
-//			if (_this.windowContainerId != null) {
-//				$('#' + id).qtip({
-//					content : {
-//						text : _this._getToolTipContent(specimen)
-//					},
-//					position : {
-//						adjust : {
-//							x : 0,
-//							y : 20
-//						}
-//					}
-//				});
-//			} else {
-//				$('#' + id).qtip({
-//					content : {
-//						text : _this._getToolTipContent(specimen)
-//					},
-//					position : {
-//						adjust : {
-//							x : 0,
-//							y : 20
-//						}
-//					}
-//				});
-//
-//			}
 		}
 	}
 };
@@ -16552,45 +15583,42 @@ function SpecimenGrid(args) {
 	this.onSpecimenChanged = new Event();
 }
 
-SpecimenGrid.prototype._prepareData = function(experiment) {
+SpecimenGrid.prototype._prepareData = function(dataCollections) {
 	var data = [];
 
-	var samples = experiment.getSamples();
-	for ( var i = 0; i < samples.length; i++) {
-		var sample = samples[i];
-		if (sample.macromolecule3VO != null) {
-			sample.macromolecule = sample.macromolecule3VO.acronym;
+	for ( var i = 0; i < dataCollections.length; i++) {
+		var sample = dataCollections[i];
+		if (sample.Macromolecule_macromoleculeId != null) {
+			sample.macromolecule = sample.Macromolecule_acronym;
 			sample.exposureTemperature = [];
-			sample.macromoleculeId = sample.macromolecule3VO.macromoleculeId;
+			sample.macromoleculeId = sample.Macromolecule_macromoleculeId;
 		}
 
-		if (sample.sampleplateposition3VO != null) {
-			if (sample.sampleplateposition3VO.samplePlateId != null) {
-				sample.samplePlateId = sample.sampleplateposition3VO.samplePlateId;
-				sample.rowNumber = sample.sampleplateposition3VO.rowNumber;
-				sample.columnNumber = sample.sampleplateposition3VO.columnNumber;
-				if (experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).plategroup3VO != null) {
-					sample.plateGroupName = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).plategroup3VO.name;
-					sample.samplePlateName = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).name + "  [" + sample.plateGroupName + "]";
-					sample.slotPositionColumn = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).slotPositionColumn;
-				}
+		if (sample.SamplePlatePosition_samplePlatePositionId != null) {
+			if (sample.SamplePlatePosition_samplePlateId != null) {
+				sample.samplePlateId = sample.SamplePlatePosition_samplePlateId;
+				sample.rowNumber = sample.SamplePlatePosition_rowNumber;
+				sample.columnNumber = sample.SamplePlatePosition_columnNumber;
+				// sample.plateGroupName = experiment.getSamplePlateById(sample.sampleplateposition3VO.samplePlateId).plategroup3VO.name;
+				sample.samplePlateName = sample.SamplePlate_name;
+				sample.slotPositionColumn = sample.SamplePlate_slotPositionColumn;
 			}
 		} else {
 			sample.samplePlateName = "Unallocated Specimens";
 		}
 
 		/** For grouping, because sencha has not option for multiple grouping I add a field to your store with a convert function that concatenates these two fields and then group by that field.**/
-		sample.groupIndex = sample.bufferId + sample.macromoleculeId;
-		var macromolecule = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId);
+		sample.groupIndex = sample.Buffer_bufferId + sample.Macromolecule_macromoleculeId;
+		var macromolecule = EXI.proposalManager.getMacromoleculeById(sample.Macromolecule_macromoleculeId);
 
 		sample.acronym = "Buffers";
 		if (macromolecule != null) {
-			sample.acronym = EXI.proposalManager.getMacromoleculeById(sample.macromoleculeId).acronym;
+			sample.acronym = EXI.proposalManager.getMacromoleculeById(sample.Macromolecule_macromoleculeId).acronym;
 		}
 
-		sample.buffer = experiment.getBufferById(sample.bufferId);
+		sample.buffer = EXI.proposalManager.getBufferById(sample.Buffer_bufferId);
 
-		sample.volumeToLoad = experiment.getVolumeToLoadBySampleId(sample.sampleId);
+		sample.volumeToLoad = sample.Measurement_volumeToLoad;
 		data.push(sample);
 	}
 	return data;
@@ -16604,7 +15632,7 @@ SpecimenGrid.prototype.selectById = function(specimenId) {
 	this.grid.getSelectionModel().deselectAll();
 	for ( var i = 0; i < this.grid.getStore().data.items.length; i++) {
 		var item = this.grid.getStore().data.items[i].data;
-		if (item.specimenId == specimenId) {
+		if (item.Specimen_specimenId == specimenId) {
 			this.grid.getSelectionModel().select(i);
 		}
 	}
@@ -16691,7 +15719,6 @@ SpecimenGrid.prototype.getPlugins = function() {
 					var macromoleculeId = e.record.data.macromoleculeId;
 					
 					var onSuccess = (function(sender, specimen) {
-						debugger
 						/** Because macromolecule3VO is fecthed LAZY **/
 						if (macromoleculeId != null) {
 							specimen.macromolecule3VO = EXI.proposalManager.getMacromoleculeById(macromoleculeId);
@@ -16783,26 +15810,37 @@ SpecimenGrid.prototype.getPanelByExperiment = function(experiment) {
 	return this.getPanel(data);
 };
 
-SpecimenGrid.prototype.refresh = function(experiment) {
-	this.experiment = experiment;
-	var data = this._prepareData(experiment);
-	this.store.loadData(data);
+SpecimenGrid.prototype.refresh = function(dataCollections) {
+	// debugger
+	this.dataCollections = dataCollections;
+	_.map(dataCollections, function(o){ 
+        if(o.Macromolecule_macromoleculeId){
+		    o.acronym = EXI.proposalManager.getMacromoleculeById(o.Macromolecule_macromoleculeId).acronym;
+        } else {
+			o.acronym = "Buffers";
+		}
+		o.groupIndex = o.Buffer_bufferId + o.Macromolecule_macromoleculeId;
+	});
+	// var data = this._prepareData(dataCollections);
+
+	this.store.loadData(dataCollections);
 };
 
 SpecimenGrid.prototype.getPanel = function() {
+	
 	var _this = this;
 	this.store = Ext.create('Ext.data.Store', {
 		fields : [
-			'buffer', 'bufferId', 'code', 'macromolecule', 'acronym', 'macromoleculeId', 'concentration', 'volume', 'samplePlateId',
-			'slotPositionColumn', 'rowNumber', 'columnNumber', 'groupIndex' ],
+			'Buffer_acronym', 'Buffer_bufferId', 'Measurement_code', 'Macromolecule_acronym', 'acronym', 'Macromolecule_macromoleculeId', 'Specimen_concentration', 'Specimen_volume', 'SamplePlatePosition_samplePlateId',
+			'SamplePlate_slotPositionColumn', 'SamplePlatePosition_rowNumber', 'SamplePlatePosition_columnNumber', 'groupIndex' ],
 		data : [],
 		groupField : 'acronym'
 	});
 	this.store.sort([ {
-		property : 'concentration',
+		property : 'Specimen_concentration',
 		direction : 'ASC'
 	}, {
-		property : 'buffer',
+		property : 'Buffer_acronym',
 		direction : 'ASC'
 	} ]);
 
@@ -16811,12 +15849,10 @@ SpecimenGrid.prototype.getPanel = function() {
 //		mode : this.selectionMode,
 		listeners : {
 			select : function(sm, record, index, eOpts ) {
-//				debugger
-//				var selected = [];
-//				for ( var i = 0; i < selections.length; i++) {
-//					selected.push(selections[i].data);
-//				}
 				_this.onSelected.notify([record.data]);
+			},
+			deselect : function(sm, record, index, eOpts ) {
+				_this.onSelected.notify([]);
 			}
 		}
 	});
@@ -16848,43 +15884,37 @@ SpecimenGrid.prototype.getPanel = function() {
 						columns : [
 							{
 								text : '',
-								dataIndex : 'macromolecule',
+								dataIndex : 'Macromolecule_acronym',
 								width : 20,
 								renderer : function(val, y, sample) {
-									var macromoleculeId = null;
-									if (sample.data.macromolecule3VO != null) {
-										macromoleculeId = sample.data.macromolecule3VO.macromoleculeId;
-									}
-									else{
-										macromoleculeId = sample.data.macromoleculeId;
-									}
-									
+									var macromoleculeId = sample.data.Macromolecule_macromoleculeId;
 									if (macromoleculeId == null) return; 
-									return BUI.getRectangleColorDIV(_this.experiment.macromoleculeColors[macromoleculeId], 10, 10);
+									// return BUI.getRectangleColorDIV(_this.experiment.macromoleculeColors[macromoleculeId], 10, 10);
+									return BUI.getRectangleColorDIV("red", 10, 10);
 								}
 							},
 							{
 								text : 'Macromolecule',
-								dataIndex : 'macromolecule',
+								dataIndex : 'Macromolecule_acronym',
 								width : 100
 							},
 							{
 								text : '',
-								dataIndex : 'buffer',
+								dataIndex : 'Buffer_acronym',
 								width : 20,
 								renderer : function(val, y, sample) {
 									var color = "black";
-									if (sample.data.bufferId != null) {
-										if (_this.experiment.getDataCollectionsBySpecimenId(sample.data.specimenId)[0] != null){
-											color = _this.experiment.getSpecimenColorByBufferId(_this.experiment.getMeasurementById(_this.experiment.getDataCollectionsBySpecimenId(sample.data.specimenId)[0].measurementtodatacollection3VOs[0].measurementId).specimenId);
-										}
+									if (sample.data.Buffer_bufferId != null) {
+										// if (_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0] != null){
+										// 	color = _this.experiment.getSpecimenColorByBufferId(_this.experiment.getMeasurementById(_this.experiment.getDataCollectionsBySpecimenId(sample.data.Specimen_specimenId)[0].measurementtodatacollection3VOs[0].measurementId).specimenId);
+										// }
 										return BUI.getRectangleColorDIV(color, 10, 10);
 									}
 								}
 							}
 							, {
 								text : 'Buffer',
-								dataIndex : 'bufferId',
+								dataIndex : 'Buffer_bufferId',
 								width : 140,
 								editor : BIOSAXS_COMBOMANAGER.getComboBuffers(EXI.proposalManager.getBuffers(), {
 									noLabel : true,
@@ -16898,7 +15928,7 @@ SpecimenGrid.prototype.getPanel = function() {
 							}, 
 							{
 								text : 'Conc.',
-								dataIndex : 'concentration',
+								dataIndex : 'Specimen_concentration',
 								width : 100,
 								editor : {
 									allowBlank : false
@@ -16922,35 +15952,36 @@ SpecimenGrid.prototype.getPanel = function() {
 							},
 							{
 								text : 'Vol. Well',
-								dataIndex : 'volume',
+								dataIndex : 'Specimen_volume',
 								width : 70,
 								editor : {
 									allowBlank : true
 								},
 								renderer : function(val, y, sample) {
-									return BUI.formatValuesUnits(sample.data.volume, '&#181l', {
+									return BUI.formatValuesUnits(sample.data.Specimen_volume, '&#181l', {
 										fontSize : 12,
 										decimals : 2,
 										unitsFontSize : this.unitsFontSize
 									});
 								}
 							}, 
+							// {
+							// 	text : 'Position',
+							// 	hidden : true,
+							// 	flex : 1,
+							// 	renderer : function(val, y, sample) {
+							// 		return BUI.getSamplePositionHTML(sample.data, _this.experiment);
+							// 	}
+							// }, 
 							{
-								text : 'Position',
-								hidden : true,
-								flex : 1,
-								renderer : function(val, y, sample) {
-									return BUI.getSamplePositionHTML(sample.data, _this.experiment);
-								}
-							}, {
 								text : 'samplePlateId',
-								dataIndex : 'samplePlateId',
+								dataIndex : 'SamplePlatePosition_samplePlateId',
 								hidden : true
 							}, 
 							{
 								text : 'Plate',
 								hidden : this.isPositionColumnHidden,
-								dataIndex : 'slotPositionColumn',
+								dataIndex : 'SamplePlate_slotPositionColumn',
 								editor : _this._getSlotColumBombo(),
 								flex : 1,
 								renderer : function(val, meta, sample) {
@@ -16963,7 +15994,7 @@ SpecimenGrid.prototype.getPanel = function() {
 							}, {
 								text : 'Row',
 								hidden : this.isPositionColumnHidden,
-								dataIndex : 'rowNumber',
+								dataIndex : 'SamplePlatePosition_rowNumber',
 								editor : this._getRowCombo(),
 								flex : 1,
 								renderer : function(val, meta, sample) {
@@ -16976,7 +16007,7 @@ SpecimenGrid.prototype.getPanel = function() {
 							}, {
 								text : 'Well',
 								hidden : this.isPositionColumnHidden,
-								dataIndex : 'columnNumber',
+								dataIndex : 'SamplePlatePosition_columnNumber',
 								editor : this._getColumnCombo(),
 								flex : 1,
 								renderer : function(val, meta, sample) {
@@ -17015,8 +16046,9 @@ SpecimenGrid.prototype.getPanel = function() {
 							preserveScrollOnRefresh : true,
 							stripeRows : true,
 							getRowClass : function(record) {
-								var specimens = _this.experiment.getSampleByPosition(record.data.samplePlateId, record.data.rowNumber,
-										record.data.columnNumber);
+								var specimens = _.filter(_this.dataCollections,{"SamplePlatePosition_rowNumber":record.data.SamplePlatePosition_rowNumber,
+																				"SamplePlatePosition_columnNumber":record.data.SamplePlatePosition_columnNumber,
+																				"SamplePlatePosition_samplePlateId":record.data.SamplePlatePosition_samplePlateId});
 								if (specimens.length > 1) {
 									return 'red-row';
 
@@ -17092,7 +16124,7 @@ function SpecimenWidget(args){
 											minHeight 			: 425,
 											selectionMode 		: "SINGLE",
 											editEnabled 		: false,
-											updateRowEnabled 	: true,
+											updateRowEnabled 	: false,
 											width 				: 900,
 											showTitle 			: false
 	});
@@ -17100,7 +16132,7 @@ function SpecimenWidget(args){
 	
 	this.specimenGrid.onSpecimenChanged.attach(function(sender, specimen) {
 		_this.experiment.setSpecimenById(specimen);
-		_this.refresh(_this.experiment);
+		_this.load(_this.experiment);
 	});
 
 	this.specimenGrid.onSelected.attach(function(sender, specimens) {
@@ -17123,81 +16155,82 @@ function SpecimenWidget(args){
 	
 	
 	this.samplePlateGroupWidget.onExperimentChanged.attach(function(sender, json) {
-		_this.refresh(new Experiment(json));
+		_this.load(new Experiment(json));
 	});
 
 	this.samplePlateGroupWidget.onClick.attach(function(sender, args) {
 		/** Clicking on a plate * */
-		var row = args.row;
-		var column = args.column;
-		var samplePlateId = args.samplePlate.samplePlateId;
-
-		/** is specimen selected on the grid? * */
-		if (_this.specimenSelected != null) {
-			/** Is position target empty * */
-			if (_this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column).length == 0) {
-				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-				if (specimen.sampleplateposition3VO == null) {
-					specimen.sampleplateposition3VO = {};
-				}
-
-				specimen.sampleplateposition3VO = {
-					columnNumber : column,
-					rowNumber : row,
-					samplePlateId : samplePlateId
-				};
-
-				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
-				/** If success * */
-				var onSuccess = (function(sender, experiment) {
-					_this.samplePlateGroupWidget.panel.setLoading(false);
-				});
-
-//				adapter.onError.attach(function(sender, error) {
-//					_this.samplePlateGroupWidget.panel.setLoading(false);
-//					showError(error);
-//				});
-
-				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
-
-				_this.samplePlateGroupWidget.refresh(_this.experiment);
-				_this.specimenGrid.refresh(_this.experiment);
-				//_this.refresh(_this.experiment);
-				_this.specimenSelected = null;
-				_this.specimenGrid.deselectAll();
-				
-			} else {
-				/**
-				 * Can we merge? We can merge when specimen are the
-				 * same. So, same buffer, macromolecule, concentration *
-				 */
-				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
-				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
-
-				if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
-					if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
-							((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
-						var onSuccess = (function(sender, data) {
-							_this.refresh(new Experiment(data));
-							_this.samplePlateGroupWidget.panel.setLoading(false);
-							
-							_this.onExperimentChanged.notify(experiment);
-						});
-						_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
-						EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
-						_this.specimenSelected = null;
-						_this.specimenGrid.deselectAll();
-					}
-				} else {
-					alert("Well is not empty. Select another well!");
-				}
-			}
+		// var row = args.row;
+		// var column = args.column;
+		// var samplePlate = args.samplePlate;
+		var specimenId = args.specimenId;
+		if (_this.specimenSelected && _this.specimenSelected.Specimen_specimenId == specimenId) {
+			_this.samplePlateGroupWidget.selectSpecimens([]);
+			_this.specimenGrid.deselectAll();
+			_this.specimenSelected = null;
 		} else {
-			var specimen = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
-			if (specimen != null) {
-				_this.specimenGrid.selectById(specimen.specimenId);
-			}
+			_this.specimenSelected = {Specimen_specimenId : specimenId};
+			_this.specimenGrid.selectById(specimenId);
 		}
+
+// 		/** is specimen selected on the grid? * */
+// 		if (_this.specimenSelected != null) {
+// 			/** Is position target empty * */
+// 			if (specimenId) {
+// 				_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Saving specimen");
+// 				/** If success * */
+// 				var onSuccess = (function(sender, experiment) {
+// 					_this.samplePlateGroupWidget.panel.setLoading(false);
+// 					_this.samplePlateGroupWidget.refresh(_this.experiment);
+// 					_this.specimenGrid.refresh(_this.experiment);
+// 					//_this.refresh(_this.experiment);
+// 					_this.specimenSelected = null;
+// 					_this.specimenGrid.deselectAll();
+// 				});
+
+// //				adapter.onError.attach(function(sender, error) {
+// //					_this.samplePlateGroupWidget.panel.setLoading(false);
+// //					showError(error);
+// //				});
+
+// 				EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.saveSpecimen(specimen);
+				
+// 			} else {
+// 				/**
+// 				 * Can we merge? We can merge when specimen are the
+// 				 * same. So, same buffer, macromolecule, concentration *
+// 				 */
+// 				var target = _this.experiment.getSampleByPosition(args.samplePlate.samplePlateId, args.row, args.column)[0];
+// 				var specimen = _this.experiment.getSampleById(_this.specimenSelected.specimenId);
+// 				if (target == specimen) {
+// 					_this.samplePlateGroupWidget.refresh(_this.experiment);
+// 					_this.specimenSelected = null;
+// 					_this.specimenGrid.deselectAll();
+// 				} else {
+// 					if ((specimen.bufferId == target.bufferId) && (specimen.concentration == target.concentration)) {
+// 						if (((specimen.macromolecule3VO != null) && (target.macromolecule3VO != null) && (specimen.macromolecule3VO.macromoleculeId == target.macromolecule3VO.macromoleculeId)) || 
+// 								((specimen.macromolecule3VO == null) && (target.macromolecule3VO == null))) {
+// 							var onSuccess = (function(sender, data) {
+// 								_this.load(new Experiment(data));
+// 								_this.samplePlateGroupWidget.panel.setLoading(false);
+								
+// 								_this.onExperimentChanged.notify(experiment);
+// 							});
+// 							_this.samplePlateGroupWidget.panel.setLoading("ISPyB: Merging specimens");
+// 							EXI.getDataAdapter({onSuccess : onSuccess}).saxs.specimen.mergeSpecimens(specimen.specimenId, target.specimenId);
+// 							_this.specimenSelected = null;
+// 							_this.specimenGrid.deselectAll();
+// 						}
+// 					} else {
+// 						$.notify("Well is not empty. Select another well!", "error");
+// 					}
+// 				}
+// 			}
+// 		} else {
+// 			if (specimenId != null) {
+// 				_this.specimenGrid.selectById(specimenId);
+// 			}
+// 		}
 	});
 	/** Events **/
 	this.onExperimentChanged = new Event(this);
@@ -17206,8 +16239,8 @@ function SpecimenWidget(args){
 /**
  * Return vbox or hbox depending on the slot positions of the plates
  */
-SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
-	var dimensions = this.samplePlateGroupWidget.getDimensions(experiment.getSamplePlates());
+SpecimenWidget.prototype.getContainerLayoutConfiguration = function(dataCollections){
+	// var dimensions = this.samplePlateGroupWidget.getDimensions(experiment.getSamplePlates());
 //	if (dimensions.maxSlotPositionRow < dimensions.maxSlotPositionColumn){
 //		return {
 //					layout 					: "vbox",
@@ -17228,13 +16261,13 @@ SpecimenWidget.prototype.getContainerLayoutConfiguration = function(experiment){
 };
 
 
-SpecimenWidget.prototype.refresh = function(experiment){
-	this.experiment = experiment;
+SpecimenWidget.prototype.load = function(dataCollections){
+	this.dataCollections = _.uniqBy(dataCollections,"Specimen_specimenId");
 	
 	/** Removing all components **/
 	this.panel.removeAll();
-	
-	var layoutConfiguration = this.getContainerLayoutConfiguration(experiment);
+
+	var layoutConfiguration = this.getContainerLayoutConfiguration(dataCollections);
 
 	/** Setting new width and height for layout vbox and hbox **/
 	this.specimenGrid.width = layoutConfiguration.specimenGridWidth;
@@ -17268,8 +16301,8 @@ SpecimenWidget.prototype.refresh = function(experiment){
    	this.panel.insert(container);
    	
 	/** Load data **/
-	this.specimenGrid.refresh(experiment);
-	this.samplePlateGroupWidget.refresh(experiment);
+	this.specimenGrid.refresh(this.dataCollections);
+	this.samplePlateGroupWidget.refresh(this.dataCollections);
 	
 	
 };
@@ -17290,25 +16323,25 @@ SpecimenWidget.prototype.getPanel = function(){
 };
 
 
-SpecimenWidget.prototype.input = function() {
-	return {
-		experiment : DATADOC.getExperiment_10(),
-		proposal : DATADOC.getProposal_10()
-	};
-};
+// SpecimenWidget.prototype.input = function() {
+// 	return {
+// 		experiment : DATADOC.getExperiment_10(),
+// 		proposal : DATADOC.getProposal_10()
+// 	};
+// };
 
-SpecimenWidget.prototype.test = function(targetId) {
-	var specimenWidget = new SpecimenWidget({
-		height : 500,
-		width : 1000
-	});
-	BIOSAXS.proposal = new Proposal(specimenWidget.input().proposal);
-	var experiment = new Experiment(specimenWidget.input().experiment);
-	var panel = specimenWidget.getPanel();
-	panel.render(targetId);
-	specimenWidget.refresh(experiment);
+// SpecimenWidget.prototype.test = function(targetId) {
+// 	var specimenWidget = new SpecimenWidget({
+// 		height : 500,
+// 		width : 1000
+// 	});
+// 	BIOSAXS.proposal = new Proposal(specimenWidget.input().proposal);
+// 	var experiment = new Experiment(specimenWidget.input().experiment);
+// 	var panel = specimenWidget.getPanel();
+// 	panel.render(targetId);
+// 	specimenWidget.refresh(experiment);
 
-};
+// };
 
 
 

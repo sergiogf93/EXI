@@ -15,10 +15,8 @@ SAXSMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 SAXSMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
 
 
-SAXSMainMenu.prototype.getMenuItems = function() {
-	
-	
-	
+SAXSMainMenu.prototype.getMenuItems = function() {	
+    		
 	return [	
     	this.getHomeItem(),
     	this.getShipmentItem(),
@@ -26,6 +24,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
+                 disabled : true,
 				menu : this.getPreparationMenu() 
 		}, {
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
@@ -52,7 +51,7 @@ SAXSMainMenu.prototype.getMenuItems = function() {
 			hidden : this.isHidden,
 			listeners : {
 				specialkey : function(field, e) {
-					if (e.getKey() == e.ENTER) {
+					if (e.getKey() == e.ENTER) {                        
 						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
 					}
 				} 

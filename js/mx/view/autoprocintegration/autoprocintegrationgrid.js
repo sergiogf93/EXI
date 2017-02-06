@@ -55,15 +55,16 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
          }
          catch(e){
              
+             console.log(e);
          }  
     }
     
     var anomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous; });
     var nonanomalous = _.filter(data, function(o) { return o.v_datacollection_summary_phasing_anomalous == false; });
     /**Set non anomalous first */
-    data = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
-    data = _.concat(new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group"),data);    
-    return data;
+    anomalousdata = new AutoprocessingRanker().rank(anomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    nonanomalousdata = new AutoprocessingRanker().rank(nonanomalous, "v_datacollection_summary_phasing_autoproc_space_group");    
+    return _.concat(nonanomalousdata, anomalousdata);
 };
 
 AutoProcIntegrationGrid.prototype.load = function(data) {      
@@ -109,7 +110,8 @@ AutoProcIntegrationGrid.prototype.getPhasing = function(data) {
     return phasing;
 };                 
 
-AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	                    
+AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	  
+                      
     var type = data.scalingStatisticsType.split(",");
     function getValue(attribute, i, decimals){
         
@@ -142,7 +144,9 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
                                             rMerge 			        : getValue(data.rMerge, i, 1),
                                             ccHalf 			        : getValue(data.ccHalf, i,1),
                                             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i,1),
-                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1)
+                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1),
+                                            ccAno                	: getValue(data.ccAno, i),
+                                            sigAno                	: getValue(data.sigAno, i)
                                            
                                             
                };            
@@ -184,7 +188,9 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
             rMerge 			        : getValue(data.rMerge, i),
             ccHalf 			        : getValue(data.ccHalf, i),
             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i),
-            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i)
+            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i),
+            ccAno                	: getValue(data.ccAno, i),
+            sigAno                	: getValue(data.sigAno, i)
             
         });
         

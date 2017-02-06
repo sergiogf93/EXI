@@ -10,7 +10,7 @@
                      {.DataCollectionGroup_startTime}
                      </span>                                   
                 </span>
-             <p>{.DataCollection_imageDirectory}</p>      
+             <p><b>{.DataCollection_imageDirectory}</b></p>      
             
          </div>
          <div class="pull-right">
@@ -58,24 +58,30 @@
                                                 <div class='summary_datacollection_failed'></div>
                                             {/eq}
                                         </td>
+                                        <td>Mosaicity</td> <td class='column_parameter_value'>{@decimal key="ScreeningOutput_mosaicity" decimals=2 /}</td>
                                     </tr>
-                                    <tr>
-                                        <td>Mosaicity</td> <td class='column_parameter_value'>{.ScreeningOutput_mosaicity}</td>
-                                    </tr>  
+                                  
                                     {@ne key=ScreeningOutput_strategySuccess value=null}                    
                                             <tr>
                                                 <td><kbd style='background-color:#CCCCCC;color:blue;'>Strategy</kbd></td> 
                                             
                                                     {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
-                                                        <td> <div class='summary_datacollection_success'></div></td>
-                                                        
+                                                        <td> <div class='summary_datacollection_success'></div></td> 
+                                                         <td>Space Group</td> <td class='column_parameter_value'>{.ScreeningOutputLattice_spaceGroup}</td>                                                        
                                                         <tr>
-                                                            <td>Rank. Res.</td> <td class='column_parameter_value'>{.ScreeningOutput_rankingResolution}</td>
+                                                            <td>Rank. Res.</td> <td class='column_parameter_value'>{.ScreeningOutput_rankingResolution} &#8491;</td>
+                                                            <td>Exp. Time</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_exposureTime} s</td>
                                                         </tr>                                                               
                                                         <tr>
-                                                            <td>Space Group</td> <td class='column_parameter_value'>{.ScreeningOutputLattice_spaceGroup}</td>
+                                                             <td>Images</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_numberOfImages}</td>
+                                                            <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
+                                                        </tr>  
+                                                        <tr>
+                                                             <td>Transmission</td> <td class='column_parameter_value'>{@decimal key="ScreeningStrategySubWedge_transmission" decimals=2 /}%</td>
+                                                             <td></td> <td class='column_parameter_value'></td>
+                                                            
                                                         </tr>     
-                                            
+                                                        
                                                     {:else}
                                                         <td><div class='summary_datacollection_failed'></div></td>
                                                     {/eq}
@@ -83,7 +89,7 @@
                                             </tr>
                                                                                                                 
                                     {/ne}                                                                                                                                                                                                           
-                            </table> 
+                            </table>
                             {@eq key=ScreeningOutput_strategySuccess type="boolean" value="true"}
                                 {>"unitcell.screening.mxdatacollectiongrid.template"  /}  
                             {/eq}                             
@@ -104,7 +110,7 @@
                      </a>                           
                   </div>
                 
-                  <div class="col-xs-6 col-md-2">
+                  <div class="col-xs-6 col-md-2"> 
                      <a href="{.indicator}" data-lightbox='{.indicator}' data-title="#{.runNumber} {.folder}"> <img  alt="Image not found" class="img-responsive lazy"  data-src="{.indicator}"/></a> 
                   </div>
                 
@@ -113,13 +119,14 @@
               
                <div class="container-fluid">
                    <div class="col-xs-12 col-md-12">
-                               {.DataCollectionGroup_comments}
-                                {?SpaceGroupModelResolvedByPhasing}
-                                    <div class="alert alert-success">
-                                        Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
-                                    </div>
-                                {/SpaceGroupModelResolvedByPhasing}
-                               
+                        {?DataCollectionGroup_comments}
+                                    <b>{@dataCollectionComment key="DataCollectionGroup_comments" /}</b>
+                        {/DataCollectionGroup_comments}
+                        {?SpaceGroupModelResolvedByPhasing}
+                            <div class="alert alert-success" style='font-size:14px;'>
+                                Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
+                            </div>
+                        {/SpaceGroupModelResolvedByPhasing}
                     </div>
                </div>
                
@@ -167,7 +174,9 @@
                         
                          <div class="col-xs-12 col-md-2">
                            <div id='sample_puck_layout_{.DataCollection_dataCollectionId}'>
-                           </div>                          
+                           </div>
+                           <div id='sample_puck_legend_{.DataCollection_dataCollectionId}' style="height:60px">
+                           </div>                     
                         </div>
                         
                        
@@ -236,7 +245,7 @@
         {@gt key=resultsCount   value="0"}
         <div id="re_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
-               <div class="row">
+               <div class="row" style='height:600px;'>
                     <div class="col-xs-12 col-md-12" id="__re_{.DataCollection_dataCollectionId}">
                             <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                     </div>
@@ -247,7 +256,7 @@
          {@gt key=workflows.length   value="0"}
             <div id="wf_{.DataCollection_dataCollectionId}" class="tab-pane fade">
                 <div class="container-fluid">
-                <div class="row">
+                 <div class="row" style='height:600px;'>
                         <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>
@@ -258,7 +267,7 @@
           {@gt key=hasPhasing   value=0}
             <div id="ph_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
                 <div class="container-fluid">
-                <div class="row">
+                 <div class="row" style='height:600px;'>
                         <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionGroupId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>

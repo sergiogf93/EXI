@@ -29,7 +29,7 @@
    </tr>
    <tr>
       <td>Transmission</td>
-      <td class='column_parameter_value'>{.transmission}</td>
+      <td class='column_parameter_value'>{@decimal key="transmission" decimals=2 /}%</td>
    </tr>
    <tr>
       <td>Flux start</td>
