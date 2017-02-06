@@ -144,6 +144,24 @@ dust.helpers.fileName = function (chunk, context, bodies, params) {
     }
     return chunk;
 }
+
+dust.helpers.formatDate = function (chunk, context, bodies, params) {
+    if (params.date) {
+        if (params.date){
+            if (params.format != null) {
+                try {
+                    formatted = moment(new Date(params.date)).format(params.format);
+                    chunk.write(formatted);
+                } catch (e) {
+                    chunk.write(params.date);
+                }
+            } else {
+                chunk.write(params.date);
+            }
+        }
+    }
+    return chunk;
+}
 //
 //function ExiController(){
 //	this.init();
@@ -799,7 +817,7 @@ Exi.prototype.show = function() {
 													region : 'west',
 													width : 250,
 													split : false,
-													title : 'Browse by',
+													title : 'Select',
 													cls : 'navigation',
 													collapsible : true,
 													collapsed : true
@@ -1753,12 +1771,17 @@ ShippingExiController.prototype.loadShipmentsNavigationPanel = function(listView
 			curated.push(data[i][0]);
 		}
 		curated.sort(function(a,b){return b.Shipping_shippingId - a.Shipping_shippingId;});
-		
-		/** Load panel * */
-		EXI.addNavigationPanel(listView);
-		/** Load data * */
-		listView.load(curated);
-		EXI.setLoadingMainPanel(false);
+
+		var onSuccessProposal = function (sender,dewars) {
+			listView.dewars = dewars;
+			/** Load panel * */
+			EXI.addNavigationPanel(listView);
+			/** Load data * */
+			listView.load(curated);
+			EXI.setLoadingMainPanel(false);
+		}
+
+		EXI.getDataAdapter({ onSuccess : onSuccessProposal}).proposal.dewar.getDewarsByProposal();
 	};
 	
 	/** Handle error * */
@@ -2074,7 +2097,8 @@ MainMenu.prototype.getShipmentItem = function() {
 						{
 							text : 'Add new',
 							icon : '../images/icon/add.png',
-							handler : onItemCheck 
+							handler : onItemCheck,
+							disabled : true
 						}, {
 							text : 'List',
 							icon : '../images/icon/ic_list_black_24dp.png',
@@ -2821,6 +2845,7 @@ SessionListView.prototype.getFields = function(){
 function ShippingListView(){
 	this.sorters = [{property : 'sessionId', direction: 'DESC'}];
 	ListView.call(this);
+	this.dewars = null;
 }
 
 ShippingListView.prototype.getPanel = ListView.prototype.getPanel;
@@ -2828,6 +2853,31 @@ ShippingListView.prototype.load = ListView.prototype.load;
 ShippingListView.prototype.getFilter = ListView.prototype.getFilter;
 ShippingListView.prototype.getFields = ListView.prototype.getFields;
 ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
+
+/**
+* Return the number of containers and samples for a given shipment 
+*
+* @method getStatsByShippingId
+* @param {Integer} shippingId ShippingId
+*/
+ShippingListView.prototype.getStatsByShippingId = function(shippingId){
+	if (this.dewars){
+		var _this = this;
+		var containers = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
+		var sampleCount = 0;
+		_(containers).forEach(function(value) {
+			sampleCount = sampleCount + value.sampleCount;
+		});      
+		return {
+					samples     : sampleCount,
+					dewars      : Object.keys(_.groupBy(containers, "dewarId")).length,
+					containers   : containers.length
+			
+		};
+	} else {
+		return null;
+	}
+};
 
 /**
 * Calls to the dust template in order to render to puck in HTML
@@ -2839,6 +2889,7 @@ ShippingListView.prototype.getRow = function(record){
 	var html = "";
     
 	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
+	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
 
 	dust.render("shipping.listview", record.data, function(err, out){
         	html = out;
@@ -5973,7 +6024,7 @@ function ParcelGrid(args) {
 	this.id = BUI.id();
 	this.height = 100;
 	this.width = 100;
-	this.padding = 0;
+	this.padding = 10;
 	this.btnEditVisible = true;
 	this.btnRemoveVisible = true;
 
@@ -6018,13 +6069,13 @@ ParcelGrid.prototype._getTopButtons = function() {
 	}));
 };
 
-ParcelGrid.prototype.load = function(shipment) {
+ParcelGrid.prototype.load = function(shipment,hasExportedData) {
 	var _this = this;
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
+	this.hasExportedData = hasExportedData;
 
-
-	this.panel.removeAll();
+	$("#" + this.id + "-content").html("");
 
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
@@ -6040,9 +6091,21 @@ ParcelGrid.prototype.load = function(shipment) {
 			};			
 			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
     }
+	
+	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels)");
+	$("#" + this.id + "-add-button").removeClass("disabled");
+	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
+		_this.edit();
+	});
 
-	Ext.getCmp(this.id + "-label").setText("Content (" + this.dewars.length + " Parcels)");
-	Ext.getCmp(this.id + "-add-button").enable();
+	this.parcelPanels = Ext.create('Ext.panel.Panel', {
+															// cls 		: 'border-grid',
+															// width 		: this.width,
+															autoScroll	:true,
+															autoHeight 	:true,
+															maxHeight	: this.height,
+															renderTo	: this.id + "-content"
+														});
 	for ( var i in this.dewars) {
 		var parcelPanel = new ParcelPanel({
 			height : 90,
@@ -6051,10 +6114,12 @@ ParcelGrid.prototype.load = function(shipment) {
 			shippingStatus : this.shipment.shippingStatus,
 			index : Number(i)+1
 		});
-		this.panel.insert(parcelPanel.getPanel());
+		this.parcelPanels.insert(parcelPanel.getPanel());
 		parcelPanel.load(this.dewars[i],this.shipment);
 		parcelPanel.onSavedClick.attach(onSaved);
 	}
+	this.parcelPanels.doLayout();
+	this.panel.doLayout();
 };
 
 ParcelGrid.prototype.edit = function(dewar) {
@@ -6104,34 +6169,40 @@ ParcelGrid.prototype.edit = function(dewar) {
 };
 
 ParcelGrid.prototype.getPanel = function() {
-	var _this = this;
-	
-	this.panel = Ext.create('Ext.panel.Panel', {
-		cls : 'border-grid',
-		width : this.width,
-		autoScroll:true,
-        autoHeight :true,
-        maxHeight: this.height,
-		padding : this.padding
-	});
 
-	this.panel.addDocked({
-		height : 45,
-		xtype : 'toolbar',
-		items : [
-					{
-						xtype : 'label',
-						text : 'Content (0 Parcels)',
-						id : this.id + "-label"
-					},
-					_this._getTopButtons()
-				],
-		cls : 'exi-top-bar'
+	var html = "";
+
+	dust.render("parcel.grid.template",{id : this.id},function (err,out){
+		html = out;
+	})
+
+	this.panel =  Ext.create('Ext.panel.Panel', {
+
+			items : {
+						// cls	: 'border-grid',
+						html : '<div id="' + this.id + '">' + html + '</div>',
+						width : this.width,
+						autoScroll:false,
+						autoHeight :true,
+						// maxHeight: this.height,
+						padding : this.padding
+					}
 	});
 
 	return this.panel;
 };
 
+ParcelGrid.prototype.attachCallBackAfterRender = function () {
+
+	var _this = this;
+	var tabsEvents = function(grid) {
+		this.grid = grid;
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			_this.panel.doLayout();
+		});
+    };
+    var timer3 = setTimeout(tabsEvents, 500, this);
+}
 /**
 * This class containes name, description, samples spreadsheet and puck loyout for a given puck 
 *
@@ -6655,8 +6726,9 @@ function ShipmentForm(args) {
 	this.onSaved = new Event(this);
 }
 
-ShipmentForm.prototype.load = function(shipment) {
+ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 	this.shipment = shipment;
+	this.hasExportedData = hasExportedData;
 	var _this = this;
 	
 	var toData = EXI.proposalManager.getLabcontacts();
@@ -6682,20 +6754,29 @@ ShipmentForm.prototype.load = function(shipment) {
 		$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
 			_this.edit();
 		});
+		if (!this.hasExportedData){
+			$("#" + _this.id + "-remove-button").removeClass('disabled');
+			$("#" + _this.id + "-remove-button").unbind('click').click(function(sender){
+				alert("Not implemented");
+			});
+		}
 	}
 
 	this.panel.doLayout();
+
+	this.attachCallBackAfterRender();
 
 };
 
 ShipmentForm.prototype.getPanel = function() {
 
 	this.panel = Ext.create("Ext.panel.Panel",{
+		layout : 'fit',
 		items :	[{
-					// cls	: 'border-grid',
+					cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
-					margin : 10,
+					// margin : 10,
 					padding : this.padding,
 					width : this.width
                 }]
@@ -6739,6 +6820,18 @@ ShipmentForm.prototype.edit = function(dewar) {
 
 	shippingEditForm.load(this.shipment);
 };
+
+ShipmentForm.prototype.attachCallBackAfterRender = function () {
+
+	var _this = this;
+	var tabsEvents = function(grid) {
+		this.grid = grid;
+		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			_this.panel.doLayout();
+		});
+    };
+    var timer3 = setTimeout(tabsEvents, 500, this);
+}
 
 /**
 * This main class deals with the creation and edition of shipments
@@ -6784,20 +6877,48 @@ ShippingMainView.prototype.getPanel = function() {
 	});
 
     return this.panel;
+
+	// return Ext.create('Ext.panel.Panel', {   
+	// 				margin : 0,
+	// 				// minHeight : 900,
+	// 				layout : 'fit',
+	// 				minHeight : 600,
+	// 				items: [this.panel]
+	// 			});
 };
 
 
 ShippingMainView.prototype.load = function(shippingId) {
 	var _this = this;
 	this.shippingId = shippingId;
-	
 	this.panel.setTitle("Shipment");
 	if (shippingId != null){
 		this.panel.setLoading();
 		var onSuccess = function(sender, shipment){
-			_this.shipmentForm.load(shipment);
-			_this.parcelGrid.load(shipment);
-			_this.panel.setLoading(false);
+
+			//Check if samples have exported data in order to know if the remove button should be enabled
+
+			var containerIds = _.map(_.union(_.flatten(_.map(shipment.dewarVOs,"containerVOs"))),"containerId");
+			if (containerIds.length > 0) {
+				var onSuccessSamples = function(sender,samples) {
+					var hasExportedData = false;
+					if (samples) {
+						var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+						hasExportedData = !(withoutCollection.length == samples.length);
+					}
+
+					_this.shipmentForm.load(shipment,hasExportedData);
+					_this.parcelGrid.load(shipment,hasExportedData);
+					_this.panel.setLoading(false);
+
+				}
+				EXI.getDataAdapter({onSuccess : onSuccessSamples}).mx.sample.getSamplesByContainerId(containerIds);
+			} else {
+				_this.shipmentForm.load(shipment,false);
+				_this.parcelGrid.load(shipment,false);
+				_this.panel.setLoading(false);
+			}
+
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
     }	
@@ -6906,11 +7027,17 @@ AddressEditForm.prototype.getAddress = function () {
         address.personVO = {};
         address.personVO.personId = null;
     }
+    if (!address.personVO.laboratoryVO){
+        address.personVO.laboratoryVO = {};
+        address.personVO.laboratoryVO.laboratoryId = null;
+    }
     address.personVO.emailAddress = $("#" + this.id + "-emailAddress").val();
     address.personVO.familyName = $("#" + this.id + "-familyName").val();
     address.personVO.givenName = $("#" + this.id + "-givenName").val();
     address.personVO.phoneNumber = $("#" + this.id + "-phoneNumber").val();
     address.personVO.faxNumber = $("#" + this.id + "-faxNumber").val();
+    address.personVO.laboratoryVO.name = $("#" + this.id + "-labName").val();
+    address.personVO.laboratoryVO.address = $("#" + this.id + "-labAddress").val();
     address.cardName = $("#" + this.id + "-cardName").val();
     address.courierAccount = $("#" + this.id + "-courierAccount").val();
     address.defaultCourrierCompany = $("#" + this.id + "-defaultCourrierCompany").val();
@@ -6971,7 +7098,7 @@ AddressForm.prototype.getAddress = function() {
 
 AddressForm.prototype.load = function(address) {
 	this.address = address;
-
+	
 	var html = "";
 	dust.render("address.form.template", address, function(err, out){
 		html = out;
@@ -7000,17 +7127,6 @@ AddressForm.prototype.getPanel = function() {
 
 	return this.panel;
 };
-
-// AddressForm.prototype.save = function() {
-// 	var _this = this;
-
-// 	_this.panel.setLoading();
-// 	var onSuccess = function(sender) {
-// 		_this.panel.setLoading(false);
-// 		EXI.getDataAdapter().proposal.proposal.update();
-// 	};
-// 	EXI.getDataAdapter({onSuccess : onSuccess }).proposal.labcontacts.saveLabContact(_this.getAddress());
-// };
 
 AddressForm.prototype.getToolBar = function() {
 	var _this = this;
@@ -7343,7 +7459,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
                             }
                         },{
                             text : 'Remove',
-                            disabled : _this.shippingStatus == "processing",
+                            disabled : _this.shippingStatus == "processing" || !_this.withoutCollection,
                             handler : function() {
                                 _this.removeButtonClicked();
                                  window.close();
@@ -7416,6 +7532,7 @@ ContainerParcelPanel.prototype.load = function (samples) {
         }
         // this.shippingId = samples[0].Shipping_shippingId;
     }
+    
     var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
     if (withoutCollection.length < samples.length) {
         this.withoutCollection = false;
@@ -8385,7 +8502,7 @@ ParcelPanel.prototype.showAddContainerForm = function() {
 
 ParcelPanel.prototype.getPanel = function() {
 	this.panel = Ext.create("Ext.panel.Panel",{
-		cls 		: "border-grid",
+		cls 		: "border-grid-light",
 		margin 		: 10,
 		height 		: this.height,
 		width 		: this.width,

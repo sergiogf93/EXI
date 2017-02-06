@@ -1437,12 +1437,8 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-<<<<<<< HEAD
-        },{
-=======
         },
 		,{
->>>>>>> ffa51da644e4b996b95e0fb760be3551d82b0c0e
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);

@@ -1,7 +1,7 @@
 <table class="table valign-middle-rows small-padding-rows" style="height:{height}px;margin:0px;font-size: 9px;">
     <tr>
-        <td >Name: </td>
-        <td class="column_parameter_value">{dewar.code}</td>
+        <td style="border-top:none;">Name: </td>
+        <td class="column_parameter_value" style="border-top:none;">{dewar.code}</td>
     </tr>
     <tr valign="middle">
         <td>Status: </td>

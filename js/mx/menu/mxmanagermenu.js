@@ -71,11 +71,11 @@ MXManagerMenu.prototype.getMenuItems = function() {
 MXManagerMenu.prototype.getManagerMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
-		if (item.text == "AutoprocIntegrator") {
+		if (item.text == "Autoproc Scaling Statistics") {
 			var scatteringForm = new ScatteringForm({width : 650, height : 560});
 
 			var window = Ext.create('Ext.window.Window', {
-				title : 'Scattering',
+				title : 'Autoprocessing scaling statistics',
 				height : 560,
 				width : 650,
 				modal : true,
@@ -113,7 +113,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 						menu : {       
 								items: [
 									{
-										text: 'AutoprocIntegrator',
+										text: 'Autoproc Scaling Statistics',
 										icon : '../images/icon/ic_insert_chart_black_36dp.png',
 										handler: onItemCheck
 									}

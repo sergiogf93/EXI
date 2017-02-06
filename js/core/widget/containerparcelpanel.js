@@ -114,7 +114,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
                             }
                         },{
                             text : 'Remove',
-                            disabled : _this.shippingStatus == "processing",
+                            disabled : _this.shippingStatus == "processing" || !_this.withoutCollection,
                             handler : function() {
                                 _this.removeButtonClicked();
                                  window.close();
@@ -187,6 +187,7 @@ ContainerParcelPanel.prototype.load = function (samples) {
         }
         // this.shippingId = samples[0].Shipping_shippingId;
     }
+    
     var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
     if (withoutCollection.length < samples.length) {
         this.withoutCollection = false;
