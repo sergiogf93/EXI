@@ -12,7 +12,7 @@
             <div class="pull-right">
                 <ul class="nav nav-tabs" id="{id}-tabs">
                     <li class="active"><a data-toggle="tab" href="#{id}-content">Content</a></li>
-                    <li><a data-toggle="tab" href="##{id}-statistics">Statistics</a></li>               
+                    {!<li><a data-toggle="tab" href="##{id}-statistics">Statistics</a></li>!}       
                 </ul>
             </div>
         </div>

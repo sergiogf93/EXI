@@ -79,6 +79,9 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData) {
 	
 	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
+	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
+		_this.edit();
+	});
 
 	this.parcelPanels = Ext.create('Ext.panel.Panel', {
 															// cls 		: 'border-grid',
