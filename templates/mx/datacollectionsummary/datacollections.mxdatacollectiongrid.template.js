@@ -1,4 +1,6 @@
- <div class="container-fluid containerWithScroll" >
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<div class="container-fluid containerWithScroll" >
     <div class="row">
         <div class="col-xs-12 col-md-2">        
             <table class="table table-striped table-hover">
@@ -77,4 +79,4 @@
              </table>
         </div>
     </div>
- </div>
+</div>
