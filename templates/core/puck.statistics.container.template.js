@@ -20,7 +20,7 @@
                 <tr>
                     <td>
                         <span id='{id}-measured'>{nMeasured}</span>
-                        <span style="font-size:9px;"> Measured</span>
+                        <span style="font-size:8px;"> Measured</span>
                     </td>
                 </tr>
             </table>
