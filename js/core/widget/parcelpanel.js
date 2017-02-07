@@ -20,6 +20,7 @@ function ParcelPanel(args) {
 	this.shippingId = 0;
 	this.shippingStatus = "";
 	this.containersPanel = null;
+	this.currentTab = "content";
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -43,13 +44,17 @@ function ParcelPanel(args) {
 		if (args.shippingStatus != null) {
 			this.shippingStatus = args.shippingStatus;
 		}
+		if (args.currentTab != null) {
+			this.currentTab = args.currentTab;
+		}
 	}
 	
 	this.onSavedClick = new Event(this);
+	this.onContainerAdded = new Event(this);
 
 }
 
-ParcelPanel.prototype.load = function(dewar, shipment) {
+ParcelPanel.prototype.load = function(dewar, shipment, samples, withoutCollection) {
 	var _this = this;
 	this.dewar = dewar;
 	this.dewar.index = this.index;
@@ -59,6 +64,8 @@ ParcelPanel.prototype.load = function(dewar, shipment) {
 			this.dewar.beamlineName = shipment.sessions[0].beamlineName;
 		}
 	}
+	this.samples = samples;
+	this.withoutCollection = withoutCollection;
 	
 	/** Loading the template **/
 	var html = "";
@@ -110,9 +117,28 @@ ParcelPanel.prototype.load = function(dewar, shipment) {
 
 ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
 	var html = "";
-	dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
-		html = out;
-	});
+	if (this.currentTab == "content") {
+		dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
+			html = out;
+		});
+	} else {
+		var nContainers = 0;
+		if (dewar.containerVOs) {
+			nContainers = dewar.containerVOs.length;
+		}
+		var nSamples = 0;
+		var nMeasured = 0;
+		if (this.samples) {
+			nSamples = this.samples.length;
+		}
+		var nMeasured = nSamples;
+		if (this.withoutCollection) {
+			nMeasured = nSamples - this.withoutCollection.length;
+		}
+		dust.render("parcel.panel.statistics.template", {id : this.id,height : this.height, nContainers : nContainers, nSamples : nSamples, nMeasured : nMeasured}, function(err, out){
+			html = out;
+		});
+	}
 
 	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
 	if (dewar.comments != "" && dewar.comments != null) {
@@ -239,6 +265,7 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 		}
 		var onSuccess = function(sender, container){
 			EXI.proposalManager.get(true);
+			_this.onContainerAdded.notify(container);
 			_this.renderPucks(_this.dewar);
 		};
 		
@@ -257,6 +284,7 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 			_this.dewar.containerVOs.push(container);
 			
 			var onSaveSuccess = function (sender) {
+				_this.onContainerAdded.notify(container);
 				_this.renderPucks(_this.dewar);
 			}
 			var onError = function(sender,error) {
