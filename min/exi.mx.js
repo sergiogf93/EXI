@@ -994,13 +994,14 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 			var scatteringForm = new ScatteringForm({width : 650, height : 560});
 
 			var window = Ext.create('Ext.window.Window', {
+				title: "Plot autoprocessing values for last week",
 				height : 560,
 				width : 650,
 				modal : true,
 				layout : 'fit',
 				items : [ scatteringForm.getPanel() ],
 				buttons : [ {
-						text : 'Plot',
+						text : 'Plot (last 7 days)',
 						handler : function() {
 							scatteringForm.plot();
 						}
@@ -1042,6 +1043,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 			] 
 	});
 };
+
 /**
 * AutoProcIntegrationListView displays the crystal as list on the navigation panels
 *
