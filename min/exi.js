@@ -4176,6 +4176,18 @@ ScatteringForm.prototype.load = function(data) {
 	this.data.today = moment().format("YYYY-MM-DD");
 	this.data.tenDaysAgo = moment().subtract(10,'d').format("YYYY-MM-DD");
 
+	if (!this.data.types){
+		this.data.types = [
+								{display : "Overall", value : "overall"},
+								{display : "InnerShell", value : "innerShell"},
+								{display : "OutShell", value : "outShell"}
+							]
+	}
+
+	if (!this.data.beamlines) {
+		this.data.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
+	}
+
     var html = "";
     dust.render("scattering.form.template", this.data, function (err, out) {
         html = out;
@@ -4192,18 +4204,25 @@ ScatteringForm.prototype.plot = function() {
 	$('.scattering-checkbox:checked').each(function(i){
 		checkedValues.push($(this).val());
 	});
-
+	var type = $("#" + this.id + "-type").val();
+	var beamline = $("#" + this.id + "-beamline").val();
+	
 	if (startDate != "" && endDate != "" && checkedValues.length > 0) {
 		var diffDays = moment(endDate,"YYYY-MM-DD").diff(moment(startDate,"YYYY-MM-DD"), 'days');
 		if (diffDays <= 10){
-			var url = EXI.getDataAdapter().mx.stats.getStatisticsByDate(startDate,endDate);
+			url = "";
+			if (beamline != ""){
+				url = EXI.getDataAdapter().mx.stats.getStatisticsByDateAndBeamline(type,startDate,endDate,beamline);
+			} else {
+				url = EXI.getDataAdapter().mx.stats.getStatisticsByDate(type,startDate,endDate);
+			}
 			var urlParams = "url=" + url + "&/&title=" + this.data.title + "&/&y=" + checkedValues.toString() + "&/&x=recordTimeStamp&";
 			window.open("../viewer/scatter/index.html?" + urlParams,"_blank");
 		} else {
 			$("#" + this.id + "-dates").notify("Date interval must be 10 days or lower.", "error");
 		}
 	} else {
-		$("#" + this.id + "-notifications").notify("Set the dates correctly and select the values to plot.", "error");
+		$("#" + this.id + "-checkox-div").notify("Set the dates correctly and select the values to plot.", { className : "error",elementPosition: 'top left'});
 	}
 }
 function SessionMainView(args) {
@@ -6089,8 +6108,9 @@ function ParcelGrid(args) {
 		}
 	}
 
-	this.shipment = "";
+	this.shipment = null;
 	this.dewars = {};
+	this.parcelPanels = {};
 
 	/** Events **/
 	this.onSuccess = new Event(this);
@@ -6112,28 +6132,17 @@ ParcelGrid.prototype._getTopButtons = function() {
 	}));
 };
 
-ParcelGrid.prototype.load = function(shipment,hasExportedData) {
+ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCollection) {
 	var _this = this;
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
 	this.hasExportedData = hasExportedData;
-
-	$("#" + this.id + "-content").html("");
+	this.samples = _.groupBy(samples,"Dewar_dewarId");
+	this.withoutCollection = _.groupBy(withoutCollection,"Dewar_dewarId");
 
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
 	});
-
-    function onSaved(sender, dewar) {
-			_this.panel.setLoading();
-			dewar["sessionId"] = dewar.firstExperimentId;
-			dewar["shippingId"] = _this.shipment.shippingId;
-			
-			var onSuccess = function(sender, shipment) {				
-				_this.panel.setLoading(false);
-			};			
-			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
-    }
 	
 	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
@@ -6141,29 +6150,51 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData) {
 		_this.edit();
 	});
 
-	this.parcelPanels = Ext.create('Ext.panel.Panel', {
+	this.fillTab("content", this.dewars);
+
+	this.attachCallBackAfterRender();
+};
+
+ParcelGrid.prototype.fillTab = function (tabName, dewars) {
+	var _this = this;
+	$("#" + tabName + "-" + this.id).html("");
+	this.parcelPanels[tabName] = Ext.create('Ext.panel.Panel', {
 															// cls 		: 'border-grid',
 															// width 		: this.width,
 															autoScroll	:true,
 															autoHeight 	:true,
 															maxHeight	: this.height,
-															renderTo	: this.id + "-content"
+															renderTo	: tabName + "-" + this.id
 														});
-	for ( var i in this.dewars) {
+
+	function onSaved(sender, dewar) {
+			_this.panel.setLoading();
+			dewar["sessionId"] = dewar.firstExperimentId;
+			dewar["shippingId"] = _this.shipment.shippingId;
+			
+			var onSuccess = function(sender, shipment) {				
+				_this.panel.setLoading(false);
+				_this.panel.doLayout();
+			};			
+			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
+    }
+
+	for ( var i in dewars) {
 		var parcelPanel = new ParcelPanel({
 			height : 90,
 			width : this.width - 60,
 			shippingId : this.shipment.shippingId,
 			shippingStatus : this.shipment.shippingStatus,
-			index : Number(i)+1
+			index : Number(i)+1,
+			currentTab : tabName
 		});
-		this.parcelPanels.insert(parcelPanel.getPanel());
-		parcelPanel.load(this.dewars[i],this.shipment);
+		this.parcelPanels[tabName].insert(parcelPanel.getPanel());
+		parcelPanel.load(this.dewars[i],this.shipment,this.samples[this.dewars[i].dewarId],this.withoutCollection[this.dewars[i].dewarId]);
 		parcelPanel.onSavedClick.attach(onSaved);
 	}
-	this.parcelPanels.doLayout();
+	this.parcelPanels[tabName].doLayout();
 	this.panel.doLayout();
-};
+}
 
 ParcelGrid.prototype.edit = function(dewar) {
 	var _this = this;
@@ -6241,6 +6272,13 @@ ParcelGrid.prototype.attachCallBackAfterRender = function () {
 	var tabsEvents = function(grid) {
 		this.grid = grid;
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var target = $(e.target).attr("href");
+			if (target.startsWith("#co")){
+				_this.fillTab("content",_this.dewars);
+			}
+			if (target.startsWith("#st")){
+				_this.fillTab("statistics",_this.dewars);
+			}
 			_this.panel.doLayout();
 		});
     };
@@ -6951,7 +6989,7 @@ ShippingMainView.prototype.load = function(shippingId) {
 					}
 
 					_this.shipmentForm.load(shipment,hasExportedData);
-					_this.parcelGrid.load(shipment,hasExportedData);
+					_this.parcelGrid.load(shipment,hasExportedData,samples,withoutCollection);
 					_this.panel.setLoading(false);
 
 				}
@@ -7501,26 +7539,28 @@ ContainerParcelPanel.prototype.getPanel = function () {
 * @return
 */
 ContainerParcelPanel.prototype.load = function (samples) {
-    if (this.data.puckType == "Puck") {
-        _.map(samples,function (s) {s.location = parseInt(s.BLSample_location)});
-        if (_.maxBy(samples,"location").location > 10) {
-            this.data.puckType = "Unipuck";
-            this.container = this.createContainer(this.data);
+    if (samples != null && samples.length > 0){
+        if (this.data.puckType == "Puck") {
+            _.map(samples,function (s) {s.location = parseInt(s.BLSample_location)});
+            if (_.maxBy(samples,"location").location > 10) {
+                this.data.puckType = "Unipuck";
+                this.container = this.createContainer(this.data);
+            }
         }
-    }
-    this.containerPanel.removeAll();
-    this.containerPanel.add(this.container.getPanel());
-    if (samples.length > 0){
-        this.container.loadSamples(samples);
-        if (!this.container.containerId) {
-            this.container.containerId = this.containerId;
+        this.containerPanel.removeAll();
+        this.containerPanel.add(this.container.getPanel());
+        if (samples.length > 0){
+            this.container.loadSamples(samples);
+            if (!this.container.containerId) {
+                this.container.containerId = this.containerId;
+            }
+            // this.shippingId = samples[0].Shipping_shippingId;
         }
-        // this.shippingId = samples[0].Shipping_shippingId;
-    }
-    
-    var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
-    if (withoutCollection.length < samples.length) {
-        this.withoutCollection = false;
+        
+        var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+        if (withoutCollection.length < samples.length) {
+            this.withoutCollection = false;
+        }
     }
 };
 
@@ -7603,6 +7643,8 @@ ContainerParcelPanel.prototype.createContainer = function (data) {
     } else if (data.puckType == "StockSolution") {
         data.stockSolutionId = this.containerId;
         container= new StockSolutionContainer(data);
+    } else if (data.puckType == "StatisticsPuck") {
+        container= new PuckStatisticsContainer(data);
     }
 
     container.onClick.attach(function (sender, id) {
@@ -8228,6 +8270,7 @@ function ParcelPanel(args) {
 	this.shippingId = 0;
 	this.shippingStatus = "";
 	this.containersPanel = null;
+	this.currentTab = "content";
 
 	this.isSaveButtonHidden = false;
 	this.isHidden = false;
@@ -8251,13 +8294,16 @@ function ParcelPanel(args) {
 		if (args.shippingStatus != null) {
 			this.shippingStatus = args.shippingStatus;
 		}
+		if (args.currentTab != null) {
+			this.currentTab = args.currentTab;
+		}
 	}
 	
 	this.onSavedClick = new Event(this);
 
 }
 
-ParcelPanel.prototype.load = function(dewar, shipment) {
+ParcelPanel.prototype.load = function(dewar, shipment, samples, withoutCollection) {
 	var _this = this;
 	this.dewar = dewar;
 	this.dewar.index = this.index;
@@ -8267,6 +8313,8 @@ ParcelPanel.prototype.load = function(dewar, shipment) {
 			this.dewar.beamlineName = shipment.sessions[0].beamlineName;
 		}
 	}
+	this.samples = samples;
+	this.withoutCollection = withoutCollection;
 	
 	/** Loading the template **/
 	var html = "";
@@ -8310,31 +8358,59 @@ ParcelPanel.prototype.load = function(dewar, shipment) {
 	});
 
 	/** Set parameters **/
-	this.renderShipmentParameters(dewar);
+	if (this.currentTab == "content"){
+		this.renderDewarParameters(dewar);
+	} else {
+		this.renderDewarStatistics(dewar);
+	}
+	this.renderDewarComments(dewar);
 
 	/** Rendering pucks **/
 	this.renderPucks(dewar);
 };
 
-ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
+ParcelPanel.prototype.renderDewarParameters = function (dewar) {
 	var html = "";
 	dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
 		html = out;
 	});
-
 	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
+};
+
+ParcelPanel.prototype.renderDewarStatistics = function (dewar) {
+	var html = "";
+	var nContainers = 0;
+	if (dewar.containerVOs) {
+		nContainers = dewar.containerVOs.length;
+	}
+	var nSamples = 0;
+	var nMeasured = 0;
+	if (this.samples) {
+		nSamples = this.samples.length;
+	}
+	var nMeasured = nSamples;
+	if (this.withoutCollection) {
+		nMeasured = nSamples - this.withoutCollection.length;
+	}
+	dust.render("parcel.panel.statistics.template", {id : this.id,height : this.height, dewar : dewar, nContainers : nContainers, nSamples : nSamples, nMeasured : nMeasured}, function(err, out){
+		html = out;
+	});
+	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
+}
+
+ParcelPanel.prototype.renderDewarComments = function (dewar) {
 	if (dewar.comments != "" && dewar.comments != null) {
 		$('#' + this.id + "-comments").hide().html("Comments: " + dewar.comments).fadeIn("fast");
 		$('#' + this.id + "-index-td").attr('rowspan',2);
 		$('#' + this.id + "-buttons-td").attr('rowspan',2);
 		this.panel.setHeight(this.height + 25);
 	} else {
-		this.panel.setHeight(this.height);
+		$('#' + this.id + "-comments").hide().html("").fadeIn("fast");
 		$('#' + this.id + "-index-td").attr('rowspan',1);
 		$('#' + this.id + "-buttons-td").attr('rowspan',1);
+		this.panel.setHeight(this.height);
 	}
-	this.panel.doLayout();
-};
+}
 
 ParcelPanel.prototype.renderPucks = function (dewar) {
 	var _this = this;
@@ -8370,26 +8446,47 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
-			var containerPanelsMap = {};
+			// var containerPanelsMap = {};
 			var containerIds = [];
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
+				var type = container.containerType;
+				if (this.currentTab == "statistics") {
+					type = "StatisticsPuck";
+				}
+				var containerParcelPanel = new ContainerParcelPanel({
+																	type : type, 
+																	height : this.containersPanelHeight/rows, 
+																	width : this.containersParcelWidth,
+																	containerId : container.containerId, 
+																	shippingId : this.shippingId, 
+																	shippingStatus : this.shippingStatus, 
+																	capacity : container.capacity, 
+																	code : container.code
+																});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
 					_this.renderPucks(_this.dewar);
 				});
-				containerPanelsMap[container.containerId] = containerParcelPanel;
+				// containerPanelsMap[container.containerId] = containerParcelPanel;
 				containerIds.push(container.containerId);
-				
 				containerRows[Math.floor(i/maxNumberForRow)].insert(containerParcelPanel.getPanel());
+				containerParcelPanel.load(_.filter(this.samples,{"BLSample_containerId":container.containerId}));
 			}
 			
 			for (var i = 0; i< stockSolutions.length; i++){
 				$('#hoveringTooltipDiv-' + stockSolutions[i].stockSolutionId).remove();
-				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, code : stockSolutions[i].name});	
-				containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
+				var containerParcelPanel = new ContainerParcelPanel(
+																		{type : "StockSolution", 
+																		height : this.containersPanelHeight/rows, 
+																		width : this.containersParcelWidth,
+																		containerId : stockSolutions[i].stockSolutionId, 
+																		shippingId : this.shippingId, 
+																		shippingStatus : this.shippingStatus, 
+																		code : stockSolutions[i].name
+																	});	
+				// containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
 				containerParcelPanel.onContainerRemoved.attach(function (sender, stockSolutionId) {
 					var stockSolution = EXI.proposalManager.getStockSolutionById(stockSolutionId);
@@ -8406,27 +8503,27 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				containerRows[Math.floor((i + dewar.containerVOs.length)/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
 
-			if (!_.isEmpty(containerPanelsMap)) {
+			// if (!_.isEmpty(containerPanelsMap)) {
 				
-				var onSuccess = function (sender, samples) {
-					if (samples) {
-						var samplesMap = {};
-						for (var i = 0 ; i < samples.length ; i++) {
-							var sample = samples[i];
-							if (samplesMap[sample.Container_containerId]){
-								samplesMap[sample.Container_containerId].push(sample);
-							} else {
-								samplesMap[sample.Container_containerId] = [sample];
-							}
-						}
-						_.each(samplesMap, function(samples, containerId) {
-							containerPanelsMap[containerId].load(samples);
-						});
-					}
-				}
+			// 	var onSuccess = function (sender, samples) {
+			// 		if (samples) {
+			// 			var samplesMap = {};
+			// 			for (var i = 0 ; i < samples.length ; i++) {
+			// 				var sample = samples[i];
+			// 				if (samplesMap[sample.Container_containerId]){
+			// 					samplesMap[sample.Container_containerId].push(sample);
+			// 				} else {
+			// 					samplesMap[sample.Container_containerId] = [sample];
+			// 				}
+			// 			}
+			// 			_.each(samplesMap, function(samples, containerId) {
+			// 				containerPanelsMap[containerId].load(samples);
+			// 			});
+			// 		}
+			// 	}
 
-				EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
-			}
+			// 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
+			// }
 		}
 	}
 }
@@ -8498,19 +8595,16 @@ ParcelPanel.prototype.showCaseForm = function() {
 	    items: [
 	            	caseForm.getPanel(_this.dewar)
 	    ],
-	    // listeners : {
-		// 	afterrender : function(component, eOpts) {
-		// 		if (_this.puck != null){
-		// 			_this.load(_this.puck);
-		// 		}
-		// 	}
-	    // },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {
 							_this.onSavedClick.notify(caseForm.getDewar());
 							window.close();
-                            _this.renderShipmentParameters(_this.dewar);
+							if (_this.currentTab == "content") {
+                            	_this.renderDewarParameters(_this.dewar);
+							}
+							_this.renderDewarComments(_this.dewar);
+							_this.panel.doLayout();
 						}
 					}, {
 						text : 'Cancel',
@@ -8714,6 +8808,169 @@ ProposalGrid.prototype.getPanel = function() {
 
 
 
+function PuckStatisticsContainer(args) {
+    this.id = BUI.id();
+	
+    this.templateData = {
+                            id          	: this.id,
+                            xmargin     	: 0,
+                            ymargin     	: 0,
+                            mainRadius  	: 50,
+                            width       	: 100,
+                            height      	: 100,
+							margin			: 15,
+							// rInner			: 10,
+							enableMainClick : false,
+							enableClick : false,
+                            code            : "",
+							enableMainMouseOver : false,
+							nSamples : 0,
+							nMeasured : 0
+                        };
+
+    this.samples = null;
+	this.code = "";
+
+	if (args){
+		if (args.code){
+			this.code = args.code;
+		}
+		if (args.xMargin){
+			this.templateData.xMargin = args.xMargin;
+		}
+		if (args.yMargin){
+			this.templateData.yMargin = args.yMargin;
+		}
+		if (args.enableMainClick != null){
+			this.templateData.enableMainClick = args.enableMainClick;
+		}
+		if (args.enableClick != null){
+			this.templateData.enableClick = args.enableClick;
+		}
+        if (args.mainRadius){
+			this.templateData.mainRadius = args.mainRadius;
+			this.templateData.width = 2*args.mainRadius;
+			this.templateData.height = 2*args.mainRadius;
+			this.templateData.margin = (this.templateData.width - this.templateData.imgW)*0.5;
+		}
+        if (args.code) {
+            this.templateData.code = args.code;
+        }
+	}
+
+	this.onClick = new Event(this);
+	this.onMouseOver = new Event(this);
+	this.onMouseOut = new Event(this);
+};
+
+PuckStatisticsContainer.prototype.getPanel = function () {
+	
+	var _this = this;
+	
+	this.panel =  Ext.create('Ext.panel.Panel', {
+            id: this.id + "-container",
+		    x: this.templateData.xMargin,
+		    y: this.templateData.yMargin,
+		    width : this.templateData.width + 1,
+		    height : this.templateData.height + 1,
+		   cls:'border-grid',
+		    frame: false,
+			border: false,
+			bodyStyle: 'background:transparent;',
+		    
+            items : [
+						{
+							html : this.getHTML(),
+							width : this.templateData.width + 1,
+							height : this.templateData.height + 1
+						}
+			],
+			
+	});
+
+	this.panel.on('boxready', function() {
+        if(_this.templateData.enableMainClick) {
+			$("#" + _this.id).unbind('click').click(function(sender){
+				_this.onClick.notify(sender.target.id);
+			});
+		}
+		_this.setOnMouseOverEvent();
+    });
+	
+	return this.panel;
+	
+};
+
+PuckStatisticsContainer.prototype.loadSamples = function (samples) {
+    this.samples = samples;
+    if (samples && samples.length > 0){
+		this.templateData.nSamples = samples.length;
+		this.templateData.nMeasured = samples.length;
+		var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+		if (withoutCollection) {
+			this.templateData.nMeasured = samples.length - withoutCollection.length;
+		}
+		$("#" + this.id + "-samples").html(this.templateData.nSamples);
+		$("#" + this.id + "-measured").html(this.templateData.nMeasured);
+	}
+};
+
+PuckStatisticsContainer.prototype.getHTML = function (samples) {
+	var html = "";
+	if (this.templateData.height < 40) {
+		this.templateData.fillPanel = false;
+	} else {
+		this.templateData.fillPanel = true;
+	}
+	dust.render("puck.statistics.container.template", this.templateData, function(err, out){
+		html = out;
+	});
+	
+	return html;
+};
+
+PuckStatisticsContainer.prototype.setOnMouseOverEvent = function () {
+	var _this = this;
+	
+	$("#" + this.id).unbind('mouseover').mouseover(function(sender){
+		_this.onMouseOver.notify(_this);
+		if (_this.templateData.height < 40){
+			var id = sender.currentTarget.id;
+			$("#" + id).addClass("stock-solution-focus");
+			
+			// TOOLTIP
+			var tooltipHtml = "";
+			dust.render("puck.statistics.tooltip.template", _this.templateData, function(err, out) {
+				tooltipHtml = out;
+			});
+			$('body').append(tooltipHtml);
+			$('#hoveringTooltipDiv-' + _this.id).css({
+				"top" : $(this).offset().top,
+				"left" : $(this).offset().left + _this.templateData.width
+			});
+		}
+	});
+	
+	$("#" + this.id).unbind('mouseout').mouseout(function(sender){
+		_this.onMouseOut.notify(_this);
+		if (_this.templateData.height < 40){
+			var stockId = sender.currentTarget.id;
+			$("#" + stockId).removeClass("stock-solution-focus");
+
+			// TOOLTIP
+			$('#hoveringTooltipDiv-' + _this.id).remove();
+		}
+	});
+
+}
+
+PuckStatisticsContainer.prototype.focus = function (bool) {
+	if (bool){
+		$("#" + this.id + "-container").addClass("stock-solution-selected");		
+	} else {
+		$("#" + this.id + "-container").removeClass("stock-solution-selected");	
+	}
+};
 function SessionGrid(args) {
 	this.height = 500;
 	this.tbar = false;
@@ -9059,15 +9316,11 @@ function StockSolutionContainer(args) {
                             mainRadius  	: 50,
                             width       	: 100,
                             height      	: 100,
-                            imgH			: 42,
-                            imgW			: 42,
 							margin			: 15,
 							stockId			: 0,
-							// rInner			: 10,
 							enableMainClick : false,
-                            code            : "",
-                            enableClick     : false,
-							enableMainMouseOver : false
+							enableClick : false,
+                            code            : ""
                         };
 
 	this.stockSolutionId = 0;
@@ -9087,22 +9340,17 @@ function StockSolutionContainer(args) {
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
 		}
-		if (args.enableMainClick != null){
-			this.templateData.enableMainClick = args.enableMainClick;
+		if (args.enableClick != null){
+			this.templateData.enableClick = args.enableClick;
 		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
 			this.templateData.height = 2*args.mainRadius;
-			this.templateData.imgH = this.templateData.height*0.7;
-			this.templateData.imgW = this.templateData.width*0.7;
 			this.templateData.margin = (this.templateData.width - this.templateData.imgW)*0.5;
 		}
         if (args.code) {
             this.templateData.code = args.code;
-        }
-        if (args.enableClick != null) {
-            this.templateData.enableClick = args.enableClick;
         }
         if (args.stockSolutionId) {
             this.stockSolutionId = args.stockSolutionId;
