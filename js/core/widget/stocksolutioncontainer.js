@@ -11,6 +11,7 @@ function StockSolutionContainer(args) {
 							margin			: 15,
 							stockId			: 0,
 							enableMainClick : false,
+							enableClick : false,
                             code            : ""
                         };
 
@@ -31,8 +32,8 @@ function StockSolutionContainer(args) {
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
 		}
-		if (args.enableMainClick != null){
-			this.templateData.enableMainClick = args.enableMainClick;
+		if (args.enableClick != null){
+			this.templateData.enableClick = args.enableClick;
 		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;

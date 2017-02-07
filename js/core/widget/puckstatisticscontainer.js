@@ -11,8 +11,11 @@ function PuckStatisticsContainer(args) {
 							margin			: 15,
 							// rInner			: 10,
 							enableMainClick : false,
+							enableClick : false,
                             code            : "",
-							enableMainMouseOver : false
+							enableMainMouseOver : false,
+							nSamples : 0,
+							nMeasured : 0
                         };
 
     this.samples = null;
@@ -31,8 +34,8 @@ function PuckStatisticsContainer(args) {
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
 		}
-		if (args.enableMainClick != null){
-			this.templateData.enableMainClick = args.enableMainClick;
+		if (args.enableClick != null){
+			this.templateData.enableClick = args.enableClick;
 		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
@@ -90,10 +93,15 @@ PuckStatisticsContainer.prototype.getPanel = function () {
 
 PuckStatisticsContainer.prototype.loadSamples = function (samples) {
     this.samples = samples;
-    if (samples){
-		if (samples.length > 0){
-			this.containerId = samples[0].Container_containerId; 
+    if (samples && samples.length > 0){
+		this.templateData.nSamples = samples.length;
+		this.templateData.nMeasured = samples.length;
+		var withoutCollection = _.filter(samples,{DataCollectionGroup_dataCollectionGroupId : null});
+		if (withoutCollection) {
+			this.templateData.nMeasured = samples.length - withoutCollection.length;
 		}
+		$("#" + this.id + "-samples").html(this.templateData.nSamples);
+		$("#" + this.id + "-measured").html(this.templateData.nMeasured);
 	}
 };
 
@@ -122,11 +130,11 @@ PuckStatisticsContainer.prototype.setOnMouseOverEvent = function () {
 			
 			// TOOLTIP
 			var tooltipHtml = "";
-			dust.render("stock.solution.tooltip.template", _this.templateData, function(err, out) {
+			dust.render("puck.statistics.tooltip.template", _this.templateData, function(err, out) {
 				tooltipHtml = out;
 			});
 			$('body').append(tooltipHtml);
-			$('#hoveringTooltipDiv-' + _this.stockSolutionId).css({
+			$('#hoveringTooltipDiv-' + _this.id).css({
 				"top" : $(this).offset().top,
 				"left" : $(this).offset().left + _this.templateData.width
 			});
@@ -140,7 +148,7 @@ PuckStatisticsContainer.prototype.setOnMouseOverEvent = function () {
 			$("#" + stockId).removeClass("stock-solution-focus");
 
 			// TOOLTIP
-			$('#hoveringTooltipDiv-' + _this.stockSolutionId).remove();
+			$('#hoveringTooltipDiv-' + _this.id).remove();
 		}
 	});
 
