@@ -118,7 +118,8 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 									{
 										text: 'Autoproc Scaling Statistics',
 										icon : '../images/icon/ic_insert_chart_black_36dp.png',
-										handler: onItemCheck
+										handler: onItemCheck,
+										disabled : true
 									}
 								]
 							}
