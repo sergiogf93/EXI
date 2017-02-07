@@ -4,7 +4,6 @@
                     <th  style='padding:0 15px 0 15px;'>Cell A</th>
                     <th style='padding:0 15px 0 15px;'>Cell B</th>
                     <th style='padding:0 15px 0 15px;'>Cell C</th>
-                    
                 </tr>
                 </thead>
              <tbody>

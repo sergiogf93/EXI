@@ -6,10 +6,10 @@
   <div style='float:left;' id="left">
  
          <img class="logoImage" src="../images/logo_ESRF.png" />
-        <span class="title">ESY
-        <span class="subtitle">ESRF Sample Tracking System
+        <span class="title">E-Track
+        <span class="subtitle">ESRF Tracking System
             <sub style="font-size:10px;color:orange">BETA</sub>
-        </span></span>
+        </span></span> 
   </div>
   <div id="center"></div>
  

@@ -136,12 +136,25 @@
             <div class="container-fluid">
                <div class="row">
                   {>"general.mxdatacollectiongrid.template"  /}
-                  <div class="col-xs-6 col-md-2">
-                     {>"beamline.mxdatacollectiongrid.template"  /}                             
+                  <div class="col-xs-4 col-md-2">
+                      {>"beamline.mxdatacollectiongrid.template"  /}                             
                   </div>
-                  <div class="col-xs-6 col-md-2">
+                  <div class="col-xs-4 col-md-2">
                      {>"detector.mxdatacollectiongrid.template"  /}                             
                   </div>
+
+                <div class="col-xs-4 col-md-2">
+                    <table class="table">                    
+                        <tr>
+                            <td>Synchrotron Current</td>
+                            <td  class='column_parameter_value'> 
+                                {.synchrotronCurrent}
+                            </td>
+                        </tr>                                               
+                    </table>  
+                </div>
+                  
+
                </div>
             </div>
          </div>

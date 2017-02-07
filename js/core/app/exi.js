@@ -15,6 +15,10 @@ function Exi(args) {
 	/** If false when opening a new tab it will close the already open ones **/
 	this.keepTabs = false;
 	
+    /** Timers for setInterval methods */
+    this.timers = [];
+    
+
 	
 	this.controllers = [new ExiController(), new ProposalExiController(), new ShippingExiController()];
 	
@@ -98,6 +102,19 @@ function Exi(args) {
 	this.onAfterRender = new Event(this);
 }
 
+
+Exi.prototype.addTimer = function(timer) {
+    this.timers.push(timer);
+    console.log(this.timers);
+};
+
+Exi.prototype.clearTimers = function() {
+    for (var i = 0; i < this.timers.length; i++) {
+        clearTimeout(this.timers[i]);        
+    }   
+    this.timers = [];
+    console.log(this.timers);
+}
 /**
  * This method append to args the values of the active connection: url, token and proposal
  */
@@ -163,6 +180,7 @@ Exi.prototype.loadSelected = function(selected) {
 /**
  * Adds a new Main panel to the center panel
  * @param mainView
+ * @param clearTimers if timers should be removed
  */
 Exi.prototype.addMainPanel = function(mainView) {
 	if (!this.keepTabs){
@@ -170,6 +188,19 @@ Exi.prototype.addMainPanel = function(mainView) {
 	}
 	Ext.getCmp('main_panel').add(mainView.getPanel());
 	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
+    
+  
+    this.clearTimers();
+    
+};
+
+Exi.prototype.addMainPanelWithTimer = function(mainView) {
+	if (!this.keepTabs){
+		Ext.getCmp('main_panel').removeAll();
+	}
+	Ext.getCmp('main_panel').add(mainView.getPanel());
+	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
+       
 };
 
 Exi.prototype.getSelectedDataCollections = function() {
@@ -186,6 +217,17 @@ Exi.prototype.addNavigationPanel = function(listView) {
 		Ext.getCmp("navigation").expand();
         this.showNavigationPanel();
 	}
+    this.clearTimers();
+};
+
+
+Exi.prototype.addNavigationPanelWithTimer = function(listView) {
+	Ext.getCmp('navigation').add(listView.getPanel());
+	if (Ext.getCmp("navigation") != null){
+		Ext.getCmp("navigation").expand();
+        this.showNavigationPanel();
+	}
+     
 };
 
 Exi.prototype.hideNavigationPanel = function(listView) {

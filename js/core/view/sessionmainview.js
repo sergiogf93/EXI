@@ -51,9 +51,10 @@ SessionMainView.prototype.showCalendar = function(data) {
      var _this = this;
      $('#' + _this.id).empty();
      function editEvent(event) {
-                         _this.loadByDate(moment(new Date(event.startDate)).format("YYYYMMDD"));
+                    _this.loadByDate(moment(new Date(event.startDate)).format("YYYYMMDD"));
       }
-        $('#' + this.id).calendar({
+      
+      $('#' + this.id).calendar({
             enableContextMenu: true,
             enableRangeSelection: true,
             selectRange: function(e) {
@@ -116,9 +117,9 @@ SessionMainView.prototype.load = function(sessions) {
            startDate : new Date(sessions[i].BLSession_startDate), 
            endDate : new Date(sessions[i].BLSession_endDate)
         });
-        
+       
     }
-    
+   
     this.showCalendar(sessionForCalendar);
     this.subpanel.insert( this.sessionGrid.getPanel());
     //this.sessionGrid.load(sessions);
@@ -149,7 +150,7 @@ SessionMainView.prototype.loadByDate = function(start) {
           var _this = this;
           this.panel.setLoading(true);
           function onSuccess(sender, sessions){              
-        	  //_this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
+        	 
              _this.sessionGrid.load(sessions);
         	  _this.panel.setLoading(false);
           }
