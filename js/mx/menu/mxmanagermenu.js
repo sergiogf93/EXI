@@ -78,7 +78,6 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 			var scatteringForm = new ScatteringForm({width : 650, height : 560});
 
 			var window = Ext.create('Ext.window.Window', {
-				title : 'Autoprocessing scaling statistics',
 				height : 560,
 				width : 650,
 				modal : true,
@@ -97,7 +96,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 					} ]
 			}).show();
 
-			var keys = ["rPimWithinIPlusIMinus","anomalousMultiplicity","multiplicity","resolutionLimitLow","ccHalf",
+			var keys = ["ISA", "rPimWithinIPlusIMinus","anomalousMultiplicity","multiplicity","resolutionLimitLow","ccHalf",
 			"strategySubWedgeOrigId","completeness","rMerge","anomalous","meanIOverSigI","ccAno","autoProcScalingId",
 			"nTotalObservations","sigAno","rMeasWithinIPlusIMinus","anomalousCompleteness","resolutionLimitHigh",
 			"fractionalPartialBias","rMeasAllIPlusIMinus","nTotalUniqueObservations","rPimAllIPlusIMinus"];
@@ -119,7 +118,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 										text: 'Autoproc Scaling Statistics',
 										icon : '../images/icon/ic_insert_chart_black_36dp.png',
 										handler: onItemCheck,
-										disabled : true
+										disabled : false
 									}
 								]
 							}
