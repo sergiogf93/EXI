@@ -54,7 +54,7 @@ ScatteringForm.prototype.load = function(data) {
 		this.data.types = [
 								{display : "Overall", value : "overall"},
 								{display : "InnerShell", value : "innerShell"},
-								{display : "OuterShell", value : "outerShell"}
+								{display : "OutShell", value : "outShell"}
 							]
 	}
 
