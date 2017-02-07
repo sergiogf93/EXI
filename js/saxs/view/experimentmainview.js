@@ -15,16 +15,7 @@ function ExperimentMainView() {
 		} ]
 	});
 
-	// Create the combo box, attached to the states data store
-	// var viscosityEditor = Ext.create('Ext.form.ComboBox', {
-	// 	fieldLabel : '',
-	// 	store : storeViscosity,
-	// 	queryMode : 'local',
-	// 	displayField : 'name',
-	// 	valueField : 'name'
-	// });
-	
-	
+		
 	/** Specimen Widget contains a specimenGrid and a sampleChangerWidget than can be displayed with are vertical or horizontal layout **/
 	this.specimenWidget = new SpecimenWidget({
 		height : this.height,
@@ -35,14 +26,13 @@ function ExperimentMainView() {
 	
 	this.queueGrid = new OverviewQueueGrid({
 		positionColumnsHidden : true,
-//		maxHeight : Ext.getCmp("main_panel").getHeight() - 50,
+
 		sorters : [ {
 			property : 'macromoleculeAcronym',
 			direction : 'ASC'
 		} ]
 	});
-
-	this.queueGridVersion2 = new QueueGridTest();
+	
 
 	this.activePanel = this.queueGrid;
 	
@@ -64,12 +54,8 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },{
-            text: 'Online Data Analysis (v2)',            
-            handler: function(){
-                onMenuClicked(_this.queueGridVersion2);
-            }
-        },{
+        },
+		,{
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);

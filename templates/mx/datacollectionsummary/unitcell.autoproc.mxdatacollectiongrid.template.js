@@ -1,32 +1,32 @@
    <table class='table-sm table table-striped'>
                 <thead>   
                 <tr>
-                    <th  style='padding:0 15px 0 15px;'>cell A</th>
-                    <th style='padding:0 15px 0 15px;'>cell B</th>
-                    <th style='padding:0 15px 0 15px;'>cell C</th>
+                    <th style='padding:0 15px 0 15px;font-weight: normal;'>cell A</th>
+                    <th style='padding:0 15px 0 15px;font-weight: normal;'>cell B</th>
+                    <th style='padding:0 15px 0 15px;font-weight: normal;'>cell C</th>
                     
                 </tr>
                 </thead>
              <tbody>
             
                 <tr>
-                    <td  style='padding:0 15px 0 15px;'>{.overall.cell_a}</td>
-                    <td style='padding:0 15px 0 15px;'>{.overall.cell_b}</td>
-                    <td style='padding:0 15px 0 15px;'>{.overall.cell_c}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="overall.cell_a" decimals=2 intIfPossible="true" /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="overall.cell_b" decimals=2 intIfPossible="true" /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="overall.cell_c" decimals=2 intIfPossible="true" /}</td>
                     
                 </tr>
          
                 <tr>
-                    <th  style='padding:0 15px 0 15px;'>Alpha</th>
-                    <th style='padding:0 15px 0 15px;'>Beta</th>
-                    <th style='padding:0 15px 0 15px;'>Gamma</th>
+                    <th  style='padding:0 15px 0 15px;font-weight: normal;'>Alpha</th>
+                    <th style='padding:0 15px 0 15px;font-weight: normal;'>Beta</th>
+                    <th style='padding:0 15px 0 15px;font-weight: normal;'>Gamma</th>
                     
                 </tr>
                
                 <tr>
-                    <td  style='padding:0 15px 0 15px;'>{.overall.cell_alpha}</td>
-                    <td style='padding:0 15px 0 15px;'>{.overall.cell_beta}</td>
-                    <td style='padding:0 15px 0 15px;'>{.overall.cell_gamma}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="overall.cell_alpha" decimals=2 intIfPossible="true" /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="overall.cell_beta" decimals=2 intIfPossible="true" /}</td>
+                    <td class='column_parameter_value' style='padding:0 15px 0 15px;'>{@decimal key="overall.cell_gamma" decimals=2 intIfPossible="true" /}</td>
                     
                 </tr>
                  </tbody>

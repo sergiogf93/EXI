@@ -144,6 +144,7 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                }
            
                var node = {};
+               
                node = ({
                    spaceGroup       : spaceGroup,
                    prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
@@ -199,7 +200,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                                     var mapUrl2 = EXI.getDataAdapter().mx.phasing.downloadPhasingFilesByPhasingAttachmentId( mapsArr[1]);                                
                                     toBePushed["uglymol"] = '../viewer/uglymol/index.html?pdb=' + pdbUrl + '&map1=' + mapUrl1 + '&map2=' + mapUrl2;
                                 }
-                            }                                                                            
+                            }  
+                            toBePushed["downloadFilesUrl"] = node.downloadFilesUrl;                                                                            
                             node["metrics"].push(toBePushed);                         
                        }                                            
                    }     
@@ -263,7 +265,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
             }
         }
         
-        var html = "";     
+        var html = "";    
+         
         dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
         });
@@ -288,13 +291,12 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
     var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
     if (dc){
         if ($("#sample_puck_layout_" +dataCollectionId)){
-            
             if (dc.Container_containerId){
-                var container =_.filter(grid.dataCollectionGroup, {"Container_containerId":Number(dc.Container_containerId)});
-                if(container){
+                var containers =_.filter(grid.dataCollectionGroup, {"Container_containerId":Number(dc.Container_containerId)});
+                if(containers){
                     var dataCollectionIds = {};
-                    for (var i = 1 ; i <= container[0].Container_capacity ; i++) {
-                        var sampleByLocation = _.filter(container,{"BLSample_location":i.toString()});
+                    for (var i = 1 ; i <= containers[0].Container_capacity ; i++) {
+                        var sampleByLocation = _.filter(containers,{"BLSample_location":i.toString()});
                         if (sampleByLocation.length > 0) {
                             var ids = [];
                             for (sample in sampleByLocation){
@@ -310,17 +312,27 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
                                                 enableClick : false,
                                                 dataCollectionIds : dataCollectionIds
                 };
-                                            
-                var puck = new UniPuckWidget(attributesContainerWidget);
-                
-                if (dc.Container_capacity == 10){
-                    puck = new SpinePuckWidget(attributesContainerWidget);
-                }
-                
-                $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel());
+
+                var puckLegend = new PuckLegend();
+
+                $("#sample_puck_legend_" + dataCollectionId).html(puckLegend.getPanel().html);
                 
                 var onSuccess = function(sender, samples){
                     if (samples){
+                        var puck = new UniPuckWidget(attributesContainerWidget);
+                        if (dc.Container_capacity == 10){
+                            puck = new SpinePuckWidget(attributesContainerWidget);
+                        }
+                        var locations = _.map(samples,"BLSample_location").map(function (i) {return parseInt(i)});
+                        var maxLocation = _.max(locations);
+                        if (maxLocation) {
+                            if (maxLocation > 10) {
+                                puck = new UniPuckWidget(attributesContainerWidget);
+                            } else {
+                                puck = new SpinePuckWidget(attributesContainerWidget);
+                            }
+                        }
+                        $("#sample_puck_layout_" + dataCollectionId).html(puck.getPanel().html);
                         puck.loadSamples(samples,dc.BLSample_location);
                     }
                 };
@@ -341,7 +353,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var _this = this;
     
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
-    
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/

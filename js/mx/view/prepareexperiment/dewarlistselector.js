@@ -38,29 +38,27 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
     _(filtered).forEach(function(value) {
-        if (_this.filterByDate){
-            if (value.shippingStatus){
-                if (value.shippingStatus.toUpperCase() == "PROCESSING"){
-                    data.push(value);
-                    return;
-                }                        
-            }       
         
-            /** Filtering only future sessions */            
-            if (value.sessionStartDate){
-                if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
-                    data.push(value);
+        if ((value.sessionId) ||(value.shippingStatus.toUpperCase() == "PROCESSING")){
+            if (_this.filterByDate){
+                if (value.shippingStatus){
+                    if (value.shippingStatus.toUpperCase() == "PROCESSING"){
+                        data.push(value);
+                        return;
+                    }                        
+                }       
+            
+                /** Filtering only future sessions */
+                if (value.sessionStartDate){
+                    if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
+                        data.push(value);
+                    }
                 }
             }
             else{
-                /** No session or not parseable */
-                data.push(value);
+                    data.push(value);
             }
         }
-        else{
-                data.push(value);
-        }
-        
     });
         
     this.panel.setTitle(data.length + " shipments candidates for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);    
@@ -101,6 +99,21 @@ DewarListSelectorGrid.prototype.getSelectedData = function() {
 DewarListSelectorGrid.prototype.getStore = function(){
     this.store = Ext.create('Ext.data.Store', {
         fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type']
+        /*sortInfo: { field: "sessionStartDate", direction: "DESC" },
+        sorters:
+                {
+                    field: 'sessionStartDate',
+                    direction: 'ASC',
+                    sorterFn: function(o1, o2) {
+                        var d1 = new Date(o1.data.sessionStartDate)
+                        var d2 = new Date(o2.data.sessionStartDate)
+                        if (d1 === d2) {
+                            return 0;
+                        } else {
+                            return (d1 < d2) ? 1 : -1;
+                        }
+                    }
+                }*/
     });
     return this.store;
 };
@@ -111,7 +124,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
         items: [
             {
                 xtype       : 'checkboxfield',
-                boxLabel    : 'Display only shipments scheduled for future sessions',
+                boxLabel    : 'Display only shipments scheduled for future sessions or in PROCESSING status',
                 checked     : this.filterByDate,
                 listeners : {
                     change : function( cb, newValue, oldValue, eOpts ){
@@ -127,7 +140,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
     this.panel = Ext.create('Ext.grid.Panel', {
             title: 'Select dewars',
             store: this.getStore(),
-            // cls : 'border-grid',           
+            sortableColumns : false,           
             height : this.height, 
             width : this.width,  
             flex : 0.5, 
@@ -138,7 +151,13 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     text    : 'Shipment',
                     columns : [
                          { text: 'Name',  dataIndex: 'shippingName', flex : 1 },
-                         { text: 'Status',  dataIndex: 'shippingStatus', flex: 1 },
+                         { text: 'Status',  dataIndex: 'shippingStatus', flex: 1,
+                        renderer : function(grid, a, record){
+                                      return record.data.shippingStatus.toUpperCase()
+                                 
+                                
+                            } 
+                         },
                          { text: 'Created on',  dataIndex: 'creationDate', flex: 1,   hidden : true,
                             renderer : function(grid, a, record){
                                 if (record.data.creationDate){

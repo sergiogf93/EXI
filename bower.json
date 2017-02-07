@@ -41,14 +41,15 @@
     "lightbox2": "2.8.2",
     "bootstrap": "^3.3.7",
     "exi-ui-utils": "*",
-    "bootstrap-year-calendar": "^1.1.0",
-    "notifyjs": "^0.4.2",
-    "three": "*"
+    "bootstrap-year-calendar": "^1.1.0",    
+    "three": "*",
+    "notifyjs": "*"
   },
   "devDependencies": {
     "uglymol": "^0.1.0"
   },
   "resolutions": {
-    "lightbox2": "2.8.2"
+    "lightbox2": "2.8.2",
+    "jquery": "1.9.1 - 3"
   }
 }

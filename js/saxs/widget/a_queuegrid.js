@@ -75,7 +75,6 @@ QueueGrid.prototype.getImage = function(subtractionId, category) {
 QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
     
     var _this = this;
-	
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/
@@ -89,6 +88,7 @@ QueueGrid.prototype.attachCallBackAfterRender = function(nodeWithScroll) {
     };
        
     var timer1 = setTimeout(function() { $('.queue-img').lazy(lazy);}, 500);
+	var timer2 = setTimeout(function() {  $('.smalllazy').lazy(lazy);}, 500); 
 
 };
 

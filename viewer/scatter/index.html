@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>EXI CSV Scatter Viewer</title>
+  <meta charset="utf-8">
+  
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div id="viewerScatter">
+      <div id="plotDiv" class="plotDivScatter" style="position: absolute;
+    top: 45%;
+    left: 40%;
+    height: 70%;
+    width: 70%;
+    margin: -15% 0 0 -25%;"></div>
+    </div>
+  </div>
+  <script>
+    function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
+
+    Plotly.d3.csv(getParameterByName("url"), function(rows){
+      var yValues = getParameterByName("y").split(",");
+      var data = [];
+      for (var i=0 ; i < yValues.length ; i++) {
+        var yKey = yValues[i];
+        var trace = {
+              type: 'scatter',                    // set the chart type
+              mode: 'markers',                     // connect points with lines
+              name: yKey,
+              x: rows.map(function(row){          // set the x-data
+                if (row[yKey] != null) {
+                  return row[getParameterByName("x")];
+                }
+              }),
+              y: rows.map(function(row){          // set the x-data
+                return row[yKey];
+              }),
+        };
+        data.push(trace);
+      }
+
+      var layout = {
+        title : getParameterByName("title"),
+        xaxis : {
+        
+          tickformat: "%c"   
+        },
+        hovermode:'closest',
+        margin: {                        
+          l: 40, b: 200, r: 100, t:50
+        }
+      };
+  
+      Plotly.newPlot("plotDiv", data, layout);
+  });
+
+  </script>
+</body>
+</html>

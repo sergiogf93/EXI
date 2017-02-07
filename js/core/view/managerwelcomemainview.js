@@ -41,17 +41,18 @@ ManagerWelcomeMainView.prototype.getPanel = MainView.prototype.getPanel;
 */
 ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
     
-    EXI.mainStatusBar.showBusy("Loading proposal " +proposal); 
+    //EXI.mainStatusBar.showBusy("Loading proposal " +proposal); 
     
 	EXI.credentialManager.setActiveProposal(this.username, proposal);
     EXI.proposalManager.clear();
 	/** I don't need this to be synchronous **/	
-    EXI.proposalManager.onActiveProposalChanged = new Event();
+    /*EXI.proposalManager.onActiveProposalChanged = new Event();
     EXI.proposalManager.onActiveProposalChanged.attach(function(){
         EXI.mainStatusBar.showReady();
-        console.log(EXI.proposalManager.get());
+        
     });
-	EXI.proposalManager.get();
+    
+	EXI.proposalManager.get();*/
 };
 
 

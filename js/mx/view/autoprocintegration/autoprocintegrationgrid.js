@@ -110,7 +110,8 @@ AutoProcIntegrationGrid.prototype.getPhasing = function(data) {
     return phasing;
 };                 
 
-AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	                    
+AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	  
+                      
     var type = data.scalingStatisticsType.split(",");
     function getValue(attribute, i, decimals){
         
@@ -143,7 +144,9 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
                                             rMerge 			        : getValue(data.rMerge, i, 1),
                                             ccHalf 			        : getValue(data.ccHalf, i,1),
                                             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i,1),
-                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1)
+                                            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i,1),
+                                            ccAno                	: getValue(data.ccAno, i),
+                                            sigAno                	: getValue(data.sigAno, i)
                                            
                                             
                };            
@@ -185,7 +188,9 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
             rMerge 			        : getValue(data.rMerge, i),
             ccHalf 			        : getValue(data.ccHalf, i),
             rPimWithinIPlusIMinus 	: getValue(data.rPimWithinIPlusIMinus, i),
-            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i)
+            rMeasAllIPlusIMinus 	: getValue(data.rMeasAllIPlusIMinus, i),
+            ccAno                	: getValue(data.ccAno, i),
+            sigAno                	: getValue(data.sigAno, i)
             
         });
         
