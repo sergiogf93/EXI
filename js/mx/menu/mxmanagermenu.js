@@ -24,12 +24,15 @@ MXManagerMenu.prototype.getMenuItems = function() {
     	this.getHomeItem(),
     	this.getShipmentItem(),
     	{
-				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
-				cls : 'ExiSAXSMenuToolBar',
-				hidden : this.isHidden,
-                 disabled : true,
-				menu : this.getPreparationMenu() 
-		}, {
+                text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+                cls : 'ExiSAXSMenuToolBar',
+                disabled : false,
+                handler : function(){
+                    location.hash = "/mx/prepare/main";
+                
+				}
+		},
+		{
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
@@ -55,16 +58,16 @@ MXManagerMenu.prototype.getMenuItems = function() {
 		{
 			xtype : 'textfield',
 			name : 'field1',
-			emptyText : 'search macromolecule',
-			hidden : this.isHidden,
+			value : '',
+			emptyText : 'search by protein acronym',
 			listeners : {
 				specialkey : function(field, e) {
-					if (e.getKey() == e.ENTER) {                        
-						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
+					if (e.getKey() == e.ENTER) {
+						location.hash = "/mx/datacollection/protein_acronym/" + field.getValue() + "/main";
 					}
 				} 
 			} 
-	}
+		}
 	];
 };
 

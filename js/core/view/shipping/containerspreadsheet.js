@@ -532,7 +532,7 @@ ContainerSpreadSheet.prototype.manageChange = function (change, source, directio
                 if (!this.isCrystalFormAvailable(parsed,change[3])){
                     this.resetCrystalGroup(change[0]);
                     var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
-                    if (proteins) {
+                    if (proteins && proteins.length > 0) {
                         var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
                         if (crystalsByProteinId && crystalsByProteinId.length > 0){
                             var crystal = _.maxBy(crystalsByProteinId,"crystalId");

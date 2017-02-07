@@ -117,7 +117,7 @@ ContainerParcelPanel.prototype.load = function (samples) {
         _.map(samples,function (s) {s.location = parseInt(s.BLSample_location)});
         if (_.maxBy(samples,"location").location > 10) {
             this.data.puckType = "Unipuck";
-            this.container = createContainer(this.data);
+            this.container = this.createContainer(this.data);
         }
     }
     this.containerPanel.removeAll();
@@ -144,7 +144,7 @@ ContainerParcelPanel.prototype.load = function (samples) {
 */
 ContainerParcelPanel.prototype.removePuck = function() {
     this.panel.setLoading();
-    if (this.type == "StockSolution") {
+    if (this.data.puckType == "StockSolution") {
         this.onContainerRemoved.notify(this.containerId);
     } else {
         var _this = this;
@@ -249,7 +249,7 @@ ContainerParcelPanel.prototype.createContainer = function (data) {
                             text : 'Remove',
                             disabled : _this.shippingStatus == "processing" || !_this.withoutCollection,
                             handler : function() {
-                                _this.removeButtonClicked();
+                                 _this.removeButtonClicked();
                                  window.close();
                             }
                         }, {
