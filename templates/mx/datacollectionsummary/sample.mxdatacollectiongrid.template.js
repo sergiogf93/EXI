@@ -8,36 +8,29 @@
         <td>Sample</td>
         <td  class='column_parameter_value'>{.BLSample_name}</td>
     </tr> 
-     <tr>
-        <td> Location </td>
-        <td  class='column_parameter_value'> {.BLSample_location} </td>
+    <tr>
+        <td>Shipment / Parcel</td>
+        <td  class='column_parameter_value'>{.Shipping_shippingName} / {.Dewar_code}</td>
     </tr> 
      <tr>
-        <td> status</td>
-        <td  class='column_parameter_value'> {.BLSample_blSampleStatus}</td>
+        <td> Container / Position </td>
+        <td  class='column_parameter_value'> {.Container_containerType} / {.BLSample_location} </td>
+    </tr> 
+     <tr>
+        <td> Sample barcode</td>
+        <td  class='column_parameter_value'> {.barCode}</td>
     </tr>                   
     <tr>
-        <td>Container</td>
-        <td  class='column_parameter_value'> 
-            {.Container_containerId} -- {.Container_containerType} - {.Container_capacity}  
-        </td>
+        <td>Beamline location</td>
+        <td  class='column_parameter_value'> {.Container_beamlineLocation}</td>
     </tr>
     <tr>
-        <td>sampleChangerLocation</td>
+        <td>Sample changer location</td>
         <td  class='column_parameter_value'>{.Container_sampleChangerLocation}</td>
     </tr>
-   
     <tr>
-        <td>Barcode</td>
-        <td  class='column_parameter_value'>{.barCode}</td>
+        <td>Parcel status</td>
+        <td  class='column_parameter_value'>{.Shipping_shippingStatus}</td>
     </tr>
-    
-  
-    <tr>
-        <td>beamlineLocation</td>
-        <td  class='column_parameter_value'>{.Container_beamlineLocation}</td>
-    </tr>
-    
-    
 </table>       
               
