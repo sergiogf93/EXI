@@ -78,6 +78,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 			var scatteringForm = new ScatteringForm({width : 650, height : 560});
 
 			var window = Ext.create('Ext.window.Window', {
+				title: "Plot autoprocessing values for last week",
 				height : 560,
 				width : 650,
 				modal : true,
