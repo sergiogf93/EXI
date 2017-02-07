@@ -566,6 +566,10 @@ function Exi(args) {
 	/** If false when opening a new tab it will close the already open ones **/
 	this.keepTabs = false;
 	
+    /** Timers for setInterval methods */
+    this.timers = [];
+    
+
 	
 	this.controllers = [new ExiController(), new ProposalExiController(), new ShippingExiController()];
 	
@@ -649,6 +653,19 @@ function Exi(args) {
 	this.onAfterRender = new Event(this);
 }
 
+
+Exi.prototype.addTimer = function(timer) {
+    this.timers.push(timer);
+    console.log(this.timers);
+};
+
+Exi.prototype.clearTimers = function() {
+    for (var i = 0; i < this.timers.length; i++) {
+        clearTimeout(this.timers[i]);        
+    }   
+    this.timers = [];
+    console.log(this.timers);
+}
 /**
  * This method append to args the values of the active connection: url, token and proposal
  */
@@ -714,6 +731,7 @@ Exi.prototype.loadSelected = function(selected) {
 /**
  * Adds a new Main panel to the center panel
  * @param mainView
+ * @param clearTimers if timers should be removed
  */
 Exi.prototype.addMainPanel = function(mainView) {
 	if (!this.keepTabs){
@@ -721,6 +739,19 @@ Exi.prototype.addMainPanel = function(mainView) {
 	}
 	Ext.getCmp('main_panel').add(mainView.getPanel());
 	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
+    
+  
+    this.clearTimers();
+    
+};
+
+Exi.prototype.addMainPanelWithTimer = function(mainView) {
+	if (!this.keepTabs){
+		Ext.getCmp('main_panel').removeAll();
+	}
+	Ext.getCmp('main_panel').add(mainView.getPanel());
+	Ext.getCmp('main_panel').setActiveTab(Ext.getCmp('main_panel').items.length - 1);
+       
 };
 
 Exi.prototype.getSelectedDataCollections = function() {
@@ -737,6 +768,17 @@ Exi.prototype.addNavigationPanel = function(listView) {
 		Ext.getCmp("navigation").expand();
         this.showNavigationPanel();
 	}
+    this.clearTimers();
+};
+
+
+Exi.prototype.addNavigationPanelWithTimer = function(listView) {
+	Ext.getCmp('navigation').add(listView.getPanel());
+	if (Ext.getCmp("navigation") != null){
+		Ext.getCmp("navigation").expand();
+        this.showNavigationPanel();
+	}
+     
 };
 
 Exi.prototype.hideNavigationPanel = function(listView) {
@@ -1301,7 +1343,9 @@ AuthenticationManager.prototype.login = function(user, password, url){
 
 function ExiController(){
 	this.init();
+  
 }
+
 
 ExiController.prototype.loadNavigationPanel = function(listView) {
 	/** Cleaning up navigation panel * */
@@ -1326,6 +1370,7 @@ ExiController.prototype.loadNavigationPanel = function(listView) {
 };
 
 ExiController.prototype.init = function(){
+    var _this = this;
 	function setPageBackground() {
 
 	}
@@ -1334,17 +1379,20 @@ ExiController.prototype.init = function(){
 	}
 
 	/** Welcome Page **/
-	Path.map("#/").to(function() {       
+	Path.map("#/").to(function() {   
+          
 		location.hash = '/welcome';
 	}).enter(setPageBackground);
 	
 	Path.map("#/login").to(function() {
+       
         EXI.credentialManager.logout();
 		EXI.authenticationForm.show();
 	}).enter(setPageBackground);
 	
 	
 	Path.map("#/welcome").to(function() {
+       
 		//EXI.addMainPanel(new WelcomeMainView());
         //location.hash = '/login';
          EXI.credentialManager.logout();
@@ -1352,6 +1400,7 @@ ExiController.prototype.init = function(){
 	}).enter(setPageBackground);
 	
 	Path.map("#/welcome/user/:user/main").to(function() {
+       
 		var user = this.params['user'];		
         var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -1361,7 +1410,7 @@ ExiController.prototype.init = function(){
 	
 
 	Path.map("#/welcome/manager/:user/main").to(function() {
-        
+       
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -1370,7 +1419,7 @@ ExiController.prototype.init = function(){
 		mainView.load(user);
 	}).enter(setPageBackground);
 	
-    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                    
+    Path.map("#/welcome/manager/:user/date/:start/:end/main").to(function() {                         
 		var user = this.params['user'];
 		var mainView = new ManagerWelcomeMainView();
 		EXI.addMainPanel(mainView);
@@ -1381,7 +1430,7 @@ ExiController.prototype.init = function(){
    
     
 	
-	Path.map("#/logout").to(function() {
+	Path.map("#/logout").to(function() {     
 		EXI.credentialManager.logout();
          EXI.hideNavigationPanel();
 		EXI.proposalManager.clear();
@@ -1714,13 +1763,7 @@ SessionController.prototype.init = function() {
 	Path.map("#/session/nav").to(function() {
 			EXI.clearNavigationPanel();
             EXI.hideNavigationPanel();	
-			/*EXI.setLoadingNavigationPanel(true);
-			listView = new SessionListView();
-			listView.onSelect.attach(function(sender, selected) {
-				location.hash = "/mx/datacollection/session/" + selected[0].sessionId + "/main";
-			});
-			EXI.addNavigationPanel(listView);
-            */
+		
             var mainView = new SessionMainView({
                 title : "Sessions"
             });
@@ -1728,10 +1771,9 @@ SessionController.prototype.init = function() {
             EXI.addMainPanel(mainView);
             
             var onSuccess = function(sender, data){
-            //    listView.load(EXI.proposalManager.getSessions().slice(0, 50));
+          
                  mainView.load(EXI.proposalManager.getSessions());
-            //    EXI.hideNavigationPanel();		
-            //    EXI.setLoadingNavigationPanel(false);
+         
                  EXI.setLoadingMainPanel(false);    
             };
             EXI.setLoadingMainPanel();
@@ -4217,9 +4259,10 @@ SessionMainView.prototype.showCalendar = function(data) {
      var _this = this;
      $('#' + _this.id).empty();
      function editEvent(event) {
-                         _this.loadByDate(moment(new Date(event.startDate)).format("YYYYMMDD"));
+                    _this.loadByDate(moment(new Date(event.startDate)).format("YYYYMMDD"));
       }
-        $('#' + this.id).calendar({
+      
+      $('#' + this.id).calendar({
             enableContextMenu: true,
             enableRangeSelection: true,
             selectRange: function(e) {
@@ -4282,9 +4325,9 @@ SessionMainView.prototype.load = function(sessions) {
            startDate : new Date(sessions[i].BLSession_startDate), 
            endDate : new Date(sessions[i].BLSession_endDate)
         });
-        
+       
     }
-    
+   
     this.showCalendar(sessionForCalendar);
     this.subpanel.insert( this.sessionGrid.getPanel());
     //this.sessionGrid.load(sessions);
@@ -4315,7 +4358,7 @@ SessionMainView.prototype.loadByDate = function(start) {
           var _this = this;
           this.panel.setLoading(true);
           function onSuccess(sender, sessions){              
-        	  //_this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
+        	 
              _this.sessionGrid.load(sessions);
         	  _this.panel.setLoading(false);
           }
@@ -5321,7 +5364,7 @@ ContainerSpreadSheet.prototype.manageChange = function (change, source, directio
                 if (!this.isCrystalFormAvailable(parsed,change[3])){
                     this.resetCrystalGroup(change[0]);
                     var proteins = EXI.proposalManager.getProteinByAcronym(change[3]);
-                    if (proteins) {
+                    if (proteins && proteins.length > 0) {
                         var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == proteins[0].proteinId;});
                         if (crystalsByProteinId && crystalsByProteinId.length > 0){
                             var crystal = _.maxBy(crystalsByProteinId,"crystalId");
@@ -6773,7 +6816,7 @@ ShipmentForm.prototype.getPanel = function() {
 	this.panel = Ext.create("Ext.panel.Panel",{
 		layout : 'fit',
 		items :	[{
-					cls	: 'border-grid',
+					// cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					// margin : 10,
@@ -7356,8 +7399,7 @@ function ContainerParcelPanel(args) {
     this.shippingId = 0;
     this.shippingStatus = "";
     this.withoutCollection = true;
-    this.type = "Puck";
-    this.data = {puckType : "Unipuck", 
+    this.data = {puckType : "Puck", 
                 mainRadius : this.height*0.75*0.9/2,
                 xMargin : this.width/2 - this.height*0.9/2, 
                 yMargin : 2.5,
@@ -7366,7 +7408,8 @@ function ContainerParcelPanel(args) {
                 enableClick : true,
                 enableMainClick : true,
                 enableMainMouseOver : true,
-                containerId : 0
+                containerId : 0,
+                capacity : 10
     };
     this.width = 2*this.data.mainRadius + 20;
     this.container = new ContainerWidget(this.data);
@@ -7395,17 +7438,11 @@ function ContainerParcelPanel(args) {
         if (args.code != null) {
             this.data.code = args.code;
 		}
-        if (args.type != null) {
-            if ((["Puck","StockSolution","OTHER","PLATE"]).indexOf(args.type) >= 0){
-			    this.type = args.type;
-            } else {
-                this.type = "Puck";
-            }
+        if (args.type != null){
+            this.data.puckType = args.type;
 		}
         if (args.capacity != null) {
-			if (args.capacity != 16) {
-                this.data.puckType = "Spinepuck";
-            }
+			this.data.capacity = args.capacity;
 		}
 	}
     
@@ -7421,66 +7458,7 @@ function ContainerParcelPanel(args) {
 */
 ContainerParcelPanel.prototype.getPanel = function () {
     var _this = this;
-    this.container = new ContainerWidget(this.data);
-    if (this.type == "Puck"){
-        this.container = new PuckWidgetContainer(this.data);
-    } else if (this.type == "StockSolution") {
-        this.data.stockSolutionId = this.containerId;
-        this.container= new StockSolutionContainer(this.data);
-    }
-
-    this.container.onClick.attach(function (sender, id) {
-        var code = _this.data.code;
-        if (code == "") {
-            code = "-";
-        }
-        
-        var window = Ext.create('Ext.window.Window', {
-            title: 'Container',
-            width: 250,
-            layout: 'fit',
-            modal : true,
-            items: [
-                        {
-                            html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;"><b>Code:</b> ' + code + '</span></div><div class="row"><span style="font-size:12px;color: #666;">Select one of the options below:</span></div></div>',
-                        }
-            ],
-            buttons : [ {
-                            text : 'Edit',
-                            handler : function() {
-                                if (_this.type == "StockSolution") {
-                                    location.href = "#/stocksolution/" + _this.containerId + "/main";                            
-                                } else if (_this.type == "OTHER") {
-                                    _this.openEditOtherContainerForm();
-                                } else {
-                                    location.href = "#/shipping/" + _this.shippingId + "/" + _this.shippingStatus + "/containerId/" + _this.containerId + "/edit";                            
-                                }
-                                 window.close();
-                            }
-                        },{
-                            text : 'Remove',
-                            disabled : _this.shippingStatus == "processing" || !_this.withoutCollection,
-                            handler : function() {
-                                _this.removeButtonClicked();
-                                 window.close();
-                            }
-                        }, {
-                            text : 'Cancel',
-                            handler : function() {
-                                window.close();
-                            }
-                        } ]
-        });
-        window.show();
-    });
-
-    this.container.onMouseOver.attach(function(sender, container){
-        container.focus(true);
-    });
-
-    this.container.onMouseOut.attach(function(sender, container){
-        container.focus(false);
-    });
+    this.container = this.createContainer(this.data);
 
     var containerPanelHeight = 2*this.data.mainRadius + 5;
     
@@ -7523,6 +7501,13 @@ ContainerParcelPanel.prototype.getPanel = function () {
 * @return
 */
 ContainerParcelPanel.prototype.load = function (samples) {
+    if (this.data.puckType == "Puck") {
+        _.map(samples,function (s) {s.location = parseInt(s.BLSample_location)});
+        if (_.maxBy(samples,"location").location > 10) {
+            this.data.puckType = "Unipuck";
+            this.container = this.createContainer(this.data);
+        }
+    }
     this.containerPanel.removeAll();
     this.containerPanel.add(this.container.getPanel());
     if (samples.length > 0){
@@ -7547,7 +7532,7 @@ ContainerParcelPanel.prototype.load = function (samples) {
 */
 ContainerParcelPanel.prototype.removePuck = function() {
     this.panel.setLoading();
-    if (this.type == "StockSolution") {
+    if (this.data.puckType == "StockSolution") {
         this.onContainerRemoved.notify(this.containerId);
     } else {
         var _this = this;
@@ -7609,6 +7594,72 @@ ContainerParcelPanel.prototype.openEditOtherContainerForm = function () {
 	});
 	window.show();
 }
+
+ContainerParcelPanel.prototype.createContainer = function (data) {
+    var _this = this;
+    var container = new ContainerWidget(data);
+    if (data.puckType == "Puck" || data.puckType == "Unipuck" || data.puckType == "Spinepuck"){
+        container = new PuckWidgetContainer(data);
+    } else if (data.puckType == "StockSolution") {
+        data.stockSolutionId = this.containerId;
+        container= new StockSolutionContainer(data);
+    }
+
+    container.onClick.attach(function (sender, id) {
+        var code = data.code;
+        if (code == "") {
+            code = "-";
+        }
+        
+        var window = Ext.create('Ext.window.Window', {
+            title: 'Container',
+            width: 250,
+            layout: 'fit',
+            modal : true,
+            items: [
+                        {
+                            html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;"><b>Code:</b> ' + code + '</span></div><div class="row"><span style="font-size:12px;color: #666;">Select one of the options below:</span></div></div>',
+                        }
+            ],
+            buttons : [ {
+                            text : 'Edit',
+                            handler : function() {
+                                if (data.puckType == "StockSolution") {
+                                    location.href = "#/stocksolution/" + _this.containerId + "/main";                            
+                                } else if (data.puckType == "OTHER") {
+                                    _this.openEditOtherContainerForm();
+                                } else {
+                                    location.href = "#/shipping/" + _this.shippingId + "/" + _this.shippingStatus + "/containerId/" + _this.containerId + "/edit";                            
+                                }
+                                 window.close();
+                            }
+                        },{
+                            text : 'Remove',
+                            disabled : _this.shippingStatus == "processing" || !_this.withoutCollection,
+                            handler : function() {
+                                 _this.removeButtonClicked();
+                                 window.close();
+                            }
+                        }, {
+                            text : 'Cancel',
+                            handler : function() {
+                                window.close();
+                            }
+                        } ]
+        });
+        window.show();
+    });
+
+    container.onMouseOver.attach(function(sender, container){
+        container.focus(true);
+    });
+
+    container.onMouseOut.attach(function(sender, container){
+        container.focus(false);
+    });
+
+    return container;
+}
 function ContainerTypeComboBox(args) {
     this.id = BUI.id();
 
@@ -7618,8 +7669,8 @@ function ContainerTypeComboBox(args) {
     this.initDisabled = false;
 
     this.data = [
-                    {"type":"UNIPUCK", "capacity":16},
                     {"type":"SPINE", "capacity":10},
+                    {"type":"UNIPUCK", "capacity":16},
                     {"type":"PLATE", "capacity":96}
                 ]
 
@@ -7659,7 +7710,7 @@ ContainerTypeComboBox.prototype.getPanel = function () {
         labelStyle: 'padding:5px',
         labelWidth : this.labelWidth,
         displayField: 'type',
-        value:'UNIPUCK',
+        value:'SPINE',
         width: this.width,
         disabled : this.initDisabled
     });
@@ -7678,8 +7729,11 @@ ContainerTypeComboBox.prototype.getValue = function () {
 
 ContainerTypeComboBox.prototype.getSelectedType = function () {
     var type = this.panel.getValue();
-    if (type == "UNIPUCK" || type == "SPINE") {
-        type = "Puck";
+    if (type == "UNIPUCK") {
+        type = "Unipuck";
+    }
+    else if (type == "SPINE") {
+        type = "Spinepuck";
     }
 	return type;
 };

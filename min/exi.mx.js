@@ -707,6 +707,11 @@ ExiMX.prototype.manageMenu = Exi.prototype.manageMenu;
 ExiMX.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiMX.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiMX.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiMX.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiMX.prototype.addTimer = Exi.prototype.addTimer;
+ExiMX.prototype.clearTimers = Exi.prototype.clearTimers;
+ExiMX.prototype.addMainPanelWithTimer = Exi.prototype.addMainPanelWithTimer;
+ExiMX.prototype.addNavigationPanelWithTimer = Exi.prototype.addNavigationPanelWithTimer;
  
 
 ExiMX.prototype.getHeader = function(){
@@ -935,12 +940,15 @@ MXManagerMenu.prototype.getMenuItems = function() {
     	this.getHomeItem(),
     	this.getShipmentItem(),
     	{
-				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
-				cls : 'ExiSAXSMenuToolBar',
-				hidden : this.isHidden,
-                 disabled : true,
-				menu : this.getPreparationMenu() 
-		}, {
+                text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+                cls : 'ExiSAXSMenuToolBar',
+                disabled : false,
+                handler : function(){
+                    location.hash = "/mx/prepare/main";
+                
+				}
+		},
+		{
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
@@ -966,16 +974,16 @@ MXManagerMenu.prototype.getMenuItems = function() {
 		{
 			xtype : 'textfield',
 			name : 'field1',
-			emptyText : 'search macromolecule',
-			hidden : this.isHidden,
+			value : '',
+			emptyText : 'search by protein acronym',
 			listeners : {
 				specialkey : function(field, e) {
-					if (e.getKey() == e.ENTER) {                        
-						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
+					if (e.getKey() == e.ENTER) {
+						location.hash = "/mx/datacollection/protein_acronym/" + field.getValue() + "/main";
 					}
 				} 
 			} 
-	}
+		}
 	];
 };
 
@@ -1026,7 +1034,8 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 									{
 										text: 'Autoproc Scaling Statistics',
 										icon : '../images/icon/ic_insert_chart_black_36dp.png',
-										handler: onItemCheck
+										handler: onItemCheck,
+										disabled : true
 									}
 								]
 							}
@@ -3039,6 +3048,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     var cell_beta = getArrayValues(data.Autoprocessing_cell_beta);
     var cell_gamma = getArrayValues(data.Autoprocessing_cell_gamma);
 
+    var anomalous = getArrayValues(data.Autoprocessing_anomalous);
+
     data = {};
     /** Returning if no autoprocs */
     if (autoProcIds) {
@@ -3050,7 +3061,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         if (data[autoProcIds[i]] == null) {
             data[autoProcIds[i]] = {
                 autoProcId: autoProcIds[i],
-                spaceGroup: autoProc_spaceGroups[i]
+                spaceGroup: autoProc_spaceGroups[i],
+                anomalous: anomalous[i]
             };
         }
         
@@ -3067,7 +3079,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
             cell_c: cell_c[i],
             cell_alpha: cell_alpha[i],
             cell_beta: cell_beta[i],
-            cell_gamma: cell_gamma[i]
+            cell_gamma: cell_gamma[i],
+            anomalous : anomalous[i]
 
         });
 
@@ -3079,8 +3092,8 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
     for ( i = 0; i < ids.length; i++) {
         result.push(data[ids[i]]);
     }
-    
-    return new AutoprocessingRanker().rank(result, "spaceGroup");  
+    /** Rank results when anomouls is 0 */
+    return new AutoprocessingRanker().rank(_.filter(result, {anomalous : '0'}), "spaceGroup");  
 };
 
 
@@ -3118,7 +3131,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 catch(e){}
                 /** For Phasing */
                 
-                if (data.phasingStepType) {
+                if (data.phasingStepType) { 
                     var phasingSteps = data.phasingStepType.split(",");
                     data.phasingStepLength = phasingSteps.length;
                 
@@ -3132,8 +3145,11 @@ DataCollectionGrid.prototype.getColumns = function() {
 
                 /** Image quality indicator **/
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
-                data.onlineresults = _this._getAutoprocessingStatistics(record.data);
+
+
                 
+                data.onlineresults = _this._getAutoprocessingStatistics(record.data);
+               
                 /** We dont show screen if there are results of autoprocessing */
                 data.isScreeningVisible = true;
                 if (data.onlineresults){
@@ -3196,6 +3212,7 @@ function DataCollectionMxMainView() {
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 DataCollectionMxMainView.prototype.getContainer = function() {
+
     this.container = Ext.create('Ext.tab.Panel', {   
     minHeight : 900,    
     padding : "5 40 0 5",
@@ -3253,6 +3270,12 @@ DataCollectionMxMainView.prototype.loadFXEScans = function(data) {
 };
 
 DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
+    this.panel.setTitle("");
+    var proposalId = _.uniq(_.map(dataCollections,"BLSession_proposalId"));
+    if (proposalId && proposalId.length == 1) {
+        proposal = EXI.proposalManager.getProposalById(proposalId[0]);
+        this.panel.setTitle(proposal.code + proposal.number);
+    }
 	var data = _.filter(dataCollections, function(u) {
         return u.DataCollection_dataCollectionId != null;
     });
@@ -3700,13 +3723,13 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
 
     var menu =  Ext.create('Ext.menu.Menu', {     
         items: [{
-            text: 'Data Collection',
+            text: 'Session summary',
             handler: function(){
                 _this.renderingType = "DATACOLLECTION";
                 onMenuClicked(_this.uncollapsedDataCollectionGrid);
             }
         },{
-            text: 'Summary',            
+            text: 'Data collections summary',            
             handler: function(){
                 _this.renderingType = "DATACOLLECTION_COLLAPSED";
                 onMenuClicked(_this.collapsedDataCollectionGrid);
@@ -4118,6 +4141,7 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
     try{
         this.dataCollectionGroup = dataCollectionGroup;
+        
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
@@ -4155,7 +4179,21 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
 */
 UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(target, dataCollectionGroupId) {
     var onSuccess = function(sender, data){
+       
+        _.forEach(data, function(value) {
+            // Format new date as HH:MM:SS, the slice is for zero-padding
+            d = new Date(Date.parse(value.startTime))
+            hours = ("0" + d.getHours()).slice(-2)
+            minutes = ("0" + d.getMinutes()).slice(-2)
+            seconds = ("0" + d.getSeconds()).slice(-2)
+            value.formattedStartTime = hours + ":" +minutes + ":" + seconds;
+            // URL to image quality indicators
+            value.urlImageQualityIndicators = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(value.dataCollectionId);
+            // Result from auto-processing>                     
+            value.onlineresults = UncollapsedDataCollectionGrid.prototype._getAutoprocessingStatistics(value);
+        });
         var html = "";
+        
         dust.render("datacollections.mxdatacollectiongrid.template", data, function(err, out) {                                                                                               
             html = html + out;
         });
@@ -5441,7 +5479,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
 
     this.store = Ext.create('Ext.data.Store', {
         storeId:'spreadSheedStore',
-        fields:['shippingName', 'shippingId', 'barCode', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
+        fields:['shippingName', 'shippingId', 'barCode', 'parcelName', 'containerCode', 'containerType', 'sampleCount', 'beamlineName','beamlineCombo','sampleChangerLocation','dewarId','containerId','capacity'],
         data: []
     });
 
@@ -5513,6 +5551,13 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 flex: 1,
                 readOnly: true
             },   
+            {
+                header: 'Parcel',
+                dataIndex: 'parcelName',
+                type: 'text',
+                flex: 1,
+                readOnly: true
+            },
              {
                 header: 'Container',
                 dataIndex: 'containerCode',
@@ -5529,6 +5574,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 header: 'Barcode',
                 dataIndex: 'barCode',
                 type: 'text',
+                hidden : true,
                 flex: 1,
                 readOnly: true
             },
@@ -5574,7 +5620,8 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                 readOnly: true,
                 renderer : function(value, metaData, record, rowIndex){
                     var beamlines = _.map(EXI.credentialManager.getBeamlinesByTechnique("MX"),"name");
-                    beamlines = _.union(beamlines,[record.data.beamlineName])
+                    beamlines = _.union(beamlines,[record.data.beamlineName]);
+                    _.remove(beamlines, function (beamline) {return _.indexOf(['ID14-4', 'BM14U', 'ID30A-2'], beamline) !== -1});
                     var templateData = {
                                             beamlines   : beamlines,
                                             selected    : record.data.beamlineName,
@@ -5696,6 +5743,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
             data.push({
                 shippingName : dewar.shippingName,
                 shippingId : dewar.shippingId,
+                parcelName : dewar.dewarCode,
                 barCode : dewar.barCode,
                 containerCode : dewar.containerCode,
                 containerType : containerType,
@@ -5820,27 +5868,24 @@ DewarListSelectorGrid.prototype.load = function(dewars){
     /** Filter by Dewars */ 
     var filtered = _.keyBy(dewars, "shippingId");
     var data = [];
-    _(filtered).forEach(function(value) {
+    _(filtered).forEach(function(value) {   
+        if (_this.filterByDate){
+            if (value.shippingStatus){
+                if (value.shippingStatus.toUpperCase() == "PROCESSING"){
+                    data.push(value);
+                    return;
+                }                        
+            }       
         
-        if ((value.sessionId) ||(value.shippingStatus.toUpperCase() == "PROCESSING")){
-            if (_this.filterByDate){
-                if (value.shippingStatus){
-                    if (value.shippingStatus.toUpperCase() == "PROCESSING"){
-                        data.push(value);
-                        return;
-                    }                        
-                }       
-            
-                /** Filtering only future sessions */
-                if (value.sessionStartDate){
-                    if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
-                        data.push(value);
-                    }
+            /** Filtering only future sessions */
+            if (value.sessionStartDate){
+                if (moment().diff(moment(value.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'")) <= 0){
+                    data.push(value);
                 }
             }
-            else{
-                    data.push(value);
-            }
+        }
+        else{
+                data.push(value);
         }
     });
         
@@ -5881,8 +5926,8 @@ DewarListSelectorGrid.prototype.getSelectedData = function() {
 
 DewarListSelectorGrid.prototype.getStore = function(){
     this.store = Ext.create('Ext.data.Store', {
-        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type']
-        /*sortInfo: { field: "sessionStartDate", direction: "DESC" },
+        fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type'],
+        sortInfo: { field: "sessionStartDate", direction: "DESC" },
         sorters:
                 {
                     field: 'sessionStartDate',
@@ -5896,7 +5941,7 @@ DewarListSelectorGrid.prototype.getStore = function(){
                             return (d1 < d2) ? 1 : -1;
                         }
                     }
-                }*/
+                }
     });
     return this.store;
 };
@@ -5933,7 +5978,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 {
                     text    : 'Shipment',
                     columns : [
-                         { text: 'Name',  dataIndex: 'shippingName', flex : 1 },
+                         { text: 'Name',  dataIndex: 'shippingName', flex : 3 },
                          { text: 'Status',  dataIndex: 'shippingStatus', flex: 1,
                         renderer : function(grid, a, record){
                                       return record.data.shippingStatus.toUpperCase()
@@ -5954,7 +5999,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 {
                     text    : 'Experiment',
                     columns : [
-                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex: 2, 
+                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex: 2,
                             renderer : function(grid, a, record){
                                 if (record.data.sessionStartDate){
                                     return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD/MM/YYYY");
@@ -6072,7 +6117,7 @@ function LoadSampleChangerView (args) {
         var row = data.record;
         if (row) {
             if (_this.showTip){
-                $.notify("Click on a sample changer location to place the dewar","info");
+                $.notify("Click on a sample changer location to place the container","info");
                 _this.sampleChangerWidget.blink();
                 _this.showTip = false;
             }
@@ -6143,7 +6188,7 @@ LoadSampleChangerView.prototype.setSelectedRow = function (row) {
             this.setSelectedPuck(puck);
         }
     }
-    var text = "<span style='font-size:12px;'>Click on a sample changer </br>location to place the dewar</span>";
+    var text = "<span style='font-size:12px;'>Click on a sample changer </br>location to place the container</span>";
     if (row.get('sampleChangerLocation') != null && row.get('sampleChangerLocation') !="") {
         text = "Unload #" + row.get('sampleChangerLocation');
     }
@@ -9168,6 +9213,10 @@ function PuckWidgetContainer(args) {
 					this.capacity = 16;
 					break;
 				case "Spinepuck":
+					this.puckWidget = new SpinePuckWidget(args);
+					this.capacity = 10;
+					break;
+				case "Puck":
 					this.puckWidget = new SpinePuckWidget(args);
 					this.capacity = 10;
 					break;

@@ -1,15 +1,24 @@
-function SAXSExiController() {
-	this.init();
+function SAXSExiController() {    
+    this.init();
+    this.timers = [];
+    this.timeout = 60000;
 }
 
 SAXSExiController.prototype.loadNavigationPanel = ExiController.prototype.loadNavigationPanel;
 
+SAXSExiController.prototype.cleanTimers = function(){
+    for (var i = 0; i < this.timers.length; i++) {
+        clearTimeout(this.timers[i]);         
+    }
+    
+};
 SAXSExiController.prototype.routeNavigation = function() {
 	var _this = this;
 	function loadNavigationPanel(listView) {
 		return _this.loadNavigationPanel(listView);
 	}
 
+   
 	/**
 	 * Loading navigation panel
 	 * 
@@ -90,7 +99,7 @@ SAXSExiController.prototype.routeNavigation = function() {
 };
 
 SAXSExiController.prototype.setPageBackground = function() {
-
+   
 };
 
 SAXSExiController.prototype.notFound = function() {
@@ -98,16 +107,28 @@ SAXSExiController.prototype.notFound = function() {
 };
 
 SAXSExiController.prototype.routeExperiment = function() {
+    
+    var _this = this;
+    
 	Path.map("#/experiment/experimentId/:experimentId/main").to(function() {
-		var mainView = new ExperimentMainView();
-		EXI.addMainPanel(mainView);	
-		mainView.panel.setLoading();		
-		var onSuccess = function(sender, dataCollections){			
-			mainView.load(dataCollections);
-			mainView.panel.setLoading(false);				
-		};
-		EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(this.params['experimentId']);
-		// EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentById(this.params['experimentId']);
+        var _thisRoute = this;
+        var mainView = new ExperimentMainView();
+        EXI.addMainPanelWithTimer(mainView);	                    
+        function loadMainExperimentView(experimentId){
+        	mainView.panel.setLoading();	
+            var onSuccess = function(sender, dataCollections){			
+                mainView.load(dataCollections);
+                mainView.panel.setLoading(false);				
+            };
+            EXI.getDataAdapter({onSuccess : onSuccess}).saxs.dataCollection.getDataCollectionsByExperiment(_thisRoute.params['experimentId']);
+          
+            $.notify("Experiment results will be refreshed in 60 seconds", "info");                                    
+        }
+        loadMainExperimentView();
+        
+        
+       EXI.addTimer(setInterval(loadMainExperimentView, _this.timeout));
+		
 
 	}).enter(this.setPageBackground);
     
@@ -295,14 +316,7 @@ SAXSExiController.prototype.routePrepare = function() {
 		EXI.addMainPanel(mainView);
 		mainView.load();
 	}).enter(this.setPageBackground);
-	
-	
 
-//	Path.map("#/prepare/macromolecule/main").to(function() {
-//		var mainView = new MacromoleculeMainView();
-//		EXI.addMainPanel(mainView);
-//		mainView.load();
-//	}).enter(this.setPageBackground);
 
 	Path.map("#/prepare/templates/main").to(function() {
 		var mainView = new ExperimentDesignerMainView();
@@ -351,27 +365,33 @@ SAXSExiController.prototype.init = function() {
 		var listView = new SessionSaxsListView();		
 		/** When selected move to hash * */
 		listView.onSelect.attach(function(sender, selected) {
-			if (selected[0].experimentType == "HPLC"){
-				location.hash = "/experiment/hplc/" + selected[0].experimentId + "/main";
-			}
-			if ((selected[0].experimentType == "STATIC")||(selected[0].experimentType == "CALIBRATION")){
-				location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
-			}
-			if (selected[0].experimentType == "TEMPLATE"){
-				location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
-			}
+            if (selected[0]){
+                if (selected[0].experimentType == "HPLC"){
+                    location.hash = "/experiment/hplc/" + selected[0].experimentId + "/main";
+                }
+                if ((selected[0].experimentType == "STATIC")||(selected[0].experimentType == "CALIBRATION")){
+                    location.hash = "/experiment/experimentId/" + selected[0].experimentId + "/main";
+                }
+                if (selected[0].experimentType == "TEMPLATE"){
+                    location.hash = "/experiment/templateId/" + selected[0].experimentId + "/main";
+                }
+            }
 		});
-         var onSuccess = function(sender, data){            
-		    EXI.addNavigationPanel(listView);
-            listView.load(data);            
-            EXI.setLoadingMainPanel(false);    
-          };
-            
-         EXI.getDataAdapter({
-                onSuccess : onSuccess                
-            }).saxs.experiment.getExperimentsBySessionId(this.params['sessionId']); 
-            
-
+        
+		EXI.addNavigationPanelWithTimer(listView);
+        var _thisRoute = this;
+        function loadNavigationSession(){
+            var onSuccess = function(sender, data){            
+                listView.load(data);            
+                EXI.setLoadingMainPanel(false);    
+            };            
+            EXI.getDataAdapter({onSuccess : onSuccess}).saxs.experiment.getExperimentsBySessionId(_thisRoute.params['sessionId']);
+            $.notify("Session results will be refreshed in 60 seconds", "info");                              
+        } 
+        
+        loadNavigationSession();  
+        
+        EXI.addTimer(setInterval(loadNavigationSession,_this.timeout));
 	}).enter(this.setPageBackground);
     
     
@@ -394,7 +414,7 @@ SAXSExiController.prototype.init = function() {
 		};
 		
 		EXI.getDataAdapter({onSuccess : onSuccess, onError :onError}).exi.offline.getRuns(projectId);
-//		exidataAdapter.getRuns(projectId);
+
 	}).enter(this.setPageBackground);
 	
 
@@ -429,6 +449,10 @@ ExiSAXS.prototype.manageMenu = Exi.prototype.manageMenu;
 ExiSAXS.prototype.appendDataAdapterParameters = Exi.prototype.appendDataAdapterParameters;
 ExiSAXS.prototype.hideNavigationPanel = Exi.prototype.hideNavigationPanel;
 ExiSAXS.prototype.showNavigationPanel = Exi.prototype.showNavigationPanel;
+ExiSAXS.prototype.addTimer = Exi.prototype.addTimer;
+ExiSAXS.prototype.clearTimers = Exi.prototype.clearTimers;
+ExiSAXS.prototype.addMainPanelWithTimer = Exi.prototype.addMainPanelWithTimer;
+ExiSAXS.prototype.addNavigationPanelWithTimer = Exi.prototype.addNavigationPanelWithTimer;
 
 ExiSAXS.prototype.getHeader = function(){
     var html = "";
@@ -448,6 +472,8 @@ ExiSAXS.prototype.getHeader = function(){
 ExiSAXS.prototype.getDataAdapter = function(args){
 	return new SaxsDataAdapterFactory(this.appendDataAdapterParameters(args));
 };
+
+
 
 
 function SAXSMainMenu() {
@@ -1437,8 +1463,7 @@ ExperimentMainView.prototype.getToolBar = function() {
             handler: function(){
                 onMenuClicked(_this.queueGrid);
             }
-        },
-		,{
+        },{
             text: 'Measurements',            
             handler: function(){
                 onMenuClicked(_this.measurementGrid);
@@ -12399,7 +12424,7 @@ OverviewQueueGrid.prototype.load = function(dataCollections) {
 OverviewQueueGrid.prototype.render = function(data) {
 	var html = "";
 
-	/** Calculates the rowSpan so the template knows when to plot the images. Alsp finds where to draw stronger borders*/	
+	/** Calculates the rowSpan so the template knows when to plot the images. Also finds where to draw stronger borders*/	
 	var grouped = _.groupBy(data, "MeasurementToDataCollection_dataCollectionId");
     
 	_.map(data, function(o){ 
