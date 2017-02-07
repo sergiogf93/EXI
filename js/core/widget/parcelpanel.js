@@ -196,26 +196,47 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			
 			/** Sorting container by id **/
 			dewar.containerVOs.sort(function(a, b){return a.containerId - b.containerId;});
-			var containerPanelsMap = {};
+			// var containerPanelsMap = {};
 			var containerIds = [];
 			
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
-				var containerParcelPanel = new ContainerParcelPanel({type : container.containerType, height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : container.containerId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, capacity : container.capacity, code : container.code});
+				var type = container.containerType;
+				if (this.currentTab == "statistics") {
+					type = "StatisticsPuck";
+				}
+				var containerParcelPanel = new ContainerParcelPanel({
+																	type : type, 
+																	height : this.containersPanelHeight/rows, 
+																	width : this.containersParcelWidth,
+																	containerId : container.containerId, 
+																	shippingId : this.shippingId, 
+																	shippingStatus : this.shippingStatus, 
+																	capacity : container.capacity, 
+																	code : container.code
+																});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
 					_this.renderPucks(_this.dewar);
 				});
-				containerPanelsMap[container.containerId] = containerParcelPanel;
+				// containerPanelsMap[container.containerId] = containerParcelPanel;
 				containerIds.push(container.containerId);
-				
 				containerRows[Math.floor(i/maxNumberForRow)].insert(containerParcelPanel.getPanel());
+				containerParcelPanel.load(_.filter(this.samples,{"BLSample_containerId":container.containerId}));
 			}
 			
 			for (var i = 0; i< stockSolutions.length; i++){
 				$('#hoveringTooltipDiv-' + stockSolutions[i].stockSolutionId).remove();
-				var containerParcelPanel = new ContainerParcelPanel({type : "StockSolution", height : this.containersPanelHeight/rows, width : this.containersParcelWidth,containerId : stockSolutions[i].stockSolutionId, shippingId : this.shippingId, shippingStatus : this.shippingStatus, code : stockSolutions[i].name});	
-				containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
+				var containerParcelPanel = new ContainerParcelPanel(
+																		{type : "StockSolution", 
+																		height : this.containersPanelHeight/rows, 
+																		width : this.containersParcelWidth,
+																		containerId : stockSolutions[i].stockSolutionId, 
+																		shippingId : this.shippingId, 
+																		shippingStatus : this.shippingStatus, 
+																		code : stockSolutions[i].name
+																	});	
+				// containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
 				containerParcelPanel.onContainerRemoved.attach(function (sender, stockSolutionId) {
 					var stockSolution = EXI.proposalManager.getStockSolutionById(stockSolutionId);
@@ -232,27 +253,27 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				containerRows[Math.floor((i + dewar.containerVOs.length)/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
 
-			if (!_.isEmpty(containerPanelsMap)) {
+			// if (!_.isEmpty(containerPanelsMap)) {
 				
-				var onSuccess = function (sender, samples) {
-					if (samples) {
-						var samplesMap = {};
-						for (var i = 0 ; i < samples.length ; i++) {
-							var sample = samples[i];
-							if (samplesMap[sample.Container_containerId]){
-								samplesMap[sample.Container_containerId].push(sample);
-							} else {
-								samplesMap[sample.Container_containerId] = [sample];
-							}
-						}
-						_.each(samplesMap, function(samples, containerId) {
-							containerPanelsMap[containerId].load(samples);
-						});
-					}
-				}
+			// 	var onSuccess = function (sender, samples) {
+			// 		if (samples) {
+			// 			var samplesMap = {};
+			// 			for (var i = 0 ; i < samples.length ; i++) {
+			// 				var sample = samples[i];
+			// 				if (samplesMap[sample.Container_containerId]){
+			// 					samplesMap[sample.Container_containerId].push(sample);
+			// 				} else {
+			// 					samplesMap[sample.Container_containerId] = [sample];
+			// 				}
+			// 			}
+			// 			_.each(samplesMap, function(samples, containerId) {
+			// 				containerPanelsMap[containerId].load(samples);
+			// 			});
+			// 		}
+			// 	}
 
-				EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
-			}
+			// 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
+			// }
 		}
 	}
 }

@@ -1,4 +1,4 @@
-function StockSolutionContainer(args) {
+function PuckStatisticsContainer(args) {
     this.id = BUI.id();
 	
     this.templateData = {
@@ -9,12 +9,12 @@ function StockSolutionContainer(args) {
                             width       	: 100,
                             height      	: 100,
 							margin			: 15,
-							stockId			: 0,
+							// rInner			: 10,
 							enableMainClick : false,
-                            code            : ""
+                            code            : "",
+							enableMainMouseOver : false
                         };
 
-	this.stockSolutionId = 0;
     this.samples = null;
 	this.code = "";
 
@@ -43,13 +43,6 @@ function StockSolutionContainer(args) {
         if (args.code) {
             this.templateData.code = args.code;
         }
-        if (args.stockSolutionId) {
-            this.stockSolutionId = args.stockSolutionId;
-            var stockSolution = EXI.proposalManager.getStockSolutionById(this.stockSolutionId);
-            this.templateData.macromoleculeAcronym = EXI.proposalManager.getMacromoleculeById(stockSolution.macromoleculeId).acronym;
-            this.templateData.buffer = EXI.proposalManager.getBufferById(stockSolution.bufferId).acronym;
-            this.templateData.stockId = this.stockSolutionId;
-        }
 	}
 
 	this.onClick = new Event(this);
@@ -57,7 +50,7 @@ function StockSolutionContainer(args) {
 	this.onMouseOut = new Event(this);
 };
 
-StockSolutionContainer.prototype.getPanel = function () {
+PuckStatisticsContainer.prototype.getPanel = function () {
 	
 	var _this = this;
 	
@@ -95,7 +88,7 @@ StockSolutionContainer.prototype.getPanel = function () {
 	
 };
 
-StockSolutionContainer.prototype.loadSamples = function (samples) {
+PuckStatisticsContainer.prototype.loadSamples = function (samples) {
     this.samples = samples;
     if (samples){
 		if (samples.length > 0){
@@ -104,21 +97,21 @@ StockSolutionContainer.prototype.loadSamples = function (samples) {
 	}
 };
 
-StockSolutionContainer.prototype.getHTML = function (samples) {
+PuckStatisticsContainer.prototype.getHTML = function (samples) {
 	var html = "";
 	if (this.templateData.height < 40) {
 		this.templateData.fillPanel = false;
 	} else {
 		this.templateData.fillPanel = true;
 	}
-	dust.render("stock.solution.container.template", this.templateData, function(err, out){
+	dust.render("puck.statistics.container.template", this.templateData, function(err, out){
 		html = out;
 	});
 	
 	return html;
 };
 
-StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
+PuckStatisticsContainer.prototype.setOnMouseOverEvent = function () {
 	var _this = this;
 	
 	$("#" + this.id).unbind('mouseover').mouseover(function(sender){
@@ -153,7 +146,7 @@ StockSolutionContainer.prototype.setOnMouseOverEvent = function () {
 
 }
 
-StockSolutionContainer.prototype.focus = function (bool) {
+PuckStatisticsContainer.prototype.focus = function (bool) {
 	if (bool){
 		$("#" + this.id + "-container").addClass("stock-solution-selected");		
 	} else {
