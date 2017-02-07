@@ -50,7 +50,6 @@ function ParcelPanel(args) {
 	}
 	
 	this.onSavedClick = new Event(this);
-	this.onContainerAdded = new Event(this);
 
 }
 
@@ -109,50 +108,59 @@ ParcelPanel.prototype.load = function(dewar, shipment, samples, withoutCollectio
 	});
 
 	/** Set parameters **/
-	this.renderShipmentParameters(dewar);
+	if (this.currentTab == "content"){
+		this.renderDewarParameters(dewar);
+	} else {
+		this.renderDewarStatistics(dewar);
+	}
+	this.renderDewarComments(dewar);
 
 	/** Rendering pucks **/
 	this.renderPucks(dewar);
 };
 
-ParcelPanel.prototype.renderShipmentParameters = function (dewar) {
+ParcelPanel.prototype.renderDewarParameters = function (dewar) {
 	var html = "";
-	if (this.currentTab == "content") {
-		dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
-			html = out;
-		});
-	} else {
-		var nContainers = 0;
-		if (dewar.containerVOs) {
-			nContainers = dewar.containerVOs.length;
-		}
-		var nSamples = 0;
-		var nMeasured = 0;
-		if (this.samples) {
-			nSamples = this.samples.length;
-		}
-		var nMeasured = nSamples;
-		if (this.withoutCollection) {
-			nMeasured = nSamples - this.withoutCollection.length;
-		}
-		dust.render("parcel.panel.statistics.template", {id : this.id,height : this.height, nContainers : nContainers, nSamples : nSamples, nMeasured : nMeasured}, function(err, out){
-			html = out;
-		});
-	}
-
+	dust.render("parcel.panel.parameter.table.template", {id : this.id, dewar : dewar, height : this.height}, function(err, out){
+		html = out;
+	});
 	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
+};
+
+ParcelPanel.prototype.renderDewarStatistics = function (dewar) {
+	var html = "";
+	var nContainers = 0;
+	if (dewar.containerVOs) {
+		nContainers = dewar.containerVOs.length;
+	}
+	var nSamples = 0;
+	var nMeasured = 0;
+	if (this.samples) {
+		nSamples = this.samples.length;
+	}
+	var nMeasured = nSamples;
+	if (this.withoutCollection) {
+		nMeasured = nSamples - this.withoutCollection.length;
+	}
+	dust.render("parcel.panel.statistics.template", {id : this.id,height : this.height, dewar : dewar, nContainers : nContainers, nSamples : nSamples, nMeasured : nMeasured}, function(err, out){
+		html = out;
+	});
+	$('#' + this.id + "-parameters-div").hide().html(html).fadeIn("fast");
+}
+
+ParcelPanel.prototype.renderDewarComments = function (dewar) {
 	if (dewar.comments != "" && dewar.comments != null) {
 		$('#' + this.id + "-comments").hide().html("Comments: " + dewar.comments).fadeIn("fast");
 		$('#' + this.id + "-index-td").attr('rowspan',2);
 		$('#' + this.id + "-buttons-td").attr('rowspan',2);
 		this.panel.setHeight(this.height + 25);
 	} else {
-		this.panel.setHeight(this.height);
+		$('#' + this.id + "-comments").hide().html("").fadeIn("fast");
 		$('#' + this.id + "-index-td").attr('rowspan',1);
 		$('#' + this.id + "-buttons-td").attr('rowspan',1);
+		this.panel.setHeight(this.height);
 	}
-	this.panel.doLayout();
-};
+}
 
 ParcelPanel.prototype.renderPucks = function (dewar) {
 	var _this = this;
@@ -265,7 +273,6 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 		}
 		var onSuccess = function(sender, container){
 			EXI.proposalManager.get(true);
-			_this.onContainerAdded.notify(container);
 			_this.renderPucks(_this.dewar);
 		};
 		
@@ -284,7 +291,6 @@ ParcelPanel.prototype.addContainerToDewar = function(containerVO) {
 			_this.dewar.containerVOs.push(container);
 			
 			var onSaveSuccess = function (sender) {
-				_this.onContainerAdded.notify(container);
 				_this.renderPucks(_this.dewar);
 			}
 			var onError = function(sender,error) {
@@ -318,19 +324,16 @@ ParcelPanel.prototype.showCaseForm = function() {
 	    items: [
 	            	caseForm.getPanel(_this.dewar)
 	    ],
-	    // listeners : {
-		// 	afterrender : function(component, eOpts) {
-		// 		if (_this.puck != null){
-		// 			_this.load(_this.puck);
-		// 		}
-		// 	}
-	    // },
 	    buttons : [ {
 						text : 'Save',
 						handler : function() {
 							_this.onSavedClick.notify(caseForm.getDewar());
 							window.close();
-                            _this.renderShipmentParameters(_this.dewar);
+							if (_this.currentTab == "content") {
+                            	_this.renderDewarParameters(_this.dewar);
+							}
+							_this.renderDewarComments(_this.dewar);
+							_this.panel.doLayout();
 						}
 					}, {
 						text : 'Cancel',

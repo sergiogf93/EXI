@@ -56,17 +56,12 @@ ParcelGrid.prototype._getTopButtons = function() {
 };
 
 ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCollection) {
-	if (this.shipment == null) {
-		this.attachCallBackAfterRender();
-	}
 	var _this = this;
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
 	this.hasExportedData = hasExportedData;
 	this.samples = _.groupBy(samples,"Dewar_dewarId");
 	this.withoutCollection = _.groupBy(withoutCollection,"Dewar_dewarId");
-
-	$("#content-" + this.id).html("");
 
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
@@ -85,6 +80,7 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 
 ParcelGrid.prototype.fillTab = function (tabName, dewars) {
 	var _this = this;
+	$("#" + tabName + "-" + this.id).html("");
 	this.parcelPanels[tabName] = Ext.create('Ext.panel.Panel', {
 															// cls 		: 'border-grid',
 															// width 		: this.width,
@@ -101,6 +97,7 @@ ParcelGrid.prototype.fillTab = function (tabName, dewars) {
 			
 			var onSuccess = function(sender, shipment) {				
 				_this.panel.setLoading(false);
+				_this.panel.doLayout();
 			};			
 			EXI.getDataAdapter({onSuccess : onSuccess}).proposal.dewar.saveDewar(_this.shipment.shippingId, dewar);
     }
@@ -200,10 +197,10 @@ ParcelGrid.prototype.attachCallBackAfterRender = function () {
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
 			var target = $(e.target).attr("href");
 			if (target.startsWith("#co")){
-				_this.parcelPanels["content"].doLayout();
+				_this.fillTab("content",_this.dewars);
 			}
 			if (target.startsWith("#st")){
-				_this.parcelPanels["statistics"].doLayout();
+				_this.fillTab("statistics",_this.dewars);
 			}
 			_this.panel.doLayout();
 		});
