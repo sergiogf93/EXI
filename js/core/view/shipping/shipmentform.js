@@ -22,10 +22,9 @@ function ShipmentForm(args) {
 }
 
 ShipmentForm.prototype.load = function(shipment,hasExportedData) {
+	var _this = this;
 	this.shipment = shipment;
 	this.hasExportedData = hasExportedData;
-	var _this = this;
-	
 	var toData = EXI.proposalManager.getLabcontacts();
 	var fromData = $.extend(EXI.proposalManager.getLabcontacts(), [{ cardName : 'Same as for shipping to beamline', labContactId : -1}, { cardName : 'No return requested', labContactId : 0}]);
 
@@ -56,6 +55,12 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 			});
 		}
 	}
+	
+	$("#" + this.id + "-dewars").multiselect({
+												onDropdownShow: function(event) {
+													_this.panel.doLayout();
+												}
+											});
 
 	this.panel.doLayout();
 

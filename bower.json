@@ -43,7 +43,8 @@
     "exi-ui-utils": "*",
     "bootstrap-year-calendar": "^1.1.0",
     "three": "*",
-    "notifyjs": "*"
+    "notifyjs": "*",
+    "bootstrap-multiselect": "^0.9.13"
   },
   "devDependencies": {
     "uglymol": "^0.1.0"
