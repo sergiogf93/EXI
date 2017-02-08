@@ -36,6 +36,7 @@
                   <th >cc(1/2)</th>
                   <th >ccAno</th>
                   <th >sigAno</th>
+                  <th >ISA</th>
                   <th >Download</th>
                </tr>
             </thead>
@@ -140,6 +141,7 @@
                     
                
                </td>
+                <td  >{.isa}</td>
                <td ><a href='{.downloadFilesUrl}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a></td>
             </tr>
             {/.}

@@ -1001,7 +1001,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 				layout : 'fit',
 				items : [ scatteringForm.getPanel() ],
 				buttons : [ {
-						text : 'Plot',
+						text : 'Plot (last 7 days)',
 						handler : function() {
 							scatteringForm.plot();
 						}
@@ -1043,6 +1043,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 			] 
 	});
 };
+
 /**
 * AutoProcIntegrationListView displays the crystal as list on the navigation panels
 *
