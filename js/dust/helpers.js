@@ -162,3 +162,16 @@ dust.helpers.formatDate = function (chunk, context, bodies, params) {
     }
     return chunk;
 }
+
+dust.helpers.uppercase = function (chunk, context, bodies, params) {
+    if (params.key) {
+        var value = context.current()[params.key];
+        if (value){
+            chunk.write(value.toUpperCase());
+        }
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+    return chunk;
+}

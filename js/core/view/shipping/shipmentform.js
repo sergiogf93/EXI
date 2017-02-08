@@ -17,6 +17,13 @@ function ShipmentForm(args) {
 			this.width = args.width;
 		}
 	}
+
+	var _this = this;
+
+	this.dewarTrackingView = new DewarTrackingView();
+	this.dewarTrackingView.onLoaded.attach(function(sender){
+		_this.panel.doLayout();
+	});
 	
 	this.onSaved = new Event(this);
 }
@@ -55,12 +62,8 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 			});
 		}
 	}
-	
-	$("#" + this.id + "-dewars").multiselect({
-												onDropdownShow: function(event) {
-													_this.panel.doLayout();
-												}
-											});
+
+	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
 
 	this.panel.doLayout();
 
@@ -72,8 +75,9 @@ ShipmentForm.prototype.getPanel = function() {
 
 	this.panel = Ext.create("Ext.panel.Panel",{
 		layout : 'fit',
+		cls	: 'overflowed overflowed-cascade',
+
 		items :	[{
-					// cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					// margin : 10,
@@ -127,6 +131,10 @@ ShipmentForm.prototype.attachCallBackAfterRender = function () {
 	var tabsEvents = function(grid) {
 		this.grid = grid;
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var target = $(e.target).attr("href");
+			if (target.startsWith("#tr")){
+				_this.dewarTrackingView.load(_this.shipment);
+			}
 			_this.panel.doLayout();
 		});
     };

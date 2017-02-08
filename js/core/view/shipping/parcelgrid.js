@@ -174,16 +174,16 @@ ParcelGrid.prototype.getPanel = function() {
 	})
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
-
-			items : {
-						// cls	: 'border-grid',
-						html : '<div id="' + this.id + '">' + html + '</div>',
-						width : this.width,
-						autoScroll:false,
-						autoHeight :true,
-						// maxHeight: this.height,
-						padding : this.padding
-					}
+		// cls	: 'overflowed',
+		items : {
+					// cls	: 'border-grid',
+					html : '<div id="' + this.id + '">' + html + '</div>',
+					width : this.width,
+					autoScroll:false,
+					autoHeight :true,
+					// maxHeight: this.height,
+					padding : this.padding
+				}
 	});
 
 	return this.panel;

@@ -3,17 +3,16 @@
         <div class="panel-heading clearfix">
             <div class="pull-right">
                 <ul class="nav nav-tabs" id="myTabs">
-                    <li class="active"><a data-toggle="tab" href="#{id}-shipping-information">Information</a></li>
-                    <li><a data-toggle="tab" href="##{id}-shipping-transport-history">Transport history</a></li>            
+                    <li class="active"><a data-toggle="tab" href="#information-{id}">Information</a></li>
+                    <li><a data-toggle="tab" href="#transport-history-{id}">Transport history</a></li>            
                 </ul>
             </div>
         </div>
         <div class="tab-content">
-            <div id="{id}-shipping-information" class="tab-pane fade in active" style="padding:10px;">
+            <div id="information-{id}" class="tab-pane fade in active" style="padding:10px;">
                 {>"shipping.form.information.template"  /}  
             </div>
-            <div id="{id}-shipping-transport-history" class="tab-pane fade" style="padding:10px;">
-                {>"shipping.form.tracking.template" /}
+            <div id="transport-history-{id}" class="tab-pane fade" style="padding:10px;">
             </div>
         </div>
     </div>
