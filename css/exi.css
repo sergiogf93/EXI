@@ -163,6 +163,12 @@ img.border-img {
     background-color: #c1ddf1 !important;
 } 
 
+.disabled-row .x-grid-cell { 
+    background-color: #eeeeee; 
+    color: #666666; 
+	cursor:not-allowed;
+} 
+
 .warning-row .x-grid-cell { 
     background-color: #ffeaa5; 
     color: #666666; 
@@ -172,9 +178,9 @@ img.border-img {
 	cursor : pointer;
 }
 
-.disabled-row {
+/*.disabled-row {
 	background-color : red;
-}
+}*/
 
 .active-step {
 	background-color: #3892d3;

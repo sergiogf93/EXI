@@ -10,7 +10,7 @@ function LoadSampleChangerView (args) {
     this.showTip = true;
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 185;
+    this.widgetRadius = 170;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -25,6 +25,14 @@ function LoadSampleChangerView (args) {
         isLoading : false
     };
     this.sampleChangerWidget = new FlexHCDWidget(data);
+    this.legend = new PuckLegend({
+                                    width       : 60, 
+                                    height      : 300, 
+                                    cy          : "50%", 
+                                    tOffset     : 30,
+                                    style       : "vertical",
+                                    fontSize    : "0.45vw"
+                                });
 
     this.selectedRowItem = null;
     this.selectedContainerId = null;
@@ -270,6 +278,7 @@ LoadSampleChangerView.prototype.changeSampleChangerWidgetByBeamline = function (
     this.widgetContainer.removeAll();
     this.load(this.containers);
     this.widgetContainer.insert(this.sampleChangerWidget.getPanel());
+    this.widgetContainer.insert(this.legend.getPanel());
     this.reloadSampleChangerWidget();
     this.sampleChangerWidget.blink();
     this.returnToSelectionStatus();
@@ -342,7 +351,8 @@ LoadSampleChangerView.prototype.getPanel = function () {
             type: 'hbox',
             pack: 'center'
         },  
-        items : [this.sampleChangerWidget.getPanel()]
+        items : [this.sampleChangerWidget.getPanel(),
+                this.legend.getPanel()]
     });
 
     this.verticalPanel = Ext.create('Ext.panel.Panel', {
