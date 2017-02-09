@@ -365,6 +365,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(containers, sampleChangerW
         var row = _.filter(this.panel.getStore().data.items,function (o) {return o.data.containerId == parseInt(_this.preselectedRowContainerId);});
         if (row && row.length > 0) {
             this.onSelectRow.notify({record : row[0]});
+            this.preselectedRowContainerId = null;
         }
     }
 };
