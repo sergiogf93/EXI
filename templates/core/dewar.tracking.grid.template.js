@@ -28,7 +28,9 @@
                             {@formatDate date=DewarTransportHistory_arrivalDate format="DD-MM-YYYY h:mm" /}
                         </td>
                         <td width="25%">
-                            <kbd style='background-color:#CCCCCC;color:blue;'>{@uppercase key="DewarTransportHistory_dewarStatus" /}</kbd>
+                            {?DewarTransportHistory_dewarStatus}
+                                <kbd style='background-color:#CCCCCC;color:blue;'>{@uppercase key="DewarTransportHistory_dewarStatus" /}</kbd>
+                            {/DewarTransportHistory_dewarStatus}
                         </td>
                         <td width="25%">
                             {.DewarTransportHistory_storageLocation}
