@@ -115,13 +115,15 @@
                   </div>
                 
                </div>
-               
-              
-               <div class="container-fluid">
+
+               <div class="container-fluid" style="padding-bottom: 10px;">
                    <div class="col-xs-12 col-md-12">
                         {?DataCollectionGroup_comments}
-                                    <b>{@dataCollectionComment key="DataCollectionGroup_comments" /}</b>
+                                    Comments: <b><span id="comments_{.DataCollection_dataCollectionId}">{@dataCollectionComment key="DataCollectionGroup_comments" /}</span></b>
                         {/DataCollectionGroup_comments}
+                        <a class="btn btn-xs">
+                                    <span id="{.DataCollection_dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
+                                </a>
                         {?SpaceGroupModelResolvedByPhasing}
                             <div class="alert alert-success" style='font-size:14px;'>
                                 Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 

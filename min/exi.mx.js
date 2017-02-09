@@ -3346,6 +3346,38 @@ CollapsedDataCollectionGrid.prototype.load = DataCollectionGrid.prototype.load;
 CollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prototype.loadMagnifiers;
 CollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.getPanel;
 
+function CommentEditForm(args) {
+    this.id = BUI.id();
+
+    this.dataCollectionId = null;
+    this.templateData = {id : this.id};
+}
+
+CommentEditForm.prototype.show = function(){
+    var _this = this;
+    
+    var html = "";
+    dust.render("comment.edit.form.template", this.templateData, function(err,out){
+        html = out;
+    });
+
+    $("body").append(html);
+    $("#" + this.id + "-save").unbind('click').click(function(sender){
+        _this.save();
+    });
+    
+    $("#" + this.id + "-modal").modal();
+};
+
+CommentEditForm.prototype.load = function (dataCollectionId, comments) {
+    this.dataCollectionId = dataCollectionId;
+    this.templateData.comments = comments;
+}
+
+CommentEditForm.prototype.save = function(){
+    var comment = $("#" + this.id + "-comments").val();
+    debugger
+}
 /**
 * Displays the containers of the data collections by session or acronym of the protein
 *
@@ -3353,7 +3385,7 @@ CollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.ge
 * @constructor
 */
 function ContainersDataCollectionGrid(args) {
-    this.legend = new PuckLegend({width : 300, height : 50, cy : "12.5%", tOffset : 30});
+    this.legend = new PuckLegend({width : 300, height : 50, cy : "12.5%", tOffset : "17%"});
 }
 
 ContainersDataCollectionGrid.prototype.getPanel = function (dataCollectionGroup) {
@@ -3425,20 +3457,6 @@ ContainersDataCollectionGrid.prototype.getColumns = function() {
                                 }
                             }
                             dataCollectionIdsPerContainer[data.containerIds[i]] = dataCollectionIds;
-                            // var attributesContainerWidget = {mainRadius :  pucksPanelHeight/4, 
-                            //                                 enableMouseOver : true, 
-                            //                                 enableClick : true, 
-                            //                                 containerId : containerIdNumber, 
-                            //                                 dataCollectionId : containers.DataCollection_dataCollectionId, 
-                            //                                 initSelected : data.selected[containerIdNumber],
-                            //                                 dataCollectionIds : dataCollectionIds
-                            //                             }
-                            // pucks[containerIdNumber] = new UniPuckWidget(attributesContainerWidget);
-                            // if (containers[0].Container_capacity == 10){
-                            //     pucks[containerIdNumber] = new SpinePuckWidget(attributesContainerWidget);
-                            // }
-
-                            // tree.find("#puck-panel-" + data.containerIds[i]).html(pucks[containerIdNumber].getPanel().html);
                         }
                     }
 
@@ -4141,12 +4159,11 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 */
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
     try{
+        var _this = this;
         this.dataCollectionGroup = dataCollectionGroup;
-        
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
-        
     }
     catch(e){
         console.log(e);
@@ -4169,7 +4186,6 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
     });  
     return this.panel;
 };
-
 
 /**
 * Displays the data collection tab with all the data collection related to the data collection group
@@ -4492,7 +4508,11 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             /** !!IMPORTANT this is the parent node which contains the scroll **/
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+                $(".dataCollection-edit").unbind('click').click(function(sender){
+                    var dataCollectionId = sender.target.id.split("-")[0];
+                    _this.editComments(dataCollectionId);
+                });                              
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
@@ -4538,6 +4558,13 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
 };
+
+UncollapsedDataCollectionGrid.prototype.editComments = function (dataCollectionId) {
+    var comment = $("#comments_" + dataCollectionId).html().trim();
+    var commentEditForm = new CommentEditForm();
+    commentEditForm.load(dataCollectionId,comment);
+    commentEditForm.show();
+}
 function WorkflowSectionDataCollection(args) {
 	this.noFoundClass = "summary_datacollection_noFound";
 	this.failedClass = "summary_datacollection_failed";
@@ -5452,6 +5479,8 @@ ConfirmShipmentView.prototype.loadPucksList = function (sampleChangerWidget) {
 function ContainerPrepareSpreadSheet(args){
     this.id = BUI.id();
 
+    this.preselectedRowContainerId = null;
+
     this.height = 600;
     this.width = 600;
     if (args != null){
@@ -5497,11 +5526,13 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                                     background: '#444444',
                                 },
                                 handler : function(){
+                                    // EXI.getDataAdapter().proposal.dewar.updateSampleLocation(_.map(_this.containers,"containerId"), ["null"], [""]);
+
                                     var onSuccess = function (sender,c) {
                                         _this.onUnloadAllButtonClicked.notify();
                                         _this.loadProcessingDewars(_this.sampleChangerWidget);
                                     }
-                                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(_.map(_this.dewars,"containerId"));
+                                    EXI.getDataAdapter({onSuccess:onSuccess}).proposal.dewar.emptySampleLocation(_.map(_this.containers,"containerId"));
                                 }
                             }
         ],
@@ -5593,7 +5624,7 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                              case "Spinepuck":
                                 return "<kbd style='color:black;font-size:11px;background-color:#CCCCCC;'>SPINEPUCK</kbd>";  
                             default:
-                               return record.data.containerType;
+                               return "<kbd style='color:white;font-size:11px;background-color:#000000;'>" + record.data.containerType + "</kbd>";
                         }
                 }
             },
@@ -5647,11 +5678,14 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         ],
         viewConfig: {
             getRowClass: function(record, index, rowParams, store) {
+                if (record.get('containerType') != "Unipuck" && record.get('containerType') != "Spinepuck"){
+                    return "disabled-row";
+                }
                 if (record.get('sampleChangerLocation') == "" || record.get('sampleChangerLocation') == " " || record.get('sampleChangerLocation') == null ) {
                     return "warning-row";
                 }
-                for (var i = 0 ; i < _this.dewars.length ; i++){
-                    var dewar = _this.dewars[i];
+                for (var i = 0 ; i < _this.containers.length ; i++){
+                    var dewar = _this.containers[i];
                     if (record.get('containerId') != dewar.containerId && dewar.beamlineLocation == record.get('beamlineName')) {
                         if (record.get('sampleChangerLocation') == dewar.sampleChangerLocation){
                             return "puck-error";
@@ -5672,8 +5706,10 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
         },
         listeners: {
             itemclick: function(grid, record, item, index, e) {
-                if (e.target.tagName != "SELECT"){
-                    _this.onSelectRow.notify({record : record, item : item});          
+                if (record.data.containerType == "Unipuck" || record.data.containerType == "Spinepuck"){
+                    if (e.target.tagName != "SELECT"){
+                        _this.onSelectRow.notify({record : record, item : item});          
+                    }
                 }
             }
            
@@ -5705,9 +5741,36 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
     this.panel.setLoading();
     var onSuccessProposal = function(sender, containers) {
         var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
-        _this.load(processingContainers,sampleChangerWidget);
-        _this.panel.setLoading(false);
-        _this.onLoaded.notify(processingContainers);
+        //Check if some of the containers have the old value Puck for containerType, in which case, we need to use the sample locations to specify the type
+        var containersFromISPyB = _.filter(processingContainers,{"containerType":"Puck"});
+        if (containersFromISPyB.length > 0) {
+            var onSampleSuccess = function (sender, samples) {
+                if (samples && samples.length > 0) {
+                    _.map(samples,function (s) {s.location = parseInt(s.BLSample_location)});
+                    var groupedByContainer = _.groupBy(samples,"Container_containerId");
+                    _.forEach(groupedByContainer,function(smpls, containerId){
+                                                                var type = "Spinepuck";
+                                                                if (_.maxBy(smpls,"location") > 10) {
+                                                                    type = "Unipuck";  
+                                                                }
+                                                                _.map(processingContainers,function (c) {
+                                                                    if (c.containerId == containerId) {
+                                                                        c.containerType = type;
+                                                                    }
+                                                                });
+                                                            }
+                    );
+                }
+                _this.load(processingContainers,sampleChangerWidget);
+                _this.panel.setLoading(false);
+                _this.onLoaded.notify(processingContainers);
+            }
+            EXI.getDataAdapter({onSuccess : onSampleSuccess}).mx.sample.getSamplesByContainerId(_.map(containersFromISPyB,"containerId"));
+        } else {
+            _this.load(processingContainers,sampleChangerWidget);
+            _this.panel.setLoading(false);
+            _this.onLoaded.notify(processingContainers);
+        }
     };
     var onError = function(sender, error) {        
         EXI.setError("Ops, there was an error");
@@ -5723,37 +5786,35 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
 * @param dewars
 * @return
 */
-ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidget) {
+ContainerPrepareSpreadSheet.prototype.load = function(containers, sampleChangerWidget) {
     var _this = this;
-    this.dewars = dewars;
+    this.containers = containers;
     if (sampleChangerWidget){
         this.sampleChangerWidget = sampleChangerWidget;
     }
     var data = [];
     var error = false;
     //Parse data
-    for (var i = 0 ; i < dewars.length ; i++) {
-        var dewar = dewars[i];
-        if (dewar.containerId){
-            var containerType = "Unipuck";
-            if (dewar.capacity){
-                if (dewar.capacity == 10) {
-                    containerType = "Spinepuck";
-                }
+    for (var i = 0 ; i < containers.length ; i++) {
+        var container = containers[i];
+        if (container.containerId){
+            var containerType = container.containerType;
+            if (containerType == "Puck") {
+                containerType = "Spinepuck";
             }
             data.push({
-                shippingName : dewar.shippingName,
-                shippingId : dewar.shippingId,
-                parcelName : dewar.dewarCode,
-                barCode : dewar.barCode,
-                containerCode : dewar.containerCode,
+                shippingName : container.shippingName,
+                shippingId : container.shippingId,
+                parcelName : container.containerCode,
+                barCode : container.barCode,
+                containerCode : container.containerCode,
                 containerType : containerType,
-                sampleCount : dewar.sampleCount,
-                beamlineName : dewar.beamlineLocation,
-                sampleChangerLocation : dewar.sampleChangerLocation,
-                dewarId : dewar.dewarId,
-                containerId : dewar.containerId,
-                capacity : dewar.capacity
+                sampleCount : container.sampleCount,
+                beamlineName : container.beamlineLocation,
+                sampleChangerLocation : container.sampleChangerLocation,
+                dewarId : container.dewarId,
+                containerId : container.containerId,
+                capacity : container.capacity
             });
         } else {
             error = true;
@@ -5761,7 +5822,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
     }
 
     if (error){
-        $.notify("Error: error loading the dewars", "error");
+        $.notify("Error: error loading the containers", "error");
     }
 
     this.store.loadData(data);
@@ -5772,6 +5833,14 @@ ContainerPrepareSpreadSheet.prototype.load = function(dewars, sampleChangerWidge
         _this.updateBeamlineName(containerId,beamline);
         _this.onBeamlineChanged.notify(beamline);
     });
+    //Check if any row should be selected
+    if (this.preselectedRowContainerId) {
+        var row = _.filter(this.panel.getStore().data.items,function (o) {return o.data.containerId == parseInt(_this.preselectedRowContainerId);});
+        if (row && row.length > 0) {
+            this.onSelectRow.notify({record : row[0]});
+            this.preselectedRowContainerId = null;
+        }
+    }
 };
 
 /**
@@ -5811,6 +5880,7 @@ ContainerPrepareSpreadSheet.prototype.updateBeamlineName = function (containerId
     var _this = this;
 
     var onSuccess = function(sender, containers) {
+        _this.preselectedRowContainerId = containerId
         _this.loadProcessingDewars();
     };
     var onError = function(sender, error) {        
@@ -6080,7 +6150,7 @@ function LoadSampleChangerView (args) {
     this.showTip = true;
     this.height = 600;
     this.width = 600;
-    this.widgetRadius = 185;
+    this.widgetRadius = 170;
     if (args != null){
         if (args.height){
             this.height = args.height;
@@ -6095,6 +6165,14 @@ function LoadSampleChangerView (args) {
         isLoading : false
     };
     this.sampleChangerWidget = new FlexHCDWidget(data);
+    this.legend = new PuckLegend({
+                                    width       : 60, 
+                                    height      : 300, 
+                                    cy          : "50%", 
+                                    tOffset     : 30,
+                                    style       : "vertical",
+                                    fontSize    : "0.45vw"
+                                });
 
     this.selectedRowItem = null;
     this.selectedContainerId = null;
@@ -6340,6 +6418,7 @@ LoadSampleChangerView.prototype.changeSampleChangerWidgetByBeamline = function (
     this.widgetContainer.removeAll();
     this.load(this.containers);
     this.widgetContainer.insert(this.sampleChangerWidget.getPanel());
+    this.widgetContainer.insert(this.legend.getPanel());
     this.reloadSampleChangerWidget();
     this.sampleChangerWidget.blink();
     this.returnToSelectionStatus();
@@ -6412,7 +6491,8 @@ LoadSampleChangerView.prototype.getPanel = function () {
             type: 'hbox',
             pack: 'center'
         },  
-        items : [this.sampleChangerWidget.getPanel()]
+        items : [this.sampleChangerWidget.getPanel(),
+                this.legend.getPanel()]
     });
 
     this.verticalPanel = Ext.create('Ext.panel.Panel', {
@@ -8745,8 +8825,11 @@ function PuckLegend(args){
     this.id = BUI.id();
     this.width = 200;
     this.height = 10;
+    this.style = "horizontal";
     var cy = "30.5%";
-    var tOffset = 8;
+    var fontSize = "0.55vw";
+    var rad = "7%";
+    var tOffset = "50%"; //Text offset
 
     if (args) {
         if (args.width) {
@@ -8761,14 +8844,29 @@ function PuckLegend(args){
         if (args.tOffset) {
             tOffset = args.tOffset;
         }
+        if (args.style) {
+            this.style = args.style;
+        }
+        if (args.rad) {
+            rad = args.rad;
+        }
+        if (args.fontSize) {
+            fontSize = args.fontSize;
+        }
     }
-    var fontSize = "0.55vw";
-    var rad = "7%";
+    
     var circles = [];
-    circles.push({cx : "7%", cy : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
-    circles.push({cx : "27%", cy : cy, r : rad, cls : "cell_collected", text : "COLLECTED"});
-    circles.push({cx : "47%", cy : cy, r : rad, cls : "cell_filled", text : "FILLED"});
-    circles.push({cx : "67%", cy : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
+    if (this.style == "horizontal") {
+        circles.push({cx : "7%", cy : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
+        circles.push({cx : "27%", cy : cy, r : rad, cls : "cell_collected", text : "COLLECTED"});
+        circles.push({cx : "47%", cy : cy, r : rad, cls : "cell_filled", text : "FILLED"});
+        circles.push({cx : "67%", cy : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
+} else if (this.style == "vertical") {
+        circles.push({cy : "7%", cx : cy, r : rad, cls : "cell_empty", text : "EMPTY"});
+        circles.push({cy : "27%", cx : cy, r : rad, cls : "cell_collected", text : "COLLECTED"});
+        circles.push({cy : "47%", cx : cy, r : rad, cls : "cell_filled", text : "FILLED"});
+        circles.push({cy : "67%", cx : cy, r : rad, cls : "cell_selected", text : "SELECTED"});
+    }
 
     this.data = {
                     id          : this.id,

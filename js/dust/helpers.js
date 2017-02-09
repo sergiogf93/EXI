@@ -41,7 +41,7 @@ dust.helpers.dataCollectionComment = function (chunk, context, bodies, params) {
         var value = context.current()[params.key];
         if (value){
             if (value.trim() != "") {
-                chunk.write('Comment: ' + value);
+                chunk.write(value);
             }
         }
     }
