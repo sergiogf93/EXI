@@ -22,12 +22,15 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 */
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
     try{
+        var _this = this;
         this.dataCollectionGroup = dataCollectionGroup;
-        
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
-        
+        $(".dataCollection-save").unbind('click').click(function(sender){
+			var dataCollectionId = sender.target.id.split("-")[0];
+            _this.saveComments(dataCollectionId);
+		});
     }
     catch(e){
         console.log(e);
@@ -50,7 +53,6 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
     });  
     return this.panel;
 };
-
 
 /**
 * Displays the data collection tab with all the data collection related to the data collection group
@@ -419,3 +421,8 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
 };
+
+UncollapsedDataCollectionGrid.prototype.saveComments = function (dataCollectionId) {
+    var comment = $("#" + dataCollectionId + "-comments").val();
+    debugger
+}

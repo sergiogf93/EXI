@@ -252,28 +252,6 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 				
 				containerRows[Math.floor((i + dewar.containerVOs.length)/maxNumberForRow)].insert(containerParcelPanel.getPanel());
 			}
-
-			// if (!_.isEmpty(containerPanelsMap)) {
-				
-			// 	var onSuccess = function (sender, samples) {
-			// 		if (samples) {
-			// 			var samplesMap = {};
-			// 			for (var i = 0 ; i < samples.length ; i++) {
-			// 				var sample = samples[i];
-			// 				if (samplesMap[sample.Container_containerId]){
-			// 					samplesMap[sample.Container_containerId].push(sample);
-			// 				} else {
-			// 					samplesMap[sample.Container_containerId] = [sample];
-			// 				}
-			// 			}
-			// 			_.each(samplesMap, function(samples, containerId) {
-			// 				containerPanelsMap[containerId].load(samples);
-			// 			});
-			// 		}
-			// 	}
-
-			// 	EXI.getDataAdapter({onSuccess : onSuccess}).mx.sample.getSamplesByContainerId(containerIds);
-			// }
 		}
 	}
 }

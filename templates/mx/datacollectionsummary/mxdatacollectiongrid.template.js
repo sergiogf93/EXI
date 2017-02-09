@@ -118,15 +118,23 @@
                
               
                <div class="container-fluid">
-                   <div class="col-xs-12 col-md-12">
-                        {?DataCollectionGroup_comments}
-                                    <b>{@dataCollectionComment key="DataCollectionGroup_comments" /}</b>
-                        {/DataCollectionGroup_comments}
-                        {?SpaceGroupModelResolvedByPhasing}
-                            <div class="alert alert-success" style='font-size:14px;'>
-                                Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
+                    <div class="form-group row">
+                        <div id="{.DataCollection_dataCollectionId}-comments-div">
+                            <label class="col-md-1 col-form-label">Comments:</label>
+                            <div class="col-md-6">
+                                <input id="{.DataCollection_dataCollectionId}-comments" class="form-control" type="text" value="{.DataCollectionGroup_comments}">
                             </div>
-                        {/SpaceGroupModelResolvedByPhasing}
+                            <button id="{.DataCollection_dataCollectionId}-save-comments" class="btn btn-primary dataCollection-save">Save</button>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-xs-12 col-md-12">
+                            {?SpaceGroupModelResolvedByPhasing}
+                                <div class="alert alert-success" style='font-size:14px;'>
+                                    Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
+                                </div>
+                            {/SpaceGroupModelResolvedByPhasing}
+                        </div>
                     </div>
                </div>
                
