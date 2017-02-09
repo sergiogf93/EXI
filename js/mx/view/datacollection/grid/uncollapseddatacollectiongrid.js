@@ -27,10 +27,6 @@ UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
-        $(".dataCollection-edit").unbind('click').click(function(sender){
-			var dataCollectionId = sender.target.id.split("-")[0];
-            _this.saveComments(dataCollectionId);
-		});
     }
     catch(e){
         console.log(e);
@@ -375,7 +371,11 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             /** !!IMPORTANT this is the parent node which contains the scroll **/
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+                $(".dataCollection-edit").unbind('click').click(function(sender){
+                    var dataCollectionId = sender.target.id.split("-")[0];
+                    _this.editComments(dataCollectionId);
+                });                              
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
@@ -422,7 +422,9 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     var timer3 = setTimeout(tabsEvents, 500, _this);
 };
 
-UncollapsedDataCollectionGrid.prototype.saveComments = function (dataCollectionId) {
-    var comment = $("#" + dataCollectionId + "-comments").val();
-    debugger
+UncollapsedDataCollectionGrid.prototype.editComments = function (dataCollectionId) {
+    var comment = $("#comments_" + dataCollectionId).html().trim();
+    var commentEditForm = new CommentEditForm();
+    commentEditForm.load(dataCollectionId,comment);
+    commentEditForm.show();
 }
