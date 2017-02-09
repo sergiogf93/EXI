@@ -115,26 +115,20 @@
                   </div>
                 
                </div>
-               
-              
-               <div class="container-fluid">
-                    <div class="form-group row">
-                        <div id="{.DataCollection_dataCollectionId}-comments-div">
-                            <label class="col-md-1 col-form-label">Comments:</label>
-                            <div class="col-md-6">
-                                <input id="{.DataCollection_dataCollectionId}-comments" class="form-control" type="text" value="{.DataCollectionGroup_comments}">
+
+               <div class="container-fluid" style="padding-bottom: 10px;">
+                   <div class="col-xs-12 col-md-12">
+                        {?DataCollectionGroup_comments}
+                                    Comments: <b>{@dataCollectionComment key="DataCollectionGroup_comments" /}</b>
+                        {/DataCollectionGroup_comments}
+                        <a id="{.DataCollection_dataCollectionId}-edit-comments" class="btn btn-xs dataCollection-edit">
+                                    <span class="glyphicon glyphicon-edit"></span>
+                                </a>
+                        {?SpaceGroupModelResolvedByPhasing}
+                            <div class="alert alert-success" style='font-size:14px;'>
+                                Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
                             </div>
-                            <button id="{.DataCollection_dataCollectionId}-save-comments" class="btn btn-primary dataCollection-save">Save</button>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <div class="col-xs-12 col-md-12">
-                            {?SpaceGroupModelResolvedByPhasing}
-                                <div class="alert alert-success" style='font-size:14px;'>
-                                    Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
-                                </div>
-                            {/SpaceGroupModelResolvedByPhasing}
-                        </div>
+                        {/SpaceGroupModelResolvedByPhasing}
                     </div>
                </div>
                

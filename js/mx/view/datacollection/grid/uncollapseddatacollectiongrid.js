@@ -27,7 +27,7 @@ UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
-        $(".dataCollection-save").unbind('click').click(function(sender){
+        $(".dataCollection-edit").unbind('click').click(function(sender){
 			var dataCollectionId = sender.target.id.split("-")[0];
             _this.saveComments(dataCollectionId);
 		});
