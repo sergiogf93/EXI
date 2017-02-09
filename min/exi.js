@@ -162,6 +162,19 @@ dust.helpers.formatDate = function (chunk, context, bodies, params) {
     }
     return chunk;
 }
+
+dust.helpers.uppercase = function (chunk, context, bodies, params) {
+    if (params.key) {
+        var value = context.current()[params.key];
+        if (value){
+            chunk.write(value.toUpperCase());
+        }
+    }
+    else{
+        chunk.write('WARN: NO KEY SET');
+    }
+    return chunk;
+}
 //
 //function ExiController(){
 //	this.init();
@@ -5558,6 +5571,118 @@ CrystalFormView.prototype.load = function(containerId, sampleId, shippingId){
 
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getContainerById(this.containerId,this.containerId,this.containerId);
 };
+function DewarTrackingGrid(args) {
+	this.id = BUI.id();
+
+	this.templateData = {id : this.id};
+
+    this.onLoaded = new Event(this);
+}
+
+DewarTrackingGrid.prototype.getPanel = function () {
+
+    var html = '';
+    dust.render('dewar.tracking.grid.template',this.templateData,function (err,out) {
+        html = out;
+    });
+
+    return '<div id="' + this.id + '">' + html + '</div>';
+
+}
+
+DewarTrackingGrid.prototype.load = function (dewars) {
+    if (dewars){
+        this.templateData.dewars = dewars;
+        var html = "";
+        dust.render('dewar.tracking.grid.template',this.templateData,function (err,out) {
+            html = out;
+        });
+        $("#" + this.id).html(html);
+    } else {
+        $("#" + this.id).html("");
+    }
+    this.onLoaded.notify();
+}
+function DewarTrackingView(args) {
+	this.id = BUI.id();
+	this.width = 600;
+
+	this.templateData = {id : this.id};
+
+	if (args != null) {
+		if (args.width != null) {
+			this.width = args.width;
+		}
+	}
+
+	var _this = this;
+
+	this.dewarTrackingGrid = new DewarTrackingGrid();
+	this.dewarTrackingGrid.onLoaded.attach(function(sender) {
+		_this.onLoaded.notify();
+	});
+
+	this.onLoaded = new Event(this);
+	
+}
+
+DewarTrackingView.prototype.getPanel = function () {
+
+    var html = '';
+    dust.render('dewar.tracking.view.template',[],function (err,out) {
+        html = out;
+    });
+
+    return '<div id="' + this.id + '">' + html + '</div>';
+
+}
+
+DewarTrackingView.prototype.load = function (shipment) {
+	var _this = this;
+	this.templateData.shipment = shipment;
+
+    var html = '';
+    dust.render('dewar.tracking.view.template',this.templateData,function (err,out) {
+        html = out;
+    });
+
+	$("#" + this.id).html(html);
+	$("#" + this.id + "-dewars").multiselect({
+													enableFiltering: true,
+													enableCaseInsensitiveFiltering: true,
+													includeSelectAllOption: true,
+													onChange: function(option, checked, select) {
+														_this.loadGrid(_this.getSelectedDewarIds());
+													}
+												});
+	$("#" + this.id + "-tracking-grid").html(this.dewarTrackingGrid.getPanel());
+
+	this.loadGrid(this.getSelectedDewarIds());
+}
+
+DewarTrackingView.prototype.getSelectedDewarIds = function() {
+	return multiselect = $("#" + this.id + "-dewars").val();
+}
+
+DewarTrackingView.prototype.loadGrid = function(dewarIds) {
+	var _this = this;
+	if (dewarIds && dewarIds.length > 0) {
+		var onSuccess = function (sender, tracking) {
+			var grouped = _.groupBy(_.filter(tracking, function (o) {return dewarIds.indexOf(o.Dewar_dewarId.toString()) >= 0}),"Dewar_dewarId");
+			var filteredDewars = _.filter(_this.templateData.shipment.dewarVOs,function (o) {return dewarIds.indexOf(o.dewarId.toString()) >= 0});
+			_.map(filteredDewars,function (d) {
+				d.trackingData = grouped[d.dewarId];
+				d.nTracking = grouped[d.dewarId].length + 1;
+				d.returnCourier = grouped[d.dewarId][0].Shipping_returnCourier;
+			});
+			_this.dewarTrackingGrid.load(filteredDewars);
+		}
+
+		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getDewarTrackingHistory(this.templateData.shipment.shippingId);
+	} else {
+		this.dewarTrackingGrid.load();
+	}
+}
 function EditCrystalFormView (args) {
     this.id = BUI.id();
 
@@ -6245,16 +6370,16 @@ ParcelGrid.prototype.getPanel = function() {
 	})
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
-
-			items : {
-						// cls	: 'border-grid',
-						html : '<div id="' + this.id + '">' + html + '</div>',
-						width : this.width,
-						autoScroll:false,
-						autoHeight :true,
-						// maxHeight: this.height,
-						padding : this.padding
-					}
+		// cls	: 'overflowed',
+		items : {
+					// cls	: 'border-grid',
+					html : '<div id="' + this.id + '">' + html + '</div>',
+					width : this.width,
+					autoScroll:false,
+					autoHeight :true,
+					// maxHeight: this.height,
+					padding : this.padding
+				}
 	});
 
 	return this.panel;
@@ -6797,6 +6922,13 @@ function ShipmentForm(args) {
 			this.width = args.width;
 		}
 	}
+
+	var _this = this;
+
+	this.dewarTrackingView = new DewarTrackingView();
+	this.dewarTrackingView.onLoaded.attach(function(sender){
+		_this.panel.doLayout();
+	});
 	
 	this.onSaved = new Event(this);
 }
@@ -6835,12 +6967,8 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 			});
 		}
 	}
-	
-	$("#" + this.id + "-dewars").multiselect({
-												onDropdownShow: function(event) {
-													_this.panel.doLayout();
-												}
-											});
+
+	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
 
 	this.panel.doLayout();
 
@@ -6852,8 +6980,9 @@ ShipmentForm.prototype.getPanel = function() {
 
 	this.panel = Ext.create("Ext.panel.Panel",{
 		layout : 'fit',
+		cls	: 'overflowed overflowed-cascade',
+
 		items :	[{
-					// cls	: 'border-grid',
                     html : '<div id="' + this.id + '"></div>',
                     autoScroll : false,
 					// margin : 10,
@@ -6907,6 +7036,10 @@ ShipmentForm.prototype.attachCallBackAfterRender = function () {
 	var tabsEvents = function(grid) {
 		this.grid = grid;
 		$('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+			var target = $(e.target).attr("href");
+			if (target.startsWith("#tr")){
+				_this.dewarTrackingView.load(_this.shipment);
+			}
 			_this.panel.doLayout();
 		});
     };
