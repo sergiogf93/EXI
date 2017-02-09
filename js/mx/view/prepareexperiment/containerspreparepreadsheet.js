@@ -53,6 +53,8 @@ ContainerPrepareSpreadSheet.prototype.getPanel = function() {
                                     background: '#444444',
                                 },
                                 handler : function(){
+                                    // EXI.getDataAdapter().proposal.dewar.updateSampleLocation(_.map(_this.containers,"containerId"), ["null"], [""]);
+
                                     var onSuccess = function (sender,c) {
                                         _this.onUnloadAllButtonClicked.notify();
                                         _this.loadProcessingDewars(_this.sampleChangerWidget);
