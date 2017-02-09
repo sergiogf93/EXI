@@ -3,29 +3,29 @@
     <tr>
         <td>Detector Type</td>
         <td  class='column_parameter_value'> 
-            {.detectorType}
+            {.Detector_detectorType}
         </td>
     </tr>
     <tr>
         <td>Detector Model</td>
-        <td  class='column_parameter_value'>{.detectorModel}</td>
+        <td  class='column_parameter_value'>{.Detector_detectorModel}</td>
     </tr>
     <tr>
         <td>Manufacturer</td>
-        <td  class='column_parameter_value'>{.detectorManufacturer}</td>
+        <td  class='column_parameter_value'>{.Detector_detectorManufacturer}</td>
     </tr>
     <tr>
         <td>Hor. Pixel Size</td>
-        <td  class='column_parameter_value'>{.detectorPixelSizeHorizontal}</td>
+        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeHorizontal}</td>
     </tr>
     
     <tr>
         <td>Ver. Pixel Size</td>
-        <td  class='column_parameter_value'>{.detectorPixelSizeVertical}</td>
+        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeVertical}</td>
     </tr>
     <tr>
         <td>Mode</td>
-        <td  class='column_parameter_value'>{.detectorMode}</td>
+        <td  class='column_parameter_value'>{.Detector_detectorMode}</td>
     </tr>
     
    
