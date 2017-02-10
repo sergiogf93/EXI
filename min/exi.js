@@ -2918,15 +2918,16 @@ ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 ShippingListView.prototype.getStatsByShippingId = function(shippingId){
 	if (this.dewars){
 		var _this = this;
-		var containers = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
+		var dewars = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
 		var sampleCount = 0;
-		_(containers).forEach(function(value) {
+		_(dewars).forEach(function(value) {
 			sampleCount = sampleCount + value.sampleCount;
-		});      
+		});
+		
 		return {
 					samples     : sampleCount,
-					dewars      : Object.keys(_.groupBy(containers, "dewarId")).length,
-					containers   : containers.length
+					dewars      : Object.keys(_.groupBy(dewars, "dewarId")).length,
+					containers   : dewars.length
 			
 		};
 	} else {
@@ -6262,8 +6263,9 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
 	});
+
 	
-	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels)");
+	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + samples.length + " Samples - " + (samples.length - withoutCollection.length) + " Measured)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
 	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
 		_this.edit();
@@ -6318,7 +6320,7 @@ ParcelGrid.prototype.fillTab = function (tabName, dewars) {
 ParcelGrid.prototype.edit = function(dewar) {
 	var _this = this;
 	var caseForm = new CaseForm();
-
+	debugger
 	var window = Ext.create('Ext.window.Window', {
 		title : 'Parcel',
 		height : 450,
@@ -6567,6 +6569,10 @@ PuckFormView.prototype.getPanel = function() {
                                          // this.puckLayout.getPanel()
 							         ]
 		         },
+				 {
+					 html : "<div class='container-fluid'><span style='font-size: 12px;color: #666;'>Special characters are not allowed for the sample name field</span></div>"
+				 }
+				 ,
 		         this.containerSpreadSheet.getPanel(),
                 
 	         ] 
@@ -6669,23 +6675,37 @@ PuckFormView.prototype.save = function(returnToShipment) {
 	puck.code = Ext.getCmp(_this.id + 'puck_name').getValue();
 	puck.capacity = _this.capacityCombo.getSelectedCapacity();
 	puck.containerType = _this.capacityCombo.getSelectedType();
-	
-    var onError = function(sender, error){
-		_this.panel.setLoading(false);
-		EXI.setError(error.responseText);
-	};
-    
-	var onSuccess = function(sender, puck){
-		_this.unsavedChanges = false;
-		_this.panel.setLoading(false);
-		if (returnToShipment){
-			location.href = "#/shipping/" + _this.shippingId + "/main";
-		} else {
-			_this.load(_this.containerId, _this.shippingId);
+
+	// Check if sample names have special characters
+	var hasSpecialCharacter = false;
+	var format = /[ ~`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+	for (var i = 0 ; i < puck.sampleVOs.length ; i++) {
+		if(format.test(puck.sampleVOs[i].name)) {
+			hasSpecialCharacter = true
+			break;
 		}
-	};
-	this.panel.setLoading("Saving Puck");
-	EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
+	}
+
+	if (!hasSpecialCharacter) {
+		var onError = function(sender, error){
+			_this.panel.setLoading(false);
+			EXI.setError(error.responseText);
+		};
+		
+		var onSuccess = function(sender, puck){
+			_this.unsavedChanges = false;
+			_this.panel.setLoading(false);
+			if (returnToShipment){
+				location.href = "#/shipping/" + _this.shippingId + "/main";
+			} else {
+				_this.load(_this.containerId, _this.shippingId);
+			}
+		};
+		this.panel.setLoading("Saving Puck");
+		EXI.getDataAdapter({onSuccess : onSuccess, onError : onError}).proposal.shipping.saveContainer(this.containerId, this.containerId, this.containerId, puck);
+	} else {
+		$.notify("There are special characters in some of the sample names","error");
+	}
 };
 
 /**
@@ -6747,6 +6767,33 @@ PuckFormView.prototype.showReturnWarning = function() {
 	});
 	window.show();
 }		
+function SendShipmentForm(args) {
+    this.id = BUI.id();
+}
+
+SendShipmentForm.prototype.show = function(){
+    var _this = this;
+    
+    var html = "";
+    dust.render("send.shipment.form.template", {id : this.id, shipment : this.shipment}, function(err,out){
+        html = out;
+    });
+
+    $("body").append(html);
+    $("#" + this.id + "-save").unbind('click').click(function(sender){
+        _this.save();
+    });
+    
+    $("#" + this.id + "-modal").modal();
+};
+
+SendShipmentForm.prototype.load = function (shipment) {
+    this.shipment = shipment;
+}
+
+SendShipmentForm.prototype.save = function(){
+    debugger
+}
 function ShipmentEditForm(args) {
     this.id = BUI.id();
 
@@ -6966,6 +7013,15 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 				alert("Not implemented");
 			});
 		}
+	}
+
+	if (shipment.shippingStatus == "opened") {
+		$("#" + _this.id + "-send-button").removeClass('disabled');
+		$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
+			var sendShipmentForm = new SendShipmentForm();
+			sendShipmentForm.load(_this.shipment);
+			sendShipmentForm.show();
+		});
 	}
 
 	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
@@ -7579,7 +7635,8 @@ function ContainerParcelPanel(args) {
                 enableMainClick : true,
                 enableMainMouseOver : true,
                 containerId : 0,
-                capacity : 10
+                capacity : 10,
+                showCode : true
     };
     this.width = 2*this.data.mainRadius + 20;
     this.container = new ContainerWidget(this.data);
@@ -7614,7 +7671,14 @@ function ContainerParcelPanel(args) {
         if (args.capacity != null) {
 			this.data.capacity = args.capacity;
 		}
+        if (args.showCode != null) {
+			this.data.showCode = args.showCode;
+		}
 	}
+
+    if (this.height < 45) {
+        this.data.showCode = false;
+    }
     
     this.onContainerRemoved = new Event(this);
 	
@@ -7653,7 +7717,7 @@ ContainerParcelPanel.prototype.getPanel = function () {
                 ]
 	});
     
-    if (this.height >= 45) {
+    if (this.data.showCode) {
         this.panel.insert({
                     html : "<div class='container-fluid' align='center'><span id='" + this.id + "-name' style='font-size:" + this.height*0.15 + "px;'>" + this.data.code + "</span></div>",
                     height : this.height*0.25,
@@ -8584,8 +8648,10 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
 				var type = container.containerType;
+				var showCode = true;
 				if (this.currentTab == "statistics") {
 					type = "StatisticsPuck";
+					showCode = false;
 				}
 				var containerParcelPanel = new ContainerParcelPanel({
 																	type : type, 
@@ -8595,7 +8661,8 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 																	shippingId : this.shippingId, 
 																	shippingStatus : this.shippingStatus, 
 																	capacity : container.capacity, 
-																	code : container.code
+																	code : container.code,
+																	showCode : showCode
 																});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
@@ -8616,7 +8683,8 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 																		containerId : stockSolutions[i].stockSolutionId, 
 																		shippingId : this.shippingId, 
 																		shippingStatus : this.shippingStatus, 
-																		code : stockSolutions[i].name
+																		code : stockSolutions[i].name,
+																		showCode : false
 																	});	
 				// containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
@@ -8935,7 +9003,8 @@ function PuckStatisticsContainer(args) {
                             code            : "",
 							enableMainMouseOver : false,
 							nSamples : 0,
-							nMeasured : 0
+							nMeasured : 0,
+							minimized : false
                         };
 
     this.samples = null;
@@ -8968,6 +9037,10 @@ function PuckStatisticsContainer(args) {
         }
 	}
 
+	if (this.templateData.height < 45) {
+        this.templateData.minimized = true;
+    }
+
 	this.onClick = new Event(this);
 	this.onMouseOver = new Event(this);
 	this.onMouseOut = new Event(this);
@@ -8976,6 +9049,8 @@ function PuckStatisticsContainer(args) {
 PuckStatisticsContainer.prototype.getPanel = function () {
 	
 	var _this = this;
+
+	var cls = (this.templateData.minimized) ? "border-grid" : "";
 	
 	this.panel =  Ext.create('Ext.panel.Panel', {
             id: this.id + "-container",
@@ -8983,7 +9058,7 @@ PuckStatisticsContainer.prototype.getPanel = function () {
 		    y: this.templateData.yMargin,
 		    width : this.templateData.width + 1,
 		    height : this.templateData.height + 1,
-		   cls:'border-grid',
+		   	cls : cls,
 		    frame: false,
 			border: false,
 			bodyStyle: 'background:transparent;',
@@ -9430,7 +9505,8 @@ function StockSolutionContainer(args) {
 							stockId			: 0,
 							enableMainClick : false,
 							enableClick : false,
-                            code            : ""
+                            code            : "",
+							minimized : false
                         };
 
 	this.stockSolutionId = 0;
@@ -9471,6 +9547,10 @@ function StockSolutionContainer(args) {
         }
 	}
 
+	if (this.templateData.height < 45) {
+        this.templateData.minimized = true;
+    }
+
 	this.onClick = new Event(this);
 	this.onMouseOver = new Event(this);
 	this.onMouseOut = new Event(this);
@@ -9479,6 +9559,8 @@ function StockSolutionContainer(args) {
 StockSolutionContainer.prototype.getPanel = function () {
 	
 	var _this = this;
+
+	var cls = (this.templateData.minimized) ? "border-grid" : "";
 	
 	this.panel =  Ext.create('Ext.panel.Panel', {
             id: this.id + "-container",
@@ -9486,7 +9568,7 @@ StockSolutionContainer.prototype.getPanel = function () {
 		    y: this.templateData.yMargin,
 		    width : this.templateData.width + 1,
 		    height : this.templateData.height + 1,
-		   cls:'border-grid',
+			cls : cls,
 		    frame: false,
 			border: false,
 			bodyStyle: 'background:transparent;',

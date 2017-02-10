@@ -63,6 +63,15 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 		}
 	}
 
+	if (shipment.shippingStatus == "opened") {
+		$("#" + _this.id + "-send-button").removeClass('disabled');
+		$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
+			var sendShipmentForm = new SendShipmentForm();
+			sendShipmentForm.load(_this.shipment);
+			sendShipmentForm.show();
+		});
+	}
+
 	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
 
 	this.panel.doLayout();
