@@ -19,15 +19,16 @@ ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 ShippingListView.prototype.getStatsByShippingId = function(shippingId){
 	if (this.dewars){
 		var _this = this;
-		var containers = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
+		var dewars = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
 		var sampleCount = 0;
-		_(containers).forEach(function(value) {
+		_(dewars).forEach(function(value) {
 			sampleCount = sampleCount + value.sampleCount;
-		});      
+		});
+		
 		return {
 					samples     : sampleCount,
-					dewars      : Object.keys(_.groupBy(containers, "dewarId")).length,
-					containers   : containers.length
+					dewars      : Object.keys(_.groupBy(dewars, "dewarId")).length,
+					containers   : dewars.length
 			
 		};
 	} else {

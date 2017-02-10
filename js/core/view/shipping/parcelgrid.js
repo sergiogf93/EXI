@@ -122,7 +122,7 @@ ParcelGrid.prototype.fillTab = function (tabName, dewars) {
 ParcelGrid.prototype.edit = function(dewar) {
 	var _this = this;
 	var caseForm = new CaseForm();
-
+	debugger
 	var window = Ext.create('Ext.window.Window', {
 		title : 'Parcel',
 		height : 450,
