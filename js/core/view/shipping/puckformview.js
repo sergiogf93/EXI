@@ -162,6 +162,10 @@ PuckFormView.prototype.getPanel = function() {
                                          // this.puckLayout.getPanel()
 							         ]
 		         },
+				 {
+					 html : "<div class='container-fluid'><span style='font-size: 12px;color: #666;'>Special characters are not allowed for the sample name field</span></div>"
+				 }
+				 ,
 		         this.containerSpreadSheet.getPanel(),
                 
 	         ] 
