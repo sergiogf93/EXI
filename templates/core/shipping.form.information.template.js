@@ -32,8 +32,8 @@
         </div>
     </div>
 
-    <div class="col-md-1" style="padding:0px">
-        {!{?shipment.returnLabContactVO}
+    <div class="col-md-2" style="padding:0px">
+        {?shipment.returnLabContactVO}
             <table class="table small-padding-rows borderless" style="margin:0px">
                 <tr>
                     <td colspan="2" class='column_parameter_value'>Return details</td>
@@ -51,11 +51,11 @@
                     <td>{shipment.returnLabContactVO.billingReference}</td>
                 </tr>
             </table>
-        {/shipment.returnLabContactVO}!}
+        {/shipment.returnLabContactVO}
     </div>
 
-    <div class="col-md-1" style="padding:0px">
-        {!<div class="form-group row" style="margin:5px">
+    <div class="col-md-2" style="padding:0px">
+        <div class="form-group row" style="margin:5px">
             <a id="{id}-send-button" class="btn btn-md disabled">
                 <span class="glyphicon glyphicon-plane"></span> Send shipment to ESRF
             </a>
@@ -64,10 +64,10 @@
             <a id="{id}-remove-button" class="btn btn-md disabled">
                 <span class="glyphicon glyphicon-remove" style="color:red"></span> Remove shipment
             </a>
-        </div>!}
+        </div>
     </div>
 
-    <div class="col-md-5" style="padding:0px">
+    <div class="col-md-3" style="padding:0px">
         <div class="form-group row" style="margin:5px">
             <label class="col-md-3 col-form-label " ><b>Comments:</b></label>
             <textarea  class="col-md-9" rows="4" disabled>{shipment.comments}</textarea >
