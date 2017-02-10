@@ -66,8 +66,9 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
 	});
+
 	
-	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels)");
+	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + samples.length + " Samples - " + (samples.length - withoutCollection.length) + " Measured)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
 	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
 		_this.edit();

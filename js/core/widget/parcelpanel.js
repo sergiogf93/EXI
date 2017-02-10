@@ -202,8 +202,10 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 			for (var i = 0; i< dewar.containerVOs.length; i++){
 				var container = dewar.containerVOs[i];
 				var type = container.containerType;
+				var showCode = true;
 				if (this.currentTab == "statistics") {
 					type = "StatisticsPuck";
+					showCode = false;
 				}
 				var containerParcelPanel = new ContainerParcelPanel({
 																	type : type, 
@@ -213,7 +215,8 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 																	shippingId : this.shippingId, 
 																	shippingStatus : this.shippingStatus, 
 																	capacity : container.capacity, 
-																	code : container.code
+																	code : container.code,
+																	showCode : showCode
 																});
 				containerParcelPanel.onContainerRemoved.attach(function (sender, containerId) {
 					_.remove(_this.dewar.containerVOs, {containerId: containerId});
@@ -234,7 +237,8 @@ ParcelPanel.prototype.renderPucks = function (dewar) {
 																		containerId : stockSolutions[i].stockSolutionId, 
 																		shippingId : this.shippingId, 
 																		shippingStatus : this.shippingStatus, 
-																		code : stockSolutions[i].name
+																		code : stockSolutions[i].name,
+																		showCode : false
 																	});	
 				// containerPanelsMap[stockSolutions[i].boxId] = containerParcelPanel;
 				containerIds.push(stockSolutions[i].boxId);
