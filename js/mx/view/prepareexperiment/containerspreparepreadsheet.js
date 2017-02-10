@@ -283,6 +283,11 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
                                                                 _.map(processingContainers,function (c) {
                                                                     if (c.containerId == containerId) {
                                                                         c.containerType = type;
+                                                                        if (type == "Spinepuck") {
+                                                                            c.capacity = 10;
+                                                                        } else if (type == "Unipuck") {
+                                                                            c.capacity = 16;
+                                                                        }
                                                                     }
                                                                 });
                                                             }
@@ -328,6 +333,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(containers, sampleChangerW
             var containerType = container.containerType;
             if (containerType == "Puck") {
                 containerType = "Spinepuck";
+                container.capacity = 10;
             }
             data.push({
                 shippingName : container.shippingName,

@@ -125,10 +125,11 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
         var html = "";
         var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
         
-        dust.render("workflows.mxdatacollectiongrid.template",  items, function(err, out) {
+        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
                         html = html + out;
         });
         $(target).html(html);
+
     }   
 };
 
@@ -412,11 +413,16 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                    
                 }
                 
-                  if (target.startsWith("#ph")){                           
+                if (target.startsWith("#ph")){                           
                     var dataCollectionGroupId = target.slice(4);
                     _this.displayPhasingTab(target, dataCollectionGroupId);              
                    
                 }
+
+                $(".dataCollection-edit").unbind('click').click(function(sender){
+                    var dataCollectionId = sender.target.id.split("-")[0];
+                    _this.editComments(dataCollectionId);
+                });  
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);

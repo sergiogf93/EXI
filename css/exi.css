@@ -388,6 +388,12 @@ img.border-img {
 	/*stroke-dasharray:3;*/ 
 }
 
+.puck-always-disabled {
+	cursor : no-drop !important;
+	fill-opacity : 0.2 !important;
+	stroke-opacity : 0.2 !important;
+}
+
 .puck {
 	stroke : black;
 	stroke-width : 1;
@@ -425,6 +431,12 @@ img.border-img {
 }
 
 .cell-disabled {
+	fill-opacity : 0.2 !important;
+	stroke-opacity : 0.2 !important;
+	stroke-dasharray:1;
+}
+
+.cell-always-disabled {
 	fill-opacity : 0.2 !important;
 	stroke-opacity : 0.2 !important;
 	stroke-dasharray:1;
