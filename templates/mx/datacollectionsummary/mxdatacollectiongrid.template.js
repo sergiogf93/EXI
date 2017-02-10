@@ -121,9 +121,9 @@
                         {?DataCollectionGroup_comments}
                                     Comments: <b><span id="comments_{.DataCollection_dataCollectionId}">{@dataCollectionComment key="DataCollectionGroup_comments" /}</span></b>
                         {/DataCollectionGroup_comments}
-                        <a class="btn btn-xs">
-                                    <span id="{.DataCollection_dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
-                                </a>
+                        {!<a class="btn btn-xs">
+                            <span id="{.DataCollection_dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
+                        </a>!}
                         {?SpaceGroupModelResolvedByPhasing}
                             <div class="alert alert-success" style='font-size:14px;'>
                                 Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
