@@ -15,19 +15,12 @@
         <td  class='column_parameter_value'>{.Detector_detectorManufacturer}</td>
     </tr>
     <tr>
-        <td>Hor. Pixel Size</td>
-        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeHorizontal}</td>
-    </tr>
-    
-    <tr>
-        <td>Ver. Pixel Size</td>
-        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeVertical}</td>
-    </tr>
-    <tr>
         <td>Mode</td>
         <td  class='column_parameter_value'>{.Detector_detectorMode}</td>
     </tr>
-    
-   
+    <tr>
+        <td>Pixel Size Hor (Vert)</td>
+        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeHorizontal} ({.Detector_detectorPixelSizeVertical})</td>
+    </tr>
 </table>       
               

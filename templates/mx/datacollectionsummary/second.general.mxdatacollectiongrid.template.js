@@ -1,12 +1,6 @@
 
 <table class="table">                    
     <tr>
-        <td>Type</td>
-        <td  class='column_parameter_value'> 
-        {.DataCollectionGroup_experimentType}
-        </td>
-    </tr>
-    <tr>
         <td>Res. (corner)</td>
         <td  class='column_parameter_value'>{.DataCollection_resolution} &#8491; ({.DataCollection_resolutionAtCorner} &#8491;)</td>
     </tr>
@@ -27,6 +21,10 @@
         <td>Exposure Time</td>
         <td  class='column_parameter_value'>{.DataCollection_exposureTime} s</td>
     </tr>
+    <tr>
+      <td>Flux start</td>
+      <td class='column_parameter_value'>{.DataCollection_flux} ph/sec</td>
+   </tr>
     <tr>
         <td>Flux end</td>
         <td  class='column_parameter_value'>{.DataCollection_flux_end} ph/sec</td>
