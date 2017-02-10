@@ -24,12 +24,15 @@ MXManagerMenu.prototype.getMenuItems = function() {
     	this.getHomeItem(),
     	this.getShipmentItem(),
     	{
-				text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
-				cls : 'ExiSAXSMenuToolBar',
-				hidden : this.isHidden,
-                 disabled : true,
-				menu : this.getPreparationMenu() 
-		}, {
+                text : this._convertToHTMLWhiteSpan("Prepare Experiment"),
+                cls : 'ExiSAXSMenuToolBar',
+                disabled : false,
+                handler : function(){
+                    location.hash = "/mx/prepare/main";
+                
+				}
+		},
+		{
 				text : this._convertToHTMLWhiteSpan("Data Explorer"),
 				cls : 'ExiSAXSMenuToolBar',
 				hidden : this.isHidden,
@@ -55,34 +58,34 @@ MXManagerMenu.prototype.getMenuItems = function() {
 		{
 			xtype : 'textfield',
 			name : 'field1',
-			emptyText : 'search macromolecule',
-			hidden : this.isHidden,
+			value : '',
+			emptyText : 'search by protein acronym',
 			listeners : {
 				specialkey : function(field, e) {
-					if (e.getKey() == e.ENTER) {                        
-						location.hash = "/datacollection/macromoleculeAcronym/" + field.getValue() + "/main";
+					if (e.getKey() == e.ENTER) {
+						location.hash = "/mx/datacollection/protein_acronym/" + field.getValue() + "/main";
 					}
 				} 
 			} 
-	}
+		}
 	];
 };
 
 MXManagerMenu.prototype.getManagerMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
-		if (item.text == "AutoprocIntegrator") {
+		if (item.text == "Autoproc Scaling Statistics") {
 			var scatteringForm = new ScatteringForm({width : 650, height : 560});
 
 			var window = Ext.create('Ext.window.Window', {
-				title : 'Scattering',
+				title: "Plot autoprocessing values for last week",
 				height : 560,
 				width : 650,
 				modal : true,
 				layout : 'fit',
 				items : [ scatteringForm.getPanel() ],
 				buttons : [ {
-						text : 'Plot',
+						text : 'Plot (last 7 days)',
 						handler : function() {
 							scatteringForm.plot();
 						}
@@ -94,7 +97,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 					} ]
 			}).show();
 
-			var keys = ["rPimWithinIPlusIMinus","anomalousMultiplicity","multiplicity","resolutionLimitLow","ccHalf",
+			var keys = ["ISA", "rPimWithinIPlusIMinus","anomalousMultiplicity","multiplicity","resolutionLimitLow","ccHalf",
 			"strategySubWedgeOrigId","completeness","rMerge","anomalous","meanIOverSigI","ccAno","autoProcScalingId",
 			"nTotalObservations","sigAno","rMeasWithinIPlusIMinus","anomalousCompleteness","resolutionLimitHigh",
 			"fractionalPartialBias","rMeasAllIPlusIMinus","nTotalUniqueObservations","rPimAllIPlusIMinus"];
@@ -113,9 +116,10 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 						menu : {       
 								items: [
 									{
-										text: 'AutoprocIntegrator',
+										text: 'Autoproc Scaling Statistics',
 										icon : '../images/icon/ic_insert_chart_black_36dp.png',
-										handler: onItemCheck
+										handler: onItemCheck,
+										disabled : false
 									}
 								]
 							}

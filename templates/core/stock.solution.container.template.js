@@ -2,13 +2,13 @@
     <div id='{.id}-img' pointer-events='none' class='stock-solution' style="height:{height}px;">
         {?fillPanel}
             <table class="table">
-                <tr>
-                    <td>
+                <tr valign="middle">
+                    <td style="border-bottom:1px solid;"><b>
                         {@eq key=code value=""}
                             &nbsp;-
                         {:else}
                             {code}
-                        {/eq}
+                        {/eq}</b>
                     </td>
                 </tr>
                 <tr>

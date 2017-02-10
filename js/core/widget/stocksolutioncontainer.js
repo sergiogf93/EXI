@@ -8,15 +8,11 @@ function StockSolutionContainer(args) {
                             mainRadius  	: 50,
                             width       	: 100,
                             height      	: 100,
-                            imgH			: 42,
-                            imgW			: 42,
 							margin			: 15,
 							stockId			: 0,
-							// rInner			: 10,
 							enableMainClick : false,
-                            code            : "",
-                            enableClick     : false,
-							enableMainMouseOver : false
+							enableClick : false,
+                            code            : ""
                         };
 
 	this.stockSolutionId = 0;
@@ -36,22 +32,17 @@ function StockSolutionContainer(args) {
 		if (args.enableMainClick != null){
 			this.templateData.enableMainClick = args.enableMainClick;
 		}
-		if (args.enableMainClick != null){
-			this.templateData.enableMainClick = args.enableMainClick;
+		if (args.enableClick != null){
+			this.templateData.enableClick = args.enableClick;
 		}
         if (args.mainRadius){
 			this.templateData.mainRadius = args.mainRadius;
 			this.templateData.width = 2*args.mainRadius;
 			this.templateData.height = 2*args.mainRadius;
-			this.templateData.imgH = this.templateData.height*0.7;
-			this.templateData.imgW = this.templateData.width*0.7;
 			this.templateData.margin = (this.templateData.width - this.templateData.imgW)*0.5;
 		}
         if (args.code) {
             this.templateData.code = args.code;
-        }
-        if (args.enableClick != null) {
-            this.templateData.enableClick = args.enableClick;
         }
         if (args.stockSolutionId) {
             this.stockSolutionId = args.stockSolutionId;

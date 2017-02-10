@@ -48,7 +48,18 @@ ScatteringForm.prototype.load = function(data) {
 	}
 
 	this.data.today = moment().format("YYYY-MM-DD");
-	this.data.tenDaysAgo = moment().subtract(10,'d').format("YYYY-MM-DD");
+
+	if (!this.data.types){
+		this.data.types = [
+								{display : "Overall", value : "overall"},
+								{display : "InnerShell", value : "innerShell"},
+								{display : "OutShell", value : "outShell"}
+							]
+	}
+
+	if (!this.data.beamlines) {
+		this.data.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
+	}
 
     var html = "";
     dust.render("scattering.form.template", this.data, function (err, out) {
@@ -60,23 +71,25 @@ ScatteringForm.prototype.load = function(data) {
 }
 
 ScatteringForm.prototype.plot = function() {
-	var startDate= $("#" + this.id + "-startDate").val();
-	var endDate = $("#" + this.id + "-endDate").val();
+	var endDate= $("#" + this.id + "-date").val();
 	var checkedValues = [];
 	$('.scattering-checkbox:checked').each(function(i){
 		checkedValues.push($(this).val());
 	});
-
-	if (startDate != "" && endDate != "" && checkedValues.length > 0) {
-		var diffDays = moment(endDate,"YYYY-MM-DD").diff(moment(startDate,"YYYY-MM-DD"), 'days');
-		if (diffDays <= 10){
-			var url = EXI.getDataAdapter().mx.stats.getStatisticsByDate(startDate,endDate);
-			var urlParams = "url=" + url + "&/&title=" + this.data.title + "&/&y=" + checkedValues.toString() + "&/&x=recordTimeStamp&";
-			window.open("../viewer/scatter/index.html?" + urlParams,"_blank");
+	var type = $("#" + this.id + "-type").val();
+	var beamline = $("#" + this.id + "-beamline").val();
+	
+	if (endDate != "" && checkedValues.length > 0) {
+		var startDate = moment(endDate,"YYYY-MM-DD").subtract(7,'d').format("YYYY-MM-DD");
+		url = "";
+		if (beamline != ""){
+			url = EXI.getDataAdapter().mx.stats.getStatisticsByDateAndBeamline(type,startDate,endDate,beamline);
 		} else {
-			$("#" + this.id + "-dates").notify("Date interval must be 10 days or lower.", "error");
+			url = EXI.getDataAdapter().mx.stats.getStatisticsByDate(type,startDate,endDate);
 		}
+		var urlParams = "url=" + url + "&/&title=" + this.data.title + "&/&y=" + checkedValues.toString() + "&/&x=recordTimeStamp&";
+		window.open("../viewer/scatter/index.html?" + urlParams,"_blank");
 	} else {
-		$("#" + this.id + "-notifications").notify("Set the dates correctly and select the values to plot.", "error");
+		$("#" + this.id + "-checkox-div").notify("Set the dates correctly and select the values to plot.", { className : "error",elementPosition: 'top left'});
 	}
 }
