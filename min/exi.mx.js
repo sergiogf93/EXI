@@ -4262,10 +4262,11 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
         var html = "";
         var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
         
-        dust.render("workflows.mxdatacollectiongrid.template",  items, function(err, out) {
+        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
                         html = html + out;
         });
         $(target).html(html);
+
     }   
 };
 
@@ -4549,11 +4550,16 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                    
                 }
                 
-                  if (target.startsWith("#ph")){                           
+                if (target.startsWith("#ph")){                           
                     var dataCollectionGroupId = target.slice(4);
                     _this.displayPhasingTab(target, dataCollectionGroupId);              
                    
                 }
+
+                $(".dataCollection-edit").unbind('click').click(function(sender){
+                    var dataCollectionId = sender.target.id.split("-")[0];
+                    _this.editComments(dataCollectionId);
+                });  
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
@@ -5756,6 +5762,11 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
                                                                 _.map(processingContainers,function (c) {
                                                                     if (c.containerId == containerId) {
                                                                         c.containerType = type;
+                                                                        if (type == "Spinepuck") {
+                                                                            c.capacity = 10;
+                                                                        } else if (type == "Unipuck") {
+                                                                            c.capacity = 16;
+                                                                        }
                                                                     }
                                                                 });
                                                             }
@@ -5801,6 +5812,7 @@ ContainerPrepareSpreadSheet.prototype.load = function(containers, sampleChangerW
             var containerType = container.containerType;
             if (containerType == "Puck") {
                 containerType = "Spinepuck";
+                container.capacity = 10;
             }
             data.push({
                 shippingName : container.shippingName,
@@ -6497,14 +6509,15 @@ LoadSampleChangerView.prototype.getPanel = function () {
 
     this.verticalPanel = Ext.create('Ext.panel.Panel', {
         // layout : 'hbox',
-            layout: {
-                type: 'vbox',
-                align: 'center',
-                pack: 'center'
-            },
-            items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid' align='center' ><div class='row' style='width:370px;'><div class='col-md-9'><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:500px;font-size:20px;font-weight:100;'></span></div><div class='col-md-2'><button id='" + this.id + "-unloadSC-button' type='button' class='btn btn-default btn-xs' style='background:rgb(68, 68, 68);color: #ffffff;'><b>Unload SC</b></button></div></div></div>"},
-                        this.widgetContainer    
-            ]
+        margin : 10,
+        layout: {
+            type: 'vbox',
+            align: 'center',
+            pack: 'center'
+        },
+        items : [{html : "<div id='" + this.id + "-notifications' class='container-fluid' align='center' ><div class='row' style='width:370px;'><div class='col-md-9'><span id='" + this.id + "-scw-label' class='" + this.id + "-lab' style='width:500px;font-size:20px;font-weight:100;'></span></div><div class='col-md-2'><button id='" + this.id + "-unloadSC-button' type='button' class='btn btn-default btn-xs' style='background:rgb(68, 68, 68);color: #ffffff;'><b>Unload SC</b></button></div></div></div>"},
+                    this.widgetContainer    
+        ]
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
@@ -6985,7 +6998,7 @@ PreviewPanelView.prototype.getPanel = function () {
     });
 
     this.panel = Ext.create('Ext.panel.Panel', {
-        margin : 5,
+        margins : {top : 25},
         cls : 'border-grid',
         layout : 'hbox',
         width : this.width,
@@ -8295,6 +8308,7 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
                 renderer: function(grid, e, record) {
                     var html = "";                
                     record.data.choochURL = EXI.getDataAdapter().mx.energyscan.getChoochJpegByEnergyScanId(record.data.energyScanId);
+
                     dust.render("energyscangrid.template", record.data, function(err, out) {  
                         html = out;
                     });
@@ -8431,6 +8445,10 @@ SampleChangerWidget.prototype.getPanel = function () {
 			],
 			
 	});
+
+	if (this.onRender) {
+		this.panel.on('boxready',function() {_this.onRender()});
+	}
 
 	for (puckType in this.pucks) {
 		for (puck in this.pucks[puckType]){
@@ -8588,7 +8606,7 @@ SampleChangerWidget.prototype.setClickListeners = function () {
 		var puck = allPucks[puckIndex];
 		$("#" + puck.puckWidget.id).css('cursor','pointer');
 		$("#" + puck.puckWidget.id).unbind('click').click(function(sender){
-			if (!sender.target.classList.contains('puck-disabled')){
+			if (!sender.target.classList.contains('puck-disabled') && !sender.target.classList.contains('puck-always-disabled')){
 				_this.onPuckSelected.notify(_this.findPuckById(sender.target.id));
 			}
 		});
@@ -8621,6 +8639,17 @@ SampleChangerWidget.prototype.disablePucksOfDifferentCapacity = function (capaci
 SampleChangerWidget.prototype.disablePuck = function (puck) {
 	$("#" + puck.id).addClass("puck-disabled");
 	puck.disableAllCells();
+};
+
+/**
+* Adds the class to the puck
+*
+* @method addClassToPuck
+* @param puck The puck to have the class added
+* @param cls The class to add
+*/
+SampleChangerWidget.prototype.addClassToPuck = function (puck,cls) {
+	$("#" + puck.id).addClass(cls);
 };
 
 /**
@@ -8741,6 +8770,7 @@ FlexHCDWidget.prototype.enableAllPucks = SampleChangerWidget.prototype.enableAll
 FlexHCDWidget.prototype.disablePuck = SampleChangerWidget.prototype.disablePuck;
 FlexHCDWidget.prototype.enablePuck = SampleChangerWidget.prototype.enablePuck;
 FlexHCDWidget.prototype.removeClassToAllPucks = SampleChangerWidget.prototype.removeClassToAllPucks;
+FlexHCDWidget.prototype.addClassToPuck = SampleChangerWidget.prototype.addClassToPuck;
 
 /**
 * Creates the particular structure of the FlexHCD
@@ -8821,6 +8851,13 @@ FlexHCDWidget.prototype.convertSampleChangerLocationToId = function (sampleChang
 		return null;
 	}
 };
+
+FlexHCDWidget.prototype.onRender = function () {
+	//Disable the 24th puck
+	var puck24 = this.findPuckById(this.id + "-8-3");
+	this.addClassToPuck(puck24,"puck-always-disabled");
+	puck24.addClassToCells("cell-always-disabled");
+}
 function PuckLegend(args){
     this.id = BUI.id();
     this.width = 200;
@@ -9256,6 +9293,20 @@ PuckWidget.prototype.findCellIndexById = function (id) {
 };
 
 /**
+* Adds the class to each cell
+*
+* @method addClassToCells
+* @param cls The class to add
+* @return
+*/
+PuckWidget.prototype.addClassToCells = function (cls) {
+	for (var i = 0 ; i < this.data.cells.length ; i++) {
+		var cell = this.data.cells[i];
+		$("#" + cell.id).addClass(cls);
+	}
+};
+
+/**
 * Adds the disabled class to each cell
 *
 * @method disableAllCells
@@ -9470,6 +9521,7 @@ RoboDiffWidget.prototype.enableAllPucks = SampleChangerWidget.prototype.enableAl
 RoboDiffWidget.prototype.disablePuck = SampleChangerWidget.prototype.disablePuck;
 RoboDiffWidget.prototype.enablePuck = SampleChangerWidget.prototype.enablePuck;
 RoboDiffWidget.prototype.removeClassToAllPucks = SampleChangerWidget.prototype.removeClassToAllPucks;
+RoboDiffWidget.prototype.addClassToPuck = SampleChangerWidget.prototype.addClassToPuck;
 
 /**
 * Creates the particular structure of the FlexHCD
@@ -9751,6 +9803,7 @@ SC3Widget.prototype.enableAllPucks = SampleChangerWidget.prototype.enableAllPuck
 SC3Widget.prototype.disablePuck = SampleChangerWidget.prototype.disablePuck;
 SC3Widget.prototype.enablePuck = SampleChangerWidget.prototype.enablePuck;
 SC3Widget.prototype.removeClassToAllPucks = SampleChangerWidget.prototype.removeClassToAllPucks;
+SC3Widget.prototype.addClassToPuck = SampleChangerWidget.prototype.addClassToPuck;
 
 /**
 * Creates the particular structure of the SC3
@@ -9822,6 +9875,7 @@ SpinePuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
 SpinePuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
 SpinePuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
 SpinePuckWidget.prototype.blink = PuckWidget.prototype.blink;
+SpinePuckWidget.prototype.addClassToCells = PuckWidget.prototype.addClassToCells;
 
 /**
 * Parses the data
@@ -9867,6 +9921,7 @@ UniPuckWidget.prototype.emptyAll = PuckWidget.prototype.emptyAll;
 UniPuckWidget.prototype.disableAllCells = PuckWidget.prototype.disableAllCells;
 UniPuckWidget.prototype.allowAllCells = PuckWidget.prototype.allowAllCells;
 UniPuckWidget.prototype.blink = PuckWidget.prototype.blink;
+UniPuckWidget.prototype.addClassToCells = PuckWidget.prototype.addClassToCells;
 
 /**
 * Parses the data
