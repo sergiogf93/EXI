@@ -36,7 +36,7 @@ dust.helpers.decimal = function(chunk, context, bodies, params) {
     return chunk;
 };
 
-dust.helpers.dataCollectionComment = function (chunk, context, bodies, params) {
+dust.helpers.trim = function (chunk, context, bodies, params) {
     if (params.key) {
         var value = context.current()[params.key];
         if (value){
