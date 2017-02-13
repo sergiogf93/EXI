@@ -34,6 +34,8 @@ function ParcelGrid(args) {
 	this.shipment = null;
 	this.dewars = {};
 	this.parcelPanels = {};
+	this.samples = [];
+	this.withoutCollection = [];
 
 	/** Events **/
 	this.onSuccess = new Event(this);
@@ -60,15 +62,21 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
 	this.hasExportedData = hasExportedData;
-	this.samples = _.groupBy(samples,"Dewar_dewarId");
-	this.withoutCollection = _.groupBy(withoutCollection,"Dewar_dewarId");
+	nSamples = 0;
+	nMeasured = 0;
+	if (samples) {
+		nSamples = samples.length;
+		nMeasured = nSamples - withoutCollection.length;
+		this.samples = _.groupBy(samples,"Dewar_dewarId");
+		this.withoutCollection = _.groupBy(withoutCollection,"Dewar_dewarId");
+	}
 
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
 	});
 
 	
-	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + samples.length + " Samples - " + (samples.length - withoutCollection.length) + " Measured)");
+	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + nSamples + " Samples - " + nMeasured + " Measured)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
 	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
 		_this.edit();
