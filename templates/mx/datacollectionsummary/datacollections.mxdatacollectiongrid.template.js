@@ -49,7 +49,7 @@
                                 <h4 class="modal-title">Image directory</h4>
                               </div>
                               <div class="modal-body">
-                                <h4>{.imageDirectory}</h4>
+                                <p>{.imageDirectory}</p>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
