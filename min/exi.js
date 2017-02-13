@@ -4187,8 +4187,6 @@ ScatteringForm.prototype.load = function(data) {
 		this.data.chunkedKeys = _.chunk(this.data.keys,Math.ceil(this.data.keys.length/3.0));
 	}
 
-	this.data.today = moment().format("YYYY-MM-DD");
-
 	if (!this.data.types){
 		this.data.types = [
 								{display : "Overall", value : "overall"},
@@ -4208,6 +4206,11 @@ ScatteringForm.prototype.load = function(data) {
 
 	$('#' + this.id).hide().html(html).fadeIn('fast');
 	this.panel.doLayout();
+
+	$('#' + this.id + '-datepicker').datepicker({
+		defaultDate : new Date(),
+		format : "DD/MM/YYYY"
+	});
 }
 
 ScatteringForm.prototype.plot = function() {
@@ -6777,6 +6780,8 @@ PuckFormView.prototype.showReturnWarning = function() {
 }		
 function SendShipmentForm(args) {
     this.id = BUI.id();
+
+    this.onSend = new Event(this);
 }
 
 SendShipmentForm.prototype.show = function(){
@@ -6790,14 +6795,18 @@ SendShipmentForm.prototype.show = function(){
     $("body").append(html);
     
     $("#" + this.id + "-modal").modal();
-    
+    $("#" + this.id + "-modal").on('hidden.bs.modal', function(){
+        $(this).remove();
+    });
 
     $("#" + this.id + "-save").unbind('click').click(function(sender){
         _this.save();
     });
 
+    var today = new Date();
     $("#" + this.id + "-date").datetimepicker({
-        format: "DD-MM-YYYY"
+        defaultDate: today,
+        format: "DD-MM-YYYY",
     });
 
 };
@@ -6807,9 +6816,25 @@ SendShipmentForm.prototype.load = function (shipment) {
 }
 
 SendShipmentForm.prototype.save = function(){
-    var trackingNumber = $("#" + this.id + "-tracking-number").val()
-    var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY")
-    debugger
+    var _this = this;
+    var trackingNumber = $("#" + this.id + "-tracking-number").val();
+    var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY");
+
+    if (trackingNumber != "" && date.toDate() != "Invalid Date") {
+        for (var i = 0 ; i < this.shipment.dewarVOs.length ; i++) {
+            this.shipment.dewarVOs[i].trackingNumberToSynchrotron = trackingNumber;
+        }
+        this.shipment.deliveryAgentShippingDate = moment().toDate();
+        this.shipment.deliveryAgentDeliveryDate = date.toDate();
+        this.shipment.shippingStatus = "sent to ESRF";
+        var onSuccess = function (sender) {
+            _this.onSend.notify();
+            $("#" + _this.id + "-modal").modal('hide');
+        }
+        EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.saveShipment(this.shipment);
+    } else {
+        $("#" + this.id + "-modal-body").notify("Fill the required fields.",{ className : "error"});
+    }
 }
 function ShipmentEditForm(args) {
     this.id = BUI.id();
@@ -7024,22 +7049,25 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 		$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
 			_this.edit();
 		});
-		if (!this.hasExportedData){
-			$("#" + _this.id + "-remove-button").removeClass('disabled');
-			$("#" + _this.id + "-remove-button").unbind('click').click(function(sender){
-				alert("Not implemented");
-			});
-		}
+		// if (!this.hasExportedData){
+		// 	$("#" + _this.id + "-remove-button").removeClass('disabled');
+		// 	$("#" + _this.id + "-remove-button").unbind('click').click(function(sender){
+		// 		alert("Not implemented");
+		// 	});
+		// }
 	}
 
-	if (shipment.shippingStatus == "opened") {
-		$("#" + _this.id + "-send-button").removeClass('disabled');
-		$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
-			var sendShipmentForm = new SendShipmentForm();
-			sendShipmentForm.load(_this.shipment);
-			sendShipmentForm.show();
-		});
-	}
+	// if (shipment.shippingStatus == "opened" && shipment.dewarVOs.length > 0) {
+	// 	$("#" + _this.id + "-send-button").removeClass('disabled');
+	// 	$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
+	// 		var sendShipmentForm = new SendShipmentForm();
+	// 		sendShipmentForm.onSend.attach(function(sender) {
+	// 			_this.load(_this.shipment);
+	// 		});
+	// 		sendShipmentForm.load(_this.shipment);
+	// 		sendShipmentForm.show();
+	// 	});
+	// }
 
 	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
 

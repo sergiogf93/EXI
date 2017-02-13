@@ -55,25 +55,25 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 		$("#" + _this.id + "-edit-button").unbind('click').click(function(sender){
 			_this.edit();
 		});
-		if (!this.hasExportedData){
-			$("#" + _this.id + "-remove-button").removeClass('disabled');
-			$("#" + _this.id + "-remove-button").unbind('click').click(function(sender){
-				alert("Not implemented");
-			});
-		}
+		// if (!this.hasExportedData){
+		// 	$("#" + _this.id + "-remove-button").removeClass('disabled');
+		// 	$("#" + _this.id + "-remove-button").unbind('click').click(function(sender){
+		// 		alert("Not implemented");
+		// 	});
+		// }
 	}
 
-	if (shipment.shippingStatus == "opened" && shipment.dewarVOs.length > 0) {
-		$("#" + _this.id + "-send-button").removeClass('disabled');
-		$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
-			var sendShipmentForm = new SendShipmentForm();
-			sendShipmentForm.onSend.attach(function(sender) {
-				_this.load(_this.shipment);
-			});
-			sendShipmentForm.load(_this.shipment);
-			sendShipmentForm.show();
-		});
-	}
+	// if (shipment.shippingStatus == "opened" && shipment.dewarVOs.length > 0) {
+	// 	$("#" + _this.id + "-send-button").removeClass('disabled');
+	// 	$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
+	// 		var sendShipmentForm = new SendShipmentForm();
+	// 		sendShipmentForm.onSend.attach(function(sender) {
+	// 			_this.load(_this.shipment);
+	// 		});
+	// 		sendShipmentForm.load(_this.shipment);
+	// 		sendShipmentForm.show();
+	// 	});
+	// }
 
 	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
 

@@ -40,7 +40,7 @@ SendShipmentForm.prototype.save = function(){
     var trackingNumber = $("#" + this.id + "-tracking-number").val();
     var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY");
 
-    if (trackingNumber != "" && date.toDate() != "Invalid Date") {
+    if (trackingNumber != "" && date.toDate() != "Invalid date") {
         for (var i = 0 ; i < this.shipment.dewarVOs.length ; i++) {
             this.shipment.dewarVOs[i].trackingNumberToSynchrotron = trackingNumber;
         }
