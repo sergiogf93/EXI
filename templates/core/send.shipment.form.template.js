@@ -11,12 +11,12 @@
         <form>
           <div class="form-group">
             <label for="recipient-name" class="form-control-label">Tracking #:</label>
-            <input type="text" class="form-control" id="recipient-name">
+            <input type="text" class="form-control" id="{id}-tracking-number">
           </div>
           <div class="form-group">
             <label for="recipient-name" class="form-control-label">Expected arrival date:</label>
-            <div class='input-group date' id='datetimepicker1'>
-                <input type='text' class="form-control" />
+            <div class='input-group date'>
+                <input id='{id}-date' type='text' class="form-control" />
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>

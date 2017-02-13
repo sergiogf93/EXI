@@ -11,14 +11,18 @@ SendShipmentForm.prototype.show = function(){
     });
 
     $("body").append(html);
+    
+    $("#" + this.id + "-modal").modal();
+    
+
     $("#" + this.id + "-save").unbind('click').click(function(sender){
         _this.save();
     });
-    
-    $("#" + this.id + "-modal").modal();
-    $('#datetimepicker1').datetimepicker({
+
+    $("#" + this.id + "-date").datetimepicker({
         format: "DD-MM-YYYY"
     });
+
 };
 
 SendShipmentForm.prototype.load = function (shipment) {
@@ -26,5 +30,7 @@ SendShipmentForm.prototype.load = function (shipment) {
 }
 
 SendShipmentForm.prototype.save = function(){
+    var trackingNumber = $("#" + this.id + "-tracking-number").val()
+    var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY")
     debugger
 }
