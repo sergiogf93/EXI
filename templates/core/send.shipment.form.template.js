@@ -7,7 +7,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div id="{id}-modal-body" class="modal-body">
         <form>
           <div class="form-group">
             <label for="recipient-name" class="form-control-label">Tracking #:</label>
@@ -26,7 +26,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="{id}-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+        <button id="{id}-save" type="button" class="btn btn-primary" >Save</button>
       </div>
     </div>
   </div>
