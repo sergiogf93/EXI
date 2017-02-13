@@ -44,7 +44,8 @@
     "bootstrap-year-calendar": "^1.1.0",
     "three": "*",
     "notifyjs": "*",
-    "bootstrap-multiselect": "^0.9.13"
+    "bootstrap-multiselect": "^0.9.13",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.45"
   },
   "devDependencies": {
     "uglymol": "^0.1.0"

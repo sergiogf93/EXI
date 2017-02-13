@@ -3349,8 +3349,17 @@ CollapsedDataCollectionGrid.prototype.getPanel = DataCollectionGrid.prototype.ge
 function CommentEditForm(args) {
     this.id = BUI.id();
 
-    this.dataCollectionId = null;
+    this.targetId = null;
     this.templateData = {id : this.id};
+    this.mode = "DATACOLLECTIONGROUP";
+
+    if (args) {
+        if (args.mode) {
+            this.mode = args.mode;
+        }
+    }
+
+    this.onSave = new Event(this);
 }
 
 CommentEditForm.prototype.show = function(){
@@ -3365,18 +3374,31 @@ CommentEditForm.prototype.show = function(){
     $("#" + this.id + "-save").unbind('click').click(function(sender){
         _this.save();
     });
+    $("#" + this.id + "-modal").on('hidden.bs.modal', function(){
+        $(this).remove();
+    });
     
     $("#" + this.id + "-modal").modal();
 };
 
-CommentEditForm.prototype.load = function (dataCollectionId, comments) {
-    this.dataCollectionId = dataCollectionId;
+
+CommentEditForm.prototype.load = function (targetId, comments) {
+    this.targetId = targetId;
     this.templateData.comments = comments;
 }
 
 CommentEditForm.prototype.save = function(){
+    var _this = this;
     var comment = $("#" + this.id + "-comments").val();
-    debugger
+
+    var onSuccess = function (sender) {
+        _this.onSave.notify(comment);
+    }
+    if (this.mode == "DATACOLLECTIONGROUP"){
+        EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollectionGroup.saveComments(this.targetId,comment);
+    } else {
+        EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.saveComments(this.targetId,comment);
+    }
 }
 /**
 * Displays the containers of the data collections by session or acronym of the protein
@@ -4195,6 +4217,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(target, dataCollectionGroupId) {
+    var _this = this;
     var onSuccess = function(sender, data){
        
         _.forEach(data, function(value) {
@@ -4215,6 +4238,10 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
             html = html + out;
         });
         $(target).html(html);
+        $(".dataCollection-edit").unbind('click').click(function(sender){
+            var dataCollectionId = sender.target.id.split("-")[0];
+            _this.editComments(dataCollectionId,"DATACOLLECTION");
+        });
     };
     
     var onError = function(sender, msg){
@@ -4503,6 +4530,11 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     
     var _this = this;
     
+    $(".dataCollectionGroup-edit").unbind('click').click(function(sender){
+        var dataCollectionGroupId = sender.target.id.split("-")[0];
+        _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+    });                              
+
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
     var lazy = {
             bind: 'event',
@@ -4510,10 +4542,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
                 console.log('image "' + (element.data('src')) + '" is about to be loaded');
-                $(".dataCollection-edit").unbind('click').click(function(sender){
-                    var dataCollectionId = sender.target.id.split("-")[0];
-                    _this.editComments(dataCollectionId);
-                });                              
+               
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
@@ -4527,50 +4556,59 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             this.grid = grid;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var target = $(e.target).attr("href"); 
-                
-                /** Activate tab of data collections */
-                if (target.startsWith("#dc")){
-                   var dataCollectionGroupId = target.slice(4);
-                   _this.displayDataCollectionTab(target, dataCollectionGroupId);
-                }
-                
-                if (target.startsWith("#re")){
-                    var dataCollectionId = target.slice(4);  
-                    _this.displayResultAutoprocessingTab(target, dataCollectionId);                                       
-                }
-
-                 if (target.startsWith("#sa")){                    
-                    var dataCollectionId = target.slice(4);                        
-                    _this.displaySampleTab(target, dataCollectionId);                   
-                }
-                
-                if (target.startsWith("#wf")){      
-                    var dataCollectionId = target.slice(4);
-                    _this.displayWorkflowsTab(target, dataCollectionId);              
-                   
-                }
-                
-                if (target.startsWith("#ph")){                           
+                if (target){
+                    /** Activate tab of data collections */
+                    if (target.startsWith("#dc")){
                     var dataCollectionGroupId = target.slice(4);
-                    _this.displayPhasingTab(target, dataCollectionGroupId);              
-                   
+                    _this.displayDataCollectionTab(target, dataCollectionGroupId);
+                    }
+                    
+                    if (target.startsWith("#re")){
+                        var dataCollectionId = target.slice(4);  
+                        _this.displayResultAutoprocessingTab(target, dataCollectionId);                                       
+                    }
+
+                    if (target.startsWith("#sa")){                    
+                        var dataCollectionId = target.slice(4);                        
+                        _this.displaySampleTab(target, dataCollectionId);                   
+                    }
+                    
+                    if (target.startsWith("#wf")){      
+                        var dataCollectionId = target.slice(4);
+                        _this.displayWorkflowsTab(target, dataCollectionId);              
+                    
+                    }
+                    
+                    if (target.startsWith("#ph")){                           
+                        var dataCollectionGroupId = target.slice(4);
+                        _this.displayPhasingTab(target, dataCollectionGroupId);              
+                    }
                 }
 
-                $(".dataCollection-edit").unbind('click').click(function(sender){
-                    var dataCollectionId = sender.target.id.split("-")[0];
-                    _this.editComments(dataCollectionId);
-                });  
+                // $(".dataCollectionGroup-edit").unbind('click').click(function(sender){
+                //     var dataCollectionGroupId = sender.target.id.split("-")[0];
+                //     _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+                // });  
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
 };
 
-UncollapsedDataCollectionGrid.prototype.editComments = function (dataCollectionId) {
-    var comment = $("#comments_" + dataCollectionId).html().trim();
-    var commentEditForm = new CommentEditForm();
-    commentEditForm.load(dataCollectionId,comment);
+/**
+* Opens a modal to edit a comment
+* @method editComments
+* @param Integer id The id
+* @param String mode To edit the dataCollection comment use DATACOLLECTION and to edit the dataCollectionGroup comment use DATACOLLECTIONGROUP
+*/
+UncollapsedDataCollectionGrid.prototype.editComments = function (id,mode) {
+    var comment = $("#comments_" + id).html().trim();
+    var commentEditForm = new CommentEditForm({mode : mode});
+    commentEditForm.onSave.attach(function(sender,comment) {
+        $("#comments_" + id).html(comment);
+    });
+    commentEditForm.load(id,comment);
     commentEditForm.show();
-}
+};
 function WorkflowSectionDataCollection(args) {
 	this.noFoundClass = "summary_datacollection_noFound";
 	this.failedClass = "summary_datacollection_failed";

@@ -36,7 +36,7 @@ dust.helpers.decimal = function(chunk, context, bodies, params) {
     return chunk;
 };
 
-dust.helpers.dataCollectionComment = function (chunk, context, bodies, params) {
+dust.helpers.trim = function (chunk, context, bodies, params) {
     if (params.key) {
         var value = context.current()[params.key];
         if (value){
@@ -6231,6 +6231,8 @@ function ParcelGrid(args) {
 	this.shipment = null;
 	this.dewars = {};
 	this.parcelPanels = {};
+	this.samples = [];
+	this.withoutCollection = [];
 
 	/** Events **/
 	this.onSuccess = new Event(this);
@@ -6257,15 +6259,21 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 	this.shipment = shipment;
 	this.dewars = shipment.dewarVOs;
 	this.hasExportedData = hasExportedData;
-	this.samples = _.groupBy(samples,"Dewar_dewarId");
-	this.withoutCollection = _.groupBy(withoutCollection,"Dewar_dewarId");
+	nSamples = 0;
+	nMeasured = 0;
+	if (samples) {
+		nSamples = samples.length;
+		nMeasured = nSamples - withoutCollection.length;
+		this.samples = _.groupBy(samples,"Dewar_dewarId");
+		this.withoutCollection = _.groupBy(withoutCollection,"Dewar_dewarId");
+	}
 
 	this.dewars.sort(function(a, b) {
 		return a.dewarId - b.dewarId;
 	});
 
 	
-	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + samples.length + " Samples - " + (samples.length - withoutCollection.length) + " Measured)");
+	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + nSamples + " Samples - " + nMeasured + " Measured)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
 	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
 		_this.edit();
@@ -6767,6 +6775,42 @@ PuckFormView.prototype.showReturnWarning = function() {
 	});
 	window.show();
 }		
+function SendShipmentForm(args) {
+    this.id = BUI.id();
+}
+
+SendShipmentForm.prototype.show = function(){
+    var _this = this;
+    
+    var html = "";
+    dust.render("send.shipment.form.template", {id : this.id, shipment : this.shipment}, function(err,out){
+        html = out;
+    });
+
+    $("body").append(html);
+    
+    $("#" + this.id + "-modal").modal();
+    
+
+    $("#" + this.id + "-save").unbind('click').click(function(sender){
+        _this.save();
+    });
+
+    $("#" + this.id + "-date").datetimepicker({
+        format: "DD-MM-YYYY"
+    });
+
+};
+
+SendShipmentForm.prototype.load = function (shipment) {
+    this.shipment = shipment;
+}
+
+SendShipmentForm.prototype.save = function(){
+    var trackingNumber = $("#" + this.id + "-tracking-number").val()
+    var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY")
+    debugger
+}
 function ShipmentEditForm(args) {
     this.id = BUI.id();
 
@@ -6986,6 +7030,15 @@ ShipmentForm.prototype.load = function(shipment,hasExportedData) {
 				alert("Not implemented");
 			});
 		}
+	}
+
+	if (shipment.shippingStatus == "opened") {
+		$("#" + _this.id + "-send-button").removeClass('disabled');
+		$("#" + _this.id + "-send-button").unbind('click').click(function(sender){
+			var sendShipmentForm = new SendShipmentForm();
+			sendShipmentForm.load(_this.shipment);
+			sendShipmentForm.show();
+		});
 	}
 
 	$("#transport-history-" + this.id).html(this.dewarTrackingView.getPanel());
