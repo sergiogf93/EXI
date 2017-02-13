@@ -125,6 +125,11 @@ SessionGrid.prototype.getToolbar = function(sessions) {
 
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
+    debugger
+    // var dataCollectionHeader = "Data Collections";
+    // dust.render("session.grid.datacollection.header.template",[],function(err,out){
+    //     dataCollectionHeader = out;
+    // });
    
     this.store = Ext.create('Ext.data.Store', {
 		fields : ['Proposal_ProposalNumber', 'beamLineName', 'beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],

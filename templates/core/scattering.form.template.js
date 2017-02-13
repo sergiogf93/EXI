@@ -5,7 +5,7 @@
     </div>
     <div id="{id}-dates" class="form-group row">
         <label class="col-md-2"><b>Date:</b></label>
-        <div class="col-md-4">
+        <div class="col-md-10">
             <div class='input-group date' id="{id}-datepicker">
                 <input id="{id}-date" type='text' class="form-control" />
                 <span class="input-group-addon">
