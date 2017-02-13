@@ -5,8 +5,11 @@
     </div>
     <div id="{id}-dates" class="form-group row">
         <label class="col-md-2"><b>Date:</b></label>
-        <div class="col-md-4">
-            <input id="{id}-date" class="form-control" type="date" value="{today}">
+        <div class='input-group date col-md-4' id="{id}-datepicker">
+            <input id="{id}-date" type='text' class="form-control" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
         </div>
     </div>
     <div class="form-group row">

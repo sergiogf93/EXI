@@ -47,8 +47,6 @@ ScatteringForm.prototype.load = function(data) {
 		this.data.chunkedKeys = _.chunk(this.data.keys,Math.ceil(this.data.keys.length/3.0));
 	}
 
-	this.data.today = moment().format("YYYY-MM-DD");
-
 	if (!this.data.types){
 		this.data.types = [
 								{display : "Overall", value : "overall"},
@@ -68,6 +66,11 @@ ScatteringForm.prototype.load = function(data) {
 
 	$('#' + this.id).hide().html(html).fadeIn('fast');
 	this.panel.doLayout();
+
+	$('#' + this.id + '-datepicker').datepicker({
+		defaultDate : new Date(),
+		format : "DD/MM/YYYY"
+	});
 }
 
 ScatteringForm.prototype.plot = function() {
