@@ -235,8 +235,19 @@ SessionGrid.prototype.getPanel = function() {
 			    width               : 200,
               
                  hidden              : this.isHiddenPI,
-                renderer : function(grid, a, record){                        
-                        return record.data.Person_familyName + ", " + record.data.Person_givenName;
+                renderer : function(grid, a, record){
+                        var labContacts = _.filter(EXI.proposalManager.getLabcontacts(),function (l) {return l.personVO.personId == record.data.Person_personId;});
+                        var piInformation = "";
+                        if (record.data.Person_givenName) {                       
+                            piInformation = record.data.Person_familyName + ", " + record.data.Person_givenName;
+                        } else {
+                            piInformation = record.data.Person_familyName
+                        }
+                        if (labContacts.length > 0){
+                            href = "#/proposal/address/" + labContacts[0].labContactId + "/main";
+                            piInformation = '<a href=' + href + '>' + piInformation + '</a>';
+                        }
+                        return piInformation;
                     }
 		    },
              {
