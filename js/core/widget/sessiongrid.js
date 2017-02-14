@@ -125,11 +125,18 @@ SessionGrid.prototype.getToolbar = function(sessions) {
 
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
-    debugger
-    // var dataCollectionHeader = "Data Collections";
-    // dust.render("session.grid.datacollection.header.template",[],function(err,out){
-    //     dataCollectionHeader = out;
-    // });
+
+    var dataCollectionHeader = "Data Collections";
+    var technique = null;
+    var beamlines = EXI.credentialManager.getBeamlineNames();
+    if (beamlines.length > 0) {
+        technique = EXI.credentialManager.getTechniqueByBeamline(beamlines[0]);
+    }
+    if (technique){
+        dust.render("session.grid." + technique.toLowerCase() + ".datacollection.header.template",[],function(err,out){
+            dataCollectionHeader = out;
+        });
+    }
    
     this.store = Ext.create('Ext.data.Store', {
 		fields : ['Proposal_ProposalNumber', 'beamLineName', 'beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],
@@ -172,7 +179,7 @@ SessionGrid.prototype.getPanel = function() {
               {
                             text              : 'Start',
                             dataIndex         : 'BLSession_startDate',
-                            flex              : 2,
+                            flex              : 1,
                             hidden            : false,
                             renderer          : function(grid, a, record){                                 
                                                      
@@ -184,7 +191,7 @@ SessionGrid.prototype.getPanel = function() {
                                                         location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
                                                     }
                                                     if (record.data.BLSession_startDate){                 
-                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('MMMM Do YYYY') + "</a>"; 
+                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('DD-MM-YYYY') + "</a>"; 
                                                     }
                             }
 		     },
@@ -218,7 +225,7 @@ SessionGrid.prototype.getPanel = function() {
 			    text                : 'Shifts',
 			    dataIndex           : 'nbShifts',
                 hidden              : this.isHiddenNumberOfShifts,
-                flex                : 1
+                flex                : 0.5
 		    },
            {
 			    text                : 'Local Contact',
@@ -252,9 +259,9 @@ SessionGrid.prototype.getPanel = function() {
                 flex               : 1
 		    },
            {
-                text                : 'Data Collections',
+                text                : dataCollectionHeader,
 			    dataIndex           : 'Person_emailAddress',
-                 width               : 200,
+                 flex               : 3,
                 renderer : function(grid, a, record){ 
                     function getBadge(title, count) {
                         if (count){
@@ -275,8 +282,12 @@ SessionGrid.prototype.getPanel = function() {
                         html = html + getBadge("Sample Changer", record.data.sampleChangerCount);
                         html = html + getBadge("HPLC", record.data.hplcCount);
                         return html + "</table>";  
-                    }                                                          
-                    return getTable(record);
+                    }     
+                    var html = "";
+                    dust.render("session.grid.mx.datacollection.values.template",record.data,function(err,out){
+                        html = out;
+                    });                                                   
+                    return html;
                  }
                
            },
@@ -294,7 +305,7 @@ SessionGrid.prototype.getPanel = function() {
 			    text                : 'Comments',
 			    dataIndex           : 'comments',
                 hidden              : false,
-                flex                : 3,
+                flex                : 2,
                 renderer            : function(grid, a, record){    
                                         if (record.data.comments){                
                                             return "<div style='width:50px; wordWrap: break-word;'>" + record.data.comments + "</div>";
