@@ -21,9 +21,8 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 * @return {dataCollectionGroup} Array of data collections
 */
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
-    try{
-        this.dataCollectionGroup = dataCollectionGroup;
-        
+    try{        
+        this.dataCollectionGroup = dataCollectionGroup;        
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
@@ -418,4 +417,17 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
+    
+    var movieEvents = function(grid) {
+        $(".animatedXtal").mouseover(function() {               
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+        $(".animatedXtal").mouseout(function() {
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+       
+    };
+    
+    
+    var timer4 = setTimeout(movieEvents, 500, _this);
 };
