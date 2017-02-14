@@ -8,7 +8,11 @@
                 <button id="{id}-add-button" type="button" style="margin-left:15px;" class="btn btn-default disabled">
                     <span class="glyphicon glyphicon-plus-sign"></span> Add
                 </button>
+                <button id="{id}-export" type="button" style="margin-left:100px;" class="btn btn-default disabled">
+                    <span class="glyphicon glyphicon-export"></span> Export PDF View
+                </button>
             </div>
+            
             <div class="pull-right">
                 <ul class="nav nav-tabs" id="{id}-tabs">
                     <li class="active"><a data-toggle="tab" href="#content-{id}">Content</a></li>
