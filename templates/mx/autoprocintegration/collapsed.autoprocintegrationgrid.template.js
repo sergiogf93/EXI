@@ -71,8 +71,8 @@
                {:else}
                     <td  >{.rank}</td>
                {/label}
-               <td  ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/main'>{.v_datacollection_processingPrograms}</a></td>
-               <td  >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
+               <td ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/autoprocIntegration/{.AutoProcIntegration_autoProcIntegrationId}/main'>{.v_datacollection_processingPrograms}</a></td>
+               <td >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
               
                <td >{@decimal key="v_datacollection_summary_phasing_cell_a" decimals=1}{/decimal}</td>
                <td >{@decimal key="v_datacollection_summary_phasing_cell_b" decimals=1}{/decimal}</td>
