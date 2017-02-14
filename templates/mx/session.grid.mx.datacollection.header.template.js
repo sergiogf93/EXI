@@ -22,12 +22,12 @@
                 Samples
             </div>
         </div>
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-3" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
                 Test
             </div>
         </div>
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-3" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
                 Collects
             </div>

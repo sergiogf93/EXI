@@ -24,14 +24,14 @@
                 {/gt}
             </div>
         </div>
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-3" style="padding:0px;">
             <div style="text-align:center;">
                 {@gt key=testDataCollectionGroupCount value=0} 
                     <span style="background-color:#207a7a;" class="badge">{.testDataCollectionGroupCount}</span>
                 {/gt}
             </div>
         </div>
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-3" style="padding:0px;">
             <div style="text-align:center;">
                 {@gt key=dataCollectionGroupCount value=0} 
                     <span style="background-color:#207a7a;" class="badge">{.dataCollectionGroupCount}</span>
