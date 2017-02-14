@@ -7,34 +7,19 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-4" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
-                Samples
+                Calibration
             </div>
         </div>
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-4" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
-                WF
+                Sample Changer
             </div>
         </div>
-        <div class="col-md-2" style="padding:0px;">
+        <div class="col-md-4" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
-                Test / Collects
-            </div>
-        </div>
-        <div class="col-md-2" style="padding:0px;">
-            <div style="text-align:center;border-right:1px solid #ccc">
-                En / XRF
-            </div>
-        </div>
-        <div class="col-md-2" style="padding:0px;">
-            <div style="text-align:center;border-right:1px solid #ccc">
-                Autoprocc
-            </div>
-        </div>
-        <div class="col-md-2" style="padding:0px;">
-            <div style="text-align:center;border-right:1px solid #ccc">
-                Phasing
+                HPLC
             </div>
         </div>
     </div>

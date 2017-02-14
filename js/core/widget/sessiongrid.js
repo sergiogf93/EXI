@@ -68,6 +68,7 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
+    debugger
     /** Filtering session by the beamlines of the configuration file */    
     this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
 	this.store.loadData(this.sessions, false);
@@ -136,6 +137,8 @@ SessionGrid.prototype.getPanel = function() {
         dust.render("session.grid." + technique.toLowerCase() + ".datacollection.header.template",[],function(err,out){
             dataCollectionHeader = out;
         });
+    } else {
+        techniche = "MX";
     }
    
     this.store = Ext.create('Ext.data.Store', {
@@ -284,7 +287,7 @@ SessionGrid.prototype.getPanel = function() {
                         return html + "</table>";  
                     }     
                     var html = "";
-                    dust.render("session.grid.mx.datacollection.values.template",record.data,function(err,out){
+                    dust.render("session.grid." + technique.toLowerCase() + ".datacollection.values.template",record.data,function(err,out){
                         html = out;
                     });                                                   
                     return html;
