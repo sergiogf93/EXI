@@ -433,6 +433,20 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
+
+    var movieEvents = function(grid) {
+        $(".animatedXtal").mouseover(function() {               
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+        $(".animatedXtal").mouseout(function() {
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+       
+    };
+    
+   
+    var timer4 = setTimeout(movieEvents, 500, _this);
+
 };
 
 /**
