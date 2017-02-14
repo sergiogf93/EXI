@@ -21,12 +21,12 @@ UncollapsedDataCollectionGrid.prototype.loadMagnifiers = DataCollectionGrid.prot
 * @return {dataCollectionGroup} Array of data collections
 */
 UncollapsedDataCollectionGrid.prototype.load = function(dataCollectionGroup){
-    try{        
-        this.dataCollectionGroup = dataCollectionGroup;        
+    try{
+        var _this = this;
+        this.dataCollectionGroup = dataCollectionGroup;
         this.store.loadData(dataCollectionGroup);
         this.loadMagnifiers(dataCollectionGroup);
         this.attachCallBackAfterRender();
-        
     }
     catch(e){
         console.log(e);
@@ -50,7 +50,6 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
     return this.panel;
 };
 
-
 /**
 * Displays the data collection tab with all the data collection related to the data collection group
 *
@@ -59,6 +58,7 @@ UncollapsedDataCollectionGrid.prototype.getPanel = function(){
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(target, dataCollectionGroupId) {
+    var _this = this;
     var onSuccess = function(sender, data){
        
         _.forEach(data, function(value) {
@@ -79,6 +79,10 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
             html = html + out;
         });
         $(target).html(html);
+        $(".dataCollection-edit").unbind('click').click(function(sender){
+            var dataCollectionId = sender.target.id.split("-")[0];
+            _this.editComments(dataCollectionId,"DATACOLLECTION");
+        });
     };
     
     var onError = function(sender, msg){
@@ -126,10 +130,11 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
         var html = "";
         var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
         
-        dust.render("workflows.mxdatacollectiongrid.template",  items, function(err, out) {
+        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
                         html = html + out;
         });
         $(target).html(html);
+
     }   
 };
 
@@ -366,13 +371,19 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     
     var _this = this;
     
+    $(".dataCollectionGroup-edit").unbind('click').click(function(sender){
+        var dataCollectionGroupId = sender.target.id.split("-")[0];
+        _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+    });                              
+
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
     var lazy = {
             bind: 'event',
             /** !!IMPORTANT this is the parent node which contains the scroll **/
             appendScroll: nodeWithScroll,
             beforeLoad: function(element) {
-                console.log('image "' + (element.data('src')) + '" is about to be loaded');                                
+                console.log('image "' + (element.data('src')) + '" is about to be loaded');
+               
             },           
             onFinishedAll: function() {
                 EXI.mainStatusBar.showReady();
@@ -386,38 +397,43 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             this.grid = grid;
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var target = $(e.target).attr("href"); 
-                
-                /** Activate tab of data collections */
-                if (target.startsWith("#dc")){
-                   var dataCollectionGroupId = target.slice(4);
-                   _this.displayDataCollectionTab(target, dataCollectionGroupId);
-                }
-                
-                if (target.startsWith("#re")){
-                    var dataCollectionId = target.slice(4);  
-                    _this.displayResultAutoprocessingTab(target, dataCollectionId);                                       
+                if (target){
+                    /** Activate tab of data collections */
+                    if (target.startsWith("#dc")){
+                    var dataCollectionGroupId = target.slice(4);
+                    _this.displayDataCollectionTab(target, dataCollectionGroupId);
+                    }
+                    
+                    if (target.startsWith("#re")){
+                        var dataCollectionId = target.slice(4);  
+                        _this.displayResultAutoprocessingTab(target, dataCollectionId);                                       
+                    }
+
+                    if (target.startsWith("#sa")){                    
+                        var dataCollectionId = target.slice(4);                        
+                        _this.displaySampleTab(target, dataCollectionId);                   
+                    }
+                    
+                    if (target.startsWith("#wf")){      
+                        var dataCollectionId = target.slice(4);
+                        _this.displayWorkflowsTab(target, dataCollectionId);              
+                    
+                    }
+                    
+                    if (target.startsWith("#ph")){                           
+                        var dataCollectionGroupId = target.slice(4);
+                        _this.displayPhasingTab(target, dataCollectionGroupId);              
+                    }
                 }
 
-                 if (target.startsWith("#sa")){                    
-                    var dataCollectionId = target.slice(4);                        
-                    _this.displaySampleTab(target, dataCollectionId);                   
-                }
-                
-                if (target.startsWith("#wf")){      
-                    var dataCollectionId = target.slice(4);
-                    _this.displayWorkflowsTab(target, dataCollectionId);              
-                   
-                }
-                
-                  if (target.startsWith("#ph")){                           
-                    var dataCollectionGroupId = target.slice(4);
-                    _this.displayPhasingTab(target, dataCollectionGroupId);              
-                   
-                }
+                // $(".dataCollectionGroup-edit").unbind('click').click(function(sender){
+                //     var dataCollectionGroupId = sender.target.id.split("-")[0];
+                //     _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+                // });  
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
-    
+
     var movieEvents = function(grid) {
         $(".animatedXtal").mouseover(function() {               
             this.src=_this.imageAnimatedURL[this.src]}
@@ -428,6 +444,23 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
        
     };
     
-    
+   
     var timer4 = setTimeout(movieEvents, 500, _this);
+
+};
+
+/**
+* Opens a modal to edit a comment
+* @method editComments
+* @param Integer id The id
+* @param String mode To edit the dataCollection comment use DATACOLLECTION and to edit the dataCollectionGroup comment use DATACOLLECTIONGROUP
+*/
+UncollapsedDataCollectionGrid.prototype.editComments = function (id,mode) {
+    var comment = $("#comments_" + id).html().trim();
+    var commentEditForm = new CommentEditForm({mode : mode});
+    commentEditForm.onSave.attach(function(sender,comment) {
+        $("#comments_" + id).html(comment);
+    });
+    commentEditForm.load(id,comment);
+    commentEditForm.show();
 };
