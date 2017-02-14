@@ -38,20 +38,17 @@ AutoprocIntegrationController.prototype.init = function() {
         var listPanel = new AutoProcIntegrationListView();        
         EXI.addNavigationPanel(listPanel);
         
-        listPanel.onSelect.attach(function(sender, selected){           
+        listPanel.onSelect.attach(function(sender, selected){
+			console.log(selected[0].AutoProcIntegration_autoProcIntegrationId);       
             mainView.load(selected);            
         });
          /** Load view for autoprocessing */
         var onSuccess2 = function(sender, data){
             mainView.load(data[0]);
-            console.log(data[0]);
             mainView.panel.setLoading(false);            
             listPanel.load(data[0]);
         };
         EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(this.params['datacollectionId']);
-    
-    
-    
 	}).enter(this.setPageBackground);
 
 	Path.map("#/autoprocintegration/datacollection/:datacollectionId/files").to(function() {
@@ -62,6 +59,29 @@ AutoprocIntegrationController.prototype.init = function() {
 		var mainView = new PhasingViewerMainView();		
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['datacollectionId']);
+	}).enter(this.setPageBackground);
+
+	Path.map("#/autoprocintegration/datacollection/:datacollectionId/autoprocIntegration/:autoprocIntegrationId/main").to(function() {
+		var _this = this;
+		var mainView = new AutoProcIntegrationMainView();
+		EXI.addMainPanel(mainView);
+		mainView.panel.setLoading(true);
+        
+        var listPanel = new AutoProcIntegrationListView();        
+        EXI.addNavigationPanel(listPanel);
+        
+        listPanel.onSelect.attach(function(sender, selected){
+			console.log(selected[0].AutoProcIntegration_autoProcIntegrationId);       
+            mainView.load(selected);            
+        });
+         /** Load view for autoprocessing */
+        var onSuccess2 = function(sender, data){
+			results = _.filter(data[0],function (r) {return r.AutoProcIntegration_autoProcIntegrationId == _this.params['autoprocIntegrationId']})
+            mainView.load(results);
+            mainView.panel.setLoading(false);            
+            listPanel.load(data[0]);
+        };
+        EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(this.params['datacollectionId']);
 	}).enter(this.setPageBackground);
 
 };
@@ -1065,8 +1085,7 @@ AutoProcIntegrationListView.prototype.getColumns = ListView.prototype.getColumns
 AutoProcIntegrationListView.prototype.getRow = function(record){
 	var html = "";
 	dust.render("autoprocintegration.listview", record.data, function(err, out){
-        
-        	html = out;
+		html = out;
     });
 	return html;
 };
@@ -1832,7 +1851,7 @@ AutoProcIntegrationGrid.prototype.getStatistics = function(data) {
 
 AutoProcIntegrationGrid.prototype.getPanel = function() {
 	var _this = this;
-
+    
 	this.store = Ext.create('Ext.data.Store', {
 		
 		fields : [ 'autoProcId',
@@ -2154,19 +2173,15 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
 	var _this = this;
 	this.panel.setTitle("Autoprocessing");
 	
-	
 	this.autoProcIntegrationGrid.load(data);
-    
     
     var autoprocProgramId = [];
     for (var i = 0; i < data.length; i++) {
         if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
             autoprocProgramId.push(data[i].v_datacollection_summary_phasing_autoProcProgramId);
         }
-        
     }
-   
-   
+
     var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
                             height : 250,
                             title : "Anom Corr vs Resolution",

@@ -1056,7 +1056,12 @@ ProposalManager.prototype.getBufferColors = function() {
 * @method getLabcontacts
 */
 ProposalManager.prototype.getLabcontacts = function() {
-	return this.get()[0].labcontacts;
+	var get = this.get();
+	if (get) {
+		return this.get()[0].labcontacts;
+	} else {
+		return [];
+	}
 };
 
 /**
@@ -1828,7 +1833,7 @@ ShippingExiController.prototype.loadShipmentsNavigationPanel = function(listView
 		curated.sort(function(a,b){return b.Shipping_shippingId - a.Shipping_shippingId;});
 
 		var onSuccessProposal = function (sender,dewars) {
-			listView.dewars = dewars;
+			listView.loadDewars(dewars);
 			/** Load panel * */
 			EXI.addNavigationPanel(listView);
 			/** Load data * */
@@ -2909,6 +2914,10 @@ ShippingListView.prototype.getFilter = ListView.prototype.getFilter;
 ShippingListView.prototype.getFields = ListView.prototype.getFields;
 ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 
+ShippingListView.prototype.loadDewars = function (dewars) {
+	this.dewars = dewars;
+};
+
 /**
 * Return the number of containers and samples for a given shipment 
 *
@@ -2916,24 +2925,28 @@ ShippingListView.prototype.getColumns = ListView.prototype.getColumns;
 * @param {Integer} shippingId ShippingId
 */
 ShippingListView.prototype.getStatsByShippingId = function(shippingId){
+	var _this = this;
 	if (this.dewars){
 		var _this = this;
 		var dewars = _.filter(this.dewars, function(e){return e.shippingId == shippingId;});
-		var sampleCount = 0;
-		_(dewars).forEach(function(value) {
-			sampleCount = sampleCount + value.sampleCount;
-		});
-		
-		return {
-					samples     : sampleCount,
-					dewars      : Object.keys(_.groupBy(dewars, "dewarId")).length,
-					containers   : dewars.length
-			
-		};
+		return this.getStatsFromDewars(dewars);
 	} else {
 		return null;
 	}
 };
+
+ShippingListView.prototype.getStatsFromDewars = function (dewars) {
+	var sampleCount = 0;
+	_(dewars).forEach(function(value) {
+		sampleCount = sampleCount + value.sampleCount;
+	});
+	return {
+				samples     : sampleCount,
+				dewars      : Object.keys(_.groupBy(dewars, "dewarId")).length,
+				containers   : dewars.length
+		
+	};
+}
 
 /**
 * Calls to the dust template in order to render to puck in HTML
@@ -2943,13 +2956,21 @@ ShippingListView.prototype.getStatsByShippingId = function(shippingId){
 */
 ShippingListView.prototype.getRow = function(record){
 	var html = "";
-    
+
 	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
-	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
+	if (record.data.Container_beamlineLocation){ //Has session attached
+		record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
+	} else {
+		record.data.stats = {
+										samples     : "?",
+										dewars      : "?",
+										containers   : "?"
+							};
+	}
 
 	dust.render("shipping.listview", record.data, function(err, out){
-        	html = out;
-     	});
+		html = out;
+	});
 	return html;
 };
 
@@ -4207,14 +4228,14 @@ ScatteringForm.prototype.load = function(data) {
 	$('#' + this.id).hide().html(html).fadeIn('fast');
 	this.panel.doLayout();
 
-	$('#' + this.id + '-datepicker').datepicker({
+	$('#' + this.id + '-datepicker').datetimepicker({
 		defaultDate : new Date(),
-		format : "DD/MM/YYYY"
+		format : "DD-MM-YYYY"
 	});
 }
 
 ScatteringForm.prototype.plot = function() {
-	var endDate= $("#" + this.id + "-date").val();
+	var endDate= moment($("#" + this.id + "-date").val(),"DD-MM-YYYY").format("YYYY-MM-DD");
 	var checkedValues = [];
 	$('.scattering-checkbox:checked').each(function(i){
 		checkedValues.push($(this).val());
@@ -4222,7 +4243,7 @@ ScatteringForm.prototype.plot = function() {
 	var type = $("#" + this.id + "-type").val();
 	var beamline = $("#" + this.id + "-beamline").val();
 	
-	if (endDate != "" && checkedValues.length > 0) {
+	if (endDate != "Invalid date" && checkedValues.length > 0) {
 		var startDate = moment(endDate,"YYYY-MM-DD").subtract(7,'d').format("YYYY-MM-DD");
 		url = "";
 		if (beamline != ""){
@@ -6820,7 +6841,7 @@ SendShipmentForm.prototype.save = function(){
     var trackingNumber = $("#" + this.id + "-tracking-number").val();
     var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY");
 
-    if (trackingNumber != "" && date.toDate() != "Invalid Date") {
+    if (trackingNumber != "" && date.toDate() != "Invalid date") {
         for (var i = 0 ; i < this.shipment.dewarVOs.length ; i++) {
             this.shipment.dewarVOs[i].trackingNumberToSynchrotron = trackingNumber;
         }
@@ -9271,6 +9292,7 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {
+    debugger
     /** Filtering session by the beamlines of the configuration file */    
     this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
 	this.store.loadData(this.sessions, false);
@@ -9328,6 +9350,22 @@ SessionGrid.prototype.getToolbar = function(sessions) {
 
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
+
+    var labContacts = EXI.proposalManager.getLabcontacts();
+    
+    var dataCollectionHeader = "Data Collections";
+    var technique = null;
+    var beamlines = EXI.credentialManager.getBeamlineNames();
+    if (beamlines.length > 0) {
+        technique = EXI.credentialManager.getTechniqueByBeamline(beamlines[0]);
+    }
+    if (technique){
+        dust.render("session.grid." + technique.toLowerCase() + ".datacollection.header.template",[],function(err,out){
+            dataCollectionHeader = out;
+        });
+    } else {
+        techniche = "MX";
+    }
    
     this.store = Ext.create('Ext.data.Store', {
 		fields : ['Proposal_ProposalNumber', 'beamLineName', 'beamLineOperator', 'Proposal_title', 'Person_emailAddress', 'Person_familyName', 'Person_givenName', 'nbShifts', 'comments'],
@@ -9370,7 +9408,7 @@ SessionGrid.prototype.getPanel = function() {
               {
                             text              : 'Start',
                             dataIndex         : 'BLSession_startDate',
-                            flex              : 2,
+                            flex              : 1,
                             hidden            : false,
                             renderer          : function(grid, a, record){                                 
                                                      
@@ -9382,7 +9420,7 @@ SessionGrid.prototype.getPanel = function() {
                                                         location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
                                                     }
                                                     if (record.data.BLSession_startDate){                 
-                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('MMMM Do YYYY') + "</a>"; 
+                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('DD-MM-YYYY') + "</a>"; 
                                                     }
                             }
 		     },
@@ -9416,7 +9454,7 @@ SessionGrid.prototype.getPanel = function() {
 			    text                : 'Shifts',
 			    dataIndex           : 'nbShifts',
                 hidden              : this.isHiddenNumberOfShifts,
-                flex                : 1
+                flex                : 0.5
 		    },
            {
 			    text                : 'Local Contact',
@@ -9438,8 +9476,19 @@ SessionGrid.prototype.getPanel = function() {
 			    width               : 200,
               
                  hidden              : this.isHiddenPI,
-                renderer : function(grid, a, record){                        
-                        return record.data.Person_familyName + ", " + record.data.Person_givenName;
+                renderer : function(grid, a, record){
+                        var labContactsFiltered = _.filter(labContacts,function (l) {return l.personVO.personId == record.data.Person_personId;});
+                        var piInformation = "";
+                        if (record.data.Person_givenName) {                       
+                            piInformation = record.data.Person_familyName + ", " + record.data.Person_givenName;
+                        } else {
+                            piInformation = record.data.Person_familyName
+                        }
+                        if (labContactsFiltered.length > 0){
+                            href = "#/proposal/address/" + labContactsFiltered[0].labContactId + "/main";
+                            piInformation = '<a href=' + href + '>' + piInformation + '</a>';
+                        }
+                        return piInformation;
                     }
 		    },
              {
@@ -9450,9 +9499,9 @@ SessionGrid.prototype.getPanel = function() {
                 flex               : 1
 		    },
            {
-                text                : 'Data Collections',
+                text                : dataCollectionHeader,
 			    dataIndex           : 'Person_emailAddress',
-                 width               : 200,
+                 flex               : 3,
                 renderer : function(grid, a, record){ 
                     function getBadge(title, count) {
                         if (count){
@@ -9473,8 +9522,12 @@ SessionGrid.prototype.getPanel = function() {
                         html = html + getBadge("Sample Changer", record.data.sampleChangerCount);
                         html = html + getBadge("HPLC", record.data.hplcCount);
                         return html + "</table>";  
-                    }                                                          
-                    return getTable(record);
+                    }     
+                    var html = "";
+                    dust.render("session.grid." + technique.toLowerCase() + ".datacollection.values.template",record.data,function(err,out){
+                        html = out;
+                    });                                                   
+                    return html;
                  }
                
            },
@@ -9492,7 +9545,7 @@ SessionGrid.prototype.getPanel = function() {
 			    text                : 'Comments',
 			    dataIndex           : 'comments',
                 hidden              : false,
-                flex                : 3,
+                flex                : 2,
                 renderer            : function(grid, a, record){    
                                         if (record.data.comments){                
                                             return "<div style='width:50px; wordWrap: break-word;'>" + record.data.comments + "</div>";
