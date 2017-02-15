@@ -126,15 +126,18 @@ UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = functio
 */
 UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, dataCollectionId) {
    var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
+   var _this = this;
     if (dc){
         var html = "";
         var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
-        
-        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
+        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, dataCollectionGroupId : dc.DataCollectionGroup_dataCollectionGroupId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
                         html = html + out;
         });
         $(target).html(html);
-
+        $(".dataCollection-edit").unbind('click').click(function(sender){
+            var dataCollectionGroupId = sender.target.id.split("-")[0];
+            _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+        }); 
     }   
 };
 
@@ -433,6 +436,20 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
+
+    var movieEvents = function(grid) {
+        $(".animatedXtal").mouseover(function() {               
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+        $(".animatedXtal").mouseout(function() {
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+       
+    };
+    
+   
+    var timer4 = setTimeout(movieEvents, 500, _this);
+
 };
 
 /**

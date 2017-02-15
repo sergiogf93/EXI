@@ -2984,6 +2984,9 @@ AutoProcessingFileManager.prototype.load = function(dataCollectionIds){
 };
 function DataCollectionGrid(args) {
 
+    /** HashMap to store the image snapshot and its animated equivalent image gif **/
+    this.imageAnimatedURL = {};
+    
     this.store = Ext.create('Ext.data.Store', {
             fields: ["dataCollectionGroup"]
      });
@@ -3162,7 +3165,21 @@ DataCollectionGrid.prototype.getColumns = function() {
                 /** Image quality indicator **/
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
 
-
+                /** Gets the gif for snapshots if there is a wiorkflow with snapshots **/
+                if (data.WorkflowStep_workflowStepType){
+                    if (data.WorkflowStep_workflowStepType.indexOf('Snapshots') != -1){
+                        if (data.WorkflowStep_workflowStepId){
+                            var listOfIds = data.WorkflowStep_workflowStepId.split(',');
+                            var listOfWorkflowStepType = data.WorkflowStep_workflowStepType.split(',');
+                            data.xtalAnimated = EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(listOfIds[_.indexOf(listOfWorkflowStepType, 'Snapshots')]);
+                            _this.imageAnimatedURL[data.xtal1] = data.xtalAnimated;
+                            _this.imageAnimatedURL[data.xtalAnimated] = data.xtal1;
+                            data.hasAnimated = true;
+                        }
+                        
+                    }
+                }
+                
                 
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
                
@@ -3216,13 +3233,13 @@ DataCollectionGrid.prototype.getColumns = function() {
 * @constructor
 */
 function DataCollectionMxMainView() {
-	this.icon = '../images/icon/ic_satellite_black_18dp.png';
-	MainView.call(this);
-	var _this = this;
-	
-	this.genericDataCollectionPanel = new MXDataCollectionGrid();
-        this.energyScanGrid = new EnergyScanGrid();
-        this.xfeScanGrid = new XFEScanGrid();
+    this.icon = '../images/icon/ic_satellite_black_18dp.png';
+    MainView.call(this);
+    var _this = this;
+
+    this.genericDataCollectionPanel = new MXDataCollectionGrid();
+    this.energyScanGrid = new EnergyScanGrid();
+    this.xfeScanGrid = new XFEScanGrid();
 }
 
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
@@ -4300,15 +4317,18 @@ UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = functio
 */
 UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, dataCollectionId) {
    var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
+   var _this = this;
     if (dc){
         var html = "";
         var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
-        
-        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
+        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, dataCollectionGroupId : dc.DataCollectionGroup_dataCollectionGroupId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
                         html = html + out;
         });
         $(target).html(html);
-
+        $(".dataCollection-edit").unbind('click').click(function(sender){
+            var dataCollectionGroupId = sender.target.id.split("-")[0];
+            _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+        }); 
     }   
 };
 
@@ -4607,6 +4627,20 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
+
+    var movieEvents = function(grid) {
+        $(".animatedXtal").mouseover(function() {               
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+        $(".animatedXtal").mouseout(function() {
+            this.src=_this.imageAnimatedURL[this.src]}
+        );
+       
+    };
+    
+   
+    var timer4 = setTimeout(movieEvents, 500, _this);
+
 };
 
 /**
@@ -4624,6 +4658,7 @@ UncollapsedDataCollectionGrid.prototype.editComments = function (id,mode) {
     commentEditForm.load(id,comment);
     commentEditForm.show();
 };
+
 function WorkflowSectionDataCollection(args) {
 	this.noFoundClass = "summary_datacollection_noFound";
 	this.failedClass = "summary_datacollection_failed";

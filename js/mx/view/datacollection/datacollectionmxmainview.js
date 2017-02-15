@@ -5,13 +5,13 @@
 * @constructor
 */
 function DataCollectionMxMainView() {
-	this.icon = '../images/icon/ic_satellite_black_18dp.png';
-	MainView.call(this);
-	var _this = this;
-	
-	this.genericDataCollectionPanel = new MXDataCollectionGrid();
-        this.energyScanGrid = new EnergyScanGrid();
-        this.xfeScanGrid = new XFEScanGrid();
+    this.icon = '../images/icon/ic_satellite_black_18dp.png';
+    MainView.call(this);
+    var _this = this;
+
+    this.genericDataCollectionPanel = new MXDataCollectionGrid();
+    this.energyScanGrid = new EnergyScanGrid();
+    this.xfeScanGrid = new XFEScanGrid();
 }
 
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;

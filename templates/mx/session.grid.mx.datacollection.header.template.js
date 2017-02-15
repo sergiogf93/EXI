@@ -7,12 +7,17 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3" style="padding:0px;">
+        <div class="col-md-2" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
-                En / XRF
+                En
             </div>
         </div>
-        <div class="col-md-3" style="padding:0px;">
+         <div class="col-md-2" style="padding:0px;">
+            <div style="text-align:center;border-right:1px solid #ccc">
+                XRF
+            </div>
+        </div>
+        <div class="col-md-2" style="padding:0px;">
             <div style="text-align:center;border-right:1px solid #ccc">
                 Samples
             </div>

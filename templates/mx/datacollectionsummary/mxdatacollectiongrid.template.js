@@ -86,7 +86,7 @@
                                                         <td><div class='summary_datacollection_failed'></div></td>
                                                     {/eq}
                                             
-                                            </tr>
+                                            </tr> 
                                                                                                                 
                                     {/ne}                                                                                                                                                                                                           
                             </table>
@@ -104,9 +104,15 @@
                      <img alt="Image not found" class="img-responsive lazy"  data-src="{.urlThumbnail}" />
                      </a>                           
                   </div>
+
                   <div class="col-xs-12 col-md-2">
                      <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                     <img id="xtal1_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" data-zoom-image="{.xtal1}"/>
+                     {?hasAnimated}                    
+                         <img id="xtal1_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy animatedXtal" data-src="{.xtal1}" data-zoom-image="{.xtal1}"/>
+                         <p>Hover the mouse over for alternate view</p>
+                     {:else}
+                         <img id="xtal1_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" data-zoom-image="{.xtal1}"/>
+                     {/hasAnimated}
                      </a>                           
                   </div>
                 

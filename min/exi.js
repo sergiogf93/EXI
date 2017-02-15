@@ -7733,6 +7733,9 @@ function ContainerParcelPanel(args) {
 		}
         if (args.type != null){
             this.data.puckType = args.type;
+            if (args.type == "SPINE Puck") {
+                this.data.puckType = "Spinepuck";
+            }
 		}
         if (args.capacity != null) {
 			this.data.capacity = args.capacity;
@@ -9291,8 +9294,7 @@ function SessionGrid(args) {
 
 
 
-SessionGrid.prototype.load = function(sessions) {
-    debugger
+SessionGrid.prototype.load = function(sessions) {    
     /** Filtering session by the beamlines of the configuration file */    
     this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
 	this.store.loadData(this.sessions, false);
@@ -9502,27 +9504,7 @@ SessionGrid.prototype.getPanel = function() {
                 text                : dataCollectionHeader,
 			    dataIndex           : 'Person_emailAddress',
                  flex               : 3,
-                renderer : function(grid, a, record){ 
-                    function getBadge(title, count) {
-                        if (count){
-                            if (count != 0){
-                                return '<tr><td><span style="margin-left:10px;margin-top:2px;background-color:#207a7a;" class="badge">' + count +'</span></td><td style="padding-left:10px;">' + title + '</td></tr>';
-                            }
-                        }
-                        return "";
-                    }
-                    function getTable(record){
-                        var html = "<table>";
-                        html =   html = html + getBadge("Energy", record.data.energyScanCount);
-                        html = html + getBadge("XRF", record.data.xrfSpectrumCount);
-                        html = html + getBadge("Samples", record.data.sampleCount);
-                        html = html + getBadge("Test", record.data.testDataCollectionGroupCount);
-                        html = html + getBadge("Collects", record.data.dataCollectionGroupCount);
-                        html = html + getBadge("Calibration", record.data.calibrationCount);
-                        html = html + getBadge("Sample Changer", record.data.sampleChangerCount);
-                        html = html + getBadge("HPLC", record.data.hplcCount);
-                        return html + "</table>";  
-                    }     
+                renderer : function(grid, a, record){                    
                     var html = "";
                     dust.render("session.grid." + technique.toLowerCase() + ".datacollection.values.template",record.data,function(err,out){
                         html = out;
