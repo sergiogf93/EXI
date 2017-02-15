@@ -6,14 +6,14 @@
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
-                    <th>Run</th>
                     <th>Prefix</th>
+                    <th>Run</th>
                     <th>#Images</th>
                     <th>Exposure<br/>Time</th>
                     <th>Res. (corner)</th>
                     <th>Wavelength</th>
                     <th>Transmission</th>
-                    <th>Directory</th>
+                    <th>Directory and<br/>image template</th>
                     <th>Time</th>
                     <th>Run status</th>
                     <th>Indicators</th>
@@ -30,8 +30,8 @@
                 {:else}
                  <tr>
                 {/eq}    
-                    <td>#{.dataCollectionNumber}</td>
                     <td>{.imagePrefix}</td>
+                    <td>{.dataCollectionNumber}</td>
                     <td ><span class="badge" style='background-color:#337ab7;'>{.numberOfImages}</span></td>
                     <td >{.exposureTime} s</td>
                     <td >{@decimal key="resolution" decimals=1}{/decimal} &#8491; ({@decimal key="resolutionAtCorner" decimals=1}{/decimal} &#8491;)</td>
@@ -47,10 +47,11 @@
                             <div class="modal-content">
                               <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                <h4 class="modal-title">Image directory</h4>
+                                <h4 class="modal-title">Image directory and template</h4>
                               </div>
                               <div class="modal-body">
-                                <p>{.imageDirectory}</p>
+                                <p>{.imageDirectory}</p><br>
+                                <p>{.formattedFileTemplate}</p>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
