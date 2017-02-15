@@ -7733,6 +7733,9 @@ function ContainerParcelPanel(args) {
 		}
         if (args.type != null){
             this.data.puckType = args.type;
+            if (args.type == "SPINE Puck") {
+                this.data.puckType = "Spinepuck";
+            }
 		}
         if (args.capacity != null) {
 			this.data.capacity = args.capacity;
@@ -9503,7 +9506,6 @@ SessionGrid.prototype.getPanel = function() {
                  flex               : 3,
                 renderer : function(grid, a, record){                    
                     var html = "";
-                    debugger
                     dust.render("session.grid." + technique.toLowerCase() + ".datacollection.values.template",record.data,function(err,out){
                         html = out;
                     });                                                   
