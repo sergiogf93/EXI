@@ -53,6 +53,9 @@ function ContainerParcelPanel(args) {
 		}
         if (args.type != null){
             this.data.puckType = args.type;
+            if (args.type == "SPINE Puck") {
+                this.data.puckType = "Spinepuck";
+            }
 		}
         if (args.capacity != null) {
 			this.data.capacity = args.capacity;
