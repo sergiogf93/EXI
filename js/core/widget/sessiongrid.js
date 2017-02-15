@@ -279,7 +279,6 @@ SessionGrid.prototype.getPanel = function() {
                  flex               : 3,
                 renderer : function(grid, a, record){                    
                     var html = "";
-                    debugger
                     dust.render("session.grid." + technique.toLowerCase() + ".datacollection.values.template",record.data,function(err,out){
                         html = out;
                     });                                                   

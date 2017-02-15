@@ -35,12 +35,12 @@
    </div>
    <div class="container-fluid" style="padding-bottom: 10px;">
         <div class="col-xs-12 col-md-12">
-            {?comments}
-                        Comments: <b><span id="comments_{dataCollectionId}">{@dataCollectionComment key="comments" /}</span></b>
-            {/comments}
             <a class="btn btn-xs">
-                <span id="{.dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
+                <span id="{.dataCollectionGroupId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
             </a>
+            {?comments}
+                        Comments: <b><span id="comments_{dataCollectionGroupId}">{comments}</span></b>
+            {/comments}
         </div>
     </div>
 </div>
