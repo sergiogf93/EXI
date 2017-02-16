@@ -86,7 +86,7 @@
                                                         <td><div class='summary_datacollection_failed'></div></td>
                                                     {/eq}
                                             
-                                            </tr>
+                                            </tr> 
                                                                                                                 
                                     {/ne}                                                                                                                                                                                                           
                             </table>
@@ -104,9 +104,15 @@
                      <img alt="Image not found" class="img-responsive lazy"  data-src="{.urlThumbnail}" />
                      </a>                           
                   </div>
+
                   <div class="col-xs-12 col-md-2">
                      <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                     <img id="xtal1_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" data-zoom-image="{.xtal1}"/>
+                     {?hasAnimated}                    
+                         <img id="xtal1_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy animatedXtal" data-src="{.xtal1}" data-zoom-image="{.xtal1}"/>
+                         <p>Hover the mouse over for alternate view</p>
+                     {:else}
+                         <img id="xtal1_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}" data-zoom-image="{.xtal1}"/>
+                     {/hasAnimated}
                      </a>                           
                   </div>
                 
@@ -118,10 +124,6 @@
 
                <div class="container-fluid" style="padding-bottom: 10px;">
                    <div class="col-xs-12 col-md-12">
-                        <a class="btn btn-xs">
-                            <span id="{.DataCollectionGroup_dataCollectionGroupId}-edit-comments" class="glyphicon glyphicon-edit dataCollectionGroup-edit"></span>
-                        </a>
-                        Comments:<b><div id="comments_{.DataCollectionGroup_dataCollectionGroupId}" class="wordwrap">{@trim key="DataCollectionGroup_comments" /}</div></b>
                         {?SpaceGroupModelResolvedByPhasing}
                             <div class="alert alert-success" style='font-size:14px;'>
                                 Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
@@ -282,5 +284,15 @@
             </div>  
          {/gt} 
       </div>
+      <div class="container-fluid" style="padding-bottom: 10px;">
+            <div class="col-xs-12 col-md-12">
+                <div class="wordwrap">
+                    <a class="btn btn-xs">
+                        <span id="{.DataCollectionGroup_dataCollectionGroupId}-edit-comments" class="glyphicon glyphicon-edit dataCollectionGroup-edit"></span>
+                    </a>
+                    Comments:<b id="comments_{.DataCollectionGroup_dataCollectionGroupId}">{@trim key="DataCollectionGroup_comments" /}</b>
+                </div>
+            </div>
+        </div>
    </div>
 </div>
