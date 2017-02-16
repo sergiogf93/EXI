@@ -23,6 +23,7 @@ CommentEditForm.prototype.show = function(){
     });
 
     $("body").append(html);
+    $("#" + this.id + "-tooltip").tooltip();
     $("#" + this.id + "-save").unbind('click').click(function(sender){
         _this.save();
     });

@@ -124,10 +124,6 @@
 
                <div class="container-fluid" style="padding-bottom: 10px;">
                    <div class="col-xs-12 col-md-12">
-                        <a class="btn btn-xs">
-                            <span id="{.DataCollectionGroup_dataCollectionGroupId}-edit-comments" class="glyphicon glyphicon-edit dataCollectionGroup-edit"></span>
-                        </a>
-                        Comments:<b><div id="comments_{.DataCollectionGroup_dataCollectionGroupId}" class="wordwrap">{@trim key="DataCollectionGroup_comments" /}</div></b>
                         {?SpaceGroupModelResolvedByPhasing}
                             <div class="alert alert-success" style='font-size:14px;'>
                                 Automatic SAD appears to have worked with the space group {.SpaceGroupModelResolvedByPhasing} 
@@ -288,5 +284,15 @@
             </div>  
          {/gt} 
       </div>
+      <div class="container-fluid" style="padding-bottom: 10px;">
+            <div class="col-xs-12 col-md-12">
+                <div class="wordwrap">
+                    <a class="btn btn-xs">
+                        <span id="{.DataCollectionGroup_dataCollectionGroupId}-edit-comments" class="glyphicon glyphicon-edit dataCollectionGroup-edit"></span>
+                    </a>
+                    Comments:<b id="comments_{.DataCollectionGroup_dataCollectionGroupId}">{@trim key="DataCollectionGroup_comments" /}</b>
+                </div>
+            </div>
+        </div>
    </div>
 </div>
