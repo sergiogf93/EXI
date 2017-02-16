@@ -1011,27 +1011,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
 		if (item.text == "Autoproc Scaling Statistics") {
-			var scatteringForm = new ScatteringForm({width : 650, height : 560});
-
-			var window = Ext.create('Ext.window.Window', {
-				title: "Plot autoprocessing values for last week",
-				height : 560,
-				width : 650,
-				modal : true,
-				layout : 'fit',
-				items : [ scatteringForm.getPanel() ],
-				buttons : [ {
-						text : 'Plot (last 7 days)',
-						handler : function() {
-							scatteringForm.plot();
-						}
-					}, {
-						text : 'Cancel',
-						handler : function() {
-							window.close();
-						}
-					} ]
-			}).show();
+			var scatteringForm = new ScatteringForm();
 
 			var keys = ["ISA", "rPimWithinIPlusIMinus","anomalousMultiplicity","multiplicity","resolutionLimitLow","ccHalf",
 			"strategySubWedgeOrigId","completeness","rMerge","anomalous","meanIOverSigI","ccAno","autoProcScalingId",
@@ -1041,6 +1021,7 @@ MXManagerMenu.prototype.getManagerMenu = function() {
 			var scatteringData = {title : "AutoprocIntegrator", keys : keys};
 
 			scatteringForm.load(scatteringData);
+			scatteringForm.show();
 		}
 	}
 
@@ -3403,6 +3384,7 @@ CommentEditForm.prototype.show = function(){
     });
 
     $("body").append(html);
+    $("#" + this.id + "-tooltip").tooltip();
     $("#" + this.id + "-save").unbind('click').click(function(sender){
         _this.save();
     });
@@ -4321,14 +4303,10 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
     if (dc){
         var html = "";
         var items = (new WorkflowSectionDataCollection().parseWorkflow(dc));
-        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId, dataCollectionGroupId : dc.DataCollectionGroup_dataCollectionGroupId, comments : dc.DataCollectionGroup_comments}, function(err, out) {
+        dust.render("workflows.mxdatacollectiongrid.template",  {items : items, dataCollectionId : dataCollectionId}, function(err, out) {
                         html = html + out;
         });
         $(target).html(html);
-        $(".dataCollection-edit").unbind('click').click(function(sender){
-            var dataCollectionGroupId = sender.target.id.split("-")[0];
-            _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
-        }); 
     }   
 };
 
@@ -4563,12 +4541,7 @@ UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, data
 */
 UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
     
-    var _this = this;
-    
-    $(".dataCollectionGroup-edit").unbind('click').click(function(sender){
-        var dataCollectionGroupId = sender.target.id.split("-")[0];
-        _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
-    });                              
+    var _this = this;                              
 
     var nodeWithScroll = document.getElementById(document.getElementById(_this.id).parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id);
     var lazy = {
@@ -4619,11 +4592,6 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                         _this.displayPhasingTab(target, dataCollectionGroupId);              
                     }
                 }
-
-                // $(".dataCollectionGroup-edit").unbind('click').click(function(sender){
-                //     var dataCollectionGroupId = sender.target.id.split("-")[0];
-                //     _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
-                // });  
             });
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
@@ -4635,11 +4603,16 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
         $(".animatedXtal").mouseout(function() {
             this.src=_this.imageAnimatedURL[this.src]}
         );
-       
+       $(".dataCollectionGroup-edit").click(function(sender){
+            var dataCollectionGroupId = sender.target.id.split("-")[0];
+            _this.editComments(dataCollectionGroupId,"DATACOLLECTIONGROUP");
+        });
     };
     
    
     var timer4 = setTimeout(movieEvents, 500, _this);
+
+    
 
 };
 

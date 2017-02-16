@@ -2958,15 +2958,16 @@ ShippingListView.prototype.getRow = function(record){
 	var html = "";
 
 	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
-	if (record.data.Container_beamlineLocation){ //Has session attached
-		record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
-	} else {
-		record.data.stats = {
-										samples     : "?",
-										dewars      : "?",
-										containers   : "?"
-							};
-	}
+	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
+	// if (record.data.Container_beamlineLocation){ //Has session attached
+	// 	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
+	// } else {
+	// 	record.data.stats = {
+	// 									samples     : "?",
+	// 									dewars      : "?",
+	// 									containers   : "?"
+	// 						};
+	// }
 
 	dust.render("shipping.listview", record.data, function(err, out){
 		html = out;
@@ -4161,40 +4162,32 @@ DimpleRunMainView.prototype.loadMain = function(run) {
 };
 function ScatteringForm(args) {
     this.id = BUI.id();
-
-    this.width = 600;
-    this.height = 200;
-	this.showTitle = true;
-	if (args != null) {
-		if (args.showTitle != null) {
-			this.showTitle = args.showTitle;
-		}
-        if (args.width != null) {
-			this.width = args.width;
-		}
-        if (args.height != null) {
-			this.height = args.height;
-		}
-	}
+	this.data = {id : this.id};
 }
 
-ScatteringForm.prototype.getPanel = function() {
+ScatteringForm.prototype.show = function(){
     var _this = this;
+    
+    var html = "";
+    dust.render("scattering.form.template", this.data, function(err,out){
+        html = out;
+    });
 
-	this.panel = Ext.create("Ext.panel.Panel",{
-		items :	[{
-					html : '<div id="' + this.id + '"></div>',
-					autoScroll : false,
-					width : this.width,
-					height : this.height
-				}]
+    $("body").append(html);
+
+	$('#' + this.id + '-datepicker').datetimepicker({
+		defaultDate : new Date(),
+		format : "DD-MM-YYYY"
 	});
 
-    // this.panel.on('boxready', function() {
-    //     _this.load();
-    // });
-
-	return this.panel;
+    $("#" + this.id + "-plot").unbind('click').click(function(sender){
+        _this.plot();
+    });
+    $("#" + this.id + "-modal").on('hidden.bs.modal', function(){
+        $(this).remove();
+    });
+    
+    $("#" + this.id + "-modal").modal();
 };
 
 ScatteringForm.prototype.load = function(data) {
@@ -4219,19 +4212,6 @@ ScatteringForm.prototype.load = function(data) {
 	if (!this.data.beamlines) {
 		this.data.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
 	}
-
-    var html = "";
-    dust.render("scattering.form.template", this.data, function (err, out) {
-        html = out;
-    });
-
-	$('#' + this.id).hide().html(html).fadeIn('fast');
-	this.panel.doLayout();
-
-	$('#' + this.id + '-datepicker').datetimepicker({
-		defaultDate : new Date(),
-		format : "DD-MM-YYYY"
-	});
 }
 
 ScatteringForm.prototype.plot = function() {
