@@ -18,7 +18,7 @@
                 
             </div>
             <div class="radio">
-                <label><input type="radio" value="2" name="optradio" checked>Sort by container/location</label>
+                <label><input type="radio" value="2" name="optradio" checked>Sort by dewar/container/location</label>
             </div>
             <div class="radio">
                 <label><input type="radio" value="1" name="optradio">Sort by acronym/sample name</label>

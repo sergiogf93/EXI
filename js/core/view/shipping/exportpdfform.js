@@ -13,9 +13,9 @@ ExportPDFForm.prototype.show = function(){
     });
 
     $("body").append(html);
-    // $("#" + this.id + "-save").unbind('click').click(function(sender){
-    //     _this.save();
-    // });
+    $("#" + this.id + "-export").unbind('click').click(function(sender){
+        _this.export();
+    });
 
     $("#" + this.id + "-dewars").multiselect({
 													enableFiltering: true,
@@ -33,4 +33,11 @@ ExportPDFForm.prototype.show = function(){
 
 ExportPDFForm.prototype.load = function (shipment) {
     this.templateData.shipment = shipment;
-}
+};
+
+ExportPDFForm.prototype.export = function () {
+    var sortViewer = $('input[name=optradio]:checked').val();
+    var dewarIdList = $("#" + this.id + "-dewars").val().toString();
+    var url = EXI.getDataAdapter().proposal.dewar.exportPDF(dewarIdList,sortViewer);
+    window.open(url,"_blank");
+};
