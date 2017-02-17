@@ -37,7 +37,12 @@ ExportPDFForm.prototype.load = function (shipment) {
 
 ExportPDFForm.prototype.export = function () {
     var sortViewer = $('input[name=optradio]:checked').val();
-    var dewarIdList = $("#" + this.id + "-dewars").val().toString();
-    var url = EXI.getDataAdapter().proposal.dewar.exportPDF(dewarIdList,sortViewer);
-    window.open(url,"_blank");
+    var dewarIdList = $("#" + this.id + "-dewars").val();
+    if (dewarIdList) {
+        var url = EXI.getDataAdapter().proposal.dewar.exportPDF(dewarIdList.toString(),sortViewer);
+        window.open(url,"_blank");
+        $("#" + this.id + "-modal").toggle('hidden.bs.modal');
+    } else {
+        $("#" + this.id + "-dewars").notify("Select at least one parcel","warn");
+    }
 };

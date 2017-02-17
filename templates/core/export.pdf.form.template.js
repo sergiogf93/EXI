@@ -28,7 +28,7 @@
       </div>
       <div class="modal-footer">
         <button id="{id}-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button id="{id}-export" type="button" class="btn btn-primary" data-dismiss="modal">Export</button>
+        <button id="{id}-export" type="button" class="btn btn-primary" >Export</button>
       </div>
     </div>
   </div>
