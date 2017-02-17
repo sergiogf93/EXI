@@ -4,7 +4,7 @@ function SessionMainView(args) {
 	var _this = this;
 	
 	this.sessionGrid = new SessionGrid({
-         width : 700,
+         width : 900,
          height: 598,
          margin : '0 0 0 20',
         title : "Click on calendar to see the sessions"
