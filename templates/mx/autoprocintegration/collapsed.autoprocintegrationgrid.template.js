@@ -1,17 +1,7 @@
 <div class="container-fluid containerWithScroll">
    <div class="row">
       <div class="col-xs-12 col-md-2">
-               
-         <table style='width: 100px;font-size:10px' class='table'>
-            <tbody>
-               <tr>
-                  <th class='innershell' >InnerShell</th>
-                  <th class='outershell' >OuterShell</th>
-                  <th class='overallshell' >Overall</th>
-               </tr>
-            </tbody>
-         </table>
-        
+
          <table class="table table-striped table-hover">
             <thead>
                <tr>
