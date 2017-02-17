@@ -7,7 +7,7 @@
       </div>
       <div class="modal-body">
         <form>
-            <div>
+            <div id="{id}-notify">
                 <label style="margin-right:10px;">Select Dewars:</label>
                     
                 <select id="{id}-dewars" multiple="multiple">

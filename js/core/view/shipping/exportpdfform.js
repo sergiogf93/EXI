@@ -41,8 +41,8 @@ ExportPDFForm.prototype.export = function () {
     if (dewarIdList) {
         var url = EXI.getDataAdapter().proposal.dewar.exportPDF(dewarIdList.toString(),sortViewer);
         window.open(url,"_blank");
-        $("#" + this.id + "-modal").toggle('hidden.bs.modal');
+        $("#" + this.id + "-modal").modal('hide');
     } else {
-        $("#" + this.id + "-dewars").notify("Select at least one parcel","warn");
+        $("#" + this.id + "-notify").notify("Select at least one parcel","warn");
     }
 };
