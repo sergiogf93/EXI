@@ -2,7 +2,7 @@ function ExportPDFForm(args) {
     this.id = BUI.id();
 
     this.templateData = {id : this.id};
-}
+};
 
 ExportPDFForm.prototype.show = function(){
     var _this = this;
