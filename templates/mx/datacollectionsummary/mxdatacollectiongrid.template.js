@@ -7,7 +7,7 @@
                         {.DataCollectionGroup_experimentType}
                      </kbd> 
                       <span style='color:blue;'>
-                     {.DataCollectionGroup_startTime}
+                     {@formatDate date=.DataCollectionGroup_startTime format="YYYY-MM-DD HH:mm:ss" /}
                      </span>                                   
                 </span>
              <p><b>{.DataCollection_imageDirectory}</b></p>      

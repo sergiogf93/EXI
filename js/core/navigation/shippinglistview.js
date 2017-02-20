@@ -53,7 +53,7 @@ ShippingListView.prototype.getStatsFromDewars = function (dewars) {
 ShippingListView.prototype.getRow = function(record){
 	var html = "";
 
-	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
+	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("YYYY-MM-DD");
 	if (record.data.Container_beamlineLocation){ //Has session attached
 		record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
 	} else {
