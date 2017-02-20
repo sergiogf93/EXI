@@ -35,8 +35,8 @@
                {:else}
                      {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
                 {/gt}
-                {@gt key=hasPhasing   value="0"}
-                    <li><a data-toggle="tab" href="#ph_{.DataCollection_dataCollectionGroupId}">MR  <span class="badge" style='background-color:#337ab7;'>{.hasPhasing}</span></a></li>
+                {@gt key=hasMR   value="0"}
+                    <li><a data-toggle="tab" href="#mr_{.DataCollection_dataCollectionGroupId}">MR  <span class="badge" style='background-color:#337ab7;'>{.hasMR}</span></a></li>
                {:else}
                      {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
                 {/gt}
@@ -281,13 +281,29 @@
             <div id="ph_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
                 <div class="container-fluid">
                  <div class="row" style='height:600px;'>
-                        <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionGroupId}">
+                        <div class="col-xs-12 col-md-12" id="__ph_{.DataCollection_dataCollectionGroupId}">
+                                <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
+                        </div>
+                    </div>
+                </div>
+            </div>   
+         {/gt} 
+
+        {@gt key=hasMR   value=0}
+            <div id="mr_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
+                <div class="container-fluid">
+                 <div class="row" style='height:600px;'>
+                        <div class="col-xs-12 col-md-12" id="__mr_{.DataCollection_dataCollectionGroupId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>
                     </div>
                 </div>
             </div>  
          {/gt} 
+
+         
+
+
       </div>
       <div class="container-fluid" style="padding-bottom: 10px;">
             <div class="col-xs-12 col-md-12">
