@@ -19,7 +19,7 @@
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Prefix</td>
-                  <td  style='padding:0 15px 0 15px;'><a href='#/mx/datacollection/datacollectionid/{.DataCollection_dataCollectionId}/main'>{.DataCollection_imagePrefix}</a></td>
+                  <td  style='padding:0 15px 0 15px;'><a target='_blank' href='#/mx/datacollection/datacollectionid/{.DataCollection_dataCollectionId}/main'>{.DataCollection_imagePrefix}</a></td>
                </tr>
                <tr>
                   <td  style='padding:0 15px 0 15px;'>Images</td>
@@ -60,6 +60,10 @@
       <div class="col-xs-6 col-md-2">
          {#.onlineresults[0]}       
             {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
+         {:else}
+             {#.screeningresults[0]}
+             {>"sm.characterisation.result.mxdatacollectiongrid.template"  /}
+             {/.screeningresults[0]}
          {/.onlineresults[0]}                           
       </div>
       <div class="col-xs-12 col-md-2">
