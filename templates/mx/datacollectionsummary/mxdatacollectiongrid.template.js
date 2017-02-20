@@ -35,6 +35,11 @@
                {:else}
                      {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
                 {/gt}
+                {@gt key=hasPhasing   value="0"}
+                    <li><a data-toggle="tab" href="#ph_{.DataCollection_dataCollectionGroupId}">MR  <span class="badge" style='background-color:#337ab7;'>{.hasPhasing}</span></a></li>
+               {:else}
+                     {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
+                {/gt}
              
             </ul>
          </div>
