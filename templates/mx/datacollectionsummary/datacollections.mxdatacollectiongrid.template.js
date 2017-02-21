@@ -61,7 +61,7 @@
                           </div>
                         </div>
                     </td>
-                    <td>{.formattedStartTime}</td>
+                    <td>{@formatDate date=.startTime format="HH:mm:ss" /}</td>
                     <td>{.runStatus}</td>
                     <td><a href={.urlImageQualityIndicators} data-lightbox={.urlImageQualityIndicators} >
                         <img src={.urlImageQualityIndicators} height="35px" width="35px"/></a></td>
