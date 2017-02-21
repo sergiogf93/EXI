@@ -70,15 +70,14 @@
                           <span class="badge" style='background-color:#337ab7;'>{.hasAutoProcessing}</span></a>{/gt}</td>
                     <td>{@gt key=hasPhasing value=0}<div class='summary_datacollection_success'></div>{/gt}</td>
                     <td>
+                        {#.onlineresults[0]} 
+                            {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
+                            <br/>
+                        {/.onlineresults[0]}
                         <a class="btn btn-xs">
                             <span id="{.dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
                         </a>
                         <span id="comments_{.dataCollectionId}">{.comments}</span>
-                    </td>
-                    <td>
-                        {#.onlineresults[0]} 
-                            {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
-                        {/.onlineresults[0]}
                     </td>
                 </tr>
                     
