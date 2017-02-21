@@ -245,7 +245,7 @@ ContainerParcelPanel.prototype.createContainer = function (data) {
             modal : true,
             items: [
                         {
-                            html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;"><b>Code:</b> ' + code + '</span></div><div class="row"><span style="font-size:12px;color: #666;">Select one of the options below:</span></div></div>',
+                            html : '<div class="container-fluid" style="margin:10px;"><div class="row"><span style="font-size:14px;color: #666;"><b>Code:</b> ' + code + '</span></div><div class="row"><span style="font-size:14px;color: #666;"><b>Type:</b> ' + _this.data.puckType + '</span></div><div class="row"><span style="font-size:12px;color: #666;">Select one of the options below:</span></div></div>',
                         }
             ],
             buttons : [ {
