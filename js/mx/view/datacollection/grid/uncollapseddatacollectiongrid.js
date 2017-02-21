@@ -142,13 +142,17 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
 * Displays the data worflows tab
 *
 * @param {Object} target HTML node where the content will be rendered
-* @param {Integer} dataCollectionId 
+* @param {Integer} dataCollectionGroupId 
+* @param {String} PhasingStep_method [SAD | MR ] 
 * @method displayWorkflowsTab
 */
-UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId) {
-  var onSuccess = function(sender, data){                       
+UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId, PhasingStep_method) {
+  var onSuccess = function(sender, data){   
+                          
         /** Parsing data */
-       var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
+       var spaceGroups = _.keyBy(_.filter(data[0], {PhasingStep_method : PhasingStep_method}), "SpaceGroup_spaceGroupShortName");
+
+       debugger
        var parsed = [];
        for(var spaceGroup in spaceGroups){
            if (spaceGroup != "null"){               
@@ -416,7 +420,13 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     
                     if (target.startsWith("#ph")){                           
                         var dataCollectionGroupId = target.slice(4);
-                        _this.displayPhasingTab(target, dataCollectionGroupId);              
+                        _this.displayPhasingTab(target, dataCollectionGroupId, 'SAD');              
+                    }
+
+                      if (target.startsWith("#mr")){                           
+                        var dataCollectionGroupId = target.slice(4);
+                        debugger
+                        _this.displayPhasingTab(target, dataCollectionGroupId, 'MR'); 
                     }
                 }
             });
