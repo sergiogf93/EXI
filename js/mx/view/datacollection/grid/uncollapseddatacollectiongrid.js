@@ -72,6 +72,17 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
             value.urlImageQualityIndicators = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(value.dataCollectionId);
             // Result from auto-processing>                     
             value.onlineresults = UncollapsedDataCollectionGrid.prototype._getAutoprocessingStatistics(value);
+            // Re-formatted template
+            if (value.fileTemplate.endsWith(".h5")) {
+                // Check if characterisation
+                if (Math.abs(value.overlap) > 1) {
+                    value.formattedFileTemplate = value.fileTemplate.replace("%04d", "?_master");
+                } else {
+                    value.formattedFileTemplate = value.fileTemplate.replace("%04d", "1_master");
+                };
+            } else {
+                value.formattedFileTemplate = value.fileTemplate.replace("%04d", "????");
+            };
         });
         var html = "";
         
