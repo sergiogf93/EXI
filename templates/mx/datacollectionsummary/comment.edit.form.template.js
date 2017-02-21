@@ -17,9 +17,9 @@
       </div>
       <div class="modal-footer">
         <button id="{id}-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <span id="{id}-tooltip" data-toggle="tooltip" data-placement="bottom" title="Will be implemented soon" style="margin:10px">
-          <button id="{id}-save" type="button" class="btn btn-primary" data-dismiss="modal" style="pointer-events: none;" disabled>Save</button>
-        </span>
+       
+        <button id="{id}-save" type="button" class="btn btn-primary" data-dismiss="modal"  >Save</button>
+       
       </div>
     </div>
   </div>
