@@ -1,5 +1,8 @@
 function DataCollectionGrid(args) {
 
+    /** HashMap to store the image snapshot and its animated equivalent image gif **/
+    this.imageAnimatedURL = {};
+    
     this.store = Ext.create('Ext.data.Store', {
             fields: ["dataCollectionGroup"]
      });
@@ -178,7 +181,21 @@ DataCollectionGrid.prototype.getColumns = function() {
                 /** Image quality indicator **/
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
 
-
+                /** Gets the gif for snapshots if there is a wiorkflow with snapshots **/
+                if (data.WorkflowStep_workflowStepType){
+                    if (data.WorkflowStep_workflowStepType.indexOf('Snapshots') != -1){
+                        if (data.WorkflowStep_workflowStepId){
+                            var listOfIds = data.WorkflowStep_workflowStepId.split(',');
+                            var listOfWorkflowStepType = data.WorkflowStep_workflowStepType.split(',');
+                            data.xtalAnimated = EXI.getDataAdapter().mx.workflowstep.getImageByWorkflowStepId(listOfIds[_.indexOf(listOfWorkflowStepType, 'Snapshots')]);
+                            _this.imageAnimatedURL[data.xtal1] = data.xtalAnimated;
+                            _this.imageAnimatedURL[data.xtalAnimated] = data.xtal1;
+                            data.hasAnimated = true;
+                        }
+                        
+                    }
+                }
+                
                 
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
                

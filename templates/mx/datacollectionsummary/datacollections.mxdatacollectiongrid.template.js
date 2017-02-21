@@ -50,7 +50,7 @@
                                 <h4 class="modal-title">Image directory</h4>
                               </div>
                               <div class="modal-body">
-                                <h4>{.imageDirectory}</h4>
+                                <p>{.imageDirectory}</p>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -69,15 +69,17 @@
                           <span class="badge" style='background-color:#337ab7;'>{.hasAutoProcessing}</span></a>{/gt}</td>
                     <td>{@gt key=hasPhasing value=0}<div class='summary_datacollection_success'></div>{/gt}</td>
                     <td>
-                        <a class="btn btn-xs">
-                            <span id="{.dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
-                        </a>
-                        <span id="comments_{.dataCollectionId}">{.comments}</span>
-                    </td>
-                    <td>
-                        {#.onlineresults[0]} 
-                            {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
+                        {#.onlineresults[0]}
+                            <div>
+                                {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
+                            </div>
                         {/.onlineresults[0]}
+                        <div class="wordwrap">
+                            <a class="btn btn-xs">
+                                <span id="{.dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
+                            </a>
+                            <span id="comments_{.dataCollectionId}">{.comments}</span>
+                        </div>
                     </td>
                 </tr>
                     
