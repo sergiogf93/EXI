@@ -155,9 +155,10 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
   var onSuccess = function(sender, data){   
                           debugger
         /** Parsing data */
-        data[0] = _.filter(data[0], {PhasingStep_method : PhasingStep_method})
+       data[0] = _.filter(data[0], {PhasingStep_method : PhasingStep_method})
        var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
        
+
        var parsed = [];
        for(var spaceGroup in spaceGroups){
            
@@ -359,6 +360,19 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
 UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, dataCollectionId) {                 
     var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
     if (dc){
+        /** Loading crystal snapshots within the DIV with id = sa_{.DataCollection_dataCollectionId}_crystal_snapshots */
+         //{>"crystalsnapshots.sample.mxdatacollectiongrid.template"  /}  
+         console.log(dc);
+         var crystalSnapShotDIV = "sa_" + dataCollectionId + "_crystal_snapshots";
+         if ($("#" + crystalSnapShotDIV)){
+             var html = "";    
+         
+            dust.render("crystalsnapshots.sample.mxdatacollectiongrid.template",  dc, function(err, out) {
+                        html = html + out;
+            });
+            $("#" + crystalSnapShotDIV).html(html);    
+         }
+
         if ($("#sample_puck_layout_" +dataCollectionId)){
             if (dc.Container_containerId){
                 var containers =_.filter(grid.dataCollectionGroup, {"Container_containerId":Number(dc.Container_containerId)});
