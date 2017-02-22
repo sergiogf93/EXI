@@ -153,11 +153,15 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
 */
 UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId, PhasingStep_method) {
   var onSuccess = function(sender, data){   
-                          
+                          debugger
         /** Parsing data */
-       var spaceGroups = _.keyBy(_.filter(data[0], {PhasingStep_method : PhasingStep_method}), "SpaceGroup_spaceGroupShortName");
+       data[0] = _.filter(data[0], {PhasingStep_method : PhasingStep_method})
+       var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
+       
+
        var parsed = [];
        for(var spaceGroup in spaceGroups){
+           
            if (spaceGroup != "null"){               
                var stepsBySpaceGroup = _.filter(data[0],{"SpaceGroup_spaceGroupShortName": spaceGroup});
                function getStepId(stepsBySpaceGroup){
@@ -170,16 +174,31 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
            
                var node = {};
                
-               node = ({
-                   spaceGroup       : spaceGroup,
-                   prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
-                   sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
-                   phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
-                   model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
-                   downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
-                   downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
-                   
-               });
+               if (PhasingStep_method == "MR"){
+                node = ({
+                    spaceGroup       : spaceGroup,
+                                
+                    phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                    refinement       : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "REFINEMENT"}) != null,                
+                    downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                    
+                });
+
+               }
+               else{
+                node = ({
+                    spaceGroup       : spaceGroup,
+                    prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
+                    sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
+                    phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                
+                    model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
+                    downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                    
+                });
+               }
                
                function getMetrics(phasingStep){                                      
                     if (phasingStep.metric){                        
@@ -234,6 +253,13 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    return node;         
                }
                
+               /**
+                * 
+                StepS for Phasing are: PREPARE,  SUBSTRUCTUREDETERMINATION, PHASING AND MODELBUILDING
+                StepS for Molecular replacement are: PHASING AND REFINEMENT
+
+                */
+
                /** Filling the model if any */
                if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
                         node = getNodeByPhasingStep(node, stepsBySpaceGroup, "MODELBUILDING");
@@ -248,7 +274,14 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                             node = getNodeByPhasingStep(node, stepsBySpaceGroup, "SUBSTRUCTUREDETERMINATION"); 
                         }
                         else{
-                           node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PREPARE");      
+                            
+                             if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "REFINEMENT"}) != null){                                  
+                                 node = getNodeByPhasingStep(node, stepsBySpaceGroup, "REFINEMENT"); 
+                                 
+                             }
+                             else{
+                                 node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PREPARE");        
+                            }
                         }
                     }
                }
@@ -265,6 +298,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    count = count + 1;
                }
                if (node.model){
+                   count = count + 1;
+               }
+                if (node.refinement){
                    count = count + 1;
                }
                
@@ -291,10 +327,19 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
         }
         
         var html = "";    
-         
-        dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
+         debugger
+        if (PhasingStep_method == "MR"){
+            
+            dust.render("mr.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
-        });
+            });
+        }
+        else{
+            
+            dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
+                    html = html + out;
+            });
+        }
         $(target).html(html);        
     };
     var onError = function(sender, msg){
@@ -440,8 +485,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     }
 
                       if (target.startsWith("#mr")){                           
-                        var dataCollectionGroupId = target.slice(4);
-                        debugger
+                        var dataCollectionGroupId = target.slice(4);                        
                         _this.displayPhasingTab(target, dataCollectionGroupId, 'MR'); 
                     }
                 }
