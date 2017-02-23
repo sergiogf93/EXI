@@ -60,7 +60,7 @@
                                         <h4 class="modal-title">Average file path</h4>
                                     </div>
                                     <div class="modal-body">
-                                        <h4>{.Subtraction_sampleAverageFilePath}</h4>
+                                        <p>{.Subtraction_sampleAverageFilePath}</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
