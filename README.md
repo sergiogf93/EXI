@@ -1,4 +1,4 @@
-﻿[EXI](http://exi.embl.fr/saxs) —  EXtended ISPyB
+[EXI](http://exi.embl.fr/saxs) —  EXtended ISPyB
 ==================================================
 
 
