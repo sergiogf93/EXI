@@ -55,27 +55,6 @@ ShippingListView.prototype.getRow = function(record){
 
 	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
 	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
-	// if (record.data.Container_beamlineLocation){ //Has session attached
-	// 	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
-	// } else {
-	// 	record.data.stats = {
-	// 									samples     : "?",
-	// 									dewars      : "?",
-	// 									containers   : "?"
-	// 						};
-	// }
-// =======
-// 	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("YYYY-MM-DD");
-// 	if (record.data.Container_beamlineLocation){ //Has session attached
-// 		record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
-// 	} else {
-// 		record.data.stats = {
-// 										samples     : "?",
-// 										dewars      : "?",
-// 										containers   : "?"
-// 							};
-// 	}
-// >>>>>>> 03930fd850e5ce9312db47396d1839353929b83f
 
 	dust.render("shipping.listview", record.data, function(err, out){
 		html = out;
