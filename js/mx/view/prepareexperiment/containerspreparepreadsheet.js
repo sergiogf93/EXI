@@ -268,6 +268,11 @@ ContainerPrepareSpreadSheet.prototype.loadProcessingDewars = function (sampleCha
     this.panel.setLoading();
     var onSuccessProposal = function(sender, containers) {
         var processingContainers = _.filter(containers, function(e){return e.shippingStatus == "processing";});
+        _.map(processingContainers,function(c) {
+            if (c.containerType == "SPINE Puck"){
+                c.containerType = "Spinepuck";
+            }
+        })
         //Check if some of the containers have the old value Puck for containerType, in which case, we need to use the sample locations to specify the type
         var containersFromISPyB = _.filter(processingContainers,{"containerType":"Puck"});
         if (containersFromISPyB.length > 0) {
