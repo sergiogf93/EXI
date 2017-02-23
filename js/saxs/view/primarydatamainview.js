@@ -7,10 +7,13 @@ function PrimaryDataMainView() {
 	this.onMeasurementSelectionChange = new Event(this);
 	
 	var _this = this;
+	this.selections = null;
 
 	this.framesGrid = new FramesGrid();
 	this.framesGrid.onSelectionChange.attach(function(sender, selections){
-		_this.plotter.load(selections);
+		_this.selections = selections;
+		_this.selections.operation = $('input[name=optradio]:checked').val();
+		_this.plotter.load(_this.selections);
 	});
 	
 	/** Curve plotter * */
@@ -34,19 +37,16 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 		},
 		items : [
 		         {
-		        	 xtype : 'panel',
-		        	 layout: {
-		        	        type: 'accordion',
-		        	        titleCollapse: false,
-		        	        animate: true,
-		        	        activeOnTop: true
-		        	    },
-		        	    flex : 0.2,
-		        		border : 1,
-		        		style : {
-		        			borderColor : '#000000',
-		        			borderStyle : 'solid',
-		        			borderWidth : '1px' },
+					title : '<label class="radio-inline"><input type="radio" value="LOG" name="optradio" checked>Log</label><label class="radio-inline"><input type="radio" value="LINEAL" name="optradio">Lineal</label>',
+		        	xtype : 'panel',
+					autoScroll : true,
+					
+					flex : 0.2,
+					border : 1,
+					style : {
+						borderColor : '#000000',
+						borderStyle : 'solid',
+						borderWidth : '1px' },
 		        	 items : [		        	        
 		        	                this.framesGrid.getPanel()
 		        	          ]
@@ -57,7 +57,9 @@ PrimaryDataMainView.prototype.getSlavePanel = function() {
 };
 
 PrimaryDataMainView.prototype.getPanel = function() {
-	return {
+	var _this = this;
+
+	this.panel = Ext.create('Ext.panel.Panel',{
             xtype : 'container',
             autoScroll : true,							
             layout : 'fit',
@@ -77,7 +79,18 @@ PrimaryDataMainView.prototype.getPanel = function() {
                             ]
                         }
             ]
-        };
+	});
+
+	this.panel.on('boxready',function(){
+		$('input:radio[name=optradio]').change(function () {
+			if (_this.selections){
+				_this.selections.operation = $('input[name=optradio]:checked').val();
+				_this.plotter.load(_this.selections);
+			}
+        });
+	});
+
+	return this.panel;
 };
 
 PrimaryDataMainView.prototype.load = function(dataCollectionId) {

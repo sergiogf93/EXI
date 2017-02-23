@@ -52,7 +52,7 @@ module.exports = function(grunt) {
                                     "bower_components/exi-ui-viz/min/exi-ui-viz.min.js",
                                     "bower_components/three/build/three.min.js",
                                     "bower_components/notifyjs/dist/notify.js",
-									'bower_components/eonasdan-bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js',
+									"bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js",
 									"bower_components/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"
 									]
                         }
@@ -99,7 +99,8 @@ module.exports = function(grunt) {
                                     'bower_components/lightbox2/dist/css/lightbox.css',
                                     'bower_components/bootstrap-year-calendar/css/bootstrap-year-calendar.min.css',
 									'bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css',
-									'bower_components/bootstrap-multiselect/dist/css/bootstrap-multiselect.css']
+									'bower_components/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
+				                    'bower_components/handsontable/dist/handsontable.css']
                         }
                     }
                 },

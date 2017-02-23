@@ -24,6 +24,7 @@ CommentEditForm.prototype.show = function(){
 
     $("body").append(html);
     $("#" + this.id + "-save").unbind('click').click(function(sender){
+        debugger
         _this.save();
     });
     $("#" + this.id + "-modal").on('hidden.bs.modal', function(){

@@ -2,15 +2,15 @@
     <div class="col-md-2" style="padding:0px">
         <div class="form-group row" style="margin:5px">
             <label class="col-md-7 col-form-label" ><b>Creation date:</b></label>
-            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.creationDate format="DD-MM-YYYY" /}</label>
+            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.creationDate format="YYYY-MM-DD" /}</label>
         </div>
         <div class="form-group row" style="margin:5px">
             <label class="col-md-7 col-form-label" ><b>Sending date:</b></label>
-            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.dateOfShippingToUser format="DD-MM-YYYY" /}</label>
+            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.dateOfShippingToUser format="YYYY-MM-DD" /}</label>
         </div>
         <div class="form-group row" style="margin:5px">
             <label class="col-md-7 col-form-label" ><b>Expected arrival date:</b></label>
-            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.deliveryAgentDeliveryDate format="DD-MM-YYYY" /}</label>
+            <label class="col-md-5" style="font-weight: normal">{@formatDate date=shipment.deliveryAgentDeliveryDate format="YYYY-MM-DD" /}</label>
         </div>
         <div class="form-group row" style="margin:5px">
             <label class="col-md-7 col-form-label" ><b>Return date:</b></label>
