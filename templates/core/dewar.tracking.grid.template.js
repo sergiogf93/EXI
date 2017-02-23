@@ -25,7 +25,7 @@
                     {#.trackingData}
                     <tr>
                         <td width="25%">
-                            {@formatDate date=DewarTransportHistory_arrivalDate format="DD-MM-YYYY h:mm" /}
+                            {@formatDate date=DewarTransportHistory_arrivalDate format="YYYY-MM-DD HH:mm" /}
                         </td>
                         <td width="25%">
                             {?DewarTransportHistory_dewarStatus}

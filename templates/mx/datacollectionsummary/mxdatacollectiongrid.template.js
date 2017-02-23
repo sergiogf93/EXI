@@ -7,7 +7,7 @@
                         {.DataCollectionGroup_experimentType}
                      </kbd> 
                       <span style='color:blue;'>
-                     {.DataCollectionGroup_startTime}
+                     {@formatDate date=.DataCollectionGroup_startTime format="YYYY-MM-DD HH:mm:ss" /}
                      </span>                                   
                 </span>
              <p><b>{.DataCollection_imageDirectory}</b></p>      
@@ -32,6 +32,11 @@
                 {/gt}
                 {@gt key=hasPhasing   value="0"}
                     <li><a data-toggle="tab" href="#ph_{.DataCollection_dataCollectionGroupId}">Phasing  <span class="badge" style='background-color:#337ab7;'>{.hasPhasing}</span></a></li>
+               {:else}
+                     {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
+                {/gt}
+                {@gt key=hasMR   value="0"}
+                    <li><a data-toggle="tab" href="#mr_{.DataCollection_dataCollectionGroupId}">MR  <span class="badge" style='background-color:#337ab7;'>{.hasMR}</span></a></li>
                {:else}
                      {! <li class="disabled"><a data-toggle="tab">Phasing</a></li> !}
                 {/gt}
@@ -156,30 +161,12 @@
          <div id="sa_{.DataCollection_dataCollectionId}" class="tab-pane fade">
             <div class="container-fluid">
                <div class="row">
-                  <div class="col-xs-6 col-md-2">
-                     {>"sample.mxdatacollectiongrid.template"  /}                             
-                  </div>
-                        <div class="col-xs-12 col-md-2">
-                            <a href="{.xtal1}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal1_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal1}"/>
-                            </a>                           
+                        <div class="col-xs-6 col-md-2">
+                            {>"sample.mxdatacollectiongrid.template"  /}                             
                         </div>
-                        <div class="col-xs-12 col-md-2">
-                            <a href="{.xtal2}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal2_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal2}"/>
-                            </a>                           
-                        </div>
-                        <div class="col-xs-12 col-md-2">
-                            <a href="{.xtal3}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal3_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal3}"/>
-                            </a>                           
-                        </div>
-                        <div class="col-xs-12 col-md-2">
-                            <a href="{.xtal4}"  data-lightbox="{.DataCollection_dataCollectionId}" data-title="{.Protein_acronym} : {.Protein_name}">
-                            <img id="xtal4_samples_{.DataCollection_dataCollectionId}" alt="Image not found" class="img-responsive smalllazy" data-src="{.xtal4}"/>
-                            </a>                           
-                        </div>
-                        
+                       
+                         <div id="sa_{.DataCollection_dataCollectionId}_crystal_snapshots"></div>
+
                          <div class="col-xs-12 col-md-2">
                            <div id='sample_puck_layout_{.DataCollection_dataCollectionId}'>
                            </div>
@@ -276,13 +263,29 @@
             <div id="ph_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
                 <div class="container-fluid">
                  <div class="row" style='height:600px;'>
-                        <div class="col-xs-12 col-md-12" id="__wf_{.DataCollection_dataCollectionGroupId}">
+                        <div class="col-xs-12 col-md-12" id="__ph_{.DataCollection_dataCollectionGroupId}">
+                                <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
+                        </div>
+                    </div>
+                </div>
+            </div>   
+         {/gt} 
+
+        {@gt key=hasMR   value=0}
+            <div id="mr_{.DataCollection_dataCollectionGroupId}" class="tab-pane fade">
+                <div class="container-fluid">
+                 <div class="row" style='height:600px;'>
+                        <div class="col-xs-12 col-md-12" id="__mr_{.DataCollection_dataCollectionGroupId}">
                                 <img style='display:block;margin-left: auto;margin-right: auto;height:150px;width:150px;'src='../images/loading-animation.gif' />                                           
                         </div>
                     </div>
                 </div>
             </div>  
          {/gt} 
+
+         
+
+
       </div>
       <div class="container-fluid" style="padding-bottom: 10px;">
             <div class="col-xs-12 col-md-12">
