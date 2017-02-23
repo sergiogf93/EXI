@@ -164,13 +164,8 @@ DataCollectionGrid.prototype.getColumns = function() {
                     }
                 }
                 catch(e){}
-                /** For Phasing */
-                
-                if (data.phasingStepType) { 
-                    var phasingSteps = data.phasingStepType.split(",");
-                    data.phasingStepLength = phasingSteps.length;
-                
-                }
+               
+               
                 
                 /** For crystal */
                 data.xtal1 = EXI.getDataAdapter().mx.dataCollection.getCrystalSnapshotByDataCollectionId(record.data.DataCollection_dataCollectionId, 1);

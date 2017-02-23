@@ -26,7 +26,7 @@ SendShipmentForm.prototype.show = function(){
     var today = new Date();
     $("#" + this.id + "-date").datetimepicker({
         defaultDate: today,
-        format: "DD-MM-YYYY",
+        format: "YYYY-MM-DD",
     });
 
 };
@@ -38,7 +38,7 @@ SendShipmentForm.prototype.load = function (shipment) {
 SendShipmentForm.prototype.save = function(){
     var _this = this;
     var trackingNumber = $("#" + this.id + "-tracking-number").val();
-    var date = moment($("#" + this.id + "-date").val(),"DD-MM-YYYY");
+    var date = moment($("#" + this.id + "-date").val(),"YYYY-MM-DD");
 
     if (trackingNumber != "" && date.toDate() != "Invalid date") {
         for (var i = 0 ; i < this.shipment.dewarVOs.length ; i++) {

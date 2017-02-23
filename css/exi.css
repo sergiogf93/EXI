@@ -827,6 +827,15 @@ img.smalllazy {
         width: 200px;
         border : 1px solid #3892d3
 }
+
+img.small {
+       height: 200px;
+        width: 200px;
+        border : 1px solid #3892d3
+}
+
+
+
  
 .th-component{
 	width : 150px;
