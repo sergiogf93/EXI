@@ -814,8 +814,6 @@ overflow-x: hidden;
 	background-color: #FFFFFF;
 }
 
-
-
 img.lazy {
         height: 200px;
         width: 200px;
@@ -833,9 +831,6 @@ img.small {
         width: 200px;
         border : 1px solid #3892d3
 }
-
-
-
  
 .th-component{
 	width : 150px;

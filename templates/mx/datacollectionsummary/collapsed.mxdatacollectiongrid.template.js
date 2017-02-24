@@ -56,7 +56,7 @@
                 <img alt="Image not found" class="lazy"  src="{.indicator}" style='height:60px;width:60px;margin-right:10px;'/>
         </a>
         {@gt key=resultsCount   value="0"}
-                <a class="btn btn-xs">
+                <a id="{.DataCollection_dataCollectionId}-download-results-anchor" class="btn btn-xs">
                         <span id="{.DataCollection_dataCollectionId}-download-results" class="glyphicon glyphicon-download download-results"></span>
                 </a>
         {/gt}
