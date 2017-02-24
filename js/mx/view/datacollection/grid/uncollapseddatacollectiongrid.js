@@ -88,6 +88,7 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
             var dataCollectionId = sender.target.id.split("-")[0];
             _this.editComments(dataCollectionId,"DATACOLLECTION");
         });
+        _this.panel.doLayout();
     };
     
     var onError = function(sender, msg){
@@ -113,7 +114,8 @@ UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = functio
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
                     html = html + out;
         });
-        $(target).html(html);        
+        $(target).html(html);
+        _this.panel.doLayout();       
     };
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
@@ -139,6 +141,7 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
                         html = html + out;
         });
         $(target).html(html);
+        _this.panel.doLayout();
     }   
 };
 
@@ -340,7 +343,8 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                     html = html + out;
             });
         }
-        $(target).html(html);        
+        $(target).html(html);
+        _this.panel.doLayout();     
     };
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
@@ -490,6 +494,8 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     }
                 }
             });
+            _this.panel.doLayout();
+
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
 

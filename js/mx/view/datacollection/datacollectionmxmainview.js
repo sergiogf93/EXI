@@ -80,6 +80,9 @@ DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
     if (proposalId && proposalId.length == 1) {
         proposal = EXI.proposalManager.getProposalById(proposalId[0]);
         this.panel.setTitle(proposal.code + proposal.number);
+        this.panel.tab.on('click',function(){
+            location.href = "#/welcome/manager/proposal/"+ proposal.code + proposal.number +"/main";
+        });
     }
 	var data = _.filter(dataCollections, function(u) {
         return u.DataCollection_dataCollectionId != null;
