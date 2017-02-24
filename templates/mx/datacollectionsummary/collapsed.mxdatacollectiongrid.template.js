@@ -51,11 +51,15 @@
             </tbody>
          </table>
       </div>
-      <div class="col-xs-1 col-md-1"> 
-         <a href="{.indicator}" data-lightbox='{.indicator}' data-title="#{.runNumber} {.folder}"> 
-            <img alt="Image not found" class="img-responsive lazy"  src="{.indicator}" 
-                 style='height:60px;width:60px'/>
-         </a> 
+      <div class="col-xs-1 col-md-1">
+        <a href="{.indicator}" data-lightbox='{.indicator}' data-title="#{.runNumber} {.folder}"> 
+                <img alt="Image not found" class="lazy"  src="{.indicator}" style='height:60px;width:60px;margin-right:10px;'/>
+        </a>
+        {@gt key=resultsCount   value="0"}
+                <a class="btn btn-xs">
+                        <span id="{.DataCollection_dataCollectionId}-download-results" class="glyphicon glyphicon-download download-results"></span>
+                </a>
+        {/gt}
       </div>
       <div class="col-xs-6 col-md-2">
          {#.onlineresults[0]}       

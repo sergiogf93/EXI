@@ -19,6 +19,11 @@ DataCollectionGrid.prototype.loadMagnifiers = function(dataCollectionGroup){
             var elementId = dataCollectionGroup[i].DataCollection_dataCollectionId + "_thumb";
             $('#' + elementId).Lazy();
      }
+
+     
+    if (this.onBoxReady) {
+        this.onBoxReady();
+    }
 };
 
 /**
