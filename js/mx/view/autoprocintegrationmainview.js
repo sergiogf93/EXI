@@ -132,7 +132,6 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
     for (var i = 0; i < data.length; i++) {
         if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
             autoProcIntegrationId.push(data[i].AutoProcIntegration_autoProcIntegrationId);
-            debugger;
         }
     }
     var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
