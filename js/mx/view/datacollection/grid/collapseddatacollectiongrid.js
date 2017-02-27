@@ -50,6 +50,8 @@ CollapsedDataCollectionGrid.prototype.downloadResults = function (dataCollection
                     var loaded = _.countBy(Object.values(file_confirmation))[true];
                     if(loaded + errors == urls.length) {
                         zip.generateAsync({type:"blob"}).then(function(content) {
+                            $('.notifyjs-corner').empty();
+                            $.notify("All loaded","info");
                             saveAs(content, "autoproc_results_" + dataCollectionId + ".zip");
                             _this.panel.setLoading(false);
                         });
@@ -58,7 +60,8 @@ CollapsedDataCollectionGrid.prototype.downloadResults = function (dataCollection
                         if (errors > 0) {
                             message += ". " + errors + " Errors"
                         }
-                        _this.panel.setLoading(message);
+                        $('.notifyjs-corner').empty();
+                        $.notify(message,"info");
                     }
                 }
                 // Function to add a file to the zip and call the downloadZipIfAllReady
