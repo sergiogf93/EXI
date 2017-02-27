@@ -128,13 +128,13 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
 	
 	this.autoProcIntegrationGrid.load(data);
     
-    var autoprocProgramId = [];
+    var autoProcIntegrationId = [];
     for (var i = 0; i < data.length; i++) {
         if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
-            autoprocProgramId.push(data[i].v_datacollection_summary_phasing_autoProcProgramId);
+            autoProcIntegrationId.push(data[i].AutoProcIntegration_autoProcIntegrationId);
+            debugger;
         }
     }
-
     var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
                             height : 250,
                             title : "Anom Corr vs Resolution",
@@ -142,7 +142,7 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
                             targetId : "anno"
     });
     $("#anno").html(annoCorrPlotter.getHTML());                         
-    annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoprocProgramId));	                  
+    annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationId));	                  
        
     var sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
         height : 250,
@@ -150,8 +150,8 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
      //   legend : 'never',
         targetId : "sigmaAnno"
     });
-        $("#sigmaAnno" + autoprocProgramId).html(sigmaAnnoPlotter.getHTML());                         
-    sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoprocProgramId));
+        $("#sigmaAnno" + autoProcIntegrationId).html(sigmaAnnoPlotter.getHTML());                         
+    sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationId));
                        
      var cc2Plotter = new AutoProcIntegrationCurvePlotter({
                             height : 250,
@@ -160,7 +160,7 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
                             targetId : "cc2"
                         });
     $("#cc2").html(cc2Plotter.getHTML());                         
-    cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoprocProgramId));
+    cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId));
 	                     
        
        
@@ -172,7 +172,7 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
                             targetId : "rfactor"
 	                    });                             
                         $("#rfactor").html(rFactorPlotter.getHTML());                         
-                        rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoprocProgramId));
+                        rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationId));
                         
                            /** Rfactor */
                         var completenessPlotter = new AutoProcIntegrationCurvePlotter({
@@ -182,7 +182,7 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
                             targetId : " completeness"
 	                    });                             
                         $("#completeness").html(completenessPlotter.getHTML());                         
-                        completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoprocProgramId));
+                        completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId));
 	                  
                       	var isigmaPlotter = new AutoProcIntegrationCurvePlotter({
                             height :250,
@@ -191,7 +191,7 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
                             targetId : " sigmaI"
                         });
                         $("#sigmaI").html(isigmaPlotter.getHTML());                         
-                        isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoprocProgramId));
+                        isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId));
 	                  
                       
                       
