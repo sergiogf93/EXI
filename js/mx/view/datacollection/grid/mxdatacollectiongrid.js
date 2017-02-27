@@ -80,6 +80,29 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                 iconCls: 'bmenu',  // <-- icon
                 menu : menu  // assign menu by instance
             },
+            '->',
+            {
+                html: '<span class="glyphicon glyphicon-download-alt"></span> Best results',
+                padding: '10px',
+                handler : function (sender,target) {
+                    var dataCollectionsWithResults = _.filter(_this.dataCollectionGroup,function(d) {return d.resultsCount});
+                    if (dataCollectionsWithResults && dataCollectionsWithResults.length > 0){
+                        _this.panel.setLoading();
+                        var onSuccess = function (sender,data) {
+                            if (data) {
+                                var parsedResults = [];
+                                for (var i = 0 ; i < data.length ; i++) {
+                                    parsedResults.push(new AutoProcIntegrationGrid().parseData(data[i]))
+                                }
+                                var bestResults = _.filter(_.flatten(parsedResults),function(r) {return r.label == "BEST"});
+                                (new ResultsDownloader()).downloadResults(bestResults, "autoproc_best_results.zip",_this.panel);
+                            }
+                        }
+
+                        EXI.getDataAdapter({onSuccess : onSuccess}).mx.autoproc.getViewByDataCollectionId(_.map(dataCollectionsWithResults,"DataCollection_dataCollectionId").toString()); 
+                    }
+                }
+            },
             '->', 
             {
                 xtype: 'textfield',
@@ -121,7 +144,6 @@ MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
     this.activePanel.load(this.dataCollectionGroup);
 };
 
-
 /**
 * Filters data by prefix, protein acronym or sample
 *
@@ -143,4 +165,3 @@ MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {
     Ext.getCmp(this.id + "_found").setText(filtered.length + " items found");
     return filtered;
 };
-
