@@ -54,15 +54,7 @@ ShippingListView.prototype.getRow = function(record){
 	var html = "";
 
 	record.data.formattedCreationDate = moment(new Date(record.data.Shipping_creationDate)).format("DD-MM-YYYY");
-	if (record.data.Container_beamlineLocation){ //Has session attached
-		record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
-	} else {
-		record.data.stats = {
-										samples     : "?",
-										dewars      : "?",
-										containers   : "?"
-							};
-	}
+	record.data.stats = this.getStatsByShippingId(record.data.Shipping_shippingId);
 
 	dust.render("shipping.listview", record.data, function(err, out){
 		html = out;
