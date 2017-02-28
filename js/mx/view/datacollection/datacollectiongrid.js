@@ -199,6 +199,13 @@ DataCollectionGrid.prototype.getColumns = function() {
                     } else {
                         data.screeningresults = [data.ScreeningOutput_indexingSuccess];
                     }
+                    if (data.screeningresults[0]) {
+                        if (data.ScreeningOutput_indexingSuccess) {
+                            data.indexingresults = [true];
+                        } else {
+                            data.indexingresults = [false];
+                        }
+                    }
                 }
                
                 /** We dont show screen if there are results of autoprocessing */

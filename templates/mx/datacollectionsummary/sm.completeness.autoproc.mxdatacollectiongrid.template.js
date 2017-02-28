@@ -2,7 +2,7 @@
 
 
 
-<table class='table-sm table table-striped'>
+<table class='table-sm table-condensed table-striped'>
     <thead>   
     <tr>
         <th  style='padding:0 15px 0 15px;'>{.spaceGroup}</th>
