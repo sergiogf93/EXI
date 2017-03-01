@@ -83,10 +83,20 @@ ExiController.prototype.init = function(){
         EXI.hideNavigationPanel();
 		mainView.loadSessionsByDate(user,this.params['start'], this.params['end'] );
 	}).enter(setPageBackground);
-    
-   
-    
-	
+
+	Path.map("#/welcome/manager/proposal/:proposal/main").to(function() {                         
+		var proposalCode = this.params['proposal'];
+		var mainView = new ManagerWelcomeMainView();
+		EXI.addMainPanel(mainView);
+        EXI.hideNavigationPanel();
+		mainView.panel.setLoading(true);
+		var onSuccess = function (sender, sessions){
+			mainView.displaySessions(sessions, sessions.length + " sessions for proposal " + proposalCode);
+			mainView.panel.setLoading(false);
+		}
+		EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
+	}).enter(setPageBackground);
+
 	Path.map("#/logout").to(function() {     
 		EXI.credentialManager.logout();
          EXI.hideNavigationPanel();
