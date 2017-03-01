@@ -6,7 +6,7 @@
     </tr>
     <tr>
         <td>Wavelength</td>
-        <td  class='column_parameter_value'>{.DataCollection_wavelength} &#8491;</td>
+        <td  class='column_parameter_value'>{@decimal key="DataCollection_wavelength" decimals=4 /} &#8491;</td>
     </tr>
     <tr>
         <td>{.DataCollection_rotationAxis} range</td>

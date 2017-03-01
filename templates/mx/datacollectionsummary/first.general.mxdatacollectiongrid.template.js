@@ -28,8 +28,8 @@
       <td class='column_parameter_value'>{.DataCollection_dataCollectionNumber}</td>
    </tr>
    <tr>
-      <td>Images</td>
-      <td class='column_parameter_value'>{.totalNumberOfImages}</td>
+      <td># Images (Total)</td>
+      <td class='column_parameter_value'>{.DataCollection_numberOfImages} ({.totalNumberOfImages})</td>
    </tr>
    <tr>
       <td>Transmission</td>

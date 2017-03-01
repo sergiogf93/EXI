@@ -159,17 +159,3 @@ SessionMainView.prototype.loadByDate = function(start) {
          var end = moment(start, "YYYYMMDD").format("YYYYMMDD");                    
          EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposalAndDate(start, end, username);          
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,23 +5,16 @@
                 <thead>   
                             <tr> 
                                 <th>Phasing</th>
-                                <th><abbr title="Prepare Step">PREPARE</abbr></th>
-                                <th><abbr title="Substructure Determination Step">SUBSTRUCTURE</abbr></th>
+                                
                                 <th><abbr title="Phasing Step">PHASING</abbr></th>
-                                <th><abbr title="Model Building Step">MODEL</abbr></th>
-    
+                              
+                                 <th><abbr title="Model Building Step">REFINEMENT</abbr></th>
                                 <th>Download</th>       
                                 <th style='color:gray'></th>                                                       
                                 <th style='color:gray'>Program</th>
                                 <th style='color:gray'>Method</th>
                                 <th style='color:gray'>Resolution</th>
-                                <th style='color:gray'>Solvent</th>                                                                
-                                <th style='color:gray'>Chain Count</th>
-                                <th style='color:gray'>Residues Count</th>
-                                <th style='color:gray'>Average Fragment Length</th>
-                                <th style='color:gray'>CC of partial model</th>                                                                                             
-                                <th style='color:gray'><abbr title="UglyMol:  https://github.com/uglymol/uglymol">Electron Density</abbr></th>
-                                <th style='color:gray; '>PDB</th>                               
+                                             
                             </tr>
                 </thead> 
                 <tbody>
@@ -38,24 +31,7 @@
                                                 <a href='#/phasing/autoprocintegrationId/{.autoProcIntegrationId}/main'> {.SpaceGroup_spaceGroupShortName}</a>
                                             {/eq}                                        
                                         </td>
-                                        <td>
-                                            {@eq key=$idx value=0}
-                                                {@eq key=prepare type="boolean" value="true"}
-                                                    <span style='color:green;' class="glyphicon glyphicon-ok"></span>
-                                                {:else}
-                                                    <span style='color:red;' class="glyphicon glyphicon-remove"></span>
-                                                {/eq}
-                                            {/eq} 
-                                        </td>
-                                        <td>
-                                            {@eq key=$idx value=0}
-                                                {@eq key=sub type="boolean" value="true"}
-                                                    <span style='color:green;' class="glyphicon glyphicon-ok"></span>
-                                                {:else}
-                                                    <span style='color:red;' class="glyphicon glyphicon-remove"></span>
-                                                {/eq} 
-                                            {/eq}
-                                        </td>  
+                                       
                                         <td> 
                                             {@eq key=$idx value=0}
                                                 {@eq key=phasing type="boolean" value="true"}
@@ -65,16 +41,16 @@
                                                 {/eq}
                                             {/eq}
                                         </td>
-                                        <td> 
+                                      
+                                         <td> 
                                             {@eq key=$idx value=0}
-                                                {@eq key=model type="boolean" value="true"}                           
+                                                {@eq key=refinement type="boolean" value="true"}                           
                                                     <span style='color:green;' class="glyphicon glyphicon-ok"></span>                          
                                                 {:else}
                                                     <span style='color:red;' class="glyphicon glyphicon-remove"></span>
                                                 {/eq}
                                             {/eq}
                                         </td>
-                                         
                                         <td >   
                                             {@eq key=$idx value=0}                     
                                                 <a href='{.downloadFilesUrl}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a>
@@ -91,25 +67,7 @@
                                         <td>{.PhasingProgramRun_phasingPrograms} </td>
                                         <td>{.PhasingStep_method} </td>
                                         <td>{.PhasingStep_highRes} - {.PhasingStep_lowRes} </td>
-                                        <td>{.PhasingStep_solventContent} </td>                                                               
-                                        <td>{@decimal key="Chain_Count" decimals=0}{/decimal}  </td>
-                                        <td>{@decimal key="_Residues_Count" decimals=0}{/decimal} </td>                     
-                                        <td>{@decimal key="_Average_Fragment_Length" decimals=0}{/decimal} </td>
-                                        <td>{@decimal key="_CC_of_partial_model" decimals=2}{/decimal}</td>                               
-                                        <td>                                            
-                                                {?uglymol}
-                                                    <a><a target="_blank" href='{.uglymol}' ><span style='font-size: 1em;' class="glyphicon glyphicon-eye-open"  ></span></a> 
-                                                {:else}                                                    
-                                                {/uglymol}                                                                                        
-                                        </td>
-                                        <td >                                            
-                                                {?pngURL}
-                                                        <a href="{.pngURL}"  data-lightbox="{.PhasingStep_autoProcScalingId}" data-title="{.PhasingStep_phasingStepType} : {.SpaceGroup_spaceGroupShortName}">
-                                                                <img id="{.PhasingStep_phasingStepId}" alt="Image not found" style='height:15px; width:15px;'  src='../images/icon/ic_search_black_48dp.png'/>
-                                                        </a>
-                                                {:else}                                                    
-                                                {/pngURL}                                                                                       
-                                        </td>         
+                                             
                                     </tr> 
                                  {/metrics}
                             {/.} 

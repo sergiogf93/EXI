@@ -81,6 +81,14 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
 		_this.edit();
 	});
+	if (nSamples > 0) {
+		$("#" + this.id + "-export").removeClass("disabled");
+		$("#" + this.id + "-export").unbind('click').click(function(sender){
+			var exportForm = new ExportPDFForm();
+			exportForm.load(_this.shipment);
+			exportForm.show();
+		});
+	}
 
 	this.fillTab("content", this.dewars);
 
@@ -131,7 +139,6 @@ ParcelGrid.prototype.fillTab = function (tabName, dewars) {
 ParcelGrid.prototype.edit = function(dewar) {
 	var _this = this;
 	var caseForm = new CaseForm();
-	debugger
 	var window = Ext.create('Ext.window.Window', {
 		title : 'Parcel',
 		height : 450,

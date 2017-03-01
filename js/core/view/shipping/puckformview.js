@@ -46,7 +46,9 @@ PuckFormView.prototype.load = function(containerId, shippingId, shippingStatus) 
     this.containerId = containerId;
     // this.containerSpreadSheet.setLoading(true);
 	this.panel.setTitle("Shipment");
-
+	this.panel.tab.on('click',function() {
+		_this.returnToShipment();
+	});
     var onSuccess = function(sender, puck){
         _this.puck = puck;
         if (puck != null){

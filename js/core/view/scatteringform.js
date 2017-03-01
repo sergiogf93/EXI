@@ -50,10 +50,23 @@ ScatteringForm.prototype.load = function(data) {
 	if (!this.data.beamlines) {
 		this.data.beamlines = EXI.credentialManager.getBeamlinesByTechnique("MX");
 	}
+
+    var html = "";
+    dust.render("scattering.form.template", this.data, function (err, out) {
+        html = out;
+    });
+
+	$('#' + this.id).hide().html(html).fadeIn('fast');
+	this.panel.doLayout();
+
+	$('#' + this.id + '-datepicker').datetimepicker({
+		defaultDate : new Date(),
+		format : "YYYY-MM-DD"
+	});
 }
 
 ScatteringForm.prototype.plot = function() {
-	var endDate= moment($("#" + this.id + "-date").val(),"DD-MM-YYYY").format("YYYY-MM-DD");
+	var endDate= moment($("#" + this.id + "-date").val(),"YYYY-MM-DD").format("YYYY-MM-DD");
 	var checkedValues = [];
 	$('.scattering-checkbox:checked').each(function(i){
 		checkedValues.push($(this).val());

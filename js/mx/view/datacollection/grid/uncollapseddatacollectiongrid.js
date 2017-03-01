@@ -62,16 +62,21 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
     var onSuccess = function(sender, data){
        
         _.forEach(data, function(value) {
-            // Format new date as HH:MM:SS, the slice is for zero-padding
-            d = new Date(Date.parse(value.startTime))
-            hours = ("0" + d.getHours()).slice(-2)
-            minutes = ("0" + d.getMinutes()).slice(-2)
-            seconds = ("0" + d.getSeconds()).slice(-2)
-            value.formattedStartTime = hours + ":" +minutes + ":" + seconds;
             // URL to image quality indicators
             value.urlImageQualityIndicators = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(value.dataCollectionId);
             // Result from auto-processing>                     
             value.onlineresults = UncollapsedDataCollectionGrid.prototype._getAutoprocessingStatistics(value);
+            // Re-formatted template
+            if (value.fileTemplate.endsWith(".h5")) {
+                // Check if characterisation
+                if (Math.abs(value.overlap) > 1) {
+                    value.formattedFileTemplate = value.fileTemplate.replace("%04d", "?_master");
+                } else {
+                    value.formattedFileTemplate = value.fileTemplate.replace("%04d", "1_master");
+                };
+            } else {
+                value.formattedFileTemplate = value.fileTemplate.replace("%04d", "????");
+            };
         });
         var html = "";
         
@@ -83,6 +88,7 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
             var dataCollectionId = sender.target.id.split("-")[0];
             _this.editComments(dataCollectionId,"DATACOLLECTION");
         });
+        _this.panel.doLayout();
     };
     
     var onError = function(sender, msg){
@@ -108,7 +114,8 @@ UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = functio
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {
                     html = html + out;
         });
-        $(target).html(html);        
+        $(target).html(html);
+        _this.panel.doLayout();       
     };
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
@@ -134,6 +141,7 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
                         html = html + out;
         });
         $(target).html(html);
+        _this.panel.doLayout();
     }   
 };
 
@@ -142,15 +150,21 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
 * Displays the data worflows tab
 *
 * @param {Object} target HTML node where the content will be rendered
-* @param {Integer} dataCollectionId 
+* @param {Integer} dataCollectionGroupId 
+* @param {String} PhasingStep_method [SAD | MR ] 
 * @method displayWorkflowsTab
 */
-UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId) {
-  var onSuccess = function(sender, data){                       
+UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dataCollectionGroupId, PhasingStep_method) {
+  var onSuccess = function(sender, data){   
+                          debugger
         /** Parsing data */
+       data[0] = _.filter(data[0], {PhasingStep_method : PhasingStep_method})
        var spaceGroups = _.keyBy(data[0], "SpaceGroup_spaceGroupShortName");
+       
+
        var parsed = [];
        for(var spaceGroup in spaceGroups){
+           
            if (spaceGroup != "null"){               
                var stepsBySpaceGroup = _.filter(data[0],{"SpaceGroup_spaceGroupShortName": spaceGroup});
                function getStepId(stepsBySpaceGroup){
@@ -163,16 +177,31 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
            
                var node = {};
                
-               node = ({
-                   spaceGroup       : spaceGroup,
-                   prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
-                   sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
-                   phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
-                   model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
-                   downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
-                   downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
-                   
-               });
+               if (PhasingStep_method == "MR"){
+                node = ({
+                    spaceGroup       : spaceGroup,
+                                
+                    phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                    refinement       : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "REFINEMENT"}) != null,                
+                    downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                    
+                });
+
+               }
+               else{
+                node = ({
+                    spaceGroup       : spaceGroup,
+                    prepare          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PREPARE"}) != null,
+                    sub              : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "SUBSTRUCTUREDETERMINATION"}) != null,
+                    phasing          : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "PHASING"}) != null,
+                
+                    model            : _.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null,
+                    downloadCSV      : EXI.getDataAdapter().mx.phasing.getCSVPhasingFilesByPhasingAttachmentIdURL(getCSV(stepsBySpaceGroup)),
+                    downloadFilesUrl : EXI.getDataAdapter().mx.phasing.getDownloadFilesByPhasingStepIdURL(getStepId(stepsBySpaceGroup))
+                    
+                });
+               }
                
                function getMetrics(phasingStep){                                      
                     if (phasingStep.metric){                        
@@ -227,6 +256,13 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    return node;         
                }
                
+               /**
+                * 
+                StepS for Phasing are: PREPARE,  SUBSTRUCTUREDETERMINATION, PHASING AND MODELBUILDING
+                StepS for Molecular replacement are: PHASING AND REFINEMENT
+
+                */
+
                /** Filling the model if any */
                if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "MODELBUILDING"}) != null){
                         node = getNodeByPhasingStep(node, stepsBySpaceGroup, "MODELBUILDING");
@@ -241,7 +277,14 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                             node = getNodeByPhasingStep(node, stepsBySpaceGroup, "SUBSTRUCTUREDETERMINATION"); 
                         }
                         else{
-                           node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PREPARE");      
+                            
+                             if (_.find(stepsBySpaceGroup, {"PhasingStep_phasingStepType" : "REFINEMENT"}) != null){                                  
+                                 node = getNodeByPhasingStep(node, stepsBySpaceGroup, "REFINEMENT"); 
+                                 
+                             }
+                             else{
+                                 node = getNodeByPhasingStep(node, stepsBySpaceGroup, "PREPARE");        
+                            }
                         }
                     }
                }
@@ -258,6 +301,9 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
                    count = count + 1;
                }
                if (node.model){
+                   count = count + 1;
+               }
+                if (node.refinement){
                    count = count + 1;
                }
                
@@ -284,11 +330,21 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
         }
         
         var html = "";    
-         
-        dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
+         debugger
+        if (PhasingStep_method == "MR"){
+            
+            dust.render("mr.mxdatacollectiongrid.template",  parsed, function(err, out) {
                     html = html + out;
-        });
-        $(target).html(html);        
+            });
+        }
+        else{
+            
+            dust.render("phasing.mxdatacollectiongrid.template",  parsed, function(err, out) {
+                    html = html + out;
+            });
+        }
+        $(target).html(html);
+        _this.panel.doLayout();     
     };
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
@@ -308,6 +364,19 @@ UncollapsedDataCollectionGrid.prototype.displayPhasingTab = function(target, dat
 UncollapsedDataCollectionGrid.prototype.displaySampleTab = function(target, dataCollectionId) {                 
     var dc =_.find(grid.dataCollectionGroup, {"DataCollection_dataCollectionId":Number(dataCollectionId)});
     if (dc){
+        /** Loading crystal snapshots within the DIV with id = sa_{.DataCollection_dataCollectionId}_crystal_snapshots */
+         //{>"crystalsnapshots.sample.mxdatacollectiongrid.template"  /}  
+         console.log(dc);
+         var crystalSnapShotDIV = "sa_" + dataCollectionId + "_crystal_snapshots";
+         if ($("#" + crystalSnapShotDIV)){
+             var html = "";    
+         
+            dust.render("crystalsnapshots.sample.mxdatacollectiongrid.template",  dc, function(err, out) {
+                        html = html + out;
+            });
+            $("#" + crystalSnapShotDIV).html(html);    
+         }
+
         if ($("#sample_puck_layout_" +dataCollectionId)){
             if (dc.Container_containerId){
                 var containers =_.filter(grid.dataCollectionGroup, {"Container_containerId":Number(dc.Container_containerId)});
@@ -416,10 +485,17 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
                     
                     if (target.startsWith("#ph")){                           
                         var dataCollectionGroupId = target.slice(4);
-                        _this.displayPhasingTab(target, dataCollectionGroupId);              
+                        _this.displayPhasingTab(target, dataCollectionGroupId, 'SAD');              
+                    }
+
+                      if (target.startsWith("#mr")){                           
+                        var dataCollectionGroupId = target.slice(4);                        
+                        _this.displayPhasingTab(target, dataCollectionGroupId, 'MR'); 
                     }
                 }
             });
+            _this.panel.doLayout();
+
     };
     var timer3 = setTimeout(tabsEvents, 500, _this);
 

@@ -616,12 +616,14 @@ ContainerSpreadSheet.prototype.isCrystalFormAvailable = function (parsedCrystalF
 */
 ContainerSpreadSheet.prototype.getCrystalInfoByProtein = function (protein) {
 	var src = [];
-	var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == protein.proteinId;});
-	if (crystalsByProteinId) {
-		for (var i = 0 ; i < crystalsByProteinId.length ; i++){
-			var crystalInfo = this.getCrystalInfo(crystalsByProteinId[i]);
-			this.crystalInfoToIdMap[crystalInfo] = crystalsByProteinId[i].crystalId;
-			src.push(crystalInfo);
+	if (protein){
+		var crystalsByProteinId = _.filter(EXI.proposalManager.getCrystals(),function(o) {return o.proteinVO.proteinId == protein.proteinId;});
+		if (crystalsByProteinId) {
+			for (var i = 0 ; i < crystalsByProteinId.length ; i++){
+				var crystalInfo = this.getCrystalInfo(crystalsByProteinId[i]);
+				this.crystalInfoToIdMap[crystalInfo] = crystalsByProteinId[i].crystalId;
+				src.push(crystalInfo);
+			}
 		}
 	}
 	return _.union(src,["NEW"]);
