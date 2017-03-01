@@ -36,4 +36,3 @@
       <td class='column_parameter_value'>{@decimal key="transmission" decimals=1 /} %</td>
    </tr>
 </table>
-
