@@ -12,7 +12,6 @@ function DataCollectionMxMainView(args) {
     if (args) {
         if (args.sessionId) {
             this.sessionId = args.sessionId;
-            debugger
         }
     }
 
@@ -102,13 +101,13 @@ DataCollectionMxMainView.prototype.loadFXEScans = function(data) {
     Ext.getCmp(this.id + "_xfeTab").setDisabled(true);
 };
 
-DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
+DataCollectionMxMainView.prototype.loadProposal = function (proposal) {
     this.panel.setTitle("");
-    var proposalId = _.uniq(_.map(dataCollections,"BLSession_proposalId"));
-    if (proposalId && proposalId.length == 1) {
-        this.proposal = EXI.proposalManager.getProposalById(proposalId[0]);
-        this.panel.setTitle(this.proposal.code + this.proposal.number);
-    }
+    this.proposal = proposal;
+    this.panel.setTitle(this.proposal.code + this.proposal.number);
+}
+
+DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
 	var data = _.filter(dataCollections, function(u) {
         return u.DataCollection_dataCollectionId != null;
     });
