@@ -16,6 +16,7 @@
                   <th  >&#x3B1; (&deg)</th>
                   <th >&beta; (&deg)</th>
                   <th >&gamma; (&deg)</th>
+                  <th >Shell</th>
                   <th >Resolution (&#197;)</th>
                   <th >Multiplicity</th>
                   <th >Completeness %</th>
@@ -70,6 +71,11 @@
                <td >{@decimal key="v_datacollection_summary_phasing_cell_alpha" decimals=1}{/decimal}</td>
                <td >{@decimal key="v_datacollection_summary_phasing_cell_beta" decimals=1}{/decimal}</td>
                <td >{@decimal key="v_datacollection_summary_phasing_cell_gamma" decimals=1}{/decimal}</td>
+               <td>
+                  <span class='innershell'>Inner</span><br />
+                  <span class='outershell'>Outer<br />
+                  <span class='overallshell'>Overall</span>
+               </td>
                <td >
                   <span class='innershell'>{.innerShell.resolutionLimitLow}-{.innerShell.resolutionLimitHigh} </span><br />
                   <span class='outershell'>{.outerShell.resolutionLimitLow}-{.outerShell.resolutionLimitHigh}</span> <br />
