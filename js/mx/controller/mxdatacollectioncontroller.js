@@ -34,7 +34,7 @@ MxDataCollectionController.prototype.init = function() {
 	}).enter(this.setPageBackground);
     
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
-		var mainView = new DataCollectionMxMainView();
+		var mainView = new DataCollectionMxMainView({sessionId : this.params['sessionId']});
 		EXI.addMainPanel(mainView);
         EXI.hideNavigationPanel();
 		EXI.setLoadingMainPanel(true);

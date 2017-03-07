@@ -104,9 +104,9 @@ DataCollectionMxMainView.prototype.loadFXEScans = function(data) {
 DataCollectionMxMainView.prototype.loadProposal = function (proposal) {
     this.panel.setTitle("");
     this.proposal = proposal;
-    this.panel.setTitle(this.proposal.code + this.proposal.number);
+    this.panel.setTitle(this.proposal.Proposal_proposalCode + this.proposal.Proposal_proposalNumber);
     this.panel.tab.on('click',function(){
-        location.href = "#/welcome/manager/proposal/"+ proposal.code + proposal.number +"/main";
+        location.href = "#/welcome/manager/proposal/"+ proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber +"/main";
     });
 }
 

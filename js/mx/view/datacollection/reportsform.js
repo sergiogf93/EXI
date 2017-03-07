@@ -14,14 +14,23 @@ ReportsForm.prototype.show = function(){
 
     $("body").append(html);
     $("#" + this.id + "-general-report-doc").unbind('click').click(function(sender){
-        _this.generateGeneralReportDoc();
+        var html = _this.generateGeneralReport();
+        var fileName = _this.proposal.Proposal_proposalCode + _this.proposal.Proposal_proposalNumber + "_Session_" + _this.session.beamLineName + "_" + moment(new Date(_this.session.BLSession_startDate)).format("YYYYMMDD") + ".doc";
+        _this.downloadHTML(html, fileName);
+    });
+    $("#" + this.id + "-general-report-pdf").unbind('click').click(function(sender){
+        var html = _this.generateGeneralReport();
     });
 
-    // $("#" + this.id + "-dewars").multiselect({
-	// 												enableFiltering: true,
-	// 												enableCaseInsensitiveFiltering: true,
-	// 												includeSelectAllOption: true
-	// 											});
+    $("#" + this.id + "-screening-report-doc").unbind('click').click(function(sender){
+        var url = EXI.getDataAdapter().proposal.session.downloadDOCReport(_this.proposal.Proposal_proposalCode + _this.proposal.Proposal_proposalNumber,_this.session.sessionId,10);
+        window.open(url,"_blank");
+    });
+
+    $("#" + this.id + "-screening-report-pdf").unbind('click').click(function(sender){
+        var url = EXI.getDataAdapter().proposal.session.downloadPDFReport(_this.proposal.Proposal_proposalCode + _this.proposal.Proposal_proposalNumber,_this.session.sessionId,10);
+        window.open(url,"_blank");
+    });
 
     $("#" + this.id + "-modal").on('hidden.bs.modal', function(){
         $(this).remove();
@@ -37,7 +46,6 @@ ReportsForm.prototype.load = function (sessionId, proposal,dataCollectionGroup,e
     this.dataCollectionGroup = dataCollectionGroup;
     this.energyScans = energyScans;
     this.xfeScans = xfeScans;
-    debugger
     if (proposal && sessionId) {
         var onSuccess = function (sender, session) {
             if (session && session.length > 0){
@@ -46,21 +54,26 @@ ReportsForm.prototype.load = function (sessionId, proposal,dataCollectionGroup,e
             }
         }
 
-        EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionByProposalSessionId(this.proposal.code + this.proposal.number,sessionId);
+        EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionByProposalSessionId(this.proposal.Proposal_proposalCode + this.proposal.Proposal_proposalNumber,sessionId);
+    }
+
+    if (this.energyScans){
+        _.map(this.energyScans,function(e) {
+            e.choochURL = EXI.getDataAdapter().mx.energyscan.getChoochJpegByEnergyScanId(e.energyScanId);
+        });
     }
 };
 
-ReportsForm.prototype.generateGeneralReportDoc = function () {
+ReportsForm.prototype.generateGeneralReport = function () {
     var html = this.getHTMLHeader();
 
-    dust.render("general.report.doc.template", {proposal : this.proposal, session : this.session, datacollections : this.dataCollectionGroup}, function(err,out){
+    dust.render("general.report.doc.template", {proposal : this.proposal, session : this.session, datacollections : this.dataCollectionGroup, energyScans : this.energyScans, xfeScans : this.xfeScans}, function(err,out){
         html += out;
     });
 
     html += '</body></html>';
-    var fileName = this.proposal.code + this.proposal.number + "_Session_" + this.session.beamLineName + "_" + moment(new Date(this.session.BLSession_startDate)).format("YYYYMMDD");
 
-    this.downloadHTMLAsDoc(html, fileName);
+    return html;
 };
 
 ReportsForm.prototype.getHTMLHeader = function () {
@@ -82,7 +95,7 @@ ReportsForm.prototype.getHTMLHeader = function () {
     return header;
 };
 
-ReportsForm.prototype.downloadHTMLAsDoc = function(html,fileName) {
+ReportsForm.prototype.downloadHTML = function(html,fileName) {
     // Convert images
     // var regularImages = $(html).find("img");
     // var canvas = document.createElement('canvas');
@@ -109,5 +122,5 @@ ReportsForm.prototype.downloadHTMLAsDoc = function(html,fileName) {
     }
     var blob = new Blob([byteNumbers], {type: 'text/html'});
 
-    saveAs(blob,fileName + '.doc');
+    saveAs(blob,fileName);
 };
