@@ -52,10 +52,13 @@ WorkflowStepMainView.prototype.getGrid = function(title, columns, data) {
 };
 
 WorkflowStepMainView.prototype.getImageResolution = function(imageItem) {  
-    if (imageItem.xsize){
+    if (!imageItem.thumbnailValue) {
+        imageItem.thumbnailValue = imageItem.value;
+    }
+    if (!imageItem.thumbnailXsize) {
         var ratio = imageItem.xsize/1024;
-        imageItem.xsize = imageItem.xsize*ratio;
-        imageItem.ysize = imageItem.ysize*ratio;
+        imageItem.thumbnailXsize = imageItem.xsize*ratio;
+        imageItem.thumbnailYsize = imageItem.ysize*ratio;
     }
     return imageItem;
 };
@@ -65,11 +68,14 @@ WorkflowStepMainView.prototype.getImagesResolution = function(imageItems) {
     resolution = resolution/imageItems.length;
     for (var i = 0; i < imageItems.length; i++) {
         var imageItem = imageItems[i];        
-         if (imageItem.xsize){
-            var ratio = resolution/imageItem.xsize;
-            imageItem.xsize = imageItem.xsize*ratio;
-            imageItem.ysize = imageItem.ysize*ratio;
-        } 
+        if (!imageItem.thumbnailValue) {
+           imageItem.thumbnailValue = imageItem.value;
+        }
+        if (!imageItem.thumbnailXsize) {
+           var ratio = resolution/imageItem.xsize;
+           imageItem.thumbnailXsize = imageItem.xsize*ratio;
+           imageItem.thumbnailYsize = imageItem.ysize*ratio;
+        }
     }
     return imageItems;
 };

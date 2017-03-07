@@ -7,7 +7,7 @@
                 {#items}
                         <td>
                             <a href="data:image/png;base64,{.value}" data-lightbox='a' data-title="{.title}">
-                                <img height="{.ysize}" width="{.xsize}" src="data:image/png;base64,{.value}" />
+                                <img height="{.thumbnailYsize}" width="{.thumbnailXsize}" src="data:image/png;base64,{.thumbnailValue}" />
                             </a>
                             <br />
                             <span class='summary_datacollection_parameter'>{.title}</span>
@@ -21,8 +21,10 @@
     {@eq key=type value="image"}
 	    <div align="center">
             
-                <img height="200" width="200" src="data:image/png;base64,{.value}" />
-          
+	            <a href="data:image/png;base64,{.value}" data-lightbox='a' data-title="{.title}">
+                    <img height="{.thumbnailYsize}" width="{.thumbnailXsize}" src="data:image/png;base64,{.value}" />
+                </a>
+
             <br />
             <span class='summary_datacollection_parameter'>{.title}</span>
         </div>			
