@@ -72,73 +72,72 @@
                <td >{@decimal key="v_datacollection_summary_phasing_cell_beta" decimals=1}{/decimal}</td>
                <td >{@decimal key="v_datacollection_summary_phasing_cell_gamma" decimals=1}{/decimal}</td>
                <td>
+                  <span class='overallshell'>Overall</span><br />
                   <span class='innershell'>Inner</span><br />
-                  <span class='outershell'>Outer<br />
-                  <span class='overallshell'>Overall</span>
+                  <span class='outershell'>Outer</span>
                </td>
                <td >
+                  <span class='overallshell'>{.overall.resolutionLimitLow}-{.overall.resolutionLimitHigh} </span><br />
                   <span class='innershell'>{.innerShell.resolutionLimitLow}-{.innerShell.resolutionLimitHigh} </span><br />
-                  <span class='outershell'>{.outerShell.resolutionLimitLow}-{.outerShell.resolutionLimitHigh}</span> <br />
-                  <span class='overallshell'>{.overall.resolutionLimitLow}-{.overall.resolutionLimitHigh} </span>
+                  <span class='outershell'>{.outerShell.resolutionLimitLow}-{.outerShell.resolutionLimitHigh}</span>
                </td>
                <td >               
+                  <span class='overallshell'>{.overall.multiplicity}</span><br />
                   <span class='innershell'>{.innerShell.multiplicity} </span><br />
-                  <span class='outershell'>{.outerShell.multiplicity}</span> <br />
-                  <span class='overallshell'>{.overall.multiplicity}</span>
+                  <span class='outershell'>{.outerShell.multiplicity}</span>
                </td>
                <td > 
+                  <span class='overallshell'>{.overall.completeness}</span><br />
                   <span class='innershell'>{.innerShell.completeness} </span><br />
-                  <span class='outershell'>{.outerShell.completeness}</span><br />
-                  <span class='overallshell'>{.overall.completeness}</span>
+                  <span class='outershell'>{.outerShell.completeness}</span>
                 </td>
                <td >
+                    <span class='overallshell'>{.overall.meanIOverSigI}</span><br />
                     <span class='innershell'>{.innerShell.meanIOverSigI} </span><br />
-                    <span class='outershell'>{.outerShell.meanIOverSigI}</span><br />
-                    <span class='overallshell'>{.overall.meanIOverSigI}</span>
+                    <span class='outershell'>{.outerShell.meanIOverSigI}</span>
                 </td>
                <td >
+                    <span class='overallshell'>{.overall.rMeasAllIPlusIMinus}</span><br />
                     <span class='innershell'>{.innerShell.rMeasAllIPlusIMinus} </span><br />
-                    <span class='outershell'>{.outerShell.rMeasAllIPlusIMinus}</span><br />
-                    <span class='overallshell'>{.overall.rMeasAllIPlusIMinus}</span>
+                    <span class='outershell'>{.outerShell.rMeasAllIPlusIMinus}</span>
                 </td>
                <td >
+                    <span class='overallshell'>{.overall.rMerge}</span><br />
                     {@lt key=innerShell.rMerge value=10}
                         <span class='innershell'>{.innerShell.rMerge} </span><br />
                     {:else}
                         <span class='innershell' style='font-weight:700;color:red;'>{.innerShell.rMerge} </span><br />
                     {/lt}
-                    <span class='outershell'>{.outerShell.rMerge}</span> <br />
-                    <span class='overallshell'>{.overall.rMerge}</span>
+                    <span class='outershell'>{.outerShell.rMerge}</span>
                </td>
                <td >
+                    <span class='overallshell'>{.overall.rPimWithinIPlusIMinus}</span><br />
                     <span class='innershell'>{.innerShell.rPimWithinIPlusIMinus} </span><br />
-                    <span class='outershell'>{.outerShell.rPimWithinIPlusIMinus}</span><br />
-                    <span class='overallshell'>{.overall.rPimWithinIPlusIMinus}</span>
+                    <span class='outershell'>{.outerShell.rPimWithinIPlusIMinus}</span>
                 </td>
                <td >
+                    {?overall.ccHalf}
+                        <span class='overallshell'>{@math key=100 method="multiply" operand=overall.ccHalf/}  </span><br />
+                    {/overall.ccHalf}
+
                     {?innerShell.ccHalf}
                         <span class='innershell'>{@math key=100 method="multiply" operand=innerShell.ccHalf/}  </span><br />
                     {/innerShell.ccHalf}
 
                     {?outerShell.ccHalf}
-                        <span class='outershell'>{@math key=100 method="multiply" operand=outerShell.ccHalf/}  </span><br />
+                        <span class='outershell'>{@math key=100 method="multiply" operand=outerShell.ccHalf/}  </span>
                     {/outerShell.ccHalf}
-                    
-                     {?overall.ccHalf}
-                        <span class='overallshell'>{@math key=100 method="multiply" operand=overall.ccHalf/}  </span><br />
-                    {/overall.ccHalf}
-                   
                </td>
                
                <td>
-                    <span class='innershell'>{.innerShell.ccAno} </span><br />
-                    <span class='outershell'>{.outerShell.ccAno}</span><br />
                     <span class='overallshell'>{.overall.ccAno}</span> <br />
+                    <span class='innershell'>{.innerShell.ccAno} </span><br />
+                    <span class='outershell'>{.outerShell.ccAno}</span>
                </td>
                <td>
+                    <span class='overallshell'>{.overall.sigAno}</span><br />
                     <span class='innershell'>{.innerShell.sigAno} </span><br />
-                    <span class='outershell'>{.outerShell.sigAno}</span><br />    
-                    <span class='overallshell'>{.overall.sigAno}</span>
+                    <span class='outershell'>{.outerShell.sigAno}</span>    
                </td>
                 <td  >{.isa}</td>
                <td ><a href='{.downloadFilesUrl}' ><span style='font-size: 1.5em;' class="glyphicon glyphicon-download " ></span></a></td>
