@@ -61,7 +61,6 @@ ShippingMainView.prototype.load = function(shippingId) {
 	if (shippingId != null){
 		this.panel.setLoading();
 		var onSuccess = function(sender, shipment){
-
 			//Check if samples have exported data in order to know if the remove button should be enabled
 
 			var containerIds = _.map(_.union(_.flatten(_.map(shipment.dewarVOs,"containerVOs"))),"containerId");
@@ -89,7 +88,6 @@ ShippingMainView.prototype.load = function(shippingId) {
 		EXI.getDataAdapter({onSuccess : onSuccess}).proposal.shipping.getShipment(shippingId);
     }	
     else{
-        
         _this.shipmentForm.load();	
 		_this.panel.setLoading(false);
     }

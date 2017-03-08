@@ -17,9 +17,7 @@
       </div>
       <div class="modal-footer">
         <button id="{id}-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-       
-        <button id="{id}-save" type="button" class="btn btn-primary" data-dismiss="modal"  >Save</button>
-       
+        <button id="{id}-save" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
       </div>
     </div>
   </div>

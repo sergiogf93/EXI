@@ -108,7 +108,6 @@ XfeViewerMainView.prototype.getGrid = function() {
 * @method setXColumn
 */
 XfeViewerMainView.prototype.setXColumn = function(labelName, selected) {
-      
     var label = _.filter(this.data.labels, function(o){ return o.name == labelName;});
     if (label){
         /** As X only can be one we set all x to false */
@@ -405,10 +404,9 @@ XfeViewerMainView.prototype.plot = function() {
                 };
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
-                debugger
+                
                 /** Fills the labels grid */
                 try {
-                    
                     this.data.labels = this.getSumForLabels(this.data.labels, this.sumByColums( _this.data.labels, _this.data.data));
                     this.store.loadData(this.data.labels);
                 }
@@ -424,6 +422,9 @@ XfeViewerMainView.prototype.plot = function() {
                     EXI.setError(e.message);
                 }
             }
+            this.setXColumn("Energy",true);
+            this.setYColumn("continuum",false);
+            this.setYColumn("pileup",false);
         }
         else {
             /** No Lines */
@@ -441,6 +442,4 @@ XfeViewerMainView.prototype.load = function(xfeFluorescenceSpectrumId) {
     this.xfeFluorescenceSpectrumId = xfeFluorescenceSpectrumId;
   
     this.plot();
-
-
 };
