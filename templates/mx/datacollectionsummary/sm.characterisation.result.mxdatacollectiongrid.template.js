@@ -1,8 +1,4 @@
-
-
-
-
-<table class='table-sm table-condensed table-striped'>
+<table class='table-sm table table-striped'>
     <thead>
         <tr>
             <td style='padding:0 15px 0 15px;'>Indexed</td> 
@@ -31,7 +27,7 @@
          </tr>
          <tr>
                  <td style='padding:0 15px 0 15px;'>Images</td> <td style='padding:0 15px 0 15px;' class='column_parameter_value'>{.ScreeningStrategySubWedge_numberOfImages}</td>
-                 <td style='padding:0 15px 0 15px;'>Total rotation</td> <td style='padding:0 15px 0 15px;' class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
+                 <td style='padding:0 15px 0 15px;'>Osc. range</td> <td style='padding:0 15px 0 15px;' class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
          </tr>
          <tr>
                  <td style='padding:0 15px 0 15px;'>Exp. Time</td> <td style='padding:0 15px 0 15px;' class='column_parameter_value'>{.ScreeningStrategySubWedge_exposureTime} s</td>

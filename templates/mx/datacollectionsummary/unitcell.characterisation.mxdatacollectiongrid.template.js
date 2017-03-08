@@ -1,4 +1,4 @@
-<table class='table-sm table-condensed table-striped align-middle-header align-middle-rows'>
+<table class='table-sm table table-striped align-middle-header align-middle-rows'>
     <thead>   
         <tr>
             <th style='padding:0 15px 0 15px;font-weight: normal;'>a</th>
