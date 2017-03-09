@@ -90,13 +90,17 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                     if (dataCollectionsWithResults && dataCollectionsWithResults.length > 0){
                         _this.panel.setLoading();
                         var onSuccess = function (sender,data) {
+                            _this.panel.setLoading(false);
                             if (data) {
                                 var parsedResults = [];
                                 for (var i = 0 ; i < data.length ; i++) {
                                     parsedResults.push(new AutoProcIntegrationGrid().parseData(data[i]))
                                 }
                                 var bestResults = _.filter(_.flatten(parsedResults),function(r) {return r.label == "BEST"});
-                                (new ResultsDownloader()).downloadResults(bestResults, "autoproc_best_results.zip",_this.panel);
+                                if (bestResults && bestResults.length > 0){
+                                    var url = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(_.map(bestResults,"v_datacollection_summary_phasing_autoProcProgramId").toString());
+                                    window.open(url,"_blank");
+                                }
                             }
                         }
 
