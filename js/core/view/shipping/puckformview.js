@@ -273,7 +273,7 @@ PuckFormView.prototype.save = function(returnToShipment) {
 
 	// Check if sample names have special characters
 	var hasSpecialCharacter = false;
-	var format = /[ ~`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+	var format = /[ ~`!@#$%^&*()+\=\[\]{};':"\\|,.<>\/?]/;
 	for (var i = 0 ; i < puck.sampleVOs.length ; i++) {
 		if(format.test(puck.sampleVOs[i].name)) {
 			hasSpecialCharacter = true
