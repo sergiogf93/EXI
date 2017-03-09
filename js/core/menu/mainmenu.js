@@ -200,6 +200,38 @@ MainMenu.prototype.getShipmentItem = function() {
 
 };
 
+MainMenu.prototype.getDataExplorerMenu = function() {
+	function onItemCheck(item, checked) {
+		if (item.text == "Calendar") {
+			location.hash = "/session/nav";
+		}
+		if (item.text == "Experiments") {
+			location.hash = "/experiment/nav";
+		}
+	}
+	var menu = Ext.create('Ext.menu.Menu', {
+		items : [ 
+			{
+				id : 'calendar_item',
+				text : 'Calendar',
+				icon : '../images/icon/sessions.png',
+				handler : onItemCheck
+			}
+		] ,
+		listeners : {
+            'beforeshow' : function(menu) {
+                if (EXI.proposalManager.getProposals().length == 0) {
+					Ext.getCmp('calendar_item').disable();
+				} else {
+					Ext.getCmp('calendar_item').enable();
+				}
+            }
+        }
+	});
+
+	return menu;
+};
+
 MainMenu.prototype.getHelpMenu = function() {
 	var _this = this;
 	function onItemCheck(item, checked) {
