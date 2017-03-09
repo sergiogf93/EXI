@@ -64,11 +64,19 @@
       <div class="col-xs-6 col-md-2">
          {#.onlineresults[0]}       
             {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
+         {:else}
+             {#.screeningresults[0]}
+             {>"sm.characterisation.result.mxdatacollectiongrid.template"  /}
+             {/.screeningresults[0]}
          {/.onlineresults[0]}                           
       </div>
       <div class="col-xs-12 col-md-2">
          {#.onlineresults[0]}       
          {>"unitcell.autoproc.mxdatacollectiongrid.template"  /}       
+         {:else}
+         {#.indexingresults[0]}
+         {>"unitcell.characterisation.mxdatacollectiongrid.template"  /}
+         {/.indexingresults[0]}
          {/.onlineresults[0]}                           
       </div>
       <div class="col-sm-2 col-md-1 " style='margin: 0 10px 10px 0;'>

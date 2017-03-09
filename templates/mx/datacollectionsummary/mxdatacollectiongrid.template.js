@@ -79,11 +79,11 @@
                                                         </tr>                                                               
                                                         <tr>
                                                              <td>Images</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_numberOfImages}</td>
-                                                            <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
+                                                            <td>Osc. range</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
                                                         </tr>  
                                                         <tr>
                                                              <td>Transmission</td> <td class='column_parameter_value'>{@decimal key="ScreeningStrategySubWedge_transmission" decimals=1 /} %</td>
-                                                             <td></td> <td class='column_parameter_value'></td>
+                                                             <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningOutput_totalRotationRange} &deg;</td>
                                                             
                                                         </tr>     
                                                         
