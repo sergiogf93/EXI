@@ -2,7 +2,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>!}
 <div class="container-fluid containerWithScroll" >
     <div class="row">
-        <div class="col-xs-12 col-md-2">        
+        <div class="col-xs-12 col-md-12">        
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
@@ -71,14 +71,17 @@
                           <span class="badge" style='background-color:#337ab7;'>{.hasAutoProcessing}</span></a>{/gt}</td>
                     <td>{@gt key=hasPhasing value=0}<div class='summary_datacollection_success'></div>{/gt}</td>
                     <td>
-                        {#.onlineresults[0]} 
-                            {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
-                            <br/>
+                        {#.onlineresults[0]}
+                            <div>
+                                {>"sm.completeness.autoproc.mxdatacollectiongrid.template"  /}
+                            </div>
                         {/.onlineresults[0]}
-                        <a class="btn btn-xs">
-                            <span id="{.dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
-                        </a>
-                        <span id="comments_{.dataCollectionId}">{.comments}</span>
+                        <div class="wordwrap">
+                            <a class="btn btn-xs">
+                                <span id="{.dataCollectionId}-edit-comments" class="glyphicon glyphicon-edit dataCollection-edit"></span>
+                            </a>
+                            <span id="comments_{.dataCollectionId}">{.comments}</span>
+                        </div>
                     </td>
                 </tr>
                     

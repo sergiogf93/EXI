@@ -45,7 +45,10 @@
     "three": "*",
     "notifyjs": "*",
     "bootstrap-multiselect": "^0.9.13",
-    "eonasdan-bootstrap-datetimepicker": "^4.17.45"
+    "eonasdan-bootstrap-datetimepicker": "^4.17.45",
+    "jszip-utils": "0.0.2",
+    "jszip": "Stuk/jszip#^3.1.3",
+    "file-saver": "^1.3.3"
   },
   "devDependencies": {
     "uglymol": "^0.1.0"

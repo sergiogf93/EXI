@@ -246,7 +246,6 @@ ContainerSpreadSheet.prototype.getHeader = function() {
     return header;
 };
 
-
 /**
 * Returns a puck object with the corresponding samples from the grid
 *
@@ -318,7 +317,6 @@ ContainerSpreadSheet.prototype.getPuck = function() {
 ContainerSpreadSheet.prototype.setRenderCrystalFormColumn = function(bool) {
 	this.renderCrystalFormColumn = bool;
 };
-
 /**
 * Returns an object containing the crystal information given the value at the crystal form column
 *
@@ -354,13 +352,22 @@ ContainerSpreadSheet.prototype.parseCrystalFormColumn = function (dataAtCrystalF
 			var splitted = dataAtCrystalFormColumn.split("-");
 			parsed.spaceGroup = splitted[0].trim();
 			if (splitted.length > 1){
-				var cells = (splitted[1] + "-" + splitted[2]).trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
-				parsed.cellA = (cells.split("-")[0].split(",")[0] == "null")? null : cells.split("-")[0].split(",")[0];
-				parsed.cellB = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[1];
-				parsed.cellC = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[2];
-				parsed.cellAlpha = (cells.split("-")[1].split(",")[0] == "null")? null : cells.split("-")[1].split(",")[0];
-				parsed.cellBeta = (cells.split("-")[1].split(",")[1] == "null")? null : cells.split("-")[1].split(",")[1];
-				parsed.cellGamma = (cells.split("-")[1].split(",")[2] == "null")? null : cells.split("-")[1].split(",")[2];
+				if (splitted[1].trim() == "undefined") {
+					parsed.cellA = undefined;
+					parsed.cellB = undefined;
+					parsed.cellC = undefined;
+					parsed.cellAlpha = undefined;
+					parsed.cellBeta = undefined;
+					parsed.cellGamma = undefined;
+				} else {
+					var cells = (splitted[1] + "-" + splitted[2]).trim().replace(/[{()}]/g, '').replace(/\s+/g,"");;
+					parsed.cellA = (cells.split("-")[0].split(",")[0] == "null")? null : cells.split("-")[0].split(",")[0];
+					parsed.cellB = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[1];
+					parsed.cellC = (cells.split("-")[0].split(",")[1] == "null")? null : cells.split("-")[0].split(",")[2];
+					parsed.cellAlpha = (cells.split("-")[1].split(",")[0] == "null")? null : cells.split("-")[1].split(",")[0];
+					parsed.cellBeta = (cells.split("-")[1].split(",")[1] == "null")? null : cells.split("-")[1].split(",")[1];
+					parsed.cellGamma = (cells.split("-")[1].split(",")[2] == "null")? null : cells.split("-")[1].split(",")[2];
+				}
 			} else {
 				parsed.cellA = 0;
 				parsed.cellB = 0;

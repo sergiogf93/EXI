@@ -23,8 +23,6 @@ XfeController.prototype.init = function() {
 	var _this = this;
 	var listView;	
 
-	
-
 	Path.map("#/mx/xfe/:xfeFluorescenceSpectrumId/main").to(function() {
 		var mainView = new XfeViewerMainView();
 		EXI.addMainPanel(mainView);

@@ -63,10 +63,9 @@ MxDataCollectionController.prototype.init = function() {
 	
     
     	Path.map("#/mx/datacollection/datacollectionid/:datacollectionid/main").to(function() {
-            //1507842
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
-        EXI.hideNavigationPanel();
+        	EXI.hideNavigationPanel();
 		EXI.setLoadingMainPanel(true);
 		var onSuccess = function(sender, data){
 		    mainView.loadCollections(data);
