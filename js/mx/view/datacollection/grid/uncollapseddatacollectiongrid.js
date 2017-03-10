@@ -108,7 +108,6 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
 */
 UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = function(target, dataCollectionId) {
     var onSuccess = function(sender, data){    
-          
         /** Parsing data */
         var html = "";     
         dust.render("collapsed.autoprocintegrationgrid.template",  new AutoProcIntegrationGrid().parseData(data[0]), function(err, out) {

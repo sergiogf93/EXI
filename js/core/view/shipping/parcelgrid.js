@@ -43,20 +43,6 @@ function ParcelGrid(args) {
 	this.onRemove = new Event(this);
 }
 
-ParcelGrid.prototype._getTopButtons = function() {
-	var _this = this;
-	var actions = [];
-	return (Ext.create('Ext.Action', {
-		id : this.id + "-add-button",
-		icon : '../images/icon/add.png',
-		text : 'Add',
-		disabled : true,
-		handler : function(widget, event) {
-			_this.edit();
-		}
-	}));
-};
-
 ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCollection) {
 	var _this = this;
 	this.shipment = shipment;
