@@ -24,7 +24,6 @@ CommentEditForm.prototype.show = function(){
 
     $("body").append(html);
     $("#" + this.id + "-save").unbind('click').click(function(sender){
-        debugger
         _this.save();
     });
     $("#" + this.id + "-modal").on('hidden.bs.modal', function(){
@@ -49,7 +48,9 @@ CommentEditForm.prototype.save = function(){
     }
     if (this.mode == "DATACOLLECTIONGROUP"){
         EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollectionGroup.saveComments(this.targetId,comment);
-    } else {
+    } else if (this.mode == "DATACOLLECTION") {
         EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.saveComments(this.targetId,comment);
+    } else if (this.mode == "SESSION") {
+        $.notify("Not implemented yet");
     }
 }

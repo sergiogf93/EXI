@@ -68,9 +68,19 @@ function SessionGrid(args) {
 
 
 SessionGrid.prototype.load = function(sessions) {    
+    var _this = this;
     /** Filtering session by the beamlines of the configuration file */    
     this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
 	this.store.loadData(this.sessions, false);
+    // Attach listener to edit the session comments
+    var attachListeners = function(grid) {
+        $("span.session-comment-edit").click(function(sender){
+            var sessionId = sender.target.id.split("-")[0];
+            _this.editComments(sessionId);
+        });
+    };
+    
+    var timer = setTimeout(attachListeners, 500, _this);
 };
 
 SessionGrid.prototype.filterByBeamline = function(beamlines) {
@@ -302,13 +312,10 @@ SessionGrid.prototype.getPanel = function() {
                 hidden              : false,
                 flex                : 2,
                 renderer            : function(grid, a, record){    
-                                        if (record.data.comments){                
-                                            return "<div style='width:50px; wordWrap: break-word;'>" + record.data.comments + "</div>";
+                                        if (record.data.comments){
+                                            return '<div style="width:50px; wordWrap: break-word;"><a class="btn btn-xs"><span id="' + record.data.sessionId + '-edit-comments" class="glyphicon glyphicon-edit session-comment-edit"></span></a><span id="comments_' + record.data.sessionId + '"> ' + record.data.comments + '</span></div>';
                                         }
                 }
-                
-
-
 		    },
            ], 
       	   viewConfig : {
@@ -332,14 +339,25 @@ SessionGrid.prototype.getPanel = function() {
 					_this.onSelected.notify({
                        proposalCode   : record.data.Proposal_proposalCode,
                        proposalNumber : record.data.Proposal_ProposalNumber
-                        
                     });
 				}			
 			}				
-	});	
+	});
+
 	return this.panel;
 };
 
-
-
-
+/**
+* Opens a modal to edit a comment
+* @method editComments
+* @param Integer id The id
+*/
+SessionGrid.prototype.editComments = function (id) {
+    var comment = $("#comments_" + id).html().trim();
+    var commentEditForm = new CommentEditForm({mode : "SESSION"});
+    commentEditForm.onSave.attach(function(sender,comment) {
+        $("#comments_" + id).html(comment);
+    });
+    commentEditForm.load(id,comment);
+    commentEditForm.show();
+};
