@@ -21,9 +21,9 @@
                <li><a data-toggle="tab" href="#sa_{.DataCollection_dataCollectionId}">Sample</a></li>
                {!<li><a data-toggle="tab" href="#df_{.DataCollection_dataCollectionId}">Diffraction Plan</a></li>!}
                {@gt key=resultsCount   value="0"}
-                    <li><a data-toggle="tab" href="#re_{.DataCollection_dataCollectionId}">Results  <span class="badge" style='background-color:#337ab7;'>{.resultsCount}</span></a></li>
+                    <li><a data-toggle="tab" href="#re_{.DataCollection_dataCollectionId}">Last Collect Results  <span class="badge" style='background-color:#337ab7;'>{.resultsCount}</span></a></li>
                 {:else}
-                     <li class="disabled"><a data-toggle="tab"> Results</a></li>
+                     <li class="disabled"><a data-toggle="tab"> Last Collect Results</a></li>
                {/gt}
                {@gt key=workflows.length   value="0"}
                     <li><a data-toggle="tab" href="#wf_{.DataCollection_dataCollectionId}">Workflow  <span class="badge" style='background-color:#337ab7;'>{.workflows.length}</span></a></li>

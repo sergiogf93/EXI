@@ -9,7 +9,7 @@
     </tr>
     <tr>
         <td>Synchrotron Current</td>
-        <td  class='column_parameter_value'>{.synchrotronCurrent}</td>
+        <td  class='column_parameter_value'>{@decimal key="synchrotronCurrent" decimals=1 /} mA</td>
     </tr>   
     <tr>
         <td>Undulator types</td>
