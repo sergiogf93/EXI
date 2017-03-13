@@ -7,7 +7,7 @@
                         <table border="0" width="100%">
                             <tr>
                                 <td>
-                                    Data Collections for Proposal: {proposal.code}{proposal.number} on Beamline: {session.beamLineName}  ---  Session start date: {@formatDate date=session.BLSession_startDate format="DD-MM-YYYY" /}
+                                    Data Collections for Proposal: {proposal.Proposal_proposalCode}{proposal.Proposal_proposalNumber} on Beamline: {session.beamLineName}  ---  Session start date: {@formatDate date=session.BLSession_startDate format="DD-MM-YYYY" /}
                                 </td>
                             </tr>
                         </table>

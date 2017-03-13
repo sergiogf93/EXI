@@ -66,7 +66,7 @@ ReportsForm.prototype.load = function (sessionId, proposal,dataCollectionGroup,e
 
 ReportsForm.prototype.generateGeneralReport = function () {
     var html = this.getHTMLHeader();
-
+    debugger
     dust.render("general.report.doc.template", {proposal : this.proposal, session : this.session, datacollections : this.dataCollectionGroup, energyScans : this.energyScans, xfeScans : this.xfeScans}, function(err,out){
         html += out;
     });
