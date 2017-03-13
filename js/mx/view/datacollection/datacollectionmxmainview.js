@@ -129,7 +129,7 @@ DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
         }
         Ext.getCmp(this.id + "_dataCollectionTab").setTitle(data.length + " Data Collections");
 	    if (data){            
-            this.genericDataCollectionPanel.load(data.reverse());
+            this.genericDataCollectionPanel.load(data);
         }
         return;	
     }
