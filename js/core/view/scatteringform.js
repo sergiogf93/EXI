@@ -57,7 +57,6 @@ ScatteringForm.prototype.load = function(data) {
     });
 
 	$('#' + this.id).hide().html(html).fadeIn('fast');
-	this.panel.doLayout();
 
 	$('#' + this.id + '-datepicker').datetimepicker({
 		defaultDate : new Date(),

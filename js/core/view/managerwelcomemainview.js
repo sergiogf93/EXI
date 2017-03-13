@@ -57,6 +57,7 @@ ManagerWelcomeMainView.prototype.activeProposal = function(proposal) {
 
 
 ManagerWelcomeMainView.prototype.getContainer = function() {
+    var _this = this;
 	this.container = Ext.create('Ext.panel.Panel', {
 		autoScroll : true,
         margin : 20,
@@ -66,6 +67,18 @@ ManagerWelcomeMainView.prototype.getContainer = function() {
                 this.sessionGrid.getPanel()
         ]
 	});
+
+    this.container.on("boxready",function(){
+        $("#datepicker").daterangepicker({
+            singleDatePicker: true,
+            showDropdowns: true
+        }, 
+        function(start, end, label) {
+            var years = moment().diff(start, 'years');
+            alert("You are " + years + " years old.");
+        });
+    });
+
 	return this.container;
 };
 
@@ -190,10 +203,16 @@ ManagerWelcomeMainView.prototype.getToolbar = function() {
         width   : 500,
         cls 	: 'exi-top-bar',
         items: [
+            // {
+            //    text: 'Choose a Date',
+            //    icon : '../images/icon/sessions.png',
+            //    menu: dateMenu 
+            // },
             {
-               text: 'Choose a Date',
-               icon : '../images/icon/sessions.png',
-               menu: dateMenu 
+                xtype: 'button',
+                icon : '../images/icon/sessions.png',
+                text: 'Choose a period of time',
+                id : 'datepicker'
             },
             {
                 xtype    : 'textfield',
