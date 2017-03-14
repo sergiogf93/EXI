@@ -57,8 +57,9 @@ DewarListSelectorGrid.prototype.load = function(dewars){
         }
     });
         
-    this.panel.setTitle(data.length + " shipments candidates for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);
+    this.panel.setTitle(data.length + " shipments candidates for " + EXI.proposalManager.getProposals()[0].code + EXI.proposalManager.getProposals()[0].number);    
     this.store.loadData(data);
+
 };
 
 /**
@@ -94,14 +95,14 @@ DewarListSelectorGrid.prototype.getSelectedData = function() {
 DewarListSelectorGrid.prototype.getStore = function(){
     this.store = Ext.create('Ext.data.Store', {
         fields:['beamlineLocation', 'storageLocation','containerStatus','containerType','sessionStartDate','creationDate','beamLineOperator','shippingStatus','shippingName', 'barCode', 'beamlineName', 'dewarCode', 'dewarStatus', 'sampleChangerLocation', 'sampleCount', 'sessionStartDate', 'type'],
-        sortInfo: { field: "creationDate", direction: "DESC" },
+        sortInfo: { field: "sessionStartDate", direction: "DESC" },
         sorters:
                 {
-                    field: 'creationDate',
+                    field: 'sessionStartDate',
                     direction: 'ASC',
                     sorterFn: function(o1, o2) {
-                        var d1 = new Date(o1.data.creationDate)
-                        var d2 = new Date(o2.data.creationDate)
+                        var d1 = new Date(o1.data.sessionStartDate)
+                        var d2 = new Date(o2.data.sessionStartDate)
                         if (d1 === d2) {
                             return 0;
                         } else {
@@ -145,18 +146,18 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 {
                     text    : 'Shipment',
                     columns : [
-                         {id : 'shippingName', text: 'Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',  dataIndex: 'shippingName', flex : 1 },
-                         { text: 'Status',  dataIndex: 'shippingStatus', flex : 1,
+                         { text: 'Name',  dataIndex: 'shippingName', flex : 3 },
+                         { text: 'Status',  dataIndex: 'shippingStatus', flex: 1,
                         renderer : function(grid, a, record){
                                       return record.data.shippingStatus.toUpperCase()
                                  
                                 
                             } 
                          },
-                         { text: 'Created on',  dataIndex: 'creationDate',   hidden : false, flex : 1,
+                         { text: 'Created on',  dataIndex: 'creationDate', flex: 1,   hidden : true,
                             renderer : function(grid, a, record){
                                 if (record.data.creationDate){
-                                    return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD/MM/YYYY");
+                                    return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("YYYY/MM/DD");
                                 }     
                                 
                             } 
@@ -164,23 +165,23 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     ]                                         
                 },
                 {
-                    text    : 'Experiment', 
+                    text    : 'Experiment',
                     columns : [
-                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex : 1,
+                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex: 2,
                             renderer : function(grid, a, record){
                                 if (record.data.sessionStartDate){
-                                    return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD/MM/YYYY");
+                                    return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("YYYY/MM/DD");
                                 }     
                                 
                             } 
                         },
-                            { text: 'beamline', dataIndex: 'beamlineName', flex : 1, },     
-                            { text: 'Local contact',  dataIndex: 'beamLineOperator', hidden : true  }                 
+                            { text: 'beamline', dataIndex: 'beamlineName', flex: 1 },     
+                            { text: 'Local contact',  dataIndex: 'beamLineOperator', flex: 2, hidden : true  }                 
                     ]                                         
                 },              
                  {      
-                        text: '#',
-                        flex : 1,
+                        text: '#',     
+                        flex: 1,
                         renderer : function(grid, e, record){
                             var stats =  _this.getStatsByShippingId(record.data.shippingId);
                             return stats.dewars + " parcels / " + stats.containers + " containers (" +  stats.samples + " samples)";
@@ -189,7 +190,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 },
                 {
                     xtype: 'actioncolumn',
-                    flex : 1,
+                    flex : 0.3,
                     items: [                               
                                  {
                                     icon: '../images/icon/add.png',
@@ -205,7 +206,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 },
                   {
                     xtype: 'actioncolumn',
-                    flex : 1,
+                     flex : 0.3,
                     items: [                              
                                  {
                                     icon: '../images/icon/ic_highlight_remove_black_48dp.png',
@@ -220,9 +221,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     ]
                 }
             ],
-            autoExpandColumn: 'shippingName',
              viewConfig : {
-                autoFill: true,
                 stripeRows : true,
                 getRowClass : function(record, rowIndex, rowParams, store){
 
