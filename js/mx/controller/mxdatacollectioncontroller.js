@@ -81,4 +81,11 @@ MxDataCollectionController.prototype.init = function() {
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['imageId'], this.params['dataCollectionId']);
 	}).enter(this.setPageBackground);
+
+	Path.map("#/mx/datacollectiongroup/:dataCollectionGroupId/step/:step/main").to(function() {
+		var mainView = new PhasingGridMainView();
+        EXI.hideNavigationPanel();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['dataCollectionGroupId'], this.params['step']);
+	}).enter(this.setPageBackground);
 };
