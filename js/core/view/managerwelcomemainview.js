@@ -85,7 +85,7 @@ ManagerWelcomeMainView.prototype.displayProposals = function(proposals) {
             _this.panel.setLoading(true);
             var proposalCode = proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber;
             function onSuccess(sender, sessions){
-                _this.displaySessions(sessions, sessions.length + " sessions for proposal " + proposalCode);
+                _this.displaySessions(sessions," sessions for proposal " + proposalCode);
                 _this.panel.setLoading(false);
             }
             EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(proposalCode);
@@ -110,7 +110,7 @@ ManagerWelcomeMainView.prototype.displaySessionsByBeamlineOperator = function(be
     var _this = this;
     _this.panel.setLoading(true);
     var onSuccess = function(sender, sessions){
-       _this.displaySessions(sessions,sessions.length + " sessions are scheduled for local contact: " + beamlineOperator);
+       _this.displaySessions(sessions," sessions are scheduled for local contact: " + beamlineOperator);
        _this.panel.setLoading(false);
     }
     
@@ -130,9 +130,13 @@ ManagerWelcomeMainView.prototype.displaySessionsByBeamlineOperator = function(be
 */
 ManagerWelcomeMainView.prototype.loadByDate = function(username, start, end) {
           var _this = this;
+          var title = " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY');
+          if (start != end) {
+              title = " sessions scheduled from " + moment(start, 'YYYYMMDD').format('DD-MM-YYYY') + " to " + moment(end, 'YYYYMMDD').format('DD-MM-YYYY');
+          }
           this.panel.setLoading(true);
           function onSuccess(sender, data){              
-        	  _this.displaySessions(data, data.length + " sessions scheduled on " + moment(start, 'YYYYMMDD').format('MMMM Do YYYY'));
+        	  _this.displaySessions(data, title);
         	  _this.panel.setLoading(false);
           }
           /** Increasing one day */
@@ -176,8 +180,7 @@ ManagerWelcomeMainView.prototype.displaySessions = function(sessions, title) {
         _this.activeProposal(args.proposalCode + args.proposalNumber);
     });
     
-    this.sessionGrid.load(this.filterSessions(sessions));
-    this.sessionGrid.panel.setTitle(title);
+    this.sessionGrid.load(this.filterSessions(sessions),title);
 };
 
 ManagerWelcomeMainView.prototype.getToolbar = function() {
@@ -308,7 +311,7 @@ ManagerWelcomeMainView.prototype.loadSessionsByProposal = function(username) {
     var _this = this;
     this.panel.setLoading(true);
     function onSuccess(sender, data){
-       _this.displaySessions(data, "Sessions for proposal " + username);
+       _this.displaySessions(data, " sessions for proposal " + username);
        _this.panel.setLoading(false);
     }
     EXI.getDataAdapter({onSuccess:onSuccess}).proposal.session.getSessionsByProposal(username);

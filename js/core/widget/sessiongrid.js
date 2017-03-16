@@ -19,6 +19,8 @@ function SessionGrid(args) {
     
     /** Array with the beamline selected to make the filter */
     this.beamlineFilter = [];
+    // Term filter value
+    this.termFilter = "";
     
 	if (args != null) {
          if (args.isHiddenLocalContact != null) {
@@ -63,28 +65,27 @@ function SessionGrid(args) {
 		}
 	}
 	this.onSelected = new Event(this);
-}
+};
 
-
-
-SessionGrid.prototype.load = function(sessions) {    
+SessionGrid.prototype.load = function(sessions, title) {    
     /** Filtering session by the beamlines of the configuration file */    
     this.sessions = _.filter(sessions, function(o){ return _.includes(EXI.credentialManager.getBeamlineNames(), o.beamLineName); });
 	this.store.loadData(this.sessions, false);
+    this.panel.setTitle(this.sessions.length + title);
 };
 
-SessionGrid.prototype.filterByBeamline = function(beamlines) {
+SessionGrid.prototype.filterByBeamline = function(sessions, beamlines) {
     console.log(beamlines);
     if (beamlines){
         if (beamlines.length > 0){
             var filtered = [];
             for(var i = 0; i < beamlines.length; i++){
-                filtered = _.concat(filtered, (_.filter(this.sessions, {'beamLineName': beamlines[i]})));
+                filtered = _.concat(filtered, (_.filter(sessions, {'beamLineName': beamlines[i]})));
             }
-            this.store.loadData(filtered, false);
+            return filtered;
         }
         else{
-            this.store.loadData(this.sessions, false);
+            return sessions;
         }
     }
 };
@@ -97,17 +98,20 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     if (selected){
                         _this.beamlineFilter.push(a.boxLabel);
                     }
-                    else{          
-                                      
+                    else{               
                         _this.beamlineFilter =_.remove(_this.beamlineFilter, function(n) {                            
                                 return n  != a.boxLabel;
                         });
                     }
-                     
-                    _this.filterByBeamline(_this.beamlineFilter);
+
+                    var filtered = _this.filterByBeamline(_this.sessions,_this.beamlineFilter);
+                    if (_this.termFilter != ""){
+                        filtered = _this.filterByTerm(filtered,_this.termFilter);
+                    }
+                    _this.store.loadData(filtered,false);
+                    _this.panel.setTitle(filtered.length + " sessions");
     };
 
-        
     for (var i =0; i<EXI.credentialManager.getBeamlines().length; i++){
         items.push({           
                 xtype: 'checkbox',
@@ -117,18 +121,59 @@ SessionGrid.prototype.getToolbar = function(sessions) {
             
         });
     }
-	 return Ext.create('Ext.toolbar.Toolbar', {  
+
+    items.push("->",
+                {
+                    xtype    : 'textfield',
+                    name     : 'proposalFilter',
+                    width    : 300,
+                    emptyText: 'Filter by term (proposal or title)',
+                    listeners : {
+                        specialkey : function(field, e) {
+                            if (e.getKey() == e.ENTER) {
+                                _this.termFilter = field.getValue();
+                                var filtered = _this.filterByTerm(_this.sessions, _this.termFilter);
+                                if (_this.beamlineFilter.length > 0) {
+                                    filtered = _this.filterByBeamline(filtered,_this.beamlineFilter);
+                                }
+                                _this.store.loadData(filtered,false);
+                                _this.panel.setTitle(filtered.length + " sessions");
+                            }
+                        } 
+                    } 
+                }
+    );
+
+    return Ext.create('Ext.toolbar.Toolbar', {  
         items: items
     });
 };
 
+SessionGrid.prototype.filterByTerm = function (sessions,term) {
+    if (term == ""){
+        return sessions;
+    } else {
+        var result = [];
+        for (var i = 0 ; i < sessions.length ; i++){
+            var proposalId = sessions[i]["Proposal_proposalCode"] +  sessions[i]["Proposal_ProposalNumber"];
+            var title = sessions[i]["Proposal_title"];
+            if (title == null){
+                title = "";
+            }
+            if ((proposalId.toUpperCase().match(term.toUpperCase())) ||(title.toUpperCase().match(term.toUpperCase()))){
+                result.push(sessions[i]);
+            }
+        }
+        return result;
+    }
+}
 
 SessionGrid.prototype.getPanel = function() {
 	var _this = this;
 
     var labContacts = EXI.proposalManager.getLabcontacts();
     
-    var dataCollectionHeader = "Data Collections";
+    var dataCollectionHeader = "Session synopsis";
     var technique = null;
     var beamlines = EXI.credentialManager.getBeamlineNames();
     if (beamlines.length > 0) {
