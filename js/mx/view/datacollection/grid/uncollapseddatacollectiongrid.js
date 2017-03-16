@@ -66,6 +66,9 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
             value.urlImageQualityIndicators = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(value.dataCollectionId);
             // Result from auto-processing>                     
             value.onlineresults = UncollapsedDataCollectionGrid.prototype._getAutoprocessingStatistics(value);
+            if (value.onlineresults && value.onlineresults.length > 0){
+                value.bestAutoprocIntegrationId = value.onlineresults[0].autoProcIntegrationId;
+            }
             // Re-formatted template
             if (value.fileTemplate.endsWith(".h5")) {
                 // Check if characterisation
@@ -107,6 +110,7 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
 * @method displayDataCollectionTab
 */
 UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = function(target, dataCollectionId) {
+    var _this = this;
     var onSuccess = function(sender, data){    
         /** Parsing data */
         var html = "";     
@@ -114,7 +118,16 @@ UncollapsedDataCollectionGrid.prototype.displayResultAutoprocessingTab = functio
                     html = html + out;
         });
         $(target).html(html);
-        _this.panel.doLayout();       
+        _this.panel.doLayout();
+        $(".autoprocintegrationrow").addClass("clickable-row");
+        $(".autoprocintegrationrow").click(function(sender) {
+            // Check if the click is not on the download button
+            if (_.indexOf(sender.target.classList,"glyphicon-download") < 0) {
+                var dataCollectionId = sender.currentTarget.id.split("-")[0];
+                var autoProcIntegrationId = sender.currentTarget.id.split("-")[1];
+                window.open('#/autoprocintegration/datacollection/' + dataCollectionId + '/autoprocIntegration/' + autoProcIntegrationId + '/main',"_blank");
+            }
+        });
     };
     var onError = function(sender, msg){
         $(target).html("Error retrieving data " + msg);        
@@ -511,11 +524,7 @@ UncollapsedDataCollectionGrid.prototype.attachCallBackAfterRender = function() {
         });
     };
     
-   
     var timer4 = setTimeout(movieEvents, 500, _this);
-
-    
-
 };
 
 /**
