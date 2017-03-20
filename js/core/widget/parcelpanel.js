@@ -33,7 +33,7 @@ function ParcelPanel(args) {
 		}
 		if (args.width != null) {
 			this.width = args.width;
-			this.containersPanelWidth = this.width*9/12 - 30;
+			this.containersPanelWidth = this.width*9/11 - 30;
 		}
 		if (args.index != null) {
 			this.index = args.index;
@@ -94,10 +94,10 @@ ParcelPanel.prototype.load = function(dewar, shipment, samples, withoutCollectio
 		location.href = url;
 		return;
 	});
-
+	
 	this.containersPanel = Ext.create('Ext.panel.Panel', {
 		id			: this.id + "-containers-panel",
-		// layout      : 'hbox',
+		// layout      : 'fit',
 		cls 		: "border-grid-light",
 		margin		: this.height*0.0 + ' 0 ' + this.height*0.05 + ' 0',
 		width       : this.containersPanelWidth,

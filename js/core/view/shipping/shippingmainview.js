@@ -50,7 +50,7 @@ ShippingMainView.prototype.getShipmentPanel = function() {
 	var _this = this;
 
 	return Ext.create("Ext.panel.Panel",{
-		cls : "border-grid",
+		// cls : "border-grid",
 		// title : 'Shipping Address Card',
 		// buttons : this.getToolBar(),
 		// icon : '../images/icon/ic_email_black_24dp.png',
