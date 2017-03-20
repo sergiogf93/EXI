@@ -27,31 +27,57 @@ function ShippingMainView() {
 	
 }
 
-ShippingMainView.prototype.getPanel = function() {
-	
-    this.panel =  Ext.create('Ext.panel.Panel', {
-        layout: {
-            type: 'vbox',
-            align: 'center'
-        },
-		autoScroll : true,
-        cls : 'border-grid',
-        items : [
-                    this.shipmentForm.getPanel(),
-                    this.parcelGrid.getPanel()
+ShippingMainView.prototype.getPanel = MainView.prototype.getPanel;
+
+ShippingMainView.prototype.getContainer = function() {
+	return Ext.create('Ext.container.Container', {
+	    layout: {
+	        type: 'fit'
+	    },
+	    margin : 15,
+	    border: 1,
+	    defaults: {
+	        labelWidth: 80,
+	        flex: 1,
+	    },
+	    items : [
+                    this.getShipmentPanel()
         ]
 	});
-
-    return this.panel;
-
-	// return Ext.create('Ext.panel.Panel', {   
-	// 				margin : 0,
-	// 				// minHeight : 900,
-	// 				layout : 'fit',
-	// 				minHeight : 600,
-	// 				items: [this.panel]
-	// 			});
 };
+
+ShippingMainView.prototype.getShipmentPanel = function() {
+	var _this = this;
+
+	return Ext.create("Ext.panel.Panel",{
+		cls : "border-grid",
+		// title : 'Shipping Address Card',
+		// buttons : this.getToolBar(),
+		// icon : '../images/icon/ic_email_black_24dp.png',
+		items :	[
+					this.shipmentForm.getPanel(),
+                    this.parcelGrid.getPanel()
+			]
+	});
+};
+
+// ShippingMainView.prototype.getPanel = function() {
+	
+//     this.panel =  Ext.create('Ext.panel.Panel', {
+//         layout: {
+//             type: 'vbox',
+//             align: 'center'
+//         },
+// 		autoScroll : true,
+//         cls : 'border-grid',
+//         items : [
+//                     this.shipmentForm.getPanel(),
+//                     this.parcelGrid.getPanel()
+//         ]
+// 	});
+
+//     return this.panel;
+// };
 
 
 ShippingMainView.prototype.load = function(shippingId) {

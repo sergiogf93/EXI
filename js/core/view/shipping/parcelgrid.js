@@ -61,7 +61,6 @@ ParcelGrid.prototype.load = function(shipment,hasExportedData,samples,withoutCol
 		return a.dewarId - b.dewarId;
 	});
 
-	
 	$("#" + this.id + "-label").html("Content (" + this.dewars.length + " Parcels - " + nSamples + " Samples - " + nMeasured + " Measured)");
 	$("#" + this.id + "-add-button").removeClass("disabled");
 	$("#" + this.id + "-add-button").unbind('click').click(function(sender){
@@ -164,7 +163,6 @@ ParcelGrid.prototype.edit = function(dewar) {
 		} ]
 	});
 	window.show();
-
 };
 
 ParcelGrid.prototype.getPanel = function() {
@@ -176,11 +174,12 @@ ParcelGrid.prototype.getPanel = function() {
 	})
 
 	this.panel =  Ext.create('Ext.panel.Panel', {
+		layout : 'fit',
 		// cls	: 'overflowed',
 		items : {
 					// cls	: 'border-grid',
 					html : '<div id="' + this.id + '">' + html + '</div>',
-					width : this.width,
+					// width : this.width,
 					autoScroll:false,
 					autoHeight :true,
 					// maxHeight: this.height,

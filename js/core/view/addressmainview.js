@@ -6,10 +6,9 @@ function AddressMainView() {
 
 	this.addressForm = new AddressForm({width : Ext.getBody().getWidth()*0.9});
 	
-	
 	this.onSelect = new Event(this);
 	this.onDeselect = new Event(this);
-}
+};
 
 AddressMainView.prototype.getPanel = MainView.prototype.getPanel;
 
@@ -38,6 +37,4 @@ AddressMainView.prototype.load = function(labContactId) {
 	};
 	
 	EXI.getDataAdapter({onSuccess : onSuccess}).proposal.labcontacts.getLabContactById(labContactId);
-	
-	
 };
