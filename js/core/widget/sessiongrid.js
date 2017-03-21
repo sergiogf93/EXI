@@ -127,7 +127,7 @@ SessionGrid.prototype.getToolbar = function(sessions) {
                     xtype    : 'textfield',
                     name     : 'proposalFilter',
                     width    : 300,
-                    emptyText: 'Filter by term (proposal or title)',
+                    emptyText: 'Filter by term (proposal or title) or comment',
                     listeners : {
                         specialkey : function(field, e) {
                             if (e.getKey() == e.ENTER) {
@@ -157,10 +157,14 @@ SessionGrid.prototype.filterByTerm = function (sessions,term) {
         for (var i = 0 ; i < sessions.length ; i++){
             var proposalId = sessions[i]["Proposal_proposalCode"] +  sessions[i]["Proposal_ProposalNumber"];
             var title = sessions[i]["Proposal_title"];
+            var comments = sessions[i].comments;
             if (title == null){
                 title = "";
             }
-            if ((proposalId.toUpperCase().match(term.toUpperCase())) ||(title.toUpperCase().match(term.toUpperCase()))){
+            if (comments == null){
+                comments = "";
+            }
+            if ((comments.toUpperCase().match(term.toUpperCase())) || (proposalId.toUpperCase().match(term.toUpperCase())) ||(title.toUpperCase().match(term.toUpperCase()))){
                 result.push(sessions[i]);
             }
         }
