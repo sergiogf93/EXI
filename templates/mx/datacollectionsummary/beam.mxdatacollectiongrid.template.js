@@ -13,7 +13,9 @@
     </tr>   
     <tr>
         <td>Beam size at Sample Hor (Vert)</td>
-        <td  class='column_parameter_value'></td>
+        <td  class='column_parameter_value'>
+                                            {?beamSizeAtSampleX}{beamSizeAtSampleX} ({beamSizeAtSampleY}) &mu;m{/beamSizeAtSampleX}
+        </td>
     </tr>
      <tr>
         <td>Beam divergence Hor (Vert)</td>
