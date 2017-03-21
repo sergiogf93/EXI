@@ -120,7 +120,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
         items: [
             {
                 xtype       : 'checkboxfield',
-                boxLabel    : 'Display only shipments scheduled for future sessions or in PROCESSING status',
+                boxLabel    : 'Display only shipments scheduled for future sessions or in processing status',
                 checked     : this.filterByDate,
                 listeners : {
                     change : function( cb, newValue, oldValue, eOpts ){
@@ -154,7 +154,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                                 
                             } 
                          },
-                         { text: 'Created on',  dataIndex: 'creationDate', flex: 1,   hidden : true,
+                         { text: 'Created on',  dataIndex: 'creationDate',   hidden : false, flex : 1, sortable: false,
                             renderer : function(grid, a, record){
                                 if (record.data.creationDate){
                                     return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("YYYY/MM/DD");
@@ -167,7 +167,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 {
                     text    : 'Experiment',
                     columns : [
-                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex: 2,
+                            { text: 'Start on',  dataIndex: 'sessionStartDate', flex : 1, sortable: false,
                             renderer : function(grid, a, record){
                                 if (record.data.sessionStartDate){
                                     return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("YYYY/MM/DD");
@@ -180,8 +180,8 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                     ]                                         
                 },              
                  {      
-                        text: '#',     
-                        flex: 1,
+                        text: '',
+                        flex : 1,
                         renderer : function(grid, e, record){
                             var stats =  _this.getStatsByShippingId(record.data.shippingId);
                             return stats.dewars + " parcels / " + stats.containers + " containers (" +  stats.samples + " samples)";
