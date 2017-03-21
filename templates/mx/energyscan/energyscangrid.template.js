@@ -42,11 +42,11 @@
                                 </tr>
                                 <tr>
                                     <td style='width:150px;'>Energy Scan Range</td>
-                                    <td class='column_parameter_value'>{.startEnergy} kev - {.endEnergy} kev</td>
+                                    <td class='column_parameter_value'>{.startEnergy} keV - {.endEnergy} keV</td>
                                 </tr>
                                 <tr>
                                     <td>Edge Energy (theoretical)</td>
-                                    <td class='column_parameter_value'>{.edgeEnergy} kev</td>
+                                    <td class='column_parameter_value'>{.edgeEnergy} keV</td>
                                 </tr>
                                 <tr>
                                     <td>Flux @100%</td>
@@ -54,20 +54,20 @@
                                 </tr>
                                 <tr>
                                     <td>Transmission</td>
-                                    <td class='column_parameter_value'>{.transmissionFactor} %</td>
+                                    <td class='column_parameter_value'>{@decimal key="transmissionFactor" decimals=1 /} %</td>
                                 </tr>
 
                                 <tr>
                                     <td style='width:150px;'>Beam Size Hor</td>
-                                    <td class='column_parameter_value'>{.beamSizeHorizontal} micrometer</td>
+                                    <td class='column_parameter_value'>{.beamSizeHorizontal} &#956;m</td>
                                 </tr>
                                 <tr>
                                     <td>Beam Size Vert</td>
-                                    <td class='column_parameter_value'>{.beamSizeVertical} micrometer</td>
+                                    <td class='column_parameter_value'>{.beamSizeVertical} &#956;m</td>
                                 </tr>
                                 <tr>
                                     <td>Exposure Time</td>
-                                    <td class='column_parameter_value'>{@decimal key="exposureTime" decimals=3 /} sec</td>
+                                    <td class='column_parameter_value'>{@decimal key="exposureTime" decimals=3 /} s</td>
                                 </tr>
                                 <tr>
                                     <td>Filename</td>
@@ -95,17 +95,12 @@
 
                                 <tr>
                                     <td >Inflection Energy</td>
-                                    <td class='column_parameter_value'>{@decimal key="inflectionEnergy" decimals=2 /} kev</td>
+                                    <td class='column_parameter_value'>{@decimal key="inflectionEnergy" decimals=2 /} keV</td>
                                 </tr>
                                 <tr>
                                     <td >Ip f'</td>
                                     <td class='column_parameter_value'>{@decimal key="inflectionFPrime" decimals=2 /} &#275; </td>
-
-
                                 </tr>
-
-
-
                                 <tr>
                                     <td >Ip f''</td>
                                     <td class='column_parameter_value'>{@decimal key="inflectionFDoublePrime" decimals=2 /} &#275; </td>
