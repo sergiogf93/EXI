@@ -18,17 +18,9 @@ ReportsForm.prototype.show = function(){
         var fileName = _this.proposal.Proposal_proposalCode + _this.proposal.Proposal_proposalNumber + "_Session_" + _this.session.beamLineName + "_" + moment(new Date(_this.session.BLSession_startDate)).format("YYYYMMDD") + ".doc";
         _this.downloadHTML(html, fileName);
     });
-    $("#" + this.id + "-general-report-pdf").unbind('click').click(function(sender){
-        var html = _this.generateGeneralReport();
-    });
 
     $("#" + this.id + "-screening-report-doc").unbind('click').click(function(sender){
         var url = EXI.getDataAdapter().proposal.session.downloadDOCReport(_this.proposal.Proposal_proposalCode + _this.proposal.Proposal_proposalNumber,_this.session.sessionId,10);
-        window.open(url,"_blank");
-    });
-
-    $("#" + this.id + "-screening-report-pdf").unbind('click').click(function(sender){
-        var url = EXI.getDataAdapter().proposal.session.downloadPDFReport(_this.proposal.Proposal_proposalCode + _this.proposal.Proposal_proposalNumber,_this.session.sessionId,10);
         window.open(url,"_blank");
     });
 
@@ -38,7 +30,6 @@ ReportsForm.prototype.show = function(){
     
     $("#" + this.id + "-modal").modal();
 };
-
 
 ReportsForm.prototype.load = function (sessionId, proposal,dataCollectionGroup,energyScans,xfeScans) {
     var _this = this;
@@ -66,8 +57,18 @@ ReportsForm.prototype.load = function (sessionId, proposal,dataCollectionGroup,e
 
 ReportsForm.prototype.generateGeneralReport = function () {
     var html = this.getHTMLHeader();
-    debugger
-    dust.render("general.report.doc.template", {proposal : this.proposal, session : this.session, datacollections : this.dataCollectionGroup, energyScans : this.energyScans, xfeScans : this.xfeScans}, function(err,out){
+    // var dataCollections = this.dataCollectionGroup;
+    var reportData = {
+                        proposal : this.proposal, 
+                        session : this.session, 
+                        datacollections : JSON.parse(JSON.stringify(this.dataCollectionGroup)), 
+                        energyScans : this.energyScans, 
+                        xfeScans : this.xfeScans
+    };
+    if ($("#" + this.id + "-include-failed").is(':checked')){
+        _.remove(reportData.datacollections, function (d) {return d.DataCollection_runStatus.toUpperCase().match("FAILED")});
+    }
+    dust.render("general.report.doc.template", reportData, function(err,out){
         html += out;
     });
 

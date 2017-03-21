@@ -12,13 +12,11 @@
         <div class="form-group row">
             <div class="col-sm-2">
                 <button id="{id}-general-report-doc" class="btn btn-default report-btn" disabled>
-                    <img src="../images/Word.png" width="32px" />
+                    <img src="../images/Word.png" width="32px"/>
                 </button>
             </div>
-            <div class="col-sm-2">
-                <button id="{id}-general-report-pdf" class="btn btn-default report-btn" disabled>
-                    <img src="../images/pdf.png" width="32px" />
-                </button>
+            <div class="checkbox col-sm-10">
+                <label><input id="{id}-include-failed" type="checkbox" value="" checked>Include failed</label>
             </div>
         </div>
         <div class="form-group row">
@@ -28,21 +26,6 @@
             <div class="col-sm-2">
                 <button id="{id}-screening-report-doc" class="btn btn-default report-btn" disabled>
                     <img src="../images/Word.png" width="32px" />
-                </button>
-            </div>
-            <div class="col-sm-2">
-                <button id="{id}-screening-report-pdf" class="btn btn-default report-btn" disabled>
-                    <img src="../images/pdf.png" width="32px" />
-                </button>
-            </div>
-        </div>
-        <div class="form-group row">
-            <label class="col-sm-12 col-form-label">MXPressO-MXPressE report:</label>
-        </div>
-        <div class="form-group row">
-            <div class="col-sm-2">
-                <button id="{id}-MXPressO-MXPressE-report-pdf" class="btn btn-default report-btn" disabled>
-                    <img src="../images/pdf.png" width="32px" />
                 </button>
             </div>
         </div>
