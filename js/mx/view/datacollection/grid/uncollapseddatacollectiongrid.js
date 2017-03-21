@@ -143,7 +143,6 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
     }   
 };
 
-
 /**
 * Displays the data worflows tab
 *
