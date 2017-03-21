@@ -1,4 +1,4 @@
-<div class="container-fluid containerWithScroll">       
+<div class="container-fluid {?hasScroll}containerWithScroll{/hasScroll}">       
      
       <div class="col-xs-12 col-md-12">  
             <table class="table table-striped table-hover">   
@@ -26,7 +26,7 @@
                 </thead> 
                 <tbody>
                 
-                            {#.}
+                            {#.parsed}
                                 {#metrics}                                 
                                  {@eq key=$idx value=0}
                                         <tr style='background-color:#e6ffe6;'>                                 
@@ -112,7 +112,7 @@
                                         </td>         
                                     </tr> 
                                  {/metrics}
-                            {/.} 
+                            {/.parsed} 
                              
                 </tbody> 
            </table>  
