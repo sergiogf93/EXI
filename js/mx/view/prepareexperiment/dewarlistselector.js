@@ -157,7 +157,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                          { text: 'Created on',  dataIndex: 'creationDate',   hidden : false, flex : 1, sortable: false,
                             renderer : function(grid, a, record){
                                 if (record.data.creationDate){
-                                    return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("YYYY/MM/DD");
+                                    return moment(record.data.creationDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD-MM-YYYY");
                                 }     
                                 
                             } 
@@ -170,7 +170,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                             { text: 'Start on',  dataIndex: 'sessionStartDate', flex : 1, sortable: false,
                             renderer : function(grid, a, record){
                                 if (record.data.sessionStartDate){
-                                    return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("YYYY/MM/DD");
+                                    return moment(record.data.sessionStartDate, "'MMMM Do YYYY, h:mm:ss a'").format("DD-MM-YYYY");
                                 }     
                                 
                             } 

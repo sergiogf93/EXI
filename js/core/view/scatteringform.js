@@ -60,12 +60,12 @@ ScatteringForm.prototype.load = function(data) {
 
 	$('#' + this.id + '-datepicker').datetimepicker({
 		defaultDate : new Date(),
-		format : "YYYY-MM-DD"
+		format : "DD-MM-YYYY"
 	});
 }
 
 ScatteringForm.prototype.plot = function() {
-	var endDate= moment($("#" + this.id + "-date").val(),"YYYY-MM-DD").format("YYYY-MM-DD");
+	var endDate= moment($("#" + this.id + "-date").val(),"DD-MM-YYYY").format("YYYY-MM-DD");
 	var checkedValues = [];
 	$('.scattering-checkbox:checked').each(function(i){
 		checkedValues.push($(this).val());

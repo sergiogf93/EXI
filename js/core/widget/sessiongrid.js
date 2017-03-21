@@ -240,7 +240,7 @@ SessionGrid.prototype.getPanel = function() {
                                                         location = "#/mx/datacollection/session/" + record.data.sessionId + "/main";
                                                     }
                                                     if (record.data.BLSession_startDate){                 
-                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('YYYY-MM-DD') + "</a>"; 
+                                                         return "<a href='" +  location +"'>" + moment(record.data.BLSession_startDate, 'MMMM Do YYYY, h:mm:ss a').format('DD-MM-YYYY') + "</a>"; 
                                                     }
                             }
 		     },
