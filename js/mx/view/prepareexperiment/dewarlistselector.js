@@ -146,7 +146,7 @@ DewarListSelectorGrid.prototype.getPanel = function(){
                 {
                     text    : 'Shipment',
                     columns : [
-                         { text: 'Name',  dataIndex: 'shippingName', flex : 3 },
+                         {id : 'shippingName', text: 'Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',  dataIndex: 'shippingName', flex : 1 },
                          { text: 'Status',  dataIndex: 'shippingStatus', flex: 1,
                         renderer : function(grid, a, record){
                                       return record.data.shippingStatus.toUpperCase()
