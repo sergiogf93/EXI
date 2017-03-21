@@ -98,7 +98,6 @@ UncollapsedDataCollectionGrid.prototype.displayDataCollectionTab = function(targ
     EXI.getDataAdapter({onSuccess:onSuccess, onError:onError}).mx.dataCollection.getDataCollectionsByDataCollectionGroupId(dataCollectionGroupId);
 };
 
-
 /**
 * Displays the data collection tab with all the data collection related to the data collection group
 *
@@ -143,7 +142,6 @@ UncollapsedDataCollectionGrid.prototype.displayWorkflowsTab = function(target, d
         _this.panel.doLayout();
     }   
 };
-
 
 /**
 * Displays the data worflows tab

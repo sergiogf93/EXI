@@ -425,6 +425,7 @@ XfeViewerMainView.prototype.plot = function() {
             this.setXColumn("Energy",true);
             this.setYColumn("continuum",false);
             this.setYColumn("pileup",false);
+            this.parseData();
         }
         else {
             /** No Lines */
