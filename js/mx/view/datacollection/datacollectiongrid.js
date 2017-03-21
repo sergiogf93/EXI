@@ -75,6 +75,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
 
     var autoProc_spaceGroups = getArrayValues(data.AutoProc_spaceGroups);
     var autoProcIds = getArrayValues(data.autoProcIds);
+    var autoProcIntegrationIds = getArrayValues(data.autoProcIntegrationId);
     var completenessList = getArrayValues(data.completenessList);
     var resolutionsLimitHigh = getArrayValues(data.resolutionsLimitHigh);
     var resolutionsLimitLow = getArrayValues(data.resolutionsLimitLow);
@@ -101,6 +102,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         if (data[autoProcIds[i]] == null) {
             data[autoProcIds[i]] = {
                 autoProcId: autoProcIds[i],
+                autoProcIntegrationId: autoProcIntegrationIds[i],
                 spaceGroup: autoProc_spaceGroups[i],
                 anomalous: anomalous[i]
             };

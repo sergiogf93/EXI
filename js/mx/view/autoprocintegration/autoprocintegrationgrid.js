@@ -70,11 +70,10 @@ AutoProcIntegrationGrid.prototype.parseData = function(data) {
 AutoProcIntegrationGrid.prototype.load = function(data) {      
     this.data =this.parseData(data);
        
-    if (this.collapsed){        
+    if (this.collapsed){   
         this.loadCollapsed(this.data);
     }
     else{
-       
 	    this.store.loadData(this.data, false);
     }
 };

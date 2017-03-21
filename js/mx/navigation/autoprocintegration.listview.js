@@ -14,6 +14,7 @@ AutoProcIntegrationListView.prototype.load = ListView.prototype.load;
 AutoProcIntegrationListView.prototype.getFilter = ListView.prototype.getFilter;
 AutoProcIntegrationListView.prototype.getFields = ListView.prototype.getFields;
 AutoProcIntegrationListView.prototype.getColumns = ListView.prototype.getColumns;
+AutoProcIntegrationListView.prototype.selectRow = ListView.prototype.selectRow;
 
 
 AutoProcIntegrationListView.prototype.getRow = function(record){
@@ -23,5 +24,3 @@ AutoProcIntegrationListView.prototype.getRow = function(record){
     });
 	return html;
 };
-
-
