@@ -84,19 +84,27 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
             {
                 html: '<span class="glyphicon glyphicon-download-alt"></span> Best results',
                 padding: '10px',
-                hidden : true,
+                hidden : false,
                 handler : function (sender,target) {
-                    var dataCollectionsWithResults = _.filter(_this.dataCollectionGroup,function(d) {return d.resultsCount});
+                    data = _this.dataCollectionGroup;
+                    if (_this.filter) {
+                        data = _this.filterBy(_this.filter);
+                    }
+                    var dataCollectionsWithResults = _.filter(data,function(d) {return d.resultsCount});
                     if (dataCollectionsWithResults && dataCollectionsWithResults.length > 0){
                         _this.panel.setLoading();
                         var onSuccess = function (sender,data) {
+                            _this.panel.setLoading(false);
                             if (data) {
                                 var parsedResults = [];
                                 for (var i = 0 ; i < data.length ; i++) {
                                     parsedResults.push(new AutoProcIntegrationGrid().parseData(data[i]))
                                 }
                                 var bestResults = _.filter(_.flatten(parsedResults),function(r) {return r.label == "BEST"});
-                                (new ResultsDownloader()).downloadResults(bestResults, "autoproc_best_results.zip",_this.panel);
+                                if (bestResults && bestResults.length > 0){
+                                    var url = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(_.map(bestResults,"v_datacollection_summary_phasing_autoProcProgramId").toString());
+                                    window.open(url,"_blank");
+                                }
                             }
                         }
 
@@ -114,7 +122,6 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                     specialkey: function(field, e) {
                         if (e.getKey() == e.ENTER) {
                             _this.filter = field.getValue();
-
                             if (_this.renderingType == "CONTAINERS"){     
                                 if (Ext.getCmp(_this.id + "_search").getValue() != "") {                        
                                     _this.containersDataCollectionGrid.select(_this.filterBy(Ext.getCmp(_this.id + "_search").getValue()));
