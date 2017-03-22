@@ -110,8 +110,11 @@ AutoProcIntegrationGrid.prototype.getPhasing = function(data) {
 };                 
 
 AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {	  
-                      
-    var type = data.scalingStatisticsType.split(",");
+    if (data.scalingStatisticsType) {                   
+        var type = data.scalingStatisticsType.split(",");
+    } else {
+        var type = [];
+    }
     function getValue(attribute, i, decimals){
         
         if (attribute){
@@ -155,8 +158,12 @@ AutoProcIntegrationGrid.prototype.getCollapseStatistics = function(data) {
 };
 
 
-AutoProcIntegrationGrid.prototype.getStatistics = function(data) {	                    
-    var type = data.scalingStatisticsType.split(",");
+AutoProcIntegrationGrid.prototype.getStatistics = function(data) {	 
+    if (data.scalingStatisticsType) {                   
+        var type = data.scalingStatisticsType.split(",");
+    } else {
+        var type = [];
+    }
     function getValue(attribute, i, decimals){        
         if (attribute){
             var splitted = attribute.split(",");

@@ -321,7 +321,7 @@ XfeViewerMainView.prototype.getAnnotations = function(data, labels) {
 */
 XfeViewerMainView.prototype.renderPlot = function(labels, data) {
     var _this = this;
-  
+    
     /** Plotting */
     var g = new Dygraph(
         document.getElementById("plot" + this.id),

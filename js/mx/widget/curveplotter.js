@@ -162,8 +162,6 @@ AutoProcIntegrationCurvePlotter.prototype.toCSV = function(labels, data) {
 AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
     var _this = this;
 
-   
-   
     /** Plotting */
     var g = new Dygraph(
         document.getElementById(this.targetId),
