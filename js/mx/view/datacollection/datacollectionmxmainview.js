@@ -63,6 +63,7 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                     {
                         html: '<span class="glyphicon glyphicon-download-alt"></span> Reports',
                         padding: '10px',
+                        hidden : true,
                         closable : false,
                         handler : function (sender,target) {
                             var reportsForm = new ReportsForm();
