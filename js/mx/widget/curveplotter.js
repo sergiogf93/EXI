@@ -222,7 +222,6 @@ Resolution,11259175,11259180,11259326
 8.05,,0,,0,38.1,0
  */
 AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
-
     var _this = this;
     $.ajax({
         url: url,
@@ -278,7 +277,6 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
 
-                debugger
                 try {
 
                     this.render(this.data.labels, this.data.data);
