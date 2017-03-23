@@ -14,10 +14,6 @@ CurveViewer.prototype.show = function(){
 
     $("body").append(html);
 
-    // if (this.curvePlotter){
-    //     $("#" + this.id + "-plot").html(this.curvePlotter.getHTML());
-    // }
-
     $("#" + this.id + "-modal").on('hidden.bs.modal', function(){
         $(this).remove();
     });
@@ -25,22 +21,34 @@ CurveViewer.prototype.show = function(){
     $("#" + this.id + "-modal").modal();
 };
 
-CurveViewer.prototype.load = function (autoProcIntegrationId, plotType, title) {
+CurveViewer.prototype.load = function (autoProcIntegrationId, plotType, title,labels) {
     this.autoProcIntegrationId = autoProcIntegrationId;
     this.plotType = plotType;
     $("#" + this.id + "-title").html(title);
+    this.curvePlotter = new AutoProcIntegrationCurvePlotter({
+                                                                height : 600,
+                                                                targetId : this.id + "-plot",
+                                                                labels : labels
+                                                            });
     switch (plotType){
         case "completeness":
-            this.curvePlotter = new AutoProcIntegrationCurvePlotter({
-                                                                        height : 600,
-                                                                        width : 800,
-                                                                        // title : "Completeness vs Resolution",
-                                                                        legend : 'always',
-                                                                        targetId : this.id + "-plot-dygraph"
-                                                                    });
-           $("#" + this.id + "-plot").html(this.curvePlotter.getHTML());
-           this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId)); 
-           break;
+            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId)); 
+            break;
+        case "anno":
+            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationId)); 
+            break;
+        case "sigmaAnno":
+            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationId)); 
+            break;
+        case "cc2":
+            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId)); 
+            break;
+        case "rfactor":
+            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationId)); 
+            break;
+        case "sigmaI":
+            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId)); 
+            break;
     }
 
     // Redraw modal

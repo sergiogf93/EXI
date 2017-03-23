@@ -129,74 +129,112 @@ AutoProcIntegrationMainView.prototype.load = function(data) {
 	this.autoProcIntegrationGrid.load(data);
     
     var autoProcIntegrationId = [];
+    var spaceGroups = [];
     for (var i = 0; i < data.length; i++) {
         if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
             autoProcIntegrationId.push(data[i].AutoProcIntegration_autoProcIntegrationId);
+            spaceGroups.push(data[i].v_datacollection_summary_phasing_autoproc_space_group);
         }
     }
-    var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
-                            height : 250,
-                            title : "Anom Corr vs Resolution",
-                          //  legend : 'never',
-                            targetId : " anno"
-    });
+    var labels = ["Resolution"].concat(spaceGroups);
 
+    var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
+        height : 250,
+        title : "Anom Corr vs Resolution",
+        labels : labels,
+        targetId : " anno",
+        labelsDiv : " anno_legend",
+        strokeWidth : 2.0
+    });
+    $("#anno").unbind('click').click(function(sender){
+        var curveViewer = new CurveViewer();
+        curveViewer.show();
+        curveViewer.load(autoProcIntegrationId,"anno","Anom Corr vs Resolution",labels);
+    });  
     $("#anno").html(annoCorrPlotter.getHTML());                         
     annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationId));	                  
        
     var sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
         height : 250,
         title : "SigAno vs Resolution",
-     //   legend : 'never',
-        targetId : " sigmaAnno"
+        labels : labels,
+        targetId : " sigmaAnno",
+        labelsDiv : " sigmaAnno_legend",
+        strokeWidth : 2.0
     });
-
+    $("#sigmaAnno").unbind('click').click(function(sender){
+        var curveViewer = new CurveViewer();
+        curveViewer.show();
+        curveViewer.load(autoProcIntegrationId,"sigmaAnno","SigAno vs Resolution",labels);
+    });
     $("#sigmaAnno").html(sigmaAnnoPlotter.getHTML());                         
     sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationId));
                        
      var cc2Plotter = new AutoProcIntegrationCurvePlotter({
                             height : 250,
                             title : "CC/2 vs Resolution",
-                         //   legend : 'never',
-                            targetId : " cc2"
+                            labels : labels,
+                            targetId : " cc2",
+                            labelsDiv : " cc2_legend",
+                            strokeWidth : 2.0                                                    
                         });
+    $("#cc2").unbind('click').click(function(sender){
+        var curveViewer = new CurveViewer();
+        curveViewer.show();
+        curveViewer.load(autoProcIntegrationId,"cc2","CC/2 vs Resolution",labels);
+    });
     $("#cc2").html(cc2Plotter.getHTML());                         
     cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId));
 	            
     var rFactorPlotter = new AutoProcIntegrationCurvePlotter({
                         height : 250,
                         title : "Rfactor vs Resolution",
-                        //  legend : 'never',
-                        targetId : " rfactor"
+                        labels : labels,
+                        targetId : " rfactor",
+                        labelsDiv : " rfactor_legend",
+                        strokeWidth : 2.0
                     });                             
-    $("#rfactor").html(rFactorPlotter.getHTML());                         
+    $("#rfactor").html(rFactorPlotter.getHTML());
+    $("#rfactor").unbind('click').click(function(sender){
+        var curveViewer = new CurveViewer();
+        curveViewer.show();
+        curveViewer.load(autoProcIntegrationId,"rfactor","Rfactor vs Resolution",labels);
+    });                        
     rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationId));
     
         /** Rfactor */
     var completenessPlotter = new AutoProcIntegrationCurvePlotter({
         height : 250,
         title : "Completeness vs Resolution",
-        // legend : 'never',
-        targetId : " completeness"
+        labels : labels,
+        targetId : " completeness",
+        labelsDiv : " completeness_legend",
+        strokeWidth : 2.0
     });                             
     $("#completeness").html(completenessPlotter.getHTML());
     $("#completeness").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,"completeness","Completeness vs Resolution");
+        curveViewer.load(autoProcIntegrationId,"completeness","Completeness vs Resolution",labels);
     });         
     completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId));
     
     var isigmaPlotter = new AutoProcIntegrationCurvePlotter({
         height :250,
         title : "I/SigmaI vs Resolution",
-        // legend : 'never',
-        targetId : " sigmaI"
+        labels : labels,
+        targetId : " sigmaI",
+        labelsDiv : " sigmaI_legend",
+        strokeWidth : 2.0
     });
+    $("#sigmaI").unbind('click').click(function(sender){
+        var curveViewer = new CurveViewer();
+        curveViewer.show();
+        curveViewer.load(autoProcIntegrationId,"sigmaI","Completeness vs Resolution",labels);
+    }); 
     $("#sigmaI").html(isigmaPlotter.getHTML());                         
     isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId));
 	                  
-    //this.loadAttachments(data);
 };
 
 
