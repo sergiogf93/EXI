@@ -169,5 +169,6 @@ XFEScanGrid.prototype.getColumns = function() {
 * of ISPyB 
 */
 XFEScanGrid.prototype.load = function(data) {
+    this.data = data;
     this.store.loadData(data);
 };

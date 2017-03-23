@@ -11,7 +11,6 @@
                      </span>                                   
                 </span>
              <p><b>{.DataCollection_imageDirectory}</b></p>      
-            
          </div>
          <div class="pull-right">
             <ul class="nav nav-tabs" id="myTabs">

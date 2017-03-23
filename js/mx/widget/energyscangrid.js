@@ -50,5 +50,6 @@ EnergyScanGrid.prototype.getPanel = function(dataCollectionGroup) {
 };
 
 EnergyScanGrid.prototype.load = function(energyScanList) {
+    this.energyScanList = energyScanList;
     this.store.loadData(energyScanList);   
 };

@@ -53,7 +53,8 @@ module.exports = function(grunt) {
                                     "bower_components/three/build/three.min.js",
                                     "bower_components/notifyjs/dist/notify.js",
 									"bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js",
-									"bower_components/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"
+									"bower_components/bootstrap-multiselect/dist/js/bootstrap-multiselect.js",
+									"bower_components/file-saver/FileSaver.min.js"
 									]
                         }
                     }
