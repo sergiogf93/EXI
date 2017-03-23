@@ -17,9 +17,9 @@
     </tr>
      <tr>
         <td>Undulator gaps</td>
-        <td  class='column_parameter_value'>{?DataCollection_undulatorGap1}{DataCollection_undulatorGap1} mm {/DataCollection_undulatorGap1}
-                                            {?DataCollection_undulatorGap2}{DataCollection_undulatorGap2} mm {/DataCollection_undulatorGap2}
-                                            {?DataCollection_undulatorGap3}{DataCollection_undulatorGap3} mm {/DataCollection_undulatorGap3}
+        <td  class='column_parameter_value'>{?DataCollection_undulatorGap1}{@decimal key="DataCollection_undulatorGap1" decimals=2 /} mm {/DataCollection_undulatorGap1}
+                                            {?DataCollection_undulatorGap2}{@decimal key="DataCollection_undulatorGap2" decimals=2 /} mm {/DataCollection_undulatorGap2}
+                                            {?DataCollection_undulatorGap3}{@decimal key="DataCollection_undulatorGap3" decimals=2 /} mm {/DataCollection_undulatorGap3}
         </td>
     </tr>
     <tr>

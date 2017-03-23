@@ -27,7 +27,7 @@
             <div  style="background-repeat: repeat-x;border:1px solid #d9534f;color:#000;background-color:#d9534f;width:{.overall.completeness}%">{.overall.completeness}%</div>                            
          {/gte}
     </td>
-    <td style='padding:0 15px 0 15px;'>{.overall.resolutionsLimitHigh}</td>
+    <td style='padding:0 15px 0 15px;'>{.overall.resolutionsLimitLow}-{.overall.resolutionsLimitHigh}</td>
     <td style='padding:0 15px 0 15px;'>{.overall.rMerge}</td>
     </tr>
 
@@ -45,7 +45,7 @@
                 
                 {/gte}
         </td>
-        <td style='padding:0 15px 0 15px;'>{.innerShell.resolutionsLimitHigh}</td>
+        <td style='padding:0 15px 0 15px;'>{.innerShell.resolutionsLimitLow}-{.innerShell.resolutionsLimitHigh}</td>
         <td style='padding:0 15px 0 15px;'>{.innerShell.rMerge}</td>
     </tr>
 
@@ -63,7 +63,7 @@
             {/gte}
             
         </td>
-        <td style='padding:0 15px 0 15px;'>{.outerShell.resolutionsLimitHigh}</td>
+        <td style='padding:0 15px 0 15px;'>{.outerShell.resolutionsLimitLow}-{.outerShell.resolutionsLimitHigh}</td>
         <td style='padding:0 15px 0 15px;'>{.outerShell.rMerge}</td>
     </tr>
     
