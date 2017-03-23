@@ -6,7 +6,7 @@
         <h4 class="modal-title" id="{id}-title"></h4>
       </div>
       <div class="modal-body">
-        <div id="{id}-plot">
+        <div id="{id}-plot" style="margin:20px">
         </div>
       </div>
       <div class="modal-footer">

@@ -176,19 +176,19 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             labelsDiv :_this.targetId + "_legend",
             labelsDivStyles : " { 'fontSize': 6 } ",
             axisLabelWidth : 20,
-           
+            
             connectSeparatedPoints: true,
             pointClickCallback: function(e, p) {
                 _this.onPointClickCallback.notify(p.name);
             },
-            axes: {
-                x: {
-                     pixelsPerXLabel : 30,
-                    axisLabelFormatter: function(d, gran, opts) {
-                        return _this.xLabels[d];                        
-                    }
-                }
-            }
+            // axes: {
+            //     x: {
+            //          pixelsPerXLabel : 30,
+            //         axisLabelFormatter: function(d, gran, opts) {
+            //             return _this.xLabels[d];                        
+            //         }
+            //     }
+            // }
         }
 
     );
@@ -265,13 +265,11 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     var noError = [];
                     var elements = element.split(',');                                       
                     elements = _.map(elements, toNumber);                 
-                    noError.push(index);
+                    // noError.push(index);
                     _this.xLabels.push(elements[0]);
 
-                    for (var i = 1; i < elements.length; i++) {
-                        if (i % 2 != 0) {
-                            noError.push(elements[i]);
-                        }
+                    for (var i = 0; i < 2; i++) {
+                        noError.push(elements[i]);
                     }
                     index = index + 1;
                     return noError;
@@ -280,7 +278,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
 
-
+                debugger
                 try {
 
                     this.render(this.data.labels, this.data.data);

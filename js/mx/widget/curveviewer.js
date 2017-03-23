@@ -35,11 +35,18 @@ CurveViewer.prototype.load = function (autoProcIntegrationId, plotType, title) {
                                                                         height : 600,
                                                                         width : 800,
                                                                         // title : "Completeness vs Resolution",
-                                                                        // legend : 'never',
-                                                                        targetId : this.id + "- plot"
+                                                                        legend : 'always',
+                                                                        targetId : this.id + "-plot-dygraph"
                                                                     });
            $("#" + this.id + "-plot").html(this.curvePlotter.getHTML());
            this.curvePlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId)); 
            break;
     }
+
+    // Redraw modal
+    var modal = document.getElementById(this.id + "-modal");
+    modal.style.display='none';
+    modal.offsetHeight; // no need to store this anywhere, the reference is enough
+    modal.style.display='block';
+
 };
