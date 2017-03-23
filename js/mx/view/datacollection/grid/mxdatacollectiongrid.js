@@ -84,7 +84,7 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
             {
                 html: '<span class="glyphicon glyphicon-download-alt"></span> Best results',
                 padding: '10px',
-                hidden : false,
+                hidden : true,
                 handler : function (sender,target) {
                     data = _this.dataCollectionGroup;
                     if (_this.filter) {
