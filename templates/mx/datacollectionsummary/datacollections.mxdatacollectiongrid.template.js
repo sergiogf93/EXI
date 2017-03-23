@@ -66,9 +66,11 @@
                     <td>{.runStatus}</td>
                     <td><a href={.urlImageQualityIndicators} data-lightbox={.urlImageQualityIndicators} >
                         <img src={.urlImageQualityIndicators} height="35px" width="35px"/></a></td>
-                    <td>{@gt key=hasAutoProcessing value=0}
-                          <a target='blank' href="#/autoprocintegration/datacollection/{.dataCollectionId}/{?bestAutoprocIntegrationId}autoprocIntegration/{bestAutoprocIntegrationId}/{/bestAutoprocIntegrationId}main">
-                          <span class="badge" style='background-color:#337ab7;'>{.hasAutoProcessing}</span></a>{/gt}</td>
+                    <td>{@gt key=hasAutoProcessing value=0}  
+                          <a target='blank' href="#/autoprocintegration/datacollection/{.dataCollectionId}/main">
+                            <span style='font-size: 1em;' class="glyphicon glyphicon-eye-open"  ></span>
+                        </a>
+                        {/gt}</td>
                     <td>{@gt key=hasPhasing value=0}<div class='summary_datacollection_success'></div>{/gt}</td>
                     <td>
                         {#.onlineresults[0]}
