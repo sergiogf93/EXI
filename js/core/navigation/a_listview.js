@@ -111,4 +111,10 @@ ListView.prototype.getPanel = function(){
 	return this.panel; 
 };
 
-
+ListView.prototype.selectRow = function(key,value) {
+	var data = _.filter(this.panel.getStore().data.items,function(o) {return o.get(key) == value});
+	if (data.length > 0){
+		var index = this.panel.getStore().data.items.indexOf(data[0]);
+		this.panel.getSelectionModel().select(index);
+	}
+};

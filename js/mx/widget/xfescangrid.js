@@ -1,4 +1,3 @@
-
 /**
 * XFEScanGrid displays the information fo a XFE
 *
@@ -47,7 +46,6 @@ XFEScanGrid.prototype.getPanel = function(dataCollectionGroup) {
                             labelsDivWidth: 100,
                             labelsShowZeroValues: false,
 
-
                             highlightCircleSize: 2,
                             strokeWidth: 1,
                             strokeBorderWidth: 1,
@@ -66,14 +64,12 @@ XFEScanGrid.prototype.getPanel = function(dataCollectionGroup) {
         }
     });
 
-
     return this.panel;
 };
 
 XFEScanGrid.prototype._getHTMLZoomImage = function(url, dataCollectionId, imageId) {
     return '<img style="width:400px;height:100;"  data-src=' + url + ' src=' + url + '>';
 };
-
 
 /**
 * @method getColumns defines the columns of the grid and associates the data
@@ -173,5 +169,6 @@ XFEScanGrid.prototype.getColumns = function() {
 * of ISPyB 
 */
 XFEScanGrid.prototype.load = function(data) {
+    this.data = data;
     this.store.loadData(data);
 };

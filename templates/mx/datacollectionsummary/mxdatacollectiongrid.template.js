@@ -7,11 +7,10 @@
                         {.DataCollectionGroup_experimentType}
                      </kbd> 
                       <span style='color:blue;'>
-                     {@formatDate date=.DataCollectionGroup_startTime format="YYYY-MM-DD HH:mm:ss" /}
+                     {@formatDate date=.DataCollectionGroup_startTime format="DD-MM-YYYY HH:mm:ss" /}
                      </span>                                   
                 </span>
              <p><b>{.DataCollection_imageDirectory}</b></p>      
-            
          </div>
          <div class="pull-right">
             <ul class="nav nav-tabs" id="myTabs">
@@ -21,9 +20,9 @@
                <li><a data-toggle="tab" href="#sa_{.DataCollection_dataCollectionId}">Sample</a></li>
                {!<li><a data-toggle="tab" href="#df_{.DataCollection_dataCollectionId}">Diffraction Plan</a></li>!}
                {@gt key=resultsCount   value="0"}
-                    <li><a data-toggle="tab" href="#re_{.DataCollection_dataCollectionId}">Results  <span class="badge" style='background-color:#337ab7;'>{.resultsCount}</span></a></li>
+                    <li><a data-toggle="tab" href="#re_{.DataCollection_dataCollectionId}">Last Collect Results  <span class="badge" style='background-color:#337ab7;'>{.resultsCount}</span></a></li>
                 {:else}
-                     <li class="disabled"><a data-toggle="tab"> Results</a></li>
+                     <li class="disabled"><a data-toggle="tab"> Last Collect Results</a></li>
                {/gt}
                {@gt key=workflows.length   value="0"}
                     <li><a data-toggle="tab" href="#wf_{.DataCollection_dataCollectionId}">Workflow  <span class="badge" style='background-color:#337ab7;'>{.workflows.length}</span></a></li>
@@ -79,11 +78,11 @@
                                                         </tr>                                                               
                                                         <tr>
                                                              <td>Images</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_numberOfImages}</td>
-                                                            <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
+                                                            <td>Osc. range</td> <td class='column_parameter_value'>{.ScreeningStrategySubWedge_oscillationRange} &deg;</td>
                                                         </tr>  
                                                         <tr>
                                                              <td>Transmission</td> <td class='column_parameter_value'>{@decimal key="ScreeningStrategySubWedge_transmission" decimals=1 /} %</td>
-                                                             <td></td> <td class='column_parameter_value'></td>
+                                                             <td>Total rotation</td> <td class='column_parameter_value'>{.ScreeningOutput_totalRotationRange} &deg;</td>
                                                             
                                                         </tr>     
                                                         

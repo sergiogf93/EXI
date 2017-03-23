@@ -49,12 +49,12 @@
                                 
                                 <tr>
                                     <td >Flux @100%</td>
-                                    <td class='column_parameter_value'>{.flux} ph/s</td>    
+                                    <td class='column_parameter_value'>{@exponential key="flux" decimals=2 /} ph/s</td>    
                                 </tr>
                                 
                                 <tr>      
                                     <td >Transmission</td>
-                                    <td class='column_parameter_value'>{@decimal key="beamTransmission" decimals=2 /} %</td>
+                                    <td class='column_parameter_value'>{@decimal key="beamTransmission" decimals=1 /} %</td>
                                 </tr>
                                 
                                 <tr>       

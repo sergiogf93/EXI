@@ -75,6 +75,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
 
     var autoProc_spaceGroups = getArrayValues(data.AutoProc_spaceGroups);
     var autoProcIds = getArrayValues(data.autoProcIds);
+    var autoProcIntegrationIds = getArrayValues(data.autoProcIntegrationId);
     var completenessList = getArrayValues(data.completenessList);
     var resolutionsLimitHigh = getArrayValues(data.resolutionsLimitHigh);
     var resolutionsLimitLow = getArrayValues(data.resolutionsLimitLow);
@@ -101,6 +102,7 @@ DataCollectionGrid.prototype._getAutoprocessingStatistics = function(data) {
         if (data[autoProcIds[i]] == null) {
             data[autoProcIds[i]] = {
                 autoProcId: autoProcIds[i],
+                autoProcIntegrationId: autoProcIntegrationIds[i],
                 spaceGroup: autoProc_spaceGroups[i],
                 anomalous: anomalous[i]
             };
@@ -181,7 +183,7 @@ DataCollectionGrid.prototype.getColumns = function() {
                 /** Image quality indicator **/
                 data.indicator = EXI.getDataAdapter().mx.dataCollection.getQualityIndicatorPlot(record.data.DataCollection_dataCollectionId);                              
 
-                /** Gets the gif for snapshots if there is a wiorkflow with snapshots **/
+                /** Gets the gif for snapshots if there is a workflow with snapshots **/
                 if (data.WorkflowStep_workflowStepType){
                     if (data.WorkflowStep_workflowStepType.indexOf('Snapshots') != -1){
                         if (data.WorkflowStep_workflowStepId){
@@ -196,8 +198,22 @@ DataCollectionGrid.prototype.getColumns = function() {
                     }
                 }
                 
-                
                 data.onlineresults = _this._getAutoprocessingStatistics(record.data);
+                /** Screening displayed if 'Characterization' workflow or if indexing success */ 
+                if (data.Workflow_workflowType) {
+                    if (data.Workflow_workflowType == 'Characterisation') {
+                        data.screeningresults = [true];
+                    } else {
+                        data.screeningresults = [data.ScreeningOutput_indexingSuccess];
+                    }
+                    if (data.screeningresults[0]) {
+                        if (data.ScreeningOutput_indexingSuccess) {
+                            data.indexingresults = [true];
+                        } else {
+                            data.indexingresults = [false];
+                        }
+                    }
+                }
                
                 /** We dont show screen if there are results of autoprocessing */
                 data.isScreeningVisible = true;

@@ -17,7 +17,7 @@
                     <th>Time</th>
                     <th>Run status</th>
                     <th>Indicators</th>
-                    <th>Results</th>
+                    <th>View<br/>Results</th>
                     <th>Phasing</th>
                     <th>Comments</th>
                     <th></th>
@@ -50,8 +50,9 @@
                                 <h4 class="modal-title">Image directory and template</h4>
                               </div>
                               <div class="modal-body">
-                                <p>{.imageDirectory}</p><br>
+                                <p>{.imageDirectory}</p>
                                 <p>{.formattedFileTemplate}</p>
+                                <p>{.imageDirectory}/{.formattedFileTemplate}</p>
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -65,9 +66,11 @@
                     <td>{.runStatus}</td>
                     <td><a href={.urlImageQualityIndicators} data-lightbox={.urlImageQualityIndicators} >
                         <img src={.urlImageQualityIndicators} height="35px" width="35px"/></a></td>
-                    <td>{@gt key=hasAutoProcessing value=0}
+                    <td>{@gt key=hasAutoProcessing value=0}  
                           <a target='blank' href="#/autoprocintegration/datacollection/{.dataCollectionId}/main">
-                          <span class="badge" style='background-color:#337ab7;'>{.hasAutoProcessing}</span></a>{/gt}</td>
+                            <span style='font-size: 1em;' class="glyphicon glyphicon-eye-open"  ></span>
+                        </a>
+                        {/gt}</td>
                     <td>{@gt key=hasPhasing value=0}<div class='summary_datacollection_success'></div>{/gt}</td>
                     <td>
                         {#.onlineresults[0]}

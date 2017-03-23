@@ -34,10 +34,19 @@ MxDataCollectionController.prototype.init = function() {
 	}).enter(this.setPageBackground);
     
 	Path.map("#/mx/datacollection/session/:sessionId/main").to(function() {
-		var mainView = new DataCollectionMxMainView();
+		var mainView = new DataCollectionMxMainView({sessionId : this.params['sessionId']});
 		EXI.addMainPanel(mainView);
         EXI.hideNavigationPanel();
 		EXI.setLoadingMainPanel(true);
+
+		var onSuccessProposal = function (sender,proposal) {
+			if (proposal && proposal.length > 0) {
+				mainView.loadProposal(proposal[0]);
+			}
+		}
+
+		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.proposal.getProposalBySessionId(this.params['sessionId']);
+
 		var onSuccess = function(sender, data){            
 		    mainView.loadCollections(data);
 			EXI.setLoadingMainPanel(false);
@@ -63,10 +72,9 @@ MxDataCollectionController.prototype.init = function() {
 	
     
     	Path.map("#/mx/datacollection/datacollectionid/:datacollectionid/main").to(function() {
-            //1507842
 		var mainView = new DataCollectionMxMainView();
 		EXI.addMainPanel(mainView);
-        EXI.hideNavigationPanel();
+        	EXI.hideNavigationPanel();
 		EXI.setLoadingMainPanel(true);
 		var onSuccess = function(sender, data){
 		    mainView.loadCollections(data);
@@ -81,5 +89,12 @@ MxDataCollectionController.prototype.init = function() {
         EXI.hideNavigationPanel();
 		EXI.addMainPanel(mainView);
 		mainView.load(this.params['imageId'], this.params['dataCollectionId']);
+	}).enter(this.setPageBackground);
+
+	Path.map("#/mx/datacollectiongroup/:dataCollectionGroupId/step/:step/main").to(function() {
+		var mainView = new PhasingGridMainView();
+        EXI.hideNavigationPanel();
+		EXI.addMainPanel(mainView);
+		mainView.load(this.params['dataCollectionGroupId'], this.params['step']);
 	}).enter(this.setPageBackground);
 };
