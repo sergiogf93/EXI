@@ -117,7 +117,7 @@ MXDataCollectionGrid.prototype.getToolBar = function() {
                 xtype: 'textfield',
                 id: this.id + "_search",
                 width: 400,
-                emptyText: 'enter search prefix, sample or protein',
+                emptyText: 'enter search prefix, sample, protein or filePath',
                 listeners: {
                     specialkey: function(field, e) {
                         if (e.getKey() == e.ENTER) {
@@ -153,14 +153,14 @@ MXDataCollectionGrid.prototype.load = function(dataCollectionGroup) {
 };
 
 /**
-* Filters data by prefix, protein acronym or sample
+* Filters data by prefix, protein acronym, sample or image directory
 *
 * @method filterBy
-* @return {String} searchTerm prefix, protein acronym or sample to be searched
+* @return {String} searchTerm prefix, protein acronym, sample or image directory to be searched
 */
 MXDataCollectionGrid.prototype.filterBy = function(searchTerm) {  
     var filtered = _.filter(this.dataCollectionGroup, function(dataCollection) {
-        var params = ["DataCollection_imagePrefix", "Protein_acronym", "BLSample_name"];
+        var params = ["DataCollection_imagePrefix", "Protein_acronym", "BLSample_name","DataCollection_imageDirectory"];
         for (var i = 0; i < params.length; i++) {
             var param = params[i];
             if (dataCollection[param]) {
