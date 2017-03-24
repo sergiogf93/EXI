@@ -110,7 +110,7 @@ CurvePlotter.prototype.loadUrl = function(url) {
 
 
 CurvePlotter.prototype.load = function(selections) {
-    this.render(EXI.getDataAdapter().saxs.frame.getFramesURL(selections.frame, selections.average, selections.subtracted, selections.sampleaverage, selections.bufferaverage));
+    this.render(EXI.getDataAdapter().saxs.frame.getFramesURL(selections.frame, selections.average, selections.subtracted, selections.sampleaverage, selections.bufferaverage, null, selections.operation));
 };
 
 
