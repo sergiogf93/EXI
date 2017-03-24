@@ -3,7 +3,7 @@ function CurvePlotter(args) {
 
     this.backgroundColor = "#FFFFFF";
 
-    this.margin = '0 0 0 5';
+    this.margin = 10;
     this.ruleColor = "black";
     this.targetId = "plotCanvas" + BUI.id();
     this.legend = 'onmouseover';
@@ -18,6 +18,7 @@ function CurvePlotter(args) {
         if (args.targetId != null) {
             this.targetId = args.targetId;
         }
+        
     }
 
     this.onRendered = new Event(this);
@@ -26,11 +27,8 @@ function CurvePlotter(args) {
 }
 
 CurvePlotter.prototype.getPanel = function() {
-    this.plotPanel = Ext.create('Ext.container.Container', {
-        layout: {
-            type: 'hbox'
-        },
-        flex: 0.7,
+    this.plotPanel = Ext.create('Ext.container.Container', {       
+        flex: 1,
         margin: this.margin,
         items: [{
             html: '<div id="' + this.targetId + '"></div>',
@@ -79,7 +77,7 @@ CurvePlotter.prototype.render = function(url) {
                 title: this.title,
                 titleHeight: 20,
 
-                legend: this.legend,
+                //legend: this.legend,
                 labelsSeparateLines: true,
                 errorBars: true,
                 connectSeparatedPoints: true,
@@ -119,15 +117,10 @@ function AutoProcIntegrationCurvePlotter(args) {
 
     this.margin = '10 0 0 0';
     this.height = null;
+    this.valueRange = null;
     this.title = "";
-    if (args != null) {
-        if (args.height != null) {
-            this.height = args.height;
-        }
-        if (args.title != null) {
-            this.title = args.title;
-        }
-    }
+    this.labelsDiv = null;
+    this.strokeWidth = 1.0;
 
     this.data = {
         labels: [], // labels = [{name: 'axisX', x: true, y, false},{name: 'axisXY', x: false, y, true}] 
@@ -135,6 +128,28 @@ function AutoProcIntegrationCurvePlotter(args) {
     };
 
     this.xLabels = [];
+
+    if (args != null) {
+        if (args.height != null) {
+            this.height = args.height;
+        }
+        if (args.title != null) {
+            this.title = args.title;
+        }
+        if (args.valueRange != null) {
+            this.valueRange = args.valueRange;
+        }
+        if (args.labels != null) {
+            this.data.labels = args.labels;
+        }
+        if (args.labelsDiv) {
+            this.labelsDiv = args.labelsDiv;
+        }
+        if (args.strokeWidth) {
+            this.strokeWidth = args.strokeWidth;
+        }
+    }
+
 }
 
 
@@ -163,9 +178,7 @@ AutoProcIntegrationCurvePlotter.prototype.toCSV = function(labels, data) {
 */
 AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
     var _this = this;
-
-   
-   
+    
     /** Plotting */
     var g = new Dygraph(
         document.getElementById(this.targetId),
@@ -177,22 +190,15 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             height: this.height - 100,
             hideOverlayOnMouseOut :true,
             labelsSeparateLines: true,
-            labelsDiv :_this.targetId + "_legend",
+            labelsDiv : this.labelsDiv,
             labelsDivStyles : " { 'fontSize': 6 } ",
-            axisLabelWidth : 20,
-           
+            strokeWidth : this.strokeWidth,
+            valueRange : this.valueRange,
+            
             connectSeparatedPoints: true,
             pointClickCallback: function(e, p) {
                 _this.onPointClickCallback.notify(p.name);
             },
-            axes: {
-                x: {
-                     pixelsPerXLabel : 30,
-                    axisLabelFormatter: function(d, gran, opts) {
-                        return _this.xLabels[d];                        
-                    }
-                }
-            }
         }
 
     );
@@ -241,14 +247,15 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
             var labelsHeader = [];
 
             if (lines) {
-                if (lines[0]) {
-                    this.data.labels = lines[0].split(",");
-
-                }
-                else {
-                    /** No Lines */
-                    EXI.setError("No labels on csv");
-                    return;
+                if (this.data.labels.length == 0) {
+                    if (lines[0]) {
+                        this.data.labels = lines[0].split(",");
+                    }
+                    else {
+                        /** No Lines */
+                        EXI.setError("No labels on csv");
+                        return;
+                    }
                 }
 
                 var toNumber = function toNumber(el) {
@@ -269,14 +276,16 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     var noError = [];
                     var elements = element.split(',');                                       
                     elements = _.map(elements, toNumber);                 
-                    noError.push(index);
+                    // noError.push(index);
+                    noError.push(elements[0]);
                     _this.xLabels.push(elements[0]);
-
-                    for (var i = 1; i < elements.length; i++) {
+                    var valueElements = [];
+                    for (var i = 0 ; i < elements.length ; i++){
                         if (i % 2 != 0) {
-                            noError.push(elements[i]);
+                            valueElements.push(elements[i]);
                         }
                     }
+                    noError = noError.concat(valueElements);
                     index = index + 1;
                     return noError;
                 };
@@ -306,6 +315,7 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
 AutoProcIntegrationCurvePlotter.prototype.getHTML = function() {
     return '<div  id="' + this.targetId + '"></div><div  style="height:20px" id="' + this.targetId + '_legend"></div>';
 };
+
 AutoProcIntegrationCurvePlotter.prototype.getPanel = function() {
     
     this.plotPanel = Ext.create('Ext.panel.Panel', {
