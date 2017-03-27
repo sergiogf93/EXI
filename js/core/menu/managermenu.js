@@ -13,6 +13,7 @@ ManagerMenu.prototype.setText = MainMenu.prototype.setText;
 ManagerMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
 ManagerMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 ManagerMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+ManagerMenu.prototype.getDataExplorerMenu = MainMenu.prototype.getDataExplorerMenu;
 
 
 ManagerMenu.prototype.getMenuItems = function() {	
@@ -140,28 +141,6 @@ ManagerMenu.prototype.getDataReductionMenu = function() {
 			text : 'Average' }, "-", {
 			text : '<span class="menuCategoryItem">COMBINING</span>' }, "-", {
 			text : 'Merging tool' } ] });
-};
-
-
-
-ManagerMenu.prototype.getDataExplorerMenu = function() {
-	function onItemCheck(item, checked) {
-		if (item.text == "Calendar") {
-			location.hash = "/session/nav";
-		}
-		if (item.text == "Experiments") {
-			location.hash = "/experiment/nav";
-		}
-	}
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-			{
-				text : 'Calendar',
-				icon : '../images/icon/sessions.png',
-				handler : onItemCheck 
-			}
-		] 
-	});
 };
 
 ManagerMenu.prototype.getOnlineDataAnalisysMenu = function() {

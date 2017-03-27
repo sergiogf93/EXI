@@ -339,7 +339,3 @@ SessionGrid.prototype.getPanel = function() {
 	});	
 	return this.panel;
 };
-
-
-
-

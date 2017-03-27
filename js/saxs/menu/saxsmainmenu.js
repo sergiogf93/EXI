@@ -13,6 +13,7 @@ SAXSMainMenu.prototype.setText = MainMenu.prototype.setText;
 SAXSMainMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
 SAXSMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 SAXSMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+SAXSMainMenu.prototype.getDataExplorerMenu = MainMenu.prototype.getDataExplorerMenu;
 
 
 SAXSMainMenu.prototype.getMenuItems = function() {	
@@ -144,28 +145,6 @@ SAXSMainMenu.prototype.getDataReductionMenu = function() {
 			text : 'Average' }, "-", {
 			text : '<span class="menuCategoryItem">COMBINING</span>' }, "-", {
 			text : 'Merging tool' } ] });
-};
-
-
-
-SAXSMainMenu.prototype.getDataExplorerMenu = function() {
-	function onItemCheck(item, checked) {
-		if (item.text == "Calendar") {
-			location.hash = "/session/nav";
-		}
-		if (item.text == "Experiments") {
-			location.hash = "/experiment/nav";
-		}
-	}
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-			{
-				text : 'Calendar',
-				icon : '../images/icon/sessions.png',
-				handler : onItemCheck 
-			}
-		] 
-	});
 };
 
 SAXSMainMenu.prototype.getOnlineDataAnalisysMenu = function() {
