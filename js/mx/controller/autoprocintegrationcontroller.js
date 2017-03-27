@@ -45,8 +45,10 @@ AutoprocIntegrationController.prototype.init = function() {
          /** Load view for autoprocessing */
         var onSuccess2 = function(sender, data){
             mainView.load(data[0]);
-            mainView.panel.setLoading(false);            
-            listPanel.load(data[0]);
+            mainView.panel.setLoading(false);
+            // Get the data sorted as in the AutoProcIntegrationGrid
+            var sortedData = mainView.autoProcIntegrationGrid.panel.getStore().data.items[0].data.items;
+            listPanel.load(sortedData);
         };
         EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(this.params['datacollectionId']);
 	}).enter(this.setPageBackground);
@@ -79,7 +81,8 @@ AutoprocIntegrationController.prototype.init = function() {
 			results = _.filter(data[0],function (r) {return r.AutoProcIntegration_autoProcIntegrationId == _this.params['autoprocIntegrationId']})
             mainView.load(results);
             mainView.panel.setLoading(false);            
-            listPanel.load(data[0]);
+            listPanel.load((new AutoProcIntegrationGrid).parseData(data[0]));
+            listPanel.selectRow("AutoProcIntegration_autoProcIntegrationId",_this.params['autoprocIntegrationId']);
         };
         EXI.getDataAdapter({onSuccess : onSuccess2}).mx.autoproc.getViewByDataCollectionId(this.params['datacollectionId']);
 	}).enter(this.setPageBackground);

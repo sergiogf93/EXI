@@ -6,45 +6,46 @@
             <thead>
                <tr>
                   {!<th  ><a href="#"  data-toggle="tooltip" title="Rank is done based on the space group and lower rMerge">Rank</a></th>!}
-                  <th  ></th>
-                  <th  ></th>
-                  <th  >Pipeline</th>
-                  <th  >SpaceGroup</th>
-                  <th  >a (&#197;)</th>
-                  <th > b (&#197;)</th>
-                  <th > c (&#197;)</th>
-                  <th  >&#x3B1; (&deg)</th>
-                  <th >&beta; (&deg)</th>
-                  <th >&gamma; (&deg)</th>
-                  <th >Shell</th>
-                  <th >Resolution (&#197;)</th>
-                  <th >Multiplicity</th>
-                  <th >Completeness %</th>
-                  <th >&#60;I/Sigma&#62;</th>
-                  <th >Rmeas</th> 
-                  <th >Rmerge</th>
-                  <th >Rpim</th>
-                  <th >cc(1/2)</th>
-                  <th >ccAno</th>
-                  <th >sigAno</th>
-                  <th >ISA</th>
-                  <th >Download</th>
+                  <th></th>
+                  <th></th>
+                  <th>Pipeline</th>
+                  <th>SpaceGroup</th>
+                  <th>a (&#197;)</th>
+                  <th> b (&#197;)</th>
+                  <th> c (&#197;)</th>
+                  <th>&#x3B1; (&deg)</th>
+                  <th>&beta; (&deg)</th>
+                  <th>&gamma; (&deg)</th>
+                  <th>Shell</th>
+                  <th>Resolution (&#197;)</th>
+                  <th>Multiplicity</th>
+                  <th>Completeness %</th>
+                  <th>&#60;I/Sigma&#62;</th>
+                  <th>Rmeas</th> 
+                  <th>Rmerge</th>
+                  <th>Rpim</th>
+                  <th>cc(1/2)</th>
+                  <th>ccAno</th>
+                  <th>sigAno</th>
+                  <th>ISA</th>
+                  <th>Download</th>
                </tr>
             </thead>
             {#.}
-           
             {@lt key=innerShell.rMerge value=10}
-                 {?label}
+                {?label}
                     {@eq key=label value="BEST"}
-                        <tr style='background-color:#e6ffe6;'>
+                        <tr id="{.AutoProcIntegration_dataCollectionId}-{.AutoProcIntegration_autoProcIntegrationId}" style='background-color:#e6ffe6;' class='autoprocintegrationrow'>
                     {:else} 
-                        <tr style='background-color:#ffffff;'>
-                    {/eq} 
-                  {/label}  
+                        <tr id="{.AutoProcIntegration_dataCollectionId}-{.AutoProcIntegration_autoProcIntegrationId}" style='background-color:#ffffff;' class='autoprocintegrationrow'>
+                    {/eq}
+                {:else}    
+                    <tr id="{.AutoProcIntegration_dataCollectionId}-{.AutoProcIntegration_autoProcIntegrationId}" class='autoprocintegrationrow'>
+                {/label}  
             {:else}
-                <tr style='background-color:#ffddcc;'>
+                <tr id="{.AutoProcIntegration_dataCollectionId}-{.AutoProcIntegration_autoProcIntegrationId}" style='background-color:#ffddcc;' class='autoprocintegrationrow'>
             {/lt}
-                <td  >
+                <td >
                   {@eq key=v_datacollection_summary_phasing_anomalous type="boolean" value="true"}
                         <kbd style="FONT-FAMILY:helvetica, arial, verdana, sans-serif;background-color:#337ab7">ANOM</kbd>
                   {:else}
@@ -62,7 +63,7 @@
                {:else}
                     <td  >{.rank}</td>
                {/label}
-               <td ><a target="_blank" href='#/autoprocintegration/datacollection/{.AutoProcIntegration_dataCollectionId}/autoprocIntegration/{.AutoProcIntegration_autoProcIntegrationId}/main'>{.v_datacollection_processingPrograms}</a></td>
+               <td >{.v_datacollection_processingPrograms}</td>
                <td >{.v_datacollection_summary_phasing_autoproc_space_group}</td>
               
                <td >{@decimal key="v_datacollection_summary_phasing_cell_a" decimals=1}{/decimal}</td>
