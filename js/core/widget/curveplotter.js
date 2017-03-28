@@ -203,6 +203,16 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             pointClickCallback: function(e, p) {
                 _this.onPointClickCallback.notify(p.name);
             },
+            axes : {
+                x: {
+                    axisLabelFormatter: function (x) {
+                        return x;
+                    },
+                    valueFormatter: function (y) {
+                        return '<span style="font-weight: bold; color: rgb(0,128,128);">' + labels[0] + "</span> " + y; //Hide legend label
+                    }
+                },
+            }
         }
 
     );
