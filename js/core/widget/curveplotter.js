@@ -121,7 +121,8 @@ function AutoProcIntegrationCurvePlotter(args) {
     this.title = "";
     this.labelsDiv = null;
     this.strokeWidth = 1.0;
-    this.labelsSeparateLines = true;
+    this.labelsSeparateLines = false;
+    this.legendFormatter = null;
 
     this.data = {
         labels: [], // labels = [{name: 'axisX', x: true, y, false},{name: 'axisXY', x: false, y, true}] 
@@ -151,6 +152,9 @@ function AutoProcIntegrationCurvePlotter(args) {
         }
         if (args.labelsSeparateLines != null) {
             this.labelsSeparateLines = args.labelsSeparateLines;
+        }
+        if (args.legendFormatter) {
+            this.legendFormatter = args.legendFormatter;
         }
     }
 
@@ -183,6 +187,12 @@ AutoProcIntegrationCurvePlotter.prototype.toCSV = function(labels, data) {
 AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
     var _this = this;
     
+    function legendFormatter (data) {
+        debugger
+        if (data.x == null) return '';  // no selection
+        return data.xHTML + data.series.map(v => v.labelHTML + ': ' + v.yHTML).join(' ');
+    }
+
     /** Plotting */
     var g = new Dygraph(
         document.getElementById(this.targetId),
@@ -198,6 +208,7 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             labelsDivStyles : " { 'fontSize': 6 } ",
             strokeWidth : this.strokeWidth,
             valueRange : this.valueRange,
+            legendFormatter : legendFormatter,
             
             connectSeparatedPoints: true,
             pointClickCallback: function(e, p) {
@@ -208,20 +219,10 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
                     axisLabelFormatter: function(d, gran, opts) {
                         return Number(_this.xRange[0] + _this.xRange[1] - d).toFixed(2);                        
                     },
-                    // axisLabelFormatter: function (x) {
-                    //     return x;
-                    // },
                     valueFormatter: function (x, opts, seriesName, g, row, col) {
                         return Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2);
-                        // _this;
-                        // return '<span style="font-weight: bold; color: rgb(0,128,128);">' + label + "</span> " + y; //Hide legend label
                     }
                 },
-                // y: {
-                //     valueFormatter: function (y, opts, seriesName, g, row, col) {
-                //         return Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2);
-                //     }
-                // }
             }
         }
 

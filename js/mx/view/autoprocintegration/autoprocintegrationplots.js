@@ -120,10 +120,11 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
                             labels : getLabels(spaceGroups,"CC2"),
                             targetId : " cc2",
                             labelsDiv : " cc2_legend",
-                            strokeWidth : 2.0                                                    
+                            strokeWidth : 2.0,
+                            valueRange : [0,110]                                               
                         });
     $("#cc2").unbind('click').click(function(sender){
-        var curveViewer = new CurveViewer();
+        var curveViewer = new CurveViewer({valueRange : [0,110]});
         curveViewer.show();
         curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId),"CC/2 vs Resolution",getLabels(spaceGroups,"CC2"));
     });
@@ -174,7 +175,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#sigmaI").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId),"Completeness vs Resolution",getLabels(spaceGroups,"I/SigmaI"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId),"I/SigmaI vs Resolution",getLabels(spaceGroups,"I/SigmaI"));
     }); 
     $("#sigmaI").html(isigmaPlotter.getHTML());                         
     isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId));             
