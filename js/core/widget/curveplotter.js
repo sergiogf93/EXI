@@ -205,13 +205,23 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             },
             axes : {
                 x: {
-                    axisLabelFormatter: function (x) {
-                        return x;
+                    axisLabelFormatter: function(d, gran, opts) {
+                        return Number(_this.xRange[0] + _this.xRange[1] - d).toFixed(2);                        
                     },
-                    valueFormatter: function (y) {
-                        return '<span style="font-weight: bold; color: rgb(0,128,128);">' + labels[0] + "</span> " + y; //Hide legend label
+                    // axisLabelFormatter: function (x) {
+                    //     return x;
+                    // },
+                    valueFormatter: function (x, opts, seriesName, g, row, col) {
+                        return Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2);
+                        // _this;
+                        // return '<span style="font-weight: bold; color: rgb(0,128,128);">' + label + "</span> " + y; //Hide legend label
                     }
                 },
+                // y: {
+                //     valueFormatter: function (y, opts, seriesName, g, row, col) {
+                //         return Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2);
+                //     }
+                // }
             }
         }
 
@@ -288,8 +298,9 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     
                 var convertToNumber = function (element) {
                     var noError = [];
-                    var elements = element.split(',');                                       
-                    elements = _.map(elements, toNumber);                 
+                    var index = lines.indexOf(element);
+                    var elements = element.split(',');                                  
+                    elements = _.map(elements, toNumber);               
                     // noError.push(index);
                     noError.push(elements[0]);
                     _this.xLabels.push(elements[0]);
@@ -303,11 +314,16 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     index = index + 1;
                     return noError;
                 };
+
                 lines = lines.reverse();
                 /** Parsing data it means remove labels, split by , and convert to number */
                 this.data.data = _.map(_.slice(lines, 1, lines.length - 1), convertToNumber);
-
-
+                this.xRange = [_.min(this.xLabels),_.max(this.xLabels)];
+                // Mirror the x-axis
+                for (var i = 0 ; i < this.data.data.length ; i++) {
+                    var data = this.data.data[i];
+                    data[0] = Number(_this.xRange[0] + _this.xRange[1] - data[0]).toFixed(2);
+                }
                 try {
 
                     this.render(this.data.labels, this.data.data);
