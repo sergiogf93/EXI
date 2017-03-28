@@ -121,6 +121,7 @@ function AutoProcIntegrationCurvePlotter(args) {
     this.title = "";
     this.labelsDiv = null;
     this.strokeWidth = 1.0;
+    this.labelsSeparateLines = true;
 
     this.data = {
         labels: [], // labels = [{name: 'axisX', x: true, y, false},{name: 'axisXY', x: false, y, true}] 
@@ -147,6 +148,9 @@ function AutoProcIntegrationCurvePlotter(args) {
         }
         if (args.strokeWidth) {
             this.strokeWidth = args.strokeWidth;
+        }
+        if (args.labelsSeparateLines != null) {
+            this.labelsSeparateLines = args.labelsSeparateLines;
         }
     }
 
@@ -189,7 +193,7 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             legend : 'always',
             height: this.height - 100,
             hideOverlayOnMouseOut :true,
-            labelsSeparateLines: true,
+            labelsSeparateLines: this.labelsSeparateLines,
             labelsDiv : this.labelsDiv,
             labelsDivStyles : " { 'fontSize': 6 } ",
             strokeWidth : this.strokeWidth,
