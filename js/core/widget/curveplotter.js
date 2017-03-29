@@ -122,7 +122,7 @@ function AutoProcIntegrationCurvePlotter(args) {
     this.labelsDiv = null;
     this.strokeWidth = 1.0;
     this.labelsSeparateLines = false;
-    this.legendFormatter = null;
+    this.useHighlightCallback = false;
 
     this.data = {
         labels: [], // labels = [{name: 'axisX', x: true, y, false},{name: 'axisXY', x: false, y, true}] 
@@ -153,8 +153,8 @@ function AutoProcIntegrationCurvePlotter(args) {
         if (args.labelsSeparateLines != null) {
             this.labelsSeparateLines = args.labelsSeparateLines;
         }
-        if (args.legendFormatter) {
-            this.legendFormatter = args.legendFormatter;
+        if (args.useHighlightCallback != null) {
+            this.useHighlightCallback = args.useHighlightCallback;
         }
     }
 
@@ -186,11 +186,24 @@ AutoProcIntegrationCurvePlotter.prototype.toCSV = function(labels, data) {
 */
 AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
     var _this = this;
-    
-    function legendFormatter (data) {
-        debugger
-        if (data.x == null) return '';  // no selection
-        return data.xHTML + data.series.map(v => v.labelHTML + ': ' + v.yHTML).join(' ');
+    var colors = ["#008800","#000088","#880000","#DD8800","#AA00AA","#FF3300","#6600FF","#880088","#88808","#808080","#008A0A","#F0880F","#0088FF","#FF00FF","#000000","#0AAAA0"];
+    var highlightCallback = null;
+    if (this.useHighlightCallback) {
+        highlightCallback = function(event, x, points, row, seriesName) {
+            var html = "";
+            for (var i = 1 ; i < _this.data.labels.length ; i++) {
+                html += '<span style="font-weight: bold; font-size:10pt; color: ' + colors[i-1] + ';">';
+                html += '<div style="display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px solid ' + colors[i-1] + ';"></div> ';
+                html += _this.data.labels[i] + "</span><br/>";
+            }
+            html += "<hr style='margin:5px;border-color:#000000' />";
+            html += "Resolution " + Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2) + "<br/>";
+            var yLabel = _this.title.split(" vs ")[0];
+            for (var i = 0 ; i < points.length ; i++) {
+                html += "<span style='font-weight: bold;color: " + colors[_this.data.labels.indexOf(points[i].name)-1] + "'>" + yLabel + " " + points[i].yval + "</span><br/>";
+            }
+            $(".dygraph-legend").html(html);
+        } 
     }
 
     /** Plotting */
@@ -208,7 +221,8 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
             labelsDivStyles : " { 'fontSize': 6 } ",
             strokeWidth : this.strokeWidth,
             valueRange : this.valueRange,
-            legendFormatter : legendFormatter,
+            highlightCallback : highlightCallback,
+            colors : colors,
             
             connectSeparatedPoints: true,
             pointClickCallback: function(e, p) {
@@ -220,9 +234,14 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
                         return Number(_this.xRange[0] + _this.xRange[1] - d).toFixed(2);                        
                     },
                     valueFormatter: function (x, opts, seriesName, g, row, col) {
-                        return Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2);
+                        return seriesName + " " + Number(_this.xRange[0] + _this.xRange[1] - x).toFixed(2);
                     }
                 },
+                y : {
+                    valueFormatter: function (y, opts, seriesName, g, row, col) {
+                        return y;
+                    }
+                }
             }
         }
 

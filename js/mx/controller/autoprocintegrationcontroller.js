@@ -43,7 +43,7 @@ AutoprocIntegrationController.prototype.init = function() {
         });
          /** Load view for autoprocessing */
         var onSuccess2 = function(sender, data){
-            // mainView.load(data[0]);
+            mainView.load(data[0]);
             mainView.panel.setLoading(false);
             // Get the data sorted as in the AutoProcIntegrationGrid
             var sortedData = mainView.autoProcIntegrationGrid.panel.getStore().data.items[0].data.items;

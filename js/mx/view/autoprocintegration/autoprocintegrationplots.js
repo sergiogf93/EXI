@@ -71,21 +71,19 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     for (var i = 0; i < data.length; i++) {
         if (data[i].v_datacollection_summary_phasing_autoProcProgramId){
             autoProcIntegrationId.push(data[i].AutoProcIntegration_autoProcIntegrationId);
-            spaceGroups.push(data[i].v_datacollection_summary_phasing_autoproc_space_group);
+            var spg = data[i].v_datacollection_summary_phasing_autoproc_space_group;
+            if (data[i].v_datacollection_summary_phasing_anomalous) {
+                spg += " ANOM";
+            }
+            spg += " - " + data[i].v_datacollection_processingPrograms;
+            spaceGroups.push(spg);
         }
     }
-    var getLabels = function (spaceGroups, yLabel) {
-        var spg = spaceGroups.slice(0);
-        for (var i = 0 ; i < spg.length ; i++) {
-            spg[i] += " (" + yLabel + ")";
-        }
-        return ["Resolution"].concat(spg);
-    }
-
+    
     var annoCorrPlotter = new AutoProcIntegrationCurvePlotter({
         height : 250,
         title : "Anom Corr vs Resolution",
-        labels : getLabels(spaceGroups,"Anom Corr"),
+        labels : ["Resolution"].concat(spaceGroups),
         targetId : " anno",
         labelsDiv : " anno_legend",
         strokeWidth : 2.0
@@ -93,7 +91,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#anno").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationId),"Anom Corr vs Resolution",getLabels(spaceGroups,"Anom Corr"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationId),"Anom Corr vs Resolution",["Resolution"].concat(spaceGroups));
     });  
     $("#anno").html(annoCorrPlotter.getHTML());                         
     annoCorrPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleAnnoCorrection(autoProcIntegrationId));	                  
@@ -101,7 +99,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     var sigmaAnnoPlotter = new AutoProcIntegrationCurvePlotter({
         height : 250,
         title : "SigAno vs Resolution",
-        labels : getLabels(spaceGroups,"SigAno"),
+        labels : ["Resolution"].concat(spaceGroups),
         targetId : " sigmaAnno",
         labelsDiv : " sigmaAnno_legend",
         strokeWidth : 2.0
@@ -109,7 +107,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#sigmaAnno").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationId),"SigAno vs Resolution",getLabels(spaceGroups,"SigAno"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationId),"SigAno vs Resolution",["Resolution"].concat(spaceGroups));
     });
     $("#sigmaAnno").html(sigmaAnnoPlotter.getHTML());                         
     sigmaAnnoPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleSigmaAno(autoProcIntegrationId));
@@ -117,7 +115,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
      var cc2Plotter = new AutoProcIntegrationCurvePlotter({
                             height : 250,
                             title : "CC/2 vs Resolution",
-                            labels : getLabels(spaceGroups,"CC2"),
+                            labels : ["Resolution"].concat(spaceGroups),
                             targetId : " cc2",
                             labelsDiv : " cc2_legend",
                             strokeWidth : 2.0,
@@ -126,7 +124,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#cc2").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer({valueRange : [0,110]});
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId),"CC/2 vs Resolution",getLabels(spaceGroups,"CC2"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId),"CC/2 vs Resolution",["Resolution"].concat(spaceGroups));
     });
     $("#cc2").html(cc2Plotter.getHTML());                         
     cc2Plotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCC2(autoProcIntegrationId));
@@ -134,7 +132,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     var rFactorPlotter = new AutoProcIntegrationCurvePlotter({
                         height : 250,
                         title : "Rfactor vs Resolution",
-                        labels : getLabels(spaceGroups,"Rfactor"),
+                        labels : ["Resolution"].concat(spaceGroups),
                         targetId : " rfactor",
                         labelsDiv : " rfactor_legend",
                         strokeWidth : 2.0
@@ -143,7 +141,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#rfactor").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationId),"Rfactor vs Resolution",getLabels(spaceGroups,"Rfactor"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationId),"Rfactor vs Resolution",["Resolution"].concat(spaceGroups));
     });                        
     rFactorPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleRfactor(autoProcIntegrationId));
     
@@ -151,7 +149,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     var completenessPlotter = new AutoProcIntegrationCurvePlotter({
         height : 250,
         title : "Completeness vs Resolution",
-        labels : getLabels(spaceGroups,"Completeness"),
+        labels : ["Resolution"].concat(spaceGroups),
         targetId : " completeness",
         labelsDiv : " completeness_legend",
         strokeWidth : 2.0
@@ -160,14 +158,14 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#completeness").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId),"Completeness vs Resolution",getLabels(spaceGroups,"Completeness"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId),"Completeness vs Resolution",["Resolution"].concat(spaceGroups));
     });         
     completenessPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleCompleteness(autoProcIntegrationId));
     
     var isigmaPlotter = new AutoProcIntegrationCurvePlotter({
         height :250,
         title : "I/SigmaI vs Resolution",
-        labels : getLabels(spaceGroups,"I/SigmaI"),
+        labels : ["Resolution"].concat(spaceGroups),
         targetId : " sigmaI",
         labelsDiv : " sigmaI_legend",
         strokeWidth : 2.0
@@ -175,7 +173,7 @@ AutoProcIntegrationPlots.prototype.load = function(data) {
     $("#sigmaI").unbind('click').click(function(sender){
         var curveViewer = new CurveViewer();
         curveViewer.show();
-        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId),"I/SigmaI vs Resolution",getLabels(spaceGroups,"I/SigmaI"));
+        curveViewer.load(autoProcIntegrationId,EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId),"I/SigmaI vs Resolution",["Resolution"].concat(spaceGroups));
     }); 
     $("#sigmaI").html(isigmaPlotter.getHTML());                         
     isigmaPlotter.loadUrl(EXI.getDataAdapter().mx.autoproc.getXScaleISigma(autoProcIntegrationId));             

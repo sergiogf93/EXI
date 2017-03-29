@@ -31,7 +31,7 @@ CurveViewer.prototype.show = function(){
 
 CurveViewer.prototype.load = function (autoProcIntegrationId, url, title,labels) {
     this.autoProcIntegrationId = autoProcIntegrationId;
-    $("#" + this.id + "-title").html(title);
+    // $("#" + this.id + "-title").html(title);
     
     this.curvePlotter = new AutoProcIntegrationCurvePlotter({
                                                                 height : 600,
@@ -39,7 +39,8 @@ CurveViewer.prototype.load = function (autoProcIntegrationId, url, title,labels)
                                                                 labels : labels,
                                                                 valueRange : this.valueRange,
                                                                 labelsSeparateLines : true,
-                                                                // legendFormatter : legendFormatter
+                                                                useHighlightCallback : true,
+                                                                title : title,
                                                             });
     this.curvePlotter.loadUrl(url);
 
