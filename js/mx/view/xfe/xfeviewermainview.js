@@ -321,7 +321,7 @@ XfeViewerMainView.prototype.getAnnotations = function(data, labels) {
 */
 XfeViewerMainView.prototype.renderPlot = function(labels, data) {
     var _this = this;
-  
+    
     /** Plotting */
     var g = new Dygraph(
         document.getElementById("plot" + this.id),
@@ -425,6 +425,7 @@ XfeViewerMainView.prototype.plot = function() {
             this.setXColumn("Energy",true);
             this.setYColumn("continuum",false);
             this.setYColumn("pileup",false);
+            this.parseData();
         }
         else {
             /** No Lines */

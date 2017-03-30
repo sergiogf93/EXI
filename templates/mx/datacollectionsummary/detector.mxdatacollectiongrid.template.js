@@ -20,7 +20,7 @@
     </tr>
     <tr>
         <td>Pixel Size Hor (Vert)</td>
-        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeHorizontal} ({.Detector_detectorPixelSizeVertical})</td>
+        <td  class='column_parameter_value'>{.Detector_detectorPixelSizeHorizontal} mm ({.Detector_detectorPixelSizeVertical} mm)</td>
     </tr>
 </table>       
               
