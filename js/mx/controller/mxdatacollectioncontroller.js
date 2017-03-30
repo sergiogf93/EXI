@@ -47,23 +47,20 @@ MxDataCollectionController.prototype.init = function() {
 
 		EXI.getDataAdapter({onSuccess : onSuccessProposal}).proposal.proposal.getProposalBySessionId(this.params['sessionId']);
 
-		var onSuccess = function(sender, data){            
+		var onSuccess = function(sender, data){
 		    mainView.loadCollections(data);
 			EXI.setLoadingMainPanel(false);
 		};
 		EXI.getDataAdapter({onSuccess : onSuccess}).mx.dataCollection.getDataCollectionViewBySessionId(this.params['sessionId']);
 
-
 		var onSuccessEnergy = function(sender, data){
 			mainView.loadEnergyScans(data);
-			
 		};
 		/** retrieving energy scans */
 		EXI.getDataAdapter({onSuccess : onSuccessEnergy}).mx.energyscan.getEnergyScanListBySessionId(this.params['sessionId']);
 
 		var onSuccessXFE = function(sender, data){
 			mainView.loadFXEScans(data);
-			
 		};
 		/** retrieving XFE scans */
 		EXI.getDataAdapter({onSuccess : onSuccessXFE}).mx.xfescan.getXFEScanListBySessionId(this.params['sessionId']);

@@ -13,6 +13,7 @@ MXMainMenu.prototype.setText = MainMenu.prototype.setText;
 MXMainMenu.prototype.getHomeItem = MainMenu.prototype.getHomeItem;
 MXMainMenu.prototype.getHelpMenu = MainMenu.prototype.getHelpMenu;
 MXMainMenu.prototype.getShipmentItem = MainMenu.prototype.getShipmentItem;
+MXMainMenu.prototype.getDataExplorerMenu = MainMenu.prototype.getDataExplorerMenu;
 
 MXMainMenu.prototype.getMenuItems = function() {
 	return [
@@ -158,24 +159,3 @@ MXMainMenu.prototype.getProteinCrystalsMenu = function() {
 		] 
 	});
 };
-
-MXMainMenu.prototype.getDataExplorerMenu = function() {
-	function onItemCheck(item, checked) {
-		if (item.text == "Calendar") {
-			location.hash = "/session/nav";
-		}
-		if (item.text == "Experiments") {
-			location.hash = "/experiment/nav";
-		}
-	}
-	return Ext.create('Ext.menu.Menu', {
-		items : [ 
-			{
-				text : 'Calendar',
-				icon : '../images/icon/sessions.png',
-				handler : onItemCheck 
-			}
-		] 
-	});
-};
-
