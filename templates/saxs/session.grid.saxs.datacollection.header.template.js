@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-12" >
             <div style="text-align:center;border-bottom:1px solid #ccc;">
-                Data Collections
+                Session synopsis
             </div>
         </div>
     </div>

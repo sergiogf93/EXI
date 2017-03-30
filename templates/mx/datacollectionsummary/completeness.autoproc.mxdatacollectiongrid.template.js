@@ -26,7 +26,7 @@
                     
                 </div>
         </td>
-        <td valign="top"  style='padding:0 15px 0 15px;'>{.overall.resolutionsLimitHigh}</td>
+        <td valign="top"  style='padding:0 15px 0 15px;'>{.overall.resolutionsLimitLow}-{.overall.resolutionsLimitHigh}</td>
         <td valign="top">{.overall.rMerge}</td>
         </tr>
 
@@ -49,7 +49,7 @@
                         
                     </div>
             </td>
-            <td valign="top" style='padding:0 15px 0 15px;'>{.innerShell.resolutionsLimitHigh}</td>
+            <td valign="top" style='padding:0 15px 0 15px;'>{.innerShell.resolutionsLimitLow}-{.innerShell.resolutionsLimitHigh}</td>
             <td valign="top">{.innerShell.rMerge}</td>
         </tr> 
         <tr>
@@ -71,7 +71,7 @@
                         
                     </div>
             </td>
-            <td valign="top" style='padding:0 15px 0 15px;'>{.outerShell.resolutionsLimitHigh}</td>
+            <td valign="top" style='padding:0 15px 0 15px;'>{.outerShell.resolutionsLimitLow}-{.outerShell.resolutionsLimitHigh}</td>
             <td valign="top">{.outerShell.rMerge}</td>
         </tr>
         

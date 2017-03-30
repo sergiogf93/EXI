@@ -24,7 +24,8 @@ CollapsedDataCollectionGrid.prototype.onBoxReady = function () {
             var onSuccess = function (sender,data) {
                 if (data) {
                     if (data[0].length > 0) {
-                        (new ResultsDownloader()).downloadResults(data[0], "autoproc_results_" + dataCollectionId + ".zip",_this.panel);
+                        var url = EXI.getDataAdapter().mx.autoproc.downloadAttachmentListByautoProcProgramsIdList(_.map(data[0],"v_datacollection_summary_phasing_autoProcProgramId").toString());
+                        window.open(url,"_blank");
                     }
                 }
             }

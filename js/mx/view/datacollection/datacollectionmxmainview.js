@@ -4,10 +4,16 @@
 * @class DataCollectionMxMainView
 * @constructor
 */
-function DataCollectionMxMainView() {
+function DataCollectionMxMainView(args) {
     this.icon = '../images/icon/ic_satellite_black_18dp.png';
     MainView.call(this);
     var _this = this;
+
+    if (args) {
+        if (args.sessionId) {
+            this.sessionId = args.sessionId;
+        }
+    }
 
     this.genericDataCollectionPanel = new MXDataCollectionGrid();
     this.energyScanGrid = new EnergyScanGrid();
@@ -17,7 +23,7 @@ function DataCollectionMxMainView() {
 DataCollectionMxMainView.prototype.getPanel = MainView.prototype.getPanel;
 
 DataCollectionMxMainView.prototype.getContainer = function() {
-
+    var _this = this;
     this.container = Ext.create('Ext.tab.Panel', {   
     minHeight : 900,    
     padding : "5 40 0 5",
@@ -37,15 +43,37 @@ DataCollectionMxMainView.prototype.getContainer = function() {
                             this.energyScanGrid.getPanel()
                     ]
             },
-                {
+            {
                     title: 'Fluorescence Spectra',
                     id : this.id + "_xfeTab",
                     cls : 'border-grid',                         
                     items:[
                         this.xfeScanGrid.getPanel()
                     ]
+            },
+        ],
+        listeners: {
+            afterrender: function(panel){
+                var bar = panel.tabBar;
+                bar.insert(3,[
+                    {
+                        xtype: 'component',
+                        flex: 1
+                    },
+                    {
+                        html: '<span class="glyphicon glyphicon-download-alt"></span> Reports',
+                        padding: '10px',
+                        hidden : true,
+                        closable : false,
+                        handler : function (sender,target) {
+                            var reportsForm = new ReportsForm();
+                            reportsForm.load(_this.sessionId,_this.proposal,_this.genericDataCollectionPanel.dataCollectionGroup,_this.energyScanGrid.energyScanList,_this.xfeScanGrid.data);
+                            reportsForm.show();
+                        }
+                    },               
+                ]);
             }
-            ]
+        }
     });
     return this.container;
 };
@@ -74,16 +102,16 @@ DataCollectionMxMainView.prototype.loadFXEScans = function(data) {
     Ext.getCmp(this.id + "_xfeTab").setDisabled(true);
 };
 
-DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
+DataCollectionMxMainView.prototype.loadProposal = function (proposal) {
     this.panel.setTitle("");
-    var proposalId = _.uniq(_.map(dataCollections,"BLSession_proposalId"));
-    if (proposalId && proposalId.length == 1) {
-        proposal = EXI.proposalManager.getProposalById(proposalId[0]);
-        this.panel.setTitle(proposal.code + proposal.number);
-        this.panel.tab.on('click',function(){
-            location.href = "#/welcome/manager/proposal/"+ proposal.code + proposal.number +"/main";
-        });
-    }
+    this.proposal = proposal;
+    this.panel.setTitle(this.proposal.Proposal_proposalCode + this.proposal.Proposal_proposalNumber);
+    this.panel.tab.on('click',function(){
+        location.href = "#/welcome/manager/proposal/"+ proposal.Proposal_proposalCode + proposal.Proposal_proposalNumber +"/main";
+    });
+}
+
+DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
 	var data = _.filter(dataCollections, function(u) {
         return u.DataCollection_dataCollectionId != null;
     });
@@ -129,7 +157,7 @@ DataCollectionMxMainView.prototype.loadCollections = function(dataCollections) {
         }
         Ext.getCmp(this.id + "_dataCollectionTab").setTitle(data.length + " Data Collections");
 	    if (data){            
-            this.genericDataCollectionPanel.load(data.reverse());
+            this.genericDataCollectionPanel.load(data);
         }
         return;	
     }

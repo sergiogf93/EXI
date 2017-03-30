@@ -5,25 +5,20 @@
          <br />
          {@formatDate date=DataCollectionGroup_startTime format="YYYY-MM-DD HH:mm:ss" /}
       </div>
-      <div class="col-xs-6 col-md-2">
+      <div class="col-xs-6 col-md-1">
          <table class='table-sm table-condensed '>
-            <thead>
-               <tr>
-                  <th  colspan=2 style='padding:0 15px 0 15px;'> </th>
-               </tr>
-            </thead>
             <tbody>
                <tr>
-                  <td  style='padding:0 15px 0 15px;'>Protein</td>
-                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.Protein_acronym}</td>
+                  <td >Protein</td>
+                  <td  class='column_parameter_value'>{.Protein_acronym}</td>
                </tr>
                <tr>
-                  <td  style='padding:0 15px 0 15px;'>Prefix</td>
-                  <td  style='padding:0 15px 0 15px;'><a href='#/mx/datacollection/datacollectionid/{.DataCollection_dataCollectionId}/main'>{.DataCollection_imagePrefix}</a></td>
+                  <td >Prefix</td>
+                  <td ><a href='#/mx/datacollection/datacollectionid/{.DataCollection_dataCollectionId}/main'>{.DataCollection_imagePrefix}</a></td>
                </tr>
                <tr>
-                  <td  style='padding:0 15px 0 15px;'>Images</td>
-                  <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.totalNumberOfImages}</td>
+                  <td >Images</td>
+                  <td  class='column_parameter_value'>{.totalNumberOfImages}</td>
                </tr>
             </tbody>
          </table>
@@ -45,7 +40,7 @@
                   <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.DataCollection_resolution} &#8491; ({.DataCollection_resolutionAtCorner} &#8491;)</td>
                </tr>
                <tr>
-                  <td  style='padding:0 15px 0 15px;'>Wavelenth</td>
+                  <td  style='padding:0 15px 0 15px;'>Wavelength</td>
                   <td  style='padding:0 15px 0 15px;' class='column_parameter_value'>{.DataCollection_wavelength} &#8491;</td>
                </tr>
             </tbody>
@@ -123,13 +118,24 @@
          {/gt}
          {/.screening}
       </div>
-      
-      
-      
-      
-        
-      
-      
-                
+      <div class="col-xs-6 col-md-1">
+        {@gt key=resultsCount   value="0"}
+                <a href='#/autoprocintegration/datacollection/{.DataCollection_dataCollectionId}/main' target="_blank" class="btn btn-xs">
+                        <span id="{.DataCollection_dataCollectionId}-autoproc-link" class="glyphicon glyphicon-eye-open autoproc-link"> Autoproc</span>
+                </a>
+        {/gt}
+      </div>
+      <div class="col-md-1">
+        {@gt key=hasPhasing   value="0"}
+                <a href='#/mx/datacollectiongroup/{DataCollectionGroup_dataCollectionGroupId}/step/SAD/main' target="_blank" class="btn btn-xs" >
+                        <span id="{.DataCollection_dataCollectionId}-phasing-link" class="glyphicon glyphicon-eye-open"> SAD</span>
+                </a>
+        {/gt}
+        {@gt key=hasMR   value="0"}
+                <a href='#/mx/datacollectiongroup/{DataCollectionGroup_dataCollectionGroupId}/step/MR/main' target="_blank" class="btn btn-xs" >
+                        <span id="{.DataCollection_dataCollectionId}-phasing-link" class="glyphicon glyphicon-eye-open"> MR</span>
+                </a>
+        {/gt}
+      </div>
    </div>
 </div>
