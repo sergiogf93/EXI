@@ -206,7 +206,6 @@ SessionGrid.prototype.getPanel = function() {
 		data : []
 	});    
 
-
 	this.panel = Ext.create('Ext.grid.Panel', {
 		title : this.title,
 		store : this.store,
