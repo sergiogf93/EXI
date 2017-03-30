@@ -196,9 +196,11 @@ ProposalManager.prototype.getMacromolecules = function() {
 ProposalManager.prototype.getProposals = function() {
 	var proposals = this.get();
 	var result = [];
-	for (var i = 0; i < proposals.length; i++) {
-		proposals[i].proposal[0]["proposal"] = proposals[i].proposal[0].code + proposals[i].proposal[0].number;
-		result = result.concat(proposals[i].proposal);
+	if (proposals) {
+		for (var i = 0; i < proposals.length; i++) {
+			proposals[i].proposal[0]["proposal"] = proposals[i].proposal[0].code + proposals[i].proposal[0].number;
+			result = result.concat(proposals[i].proposal);
+		}
 	}
 	return result;
 };
