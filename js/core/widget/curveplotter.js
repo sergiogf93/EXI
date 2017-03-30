@@ -192,7 +192,7 @@ AutoProcIntegrationCurvePlotter.prototype.render = function(labels, data) {
         highlightCallback = function(event, x, points, row, seriesName) {
             var html = "";
             for (var i = 1 ; i < _this.data.labels.length ; i++) {
-                html += '<span style="font-weight: bold; font-size:10pt; color: ' + colors[i-1] + ';">';
+                html += '<span style="font-weight: bold; font-size:8pt; color: ' + colors[i-1] + ';">';
                 html += '<div style="display: inline-block; position: relative; bottom: .5ex; padding-left: 1em; height: 1px; border-bottom: 2px solid ' + colors[i-1] + ';"></div> ';
                 html += _this.data.labels[i] + "</span><br/>";
             }
@@ -345,8 +345,15 @@ AutoProcIntegrationCurvePlotter.prototype.loadUrl = function(url) {
                     data[0] = Number(_this.xRange[0] + _this.xRange[1] - data[0]).toFixed(2);
                 }
                 try {
-
-                    this.render(this.data.labels, this.data.data);
+                    if (this.data.data.length > 0){
+                        // Manage the case when there are more values than labels
+                        if (this.data.labels.length < this.data.data[0].length) {
+                            _.map(this.data.data,function(d){
+                                _this.data.data[_this.data.data.indexOf(d)] = d.slice(0,_this.data.labels.length);
+                            });
+                        }
+                        this.render(this.data.labels, this.data.data);
+                    }
                 }
                 catch (e) {
                     EXI.setError(e.message);
